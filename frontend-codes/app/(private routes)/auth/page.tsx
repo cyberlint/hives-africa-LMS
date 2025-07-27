@@ -1,8 +1,8 @@
 "use client"
 
-import { AuthContainer } from "../../../components/auth/auth-container"
-import type { LoginFormData, SignupFormData } from "../../../lib/validations"
-import { useAuth } from "../../../contexts/AuthContext"
+import { AuthContainer } from "@/components/auth/auth-container"
+import type { LoginFormData, SignupFormData } from "@/lib/validations"
+import { useAuth } from "@/contexts/AuthContext"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { useEffect } from "react"

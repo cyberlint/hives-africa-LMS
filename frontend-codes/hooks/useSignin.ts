@@ -1,10 +1,10 @@
 "use client"
 
 import { useMutation } from '@tanstack/react-query'
-import { LoginFormData } from '../lib/validations'
-import { signinUser } from '../services/auth'
-import { useAuth } from '../contexts/AuthContext'
-import { handleApiError, isApiError } from '../lib/api-client'
+import { LoginFormData } from '@/lib/validations'
+import { signinUser } from '@/services/auth'
+import { useAuth } from '@/contexts/AuthContext'
+import { handleApiError, isApiError } from '@/lib/api-client'
 import { toast } from 'sonner'
 
 // Custom hook for signin mutation

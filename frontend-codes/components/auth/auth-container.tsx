@@ -3,7 +3,7 @@
 import * as React from "react"
 import { LoginForm } from "./login-form"
 import { SignupForm } from "./signup-form"
-import type { LoginFormData, SignupFormData } from "../lib/validations"
+import type { LoginFormData, SignupFormData } from "@/lib/validations"
 
 type AuthMode = "login" | "signup"
 

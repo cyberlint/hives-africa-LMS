@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
-import { cn } from "../../../lib/utils"
+import { cn } from "@/lib/utils"
 import { DashboardProvider } from "./studentContext"
 
 import Header from "@/components/header"

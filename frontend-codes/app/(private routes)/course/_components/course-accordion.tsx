@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { ChevronDown, FileText, BookOpen, Layers } from "lucide-react"
-import { cn } from "........./lib/utils"
+import { cn } from "@/lib/utils"
 
 interface AccordionItem {
   title: string
