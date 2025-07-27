@@ -24,7 +24,7 @@ import {
   Eye,
   Share2,
 } from "lucide-react"
-import { cn } from "........./lib/utils"
+import { cn } from "../../../../lib/utils"
 import { Progress } from "@/components/ui/progress"
 import Image from "next/image"
 
