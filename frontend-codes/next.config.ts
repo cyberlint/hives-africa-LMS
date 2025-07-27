@@ -1,14 +1,8 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    turbo: {
-      resolveAlias: {
-        '@': path.resolve(__dirname, '.'),
-      },
-    },
-  },
+  // Path aliases are already configured in tsconfig.json
+  // Next.js will automatically use those
 };
 
 export default nextConfig;
