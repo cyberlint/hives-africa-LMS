@@ -1,9 +1,9 @@
 "use client"
 
 import { useMutation } from '@tanstack/react-query'
-import { SignupFormData } from '@/lib/validations'
-import { signupUser } from '@/services/auth'
-import { handleApiError, isApiError } from '@/lib/api-client'
+import { SignupFormData } from '../lib/validations'
+import { signupUser } from '../services/auth'
+import { handleApiError, isApiError } from '../lib/api-client'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 

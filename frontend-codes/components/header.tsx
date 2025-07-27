@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useDashboard } from "@/app/(private routes)/(student)/studentContext"
 import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+import { cn } from "../lib/utils"
 import Link from "next/link"
 
 

@@ -1,6 +1,6 @@
-import { apiClient, ApiError, handleApiError } from '@/lib/api-client'
-import { SignupFormData, LoginFormData, ForgotPasswordFormData, ResetPasswordFormData } from '@/lib/validations'
-import { User } from '@/contexts/AuthContext'
+import { apiClient, ApiError, handleApiError } from '../lib/api-client'
+import { SignupFormData, LoginFormData, ForgotPasswordFormData, ResetPasswordFormData } from '../lib/validations'
+import { User } from '../contexts/AuthContext'
 
 // Authentication response types
 interface AuthResponse {
