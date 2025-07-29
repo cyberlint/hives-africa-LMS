@@ -20,6 +20,7 @@ urlpatterns = [
     path('api/analytics/', include('apps.analytics.urls')),
     path('api/courses/', include('apps.courses.urls')),
     path('api/payments/', include('apps.payments.urls')),
+    path('api/live-classes/', include('apps.live_classes.urls')),
     
     # Django Allauth (fallback for any endpoints we don't override)
     path('api/auth/', include('allauth.urls')),
@@ -35,4 +36,3 @@ if settings.DEBUG:
         urlpatterns = [
             path('__debug__/', include(debug_toolbar.urls)),
         ] + urlpatterns
-
