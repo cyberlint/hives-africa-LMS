@@ -10,8 +10,6 @@ import type { Course, User } from "@/types"
 
 import { toast } from "sonner"
 import { useDashboard } from "../studentContext"
-import { useAuth } from "@/contexts/AuthContext"
-import { UserTypeIndicator } from "@/components/shared/user-type-indicator"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -20,7 +18,6 @@ import Image from "next/image"
 export default function DashboardOverview() {
 
 const {  user, enrolledCourses,  handleTabChange} = useDashboard()
-const { user: authUser } = useAuth()
   const totalProgress = user.progress.reduce((acc, p) => acc + p.progress, 0) / user.progress.length
   const completedCourses = user.progress.filter((p) => p.progress === 100).length
   const inProgressCourses = user.progress.filter((p) => p.progress > 0 && p.progress < 100).length
@@ -57,9 +54,6 @@ const { user: authUser } = useAuth()
         <h1 className="text-2xl sm:text-3xl font-bold mb-2">Welcome back, {user.name}!</h1>
         <p className="text-base sm:text-lg opacity-90">Continue your learning journey</p>
       </div>
-
-      {/* User Type Indicator for non-student users */}
-      {authUser && <UserTypeIndicator user={authUser} showMessage={true} />}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
@@ -134,9 +128,9 @@ const { user: authUser } = useAuth()
                   <Image
                     src={course.thumbnail || "/ai.png"}
                     alt={course.title}
-                    className="w-full h-24 sm:h-32 object-cover rounded mb-3"
                     width={100}
                     height={100}
+                    className="w-full h-24 sm:h-32 object-cover rounded mb-3"
                   />
                   <h3 className="font-semibold mb-2 line-clamp-2 text-sm sm:text-base">{course.title}</h3>
                   <div className="flex items-center space-x-2 mb-3">
@@ -195,33 +189,39 @@ const { user: authUser } = useAuth()
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <Link href={"/achievements"}>
-              <div className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                <div className="bg-[#fdb606] p-2 rounded-full">
-                  <Award className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-semibold text-sm sm:text-base">First Course Completed</h4>
-                  <p className="text-xs sm:text-sm text-gray-600">
-                    Completed your first course - UI/UX Design Masterclass
-                  </p>
-                </div>
-                <Badge variant="secondary" className="text-xs">
-                  New
-                </Badge>
+            <Link href={"/achievements"}> 
+  
+            <div
+              className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+              
+            >
+              <div className="bg-[#fdb606] p-2 rounded-full">
+                <Award className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
-            </Link>
-            <Link href={"/achievements"}>
-              <div className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                <div className="bg-green-500 p-2 rounded-full">
-                  <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-semibold text-sm sm:text-base">7-Day Learning Streak</h4>
-                  <p className="text-xs sm:text-sm text-gray-600">Learned for 7 consecutive days</p>
-                </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-sm sm:text-base">First Course Completed</h4>
+                <p className="text-xs sm:text-sm text-gray-600">
+                  Completed your first course - UI/UX Design Masterclass
+                </p>
               </div>
-            </Link>
+              <Badge variant="secondary" className="text-xs">
+                New
+              </Badge>
+            </div>
+            <div
+              className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+            >
+                <Link href={"/achievements"}>
+              <div className="bg-green-500 p-2 rounded-full">
+                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-sm sm:text-base">7-Day Learning Streak</h4>
+                <p className="text-xs sm:text-sm text-gray-600">Learned for 7 consecutive days</p>
+              </div>
+              </Link>
+            </div>
+                      </Link>
           </div>
 
           {/* Mobile View All Button */}

@@ -2,8 +2,17 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "./providers/QueryProvider";
-import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
+
+// const geistSans = Geist({
+//   variable: "--font-geist-sans",
+//   subsets: ["latin"],
+// });
+
+// const geistMono = Geist_Mono({
+//   variable: "--font-geist-mono",
+//   subsets: ["latin"],
+// });
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -31,19 +40,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${montserrat.className}`}>
         <QueryProvider>
-          <AuthProvider>
-            <Toaster 
-              position="top-right"
-              toastOptions={{
-                style: {
-                  background: 'white',
-                  border: '1px solid #e5e5e5',
-                  color: '#333',
-                },
-              }}
-            />
-            {children}
-          </AuthProvider>
+          <Toaster />
+          {children}
         </QueryProvider>
       </body>
     </html>

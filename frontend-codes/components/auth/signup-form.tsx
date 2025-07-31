@@ -28,8 +28,7 @@ const router = useRouter()
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      first_name: "",
-      last_name: "",
+      name: "",
       email: "",
       password: "",
     },
@@ -58,35 +57,19 @@ const router = useRouter()
           </div>
 
           <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="first_name" className="text-sm font-medium text-gray-700">
-                  First Name
-                </Label>
-                <Input
-                  id="first_name"
-                  type="text"
-                  placeholder="John"
-                  className="h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500"
-                  {...register("first_name")}
-                  disabled={isFormLoading}
-                />
-                {errors.first_name && <p className="text-sm text-red-600">{errors.first_name.message}</p>}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="last_name" className="text-sm font-medium text-gray-700">
-                  Last Name
-                </Label>
-                <Input
-                  id="last_name"
-                  type="text"
-                  placeholder="Doe"
-                  className="h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500"
-                  {...register("last_name")}
-                  disabled={isFormLoading}
-                />
-                {errors.last_name && <p className="text-sm text-red-600">{errors.last_name.message}</p>}
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                Name
+              </Label>
+              <Input
+                id="name"
+                type="name"
+                placeholder="divine"
+                className="h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500"
+                {...register("name")}
+                disabled={isFormLoading}
+              />
+              {errors.name && <p className="text-sm text-red-600">{errors.name.message}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium text-gray-700">
