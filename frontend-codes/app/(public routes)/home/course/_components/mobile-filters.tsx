@@ -76,9 +76,9 @@ export function MobileFilters({ isOpen, onClose, filters, onFiltersChange, cours
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>Filters</DialogTitle>
-            <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0">
+            {/* <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0">
               <X className="w-4 h-4" />
-            </Button>
+            </Button> */}
           </div>
         </DialogHeader>
 

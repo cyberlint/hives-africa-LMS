@@ -7,14 +7,15 @@ import { Sidebar } from "./_components/sidebar"
 import { CourseGrid } from "./_components/course-grid"
 import { CourseList } from "./_components/course-list"
 import { Pagination } from "./_components/pagination"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 // import { Footer } from "@/components/footer"
 import { CourseModal } from "./_components/course-modal"
 import { MobileFilters } from "./_components/mobile-filters"
-import { Grid3X3, List, Search } from "lucide-react"
+import { Grid3X3, List, Search,Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useMediaQuery } from "@/hooks/use-media-query"
-
+import { FilterDropdown } from "./_components/filter-dropdown"
 export interface Course {
   id: number
   title: string
@@ -176,7 +177,7 @@ const courses: Course[] = [
 const ITEMS_PER_PAGE = 6
 
 export default function CoursesPage() {
-  const [viewMode, setViewMode] = useState<"grid" | "list">("list")
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [searchQuery, setSearchQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
@@ -257,9 +258,8 @@ export default function CoursesPage() {
   const activeFiltersCount = Object.values(filters).reduce((count, filterArray) => count + filterArray.length, 0)
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* <Header />
-      <Navigation /> */}
+<div className="min-h-screen bg-white">
+  
 
       <div className={`flex ${isMobile ? "flex-col" : ""} max-w-7xl mx-auto`}>
         <main className={`flex-1 p-6 ${isMobile ? "order-1" : ""}`}>
@@ -295,31 +295,74 @@ export default function CoursesPage() {
                 />
               </div>
 
-              <div className="flex items-center">
+              {isMobile && (
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  onClick={() => setViewMode("grid")}
-                  className={`h-10 w-10 p-0 rounded-none border-r border-[#e9ecef] ${
-                    viewMode === "grid"
-                      ? "bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white"
-                      : "text-[#6c757d] hover:bg-[#f8f9fa] bg-white border-y border-l border-[#e9ecef]"
-                  }`}
+                  onClick={() => setMobileFiltersOpen(true)}
+                  className="h-10 px-3 border-[#e9ecef] text-[#6c757d] hover:bg-[#f8f9fa] bg-white flex items-center gap-2 flex-shrink-0"
                 >
-                  <Grid3X3 className="w-4 h-4" />
+                  <Filter className="w-4 h-4" />
+                  {activeFiltersCount > 0 && (
+                    <span className="bg-[#ff6b35] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {activeFiltersCount}
+                    </span>
+                  )}
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setViewMode("list")}
-                  className={`h-10 w-10 p-0 rounded-none ${
-                    viewMode === "list"
-                      ? "bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white"
-                      : "text-[#6c757d] hover:bg-[#f8f9fa] bg-white border-y border-r border-[#e9ecef]"
-                  }`}
-                >
-                  <List className="w-4 h-4" />
-                </Button>
+              )}
+
+              <div className="flex items-center gap-2">
+                {/* filter on desktop */}
+                
+                {/* {!isMobile && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-10 px-3 border-[#e9ecef] text-[#6c757d] hover:bg-[#f8f9fa] bg-white flex items-center gap-2"
+                      >
+                        <Filter className="w-4 h-4" />
+                        Filters
+                        {activeFiltersCount > 0 && (
+                          <span className="bg-[#ff6b35] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                            {activeFiltersCount}
+                          </span>
+                        )}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-80 p-4 bg-white border border-[#e9ecef] shadow-lg">
+                      <FilterDropdown filters={filters} onFiltersChange={handleFilterChange} courses={courses} />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )} */}
+
+                <div className="flex items-center">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setViewMode("grid")}
+                    className={`h-10 w-10 p-0 rounded-none border-r border-[#e9ecef] ${
+                      viewMode === "grid"
+                        ? "bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white"
+                        : "text-[#6c757d] hover:bg-[#f8f9fa] bg-white border-y border-l border-[#e9ecef]"
+                    }`}
+                  >
+                    <Grid3X3 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setViewMode("list")}
+                    className={`h-10 w-10 p-0 rounded-none ${
+                      viewMode === "list"
+                        ? "bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white"
+                        : "text-[#6c757d] hover:bg-[#f8f9fa] bg-white border-y border-r border-[#e9ecef]"
+                    }`}
+                  >
+                    <List className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -364,7 +407,7 @@ export default function CoursesPage() {
         {!isMobile && <Sidebar filters={filters} onFiltersChange={handleFilterChange} courses={courses} />}
       </div>
 
-      {/* <Footer /> */}
+  
 
       {/* Course Details Modal */}
       {selectedCourse && (

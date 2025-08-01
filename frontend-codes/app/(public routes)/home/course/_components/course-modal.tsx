@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Star, Clock, Users, BookOpen, Award, X } from "lucide-react"
 import Image from "next/image"
+
 export interface Course {
   id: number
   title: string
@@ -31,13 +32,13 @@ interface CourseModalProps {
 export function CourseModal({ course, isOpen, onClose }: CourseModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="min-w-4xl max-h-[90vh] ">
         <DialogHeader>
           <div className="flex items-start justify-between">
             <DialogTitle className="text-2xl font-bold text-[#2c3e50] pr-8">{course.title}</DialogTitle>
-            <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0 hover:bg-[#f8f9fa]">
+            {/* <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0 hover:bg-[#f8f9fa]">
               <X className="w-4 h-4" />
-            </Button>
+            </Button> */}
           </div>
         </DialogHeader>
 

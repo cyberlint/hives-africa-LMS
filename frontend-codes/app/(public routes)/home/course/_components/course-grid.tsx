@@ -31,7 +31,7 @@ export function CourseGrid({ courses, onCourseSelect, isMobile, isTablet }: Cour
   const getGridCols = () => {
     if (isMobile) return "grid-cols-1"
     if (isTablet) return "grid-cols-2"
-    return "grid-cols-2"
+    return "grid-cols-3"
   }
 
   return (
