@@ -8,7 +8,7 @@ env = environ.Env(
 )
 
 # Build paths inside the project
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Read environment file
 environ.Env.read_env(BASE_DIR / '.env')
@@ -20,6 +20,17 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+
+# Allow all Replit subdomains in development
+import os
+if os.environ.get('REPL_SLUG'):
+    import re
+    ALLOWED_HOSTS += ['.replit.dev', '.repl.co']
+    # Allow any *.replit.dev subdomain
+    ALLOWED_HOSTS_PATTERNS = [
+        re.compile(r'.*\.replit\.dev$'),
+        re.compile(r'.*\.repl\.co$'),
+    ]
 
 # Application definition
 DJANGO_APPS = [
@@ -50,14 +61,15 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     'apps.core',
     'apps.users',
-    'apps.chat',
-    'apps.notifications',
-    'apps.files',
-    'apps.analytics',
-    'apps.courses',
-    'apps.payments',
-    'apps.search',
-    'apps.live_classes',
+    # Temporarily disabled until views are properly implemented
+    # 'apps.chat',
+    # 'apps.notifications',
+    # 'apps.files',
+    # 'apps.analytics',
+    # 'apps.courses',
+    # 'apps.payments',
+    # 'apps.search',
+    # 'apps.live_classes',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -81,6 +93,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -91,7 +104,7 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-ROOT_URLCONF = 'bmad_lms.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATES = [
     {
@@ -118,9 +131,12 @@ WEBPACK_LOADER = {
 }
 
 
-# Database
+# Database - Default SQLite configuration
 DATABASES = {
-    'default': env.db()
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 # Password validation
@@ -190,10 +206,36 @@ REST_FRAMEWORK = {
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "https://localhost:3000", 
     "http://127.0.0.1:3000",
+    "https://127.0.0.1:3000",
 ]
 
+# Add Replit-specific CORS settings
+if DEBUG:
+    import os
+    repl_id = os.getenv('REPL_ID')
+    repl_owner = os.getenv('REPL_OWNER')
+    if repl_id and repl_owner:
+        CORS_ALLOWED_ORIGINS.extend([
+            f"https://{repl_id}--5000--{repl_owner}.repl.co",
+            f"https://{repl_id}--3000--{repl_owner}.repl.co",
+            f"https://{repl_id}.{repl_owner}.repl.co",
+        ])
+
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only in development
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -285,12 +327,6 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'django.log',
-            'formatter': 'verbose',
-        },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
@@ -298,12 +334,12 @@ LOGGING = {
         },
     },
     'root': {
-        'handlers': ['console', 'file'],
+        'handlers': ['console'],
         'level': 'INFO',
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },

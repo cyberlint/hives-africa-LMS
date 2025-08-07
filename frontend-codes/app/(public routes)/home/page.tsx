@@ -124,14 +124,17 @@ const Home = () => {
             tech skills through culturally relevant content tailored for your
             journey.
           </p>
-          <button className="bg-orange text-white text-xs md:text-sm font-medium px-6 py-3">
+          <button 
+            onClick={() => window.location.href = '/auth?mode=signup'}
+            className="bg-orange text-white text-xs md:text-sm font-medium px-6 py-3 cursor-pointer hover:bg-orange/90 transition"
+          >
             Get Started for Free
           </button>
         </div>
 
         <div className="flex items-center w-full lg:w-[55%]">
           <Image
-            src={"/assets/hive_africa_hero.png"}
+            src={"/assets/home-hero-image.png"}
             alt="Hero Image"
             width={400}
             height={400}

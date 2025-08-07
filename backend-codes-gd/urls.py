@@ -2,28 +2,26 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
+
+def api_health(request):
+    return JsonResponse({'status': 'ok', 'message': 'Backend server is running'})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/health/', api_health, name='api_health'),
     
-    # Custom authentication endpoints (these take precedence)
-    path('', include('apps.users.urls')),
+    # User authentication API endpoints
+    path('api/auth/', include('apps.users.urls')),
     
-    # Core API endpoints
-    path('api/core/', include('apps.core.urls')),
-    path('', include('apps.core.urls')),
+    # User management API endpoints
+    path('api/users/', include('apps.users.user_urls')),
     
-    # Other app endpoints
-    path('api/chat/', include('apps.chat.urls')),
-    path('api/notifications/', include('apps.notifications.urls')),
-    path('api/files/', include('apps.files.urls')),
-    path('api/analytics/', include('apps.analytics.urls')),
-    path('api/courses/', include('apps.courses.urls')),
-    path('api/payments/', include('apps.payments.urls')),
-    path('api/live-classes/', include('apps.live_classes.urls')),
+    # Core API endpoints  
+    path('api/', include('apps.core.urls')),
     
-    # Django Allauth (fallback for any endpoints we don't override)
-    path('api/auth/', include('allauth.urls')),
+    # Django Allauth (fallback)
+    path('accounts/', include('allauth.urls')),
 ]
 
 # Serve media files in development
