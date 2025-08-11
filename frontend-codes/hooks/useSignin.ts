@@ -27,7 +27,7 @@ export const useSigninMutation = () => {
       })
     },
 
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Signin failed:', error)
 
       if (isApiError(error)) {

@@ -1,8 +1,11 @@
+"use client"
+
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, Play } from "lucide-react"
 import { CourseAccordion } from "../_components/course-accordion"
+import { useEffect, useState } from "react"
 type PageProps = {
   params: Promise<{ courseId: string }>;
 };
@@ -76,8 +79,27 @@ const courses = [
   },
 ]
 
-export default async function CoursePage({ params }: PageProps) {
-  const { courseId } = await params;
+export default function CoursePage({ params }: PageProps) {
+  const [courseId, setCourseId] = useState<string>("")
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadParams() {
+      try {
+        const resolvedParams = await params
+        setCourseId(resolvedParams.courseId)
+      } catch (error) {
+        console.error("Error loading params:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadParams()
+  }, [params])
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
   const course = courses.find((c) => c.id === courseId)
 
   if (!course) {

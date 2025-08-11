@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Play, Clock, Star, Filter, X } from "lucide-react"
 import { toast } from "sonner"
 import type { Course, CourseProgress } from "@/types"
-import { useDashboard } from "../studentContext"
+import { useDashboard } from "../../../(private routes)/(student)/studentContext"
 import Image from "next/image"
 interface MyLearningProps {
   courses?: Course[]

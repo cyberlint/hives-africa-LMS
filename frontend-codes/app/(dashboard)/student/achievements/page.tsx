@@ -48,7 +48,7 @@ import {
   X,
 } from "lucide-react"
 import type { User } from "@/types"
-import { useDashboard } from "../studentContext"
+import { useDashboard } from "../../../(private routes)/(student)/studentContext"
 import ShareAchievementModal from "@/components/modals/share-achievement-modal"
 import ExportDataModal from "@/components/modals/export-data-modal"
 // import EditModal from "@/components/modals/edit-modal"

@@ -1,0 +1,66 @@
+
+   Creating an optimized production build ...
+Failed to compile.
+
+./app/(learning)/courses/[courseId]/page.tsx
+Error:   × The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+    ╭─[/home/runner/workspace/app/(learning)/courses/[courseId]/page.tsx:10:1]
+  7 │ import { PlayCircle, Clock, Users, Star } from "lucide-react"
+  8 │ import Link from "next/link"
+  9 │ 
+ 10 │ "use client"
+    · ────────────
+ 11 │ 
+ 12 │ import { useEffect, useState } from "react"
+    ╰────
+
+Import trace for requested module:
+./app/(learning)/courses/[courseId]/page.tsx
+
+./app/(private routes)/course/[courseId]/page.tsx
+Error:   × The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+    ╭─[/home/runner/workspace/app/(private routes)/course/[courseId]/page.tsx:79:1]
+ 76 │   },
+ 77 │ ]
+ 78 │ 
+ 79 │ "use client"
+    · ────────────
+ 80 │ 
+ 81 │ import { useEffect, useState } from "react"
+    ╰────
+  × You're importing a component that needs `useEffect`. This React hook only works in a client component. To fix, mark the file (or its parent) with the `"use client"` directive.
+  │ 
+  │  Learn more: https://nextjs.org/docs/app/api-reference/directives/use-client
+  │ 
+  │ 
+    ╭─[/home/runner/workspace/app/(private routes)/course/[courseId]/page.tsx:81:1]
+ 78 │ 
+ 79 │ "use client"
+ 80 │ 
+ 81 │ import { useEffect, useState } from "react"
+    ·          ─────────
+ 82 │ 
+ 83 │ export default function CoursePage({ params }: PageProps) {
+ 84 │   const [courseId, setCourseId] = useState<string>("")
+    ╰────
+  × You're importing a component that needs `useState`. This React hook only works in a client component. To fix, mark the file (or its parent) with the `"use client"` directive.
+  │ 
+  │  Learn more: https://nextjs.org/docs/app/api-reference/directives/use-client
+  │ 
+  │ 
+    ╭─[/home/runner/workspace/app/(private routes)/course/[courseId]/page.tsx:81:1]
+ 78 │ 
+ 79 │ "use client"
+ 80 │ 
+ 81 │ import { useEffect, useState } from "react"
+    ·                     ────────
+ 82 │ 
+ 83 │ export default function CoursePage({ params }: PageProps) {
+ 84 │   const [courseId, setCourseId] = useState<string>("")
+    ╰────
+
+Import trace for requested module:
+./app/(private routes)/course/[courseId]/page.tsx
+
+
+> Build failed because of webpack errors

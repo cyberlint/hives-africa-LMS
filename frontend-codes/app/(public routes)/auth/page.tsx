@@ -5,17 +5,17 @@ import type { LoginFormData, SignupFormData } from "@/lib/validations"
 import { useAuth } from "@/contexts/AuthContext"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback, Suspense } from "react"
 
 type AuthMode = "login" | "signup"
 
-export default function AuthPage() {
+function AuthPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { isAuthenticated, isLoading } = useAuth()
-  
+
   // Determine initial mode based on URL parameters or default to login
-  const getInitialMode = (): AuthMode => {
+  const getInitialMode = useCallback((): AuthMode => {
     try {
       const mode = searchParams.get('mode')
       return mode === 'signup' ? 'signup' : 'login'
@@ -23,15 +23,15 @@ export default function AuthPage() {
       // Fallback for SSR or when searchParams is not available
       return 'login'
     }
-  }
-  
+  }, [searchParams])
+
   const [currentMode, setCurrentMode] = useState<AuthMode>(getInitialMode())
-  
+
   // Update mode when URL parameters change
   useEffect(() => {
     setCurrentMode(getInitialMode())
-  }, [searchParams])
-  
+  }, [getInitialMode])
+
   // Check for verification message
   useEffect(() => {
     const message = searchParams.get('message')
@@ -115,5 +115,17 @@ export default function AuthPage() {
         onGoogleSignIn={handleGoogleSignIn}
       />
     </div>
+  )
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500"></div>
+      </div>
+    }>
+      <AuthPageContent />
+    </Suspense>
   )
 }
