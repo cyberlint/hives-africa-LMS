@@ -33,6 +33,7 @@ export function SignupForm({ onSubmit, onLoginClick, onGoogleSignIn, isLoading =
       email: "",
       password: "",
       confirmPassword: "",
+      user_type: "student",
     },
   })
 

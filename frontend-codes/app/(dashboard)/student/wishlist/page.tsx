@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import type { Course } from "@/types"
 import ShareWishlistModal from "@/components/modals/share-wishlist-modal"
 import Image from "next/image"
-import { useDashboard } from "../studentContext"
+import { useDashboard } from "../../../(private routes)/(student)/studentContext"
 interface WishlistProps {
   courses: Course[]
   onCourseSelect: (course: Course) => void

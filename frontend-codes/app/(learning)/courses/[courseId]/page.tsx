@@ -6,8 +6,36 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { PlayCircle, Clock, Users, Star } from "lucide-react"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 
-export default function CourseDetailPage({ params }: { params: { courseId: string } }) {
+interface PageProps {
+  params: Promise<{
+    courseId: string
+  }>
+}
+
+export default function CourseDetailPage({ params }: PageProps) {
+  const [courseId, setCourseId] = useState<string>("")
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadParams() {
+      try {
+        const resolvedParams = await params
+        setCourseId(resolvedParams.courseId)
+      } catch (error) {
+        console.error("Error loading params:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadParams()
+  }, [params])
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="grid gap-6 lg:grid-cols-3">
@@ -39,7 +67,7 @@ export default function CourseDetailPage({ params }: { params: { courseId: strin
 
           <Card>
             <CardHeader>
-              <CardTitle>What you'll learn</CardTitle>
+              <CardTitle>What you&apos;ll learn</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">

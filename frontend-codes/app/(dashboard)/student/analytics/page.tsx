@@ -34,7 +34,7 @@ import {
   AlertCircle,
 } from "lucide-react"
 import type { User, Course } from "@/types"
-import { useDashboard } from "../studentContext"
+import { useDashboard } from "../../../(private routes)/(student)/studentContext"
 interface LearningGoal {
   id: string
   title: string

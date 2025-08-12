@@ -39,7 +39,7 @@ import {
   X,
 } from "lucide-react"
 import type { User } from "@/types"
-import { useDashboard } from "../studentContext"
+import { useDashboard } from "../../../(private routes)/(student)/studentContext"
 import Image from "next/image"
 interface AccountSettingsProps {
   user?: User

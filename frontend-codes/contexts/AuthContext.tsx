@@ -66,15 +66,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     initializeAuth()
   }, [])
 
-  // Handle route protection
+  // Handle route protection - only on client side
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && typeof window !== 'undefined') {
       handleRouteProtection()
     }
   }, [isLoading, isAuthenticated])
 
   const initializeAuth = async () => {
     try {
+      // Only access localStorage on client side
+      if (typeof window === 'undefined') {
+        setIsLoading(false)
+        return
+      }
+
       const storedToken = tokenStorage.getToken()
       const storedUser = userStorage.getUser()
 
@@ -93,14 +99,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       console.error('Error initializing auth:', error)
       // Clear any potentially invalid data
-      tokenStorage.clearTokens()
-      userStorage.removeUser()
+      if (typeof window !== 'undefined') {
+        tokenStorage.clearTokens()
+        userStorage.removeUser()
+      }
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleRouteProtection = () => {
+    // Only run on client side
+    if (typeof window === 'undefined') return
+    
     const currentPath = window.location.pathname
 
     // If user is not authenticated and trying to access protected route
