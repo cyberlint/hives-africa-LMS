@@ -2,6 +2,7 @@ import axios from 'axios';
 import { SignupFormData } from '@/lib/validations';
 import { LoginFormData } from '@/lib/validations';
 
+
 const apiurl=process.env.NEXT_PUBLIC_API_URL || ''; 
 export const signupUser = async (data: SignupFormData) => {
   try {
