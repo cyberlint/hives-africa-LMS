@@ -1,0 +1,32 @@
+
+[build]
+builder = "nixpacks"
+buildCommand = "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate"
+
+[deploy]
+startCommand = "gunicorn --bind 0.0.0.0:$PORT bmad_lms.wsgi:application"
+restartPolicyType = "never"
+
+[env]
+DJANGO_SETTINGS_MODULE = "settings.production"
+PYTHONPATH = "/app"
+PORT = "8000"
+
+[[services]]
+name = "backend"
+
+[services.source]
+repo = "."
+rootDirectory = "/backend-codes"
+
+[services.variables]
+DEBUG = "False"
+DJANGO_SETTINGS_MODULE = "settings.production"
+PYTHONPATH = "/app"
+PORT = "8000"
+
+[services.networking]
+serviceDomain = true
+
+[[services.database]]
+name = "postgres"
