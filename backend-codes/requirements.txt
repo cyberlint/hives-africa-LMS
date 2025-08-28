@@ -144,7 +144,6 @@ pydantic_core==2.33.2
 pydocstyle==6.3.0
 pyflakes==2.2.0
 Pygments==2.19.2
-PyGObject==3.48.2
 PyJWT==2.7.0
 pylint==3.3.7
 pymongo==4.13.2
