@@ -125,8 +125,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'wsgi.application'
-ASGI_APPLICATION = 'asgi.application'
 # WSGI/ASGI configuration
 WEBPACK_LOADER = {
     'DEFAULT': {
