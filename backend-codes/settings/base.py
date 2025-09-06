@@ -7,7 +7,7 @@ env = environ.Env(
     DEBUG=(bool, False)
 )
 
-CSRF_TRUSTED_ORIGINS = ["https://ytecommerceapi2025-production.up.railway.app"]
+CSRF_TRUSTED_ORIGINS = ["https://hives-africa-lms.onrender.com", "http://localhost:8000"]
 ALLOWED_HOSTS = ["*"]
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
