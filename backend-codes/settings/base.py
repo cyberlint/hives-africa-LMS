@@ -7,7 +7,7 @@ env = environ.Env(
     DEBUG=(bool, False)
 )
 
-CSRF_TRUSTED_ORIGINS = ["https://hives-africa-lms.onrender.com", "http://localhost:8000"]
+CSRF_TRUSTED_ORIGINS = ["https://hives-africa-lms.onrender.com","http://localhost:8000","https://analytixhive.onrender.com",]
 ALLOWED_HOSTS = ["*"]
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -237,6 +237,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://localhost:3000", 
     "http://127.0.0.1:3000",
     "https://127.0.0.1:3000",
+"https://analytixhive.onrender.com",
 ]
 
 # Add Replit-specific CORS settings
