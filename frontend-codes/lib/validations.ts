@@ -35,15 +35,15 @@ export const signupSchema = z.object({
     .regex(/[a-zA-Z]/, "Password must contain at least one letter")
     .regex(/[0-9]/, "Password must contain at least one number")
     .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
-  confirmPassword: z
+  password_confirm: z
     .string()
     .min(1, "Please confirm your password"),
   user_type: z
     .string()
     .min(1, "User type is required"),
-}).refine((data) => data.password === data.confirmPassword, {
+}).refine((data) => data.password === data.password_confirm, {
   message: "Passwords don't match",
-  path: ["confirmPassword"],
+  path: ["password_confirm"],
 })
 
 // Forgot password schema
@@ -64,10 +64,10 @@ export const resetPasswordSchema = z.object({
     .regex(/[a-zA-Z]/, "Password must contain at least one letter")
     .regex(/[0-9]/, "Password must contain at least one number")
     .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
-  confirmPassword: z.string().min(1, "Please confirm your password"),
-}).refine((data) => data.password === data.confirmPassword, {
+  password_confirm: z.string().min(1, "Please confirm your password"),
+}).refine((data) => data.password === data.password_confirm, {
   message: "Passwords don't match",
-  path: ["confirmPassword"],
+  path: ["password_confirm"],
 })
 
 // Change password schema
@@ -80,10 +80,10 @@ export const changePasswordSchema = z.object({
     .regex(/[a-zA-Z]/, "Password must contain at least one letter")
     .regex(/[0-9]/, "Password must contain at least one number")
     .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
-  confirmPassword: z.string().min(1, "Please confirm your password"),
-}).refine((data) => data.newPassword === data.confirmPassword, {
+  password_confirm: z.string().min(1, "Please confirm your password"),
+}).refine((data) => data.newPassword === data.password_confirm, {
   message: "Passwords don't match",
-  path: ["confirmPassword"],
+  path: ["password_confirm"],
 })
 
 // Type exports

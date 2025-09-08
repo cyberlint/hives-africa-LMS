@@ -32,7 +32,7 @@ export function SignupForm({ onSubmit, onLoginClick, onGoogleSignIn, isLoading =
       last_name: "",
       email: "",
       password: "",
-      confirmPassword: "",
+      password_confirm: "",
       user_type: "student",
     },
   })
@@ -141,17 +141,17 @@ export function SignupForm({ onSubmit, onLoginClick, onGoogleSignIn, isLoading =
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="password_confirm" className="text-sm font-medium text-gray-700">
                 Confirm Password
               </Label>
               <PasswordInput
-                id="confirmPassword"
+                id="password_confirm"
                 placeholder="Confirm your password"
                 className="h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500"
-                {...register("confirmPassword")}
+                {...register("password_confirm")}
                 disabled={isFormLoading}
               />
-              {errors.confirmPassword && <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>}
+              {errors.password_confirm && <p className="text-sm text-red-600">{errors.password_confirm.message}</p>}
             </div>
 
             <div className="space-y-3 pt-2">
