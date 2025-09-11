@@ -1,20 +1,42 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { parse } from "cookie";
+import { NextRequest, NextResponse } from "next/server";
+import { authRoutes, DEFAULT_LOGIN_REDIRECT, publicRoutes } from "./routes";
 
 export function middleware(request: NextRequest) {
-  // Just pass through all requests - no authentication logic in middleware
-  return NextResponse.next()
+  const { nextUrl } = request;
+  const cookies = parse(request.headers.get("cookie") || "");
+  // const isLoggedIn = !!cookies.user ? !!cookies.user : !!cookies.access_token;
+  const isLoggedIn = !!cookies.user;
+  const isPublicRoute =
+    publicRoutes.includes(nextUrl.pathname) ||
+    nextUrl.pathname.startsWith("/accept-invite");
+  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+  const resetPasswordAuth = nextUrl.pathname.startsWith("/new-password");
+
+  if (isAuthRoute || resetPasswordAuth) {
+    if (isLoggedIn) {
+      const loginRedirect = new URL(DEFAULT_LOGIN_REDIRECT, nextUrl.origin);
+      const reference = nextUrl.searchParams.get("inviteReference");
+      if (reference) {
+        loginRedirect.searchParams.set("reference", reference);
+      }
+      return NextResponse.redirect(new URL(loginRedirect, nextUrl.origin));
+    }
+    return null;
+  }
+
+  if (!isLoggedIn && !isPublicRoute) {
+    const signInUrl = new URL("/signin", nextUrl.origin);
+    signInUrl.searchParams.set(
+      "callbackUrl",
+      nextUrl.pathname + nextUrl.search,
+    );
+    return NextResponse.redirect(signInUrl);
+  }
+
+  return null;
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
-}
+  matcher: ["/((?!.+\\.[\\w]+$|_next).)", "/", "/(api|trpc)(.)"],
+};
