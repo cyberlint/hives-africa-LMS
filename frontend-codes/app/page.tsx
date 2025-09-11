@@ -1,4 +1,4 @@
-
+ 
 import Waitlist from "./(public routes)/waitlist/waitlist";
 
 export default function Home() {

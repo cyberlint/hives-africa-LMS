@@ -1,0 +1,44 @@
+name: Sync to Public Repository
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout organization repo
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Setup SSH key
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    
+    - name: Setup Git
+      run: |
+        git config --global user.name "ingchrist"
+        git config --global user.email "cdjinguet@gmail.com"
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+    
+    - name: Add public repo as remote
+      run: |
+        git remote add public git@github.com:cyberlint/hives-africa-LMS.git
+    
+    - name: Push to public repository
+      run: |
+        git push public ${{ github.ref_name }} --force
+        
+    - name: Push tags (if any)
+      run: |
+        git push public --tags --force
+      continue-on-error: true
+

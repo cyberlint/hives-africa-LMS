@@ -61,7 +61,7 @@ interface NotificationSettings {
 interface SecuritySettings {
   currentPassword: string
   newPassword: string
-  confirmPassword: string
+  password_confirm: string
   twoFactorSMS: boolean
   twoFactorApp: boolean
 }
@@ -116,7 +116,7 @@ export default function AccountSettings() {
   const [securitySettings, setSecuritySettings] = useState<SecuritySettings>({
     currentPassword: "",
     newPassword: "",
-    confirmPassword: "",
+    password_confirm: "",
     twoFactorSMS: false,
     twoFactorApp: false,
   })
@@ -200,8 +200,8 @@ export default function AccountSettings() {
       newErrors.newPassword = "Password must be at least 8 characters with uppercase, lowercase, and number"
     }
 
-    if (securitySettings.newPassword !== securitySettings.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match"
+    if (securitySettings.newPassword !== securitySettings.password_confirm) {
+      newErrors.password_confirm = "Passwords do not match"
     }
 
     setErrors(newErrors)
@@ -323,7 +323,7 @@ export default function AccountSettings() {
       setSecuritySettings({
         currentPassword: "",
         newPassword: "",
-        confirmPassword: "",
+        password_confirm: "",
         twoFactorSMS: securitySettings.twoFactorSMS,
         twoFactorApp: securitySettings.twoFactorApp,
       })
@@ -807,18 +807,18 @@ export default function AccountSettings() {
                     </p>
                   </div>
                   <div>
-                    <Label htmlFor="confirmPassword">Confirm New Password *</Label>
+                    <Label htmlFor="password_confirm">Confirm New Password *</Label>
                     <Input
-                      id="confirmPassword"
+                      id="password_confirm"
                       type="password"
-                      value={securitySettings.confirmPassword}
-                      onChange={(e) => setSecuritySettings((prev) => ({ ...prev, confirmPassword: e.target.value }))}
-                      className={errors.confirmPassword ? "border-red-500" : ""}
+                      value={securitySettings.password_confirm}
+                      onChange={(e) => setSecuritySettings((prev) => ({ ...prev, password_confirm: e.target.value }))}
+                      className={errors.password_confirm ? "border-red-500" : ""}
                     />
-                    {errors.confirmPassword && (
+                    {errors.password_confirm && (
                       <p className="text-sm text-red-500 mt-1 flex items-center">
                         <AlertCircle className="h-4 w-4 mr-1" />
-                        {errors.confirmPassword}
+                        {errors.password_confirm}
                       </p>
                     )}
                   </div>
