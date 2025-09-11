@@ -100,7 +100,7 @@ const setInputRef = useCallback((index: number, el: HTMLInputElement | null) => 
           Verify code
         </Button>
         <div className="text-center text-sm">
-          <p className="text-muted-foreground mb-2">Didn't receive the code?</p>
+          <p className="text-muted-foreground mb-2">Didn&apos;t receive the code?</p>
           <button type="button" onClick={handleResendCode} className="underline underline-offset-4 hover:text-primary">
             Resend code
           </button>

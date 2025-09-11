@@ -42,7 +42,7 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentPropsW
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Reset your password</h1>
         <p className="text-balance text-sm text-muted-foreground">
-          Enter your new password below. Make sure it's strong and secure.
+          Enter your new password below. Make sure it&apos;s strong and secure.
         </p>
       </div>
       <div className="grid gap-6">
