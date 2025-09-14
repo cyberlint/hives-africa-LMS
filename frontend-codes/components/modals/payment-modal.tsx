@@ -33,9 +33,12 @@ interface PaymentModalProps {
   total: number
 }
 
+// Payment method types
+type PaymentMethodType = "paystack" | "paypal" | "apple" | "google"
+
 interface PaymentMethod {
   id: string
-  type: "card" | "paypal" | "apple" | "google"
+  type: PaymentMethodType
   label: string
   icon: any
   description: string
@@ -61,7 +64,8 @@ interface CardInfo {
 
 export default function PaymentModal({ isOpen, onClose, items, total }: PaymentModalProps) {
   const [currentStep, setCurrentStep] = useState<"method" | "details" | "review" | "processing" | "success">("method")
-  const [selectedMethod, setSelectedMethod] = useState<string>("card")
+  // allow empty initial state to avoid invalid comparison errors
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethodType | "">("")
   const [isProcessing, setIsProcessing] = useState(false)
   const [processingProgress, setProcessingProgress] = useState(0)
   const [savePaymentMethod, setSavePaymentMethod] = useState(false)
@@ -89,11 +93,11 @@ export default function PaymentModal({ isOpen, onClose, items, total }: PaymentM
 
   const paymentMethods: PaymentMethod[] = [
     {
-      id: "card",
-      type: "card",
-      label: "Credit/Debit Card",
+      id: "paystack",
+      type: "paystack",
+      label: "Pay with Paystack",
       icon: CreditCard,
-      description: "Visa, Mastercard, American Express",
+      description: "Secured payment via Paystack",
     },
     {
       id: "paypal",
@@ -148,7 +152,7 @@ export default function PaymentModal({ isOpen, onClose, items, total }: PaymentM
       case "method":
         return selectedMethod !== ""
       case "details":
-        if (selectedMethod === "card") {
+        if (selectedMethod === "paystack") {
           return (
             cardInfo.number.replace(/\s/g, "").length >= 13 &&
             cardInfo.expiry.length === 5 &&
@@ -306,9 +310,9 @@ export default function PaymentModal({ isOpen, onClose, items, total }: PaymentM
                   return (
                     <button
                       key={method.id}
-                      onClick={() => setSelectedMethod(method.id)}
+                      onClick={() => setSelectedMethod(method.type)}
                       className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-colors text-left ${
-                        selectedMethod === method.id
+                        selectedMethod === method.type
                           ? "border-[#fdb606] bg-[#fdb606]/10"
                           : "border-gray-200 hover:border-gray-300"
                       }`}
@@ -330,7 +334,7 @@ export default function PaymentModal({ isOpen, onClose, items, total }: PaymentM
             <div className="space-y-6">
               <h3 className="text-lg font-semibold">Payment Details</h3>
 
-              {selectedMethod === "card" && (
+              {selectedMethod === "paystack" && (
                 <div className="space-y-4">
                   {/* Card Information */}
                   <div className="space-y-4">
@@ -461,7 +465,7 @@ export default function PaymentModal({ isOpen, onClose, items, total }: PaymentM
                       <Label htmlFor="country">Country</Label>
                       <Select
                         value={billingInfo.country}
-                        onValueChange={(value) => setBillingInfo((prev) => ({ ...prev, country: value }))}
+                        onValueChange={(value: string) => setBillingInfo((prev) => ({ ...prev, country: value }))}
                       >
                         <SelectTrigger>
                           <SelectValue />
@@ -510,7 +514,7 @@ export default function PaymentModal({ isOpen, onClose, items, total }: PaymentM
              <Checkbox
   id="savePayment"
   checked={savePaymentMethod}
-  onCheckedChange={(checked) => setSavePaymentMethod(!!checked)}
+  onCheckedChange={(checked: boolean | "indeterminate") => setSavePaymentMethod(checked === true)}
 />
                 <Label htmlFor="savePayment" className="text-sm">
                   Save this payment method for future purchases
@@ -584,7 +588,7 @@ export default function PaymentModal({ isOpen, onClose, items, total }: PaymentM
               <div className="bg-gray-50 rounded-lg p-4">
                 <h4 className="font-medium mb-2">Payment Method</h4>
                 <div className="flex items-center space-x-3">
-                  {selectedMethod === "card" && (
+                  {selectedMethod === "paystack" && (
                     <>
                       <CreditCard className="h-5 w-5" />
                       <span>•••• •••• •••• {cardInfo.number.slice(-4)}</span>
@@ -616,11 +620,11 @@ export default function PaymentModal({ isOpen, onClose, items, total }: PaymentM
              <Checkbox
               id="agreeTerms"
               checked={agreeToTerms}
-              onCheckedChange={(checked) => {
+              onCheckedChange={(checked: boolean | "indeterminate") => {
                 if (checked === "indeterminate") {
-                  setAgreeToTerms(false); // or set it to null, depending on your use case
+                  setAgreeToTerms(false)
                 } else {
-                  setAgreeToTerms(checked);
+                  setAgreeToTerms(Boolean(checked))
                 }
               }}
             />

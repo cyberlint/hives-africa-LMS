@@ -261,7 +261,7 @@ export default function ExportDataModal({ isOpen, onClose }: ExportDataModalProp
           {/* Date Range Selection */}
           <div className="space-y-3">
             <Label>Date Range</Label>
-            <Select value={dateRange} onValueChange={(value: any) => setDateRange(value)}>
+            <Select value={dateRange} onValueChange={(value: "all" | "year" | "month" | "custom") => setDateRange(value)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
