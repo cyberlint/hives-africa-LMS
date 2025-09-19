@@ -79,7 +79,7 @@ const mockCourses: Course[] = [
     duration: "35 hours",
     price: 79.99,
     originalPrice: 149.99,
-    thumbnail: "/ai.png?height=200&width=300",
+    thumbnail: "/ai.png",
     description: "Learn Python programming for data analysis and machine learning",
     progress: 100,
     status: "completed",
@@ -257,6 +257,8 @@ export default function ViewAll() {
           <Image
             src={course.thumbnail || "/ai.png"}
             alt={course.title}
+            width={300}
+            height={200}
             className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
           />
           <div className="absolute top-2 right-2">
@@ -367,6 +369,8 @@ export default function ViewAll() {
           <Image
             src={course.thumbnail || "/ai.png"}
             alt={course.title}
+            width={100}
+            height={100}
             className="w-24 h-16 object-cover rounded flex-shrink-0"
           />
           <div className="flex-1 min-w-0">

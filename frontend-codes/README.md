@@ -1,5 +1,28 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Checkout Page
+
+We added a public checkout flow integrated with the backend Paystack endpoints.
+
+- Page: `/(public routes)/checkout` — open with query params `courseId=<uuid>` or `slug=<course-slug>`
+- Coupon: Apply/remove coupon with code field
+- Payment: Initializes Paystack and redirects to authorization URL
+- Callback: `/checkout-callback` verifies the payment by `reference` and redirects
+
+Endpoints used:
+- `POST /api/payments/coupons/validate/`
+- `POST /api/payments/initialize/`
+- `POST /api/payments/verify/`
+- `GET /api/courses/:slug/` (or `/api/courses/:id/`)
+
+Environment:
+- `NEXT_PUBLIC_API_URL` must point to the Django server root (e.g., `http://localhost:8000`).
+
+Example URLs:
+- `http://localhost:3000/checkout?courseId=<uuid>`
+- `http://localhost:3000/checkout?slug=<course-slug>`
+
+
 ## Getting Started
 
 First, run the development server:
