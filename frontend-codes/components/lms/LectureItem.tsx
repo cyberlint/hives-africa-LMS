@@ -1,13 +1,7 @@
 
 import React from 'react';
 import { Play, CheckCircle, FileText, HelpCircle } from 'lucide-react';
-
-interface Lecture {
-  id: number;
-  title: string;
-  duration: number;
-  type: 'video' | 'resource' | 'quiz';
-}
+import { Lecture } from '@/types/course';
 
 interface LectureItemProps {
   lecture: Lecture;
@@ -69,8 +63,8 @@ export const LectureItem: React.FC<LectureItemProps> = ({
             isActive ? 'text-black/70' : 'text-gray-400'
           }`}>
             <span className="capitalize">{lecture.type}</span>
-            {lecture.duration > 0 && (
-              <span>{formatDuration(lecture.duration)}</span>
+            {(lecture.duration || 0) > 0 && (
+              <span>{formatDuration(lecture.duration || 0)}</span>
             )}
           </div>
         </div>

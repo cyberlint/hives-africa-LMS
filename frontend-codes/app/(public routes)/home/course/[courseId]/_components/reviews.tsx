@@ -38,7 +38,13 @@ const reviewsData = [
   },
 ]
 
-export default function Reviews() {
+import { Course } from "@/types/course"
+
+interface ReviewsProps {
+  course: Course
+}
+
+export default function Reviews({ course }: ReviewsProps) {
   const [currentSlide, setCurrentSlide] = useState(0)
   const reviewsPerPage = 2
 

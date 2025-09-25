@@ -1,15 +1,19 @@
 "use client";
 
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { useCart } from "@/contexts/CartContext";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
+  const { items } = useCart();
+  
+  const cartItemsCount = items.reduce((total, item) => total + item.quantity, 0);
 
   // Handles closing mobile menu when outside the menu is clicked
   useEffect(() => {
@@ -70,8 +74,22 @@ const Navbar = () => {
           </ul>
         </div>
 
-        {/* Desktop auth links + hamburger icon */}
+        {/* Desktop auth links + cart + hamburger icon */}
         <div className="flex items-center gap-4 md:w-[30%] justify-end">
+          {/* Cart Icon */}
+          <button
+            onClick={() => router.push("/checkout")}
+            className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
+            aria-label="Shopping Cart"
+          >
+            <ShoppingCart size={24} className="text-gray-700" />
+            {cartItemsCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-yellow text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                {cartItemsCount > 99 ? '99+' : cartItemsCount}
+              </span>
+            )}
+          </button>
+
           <ul className="flex justify-end items-center gap-4">
             <li>
               <button

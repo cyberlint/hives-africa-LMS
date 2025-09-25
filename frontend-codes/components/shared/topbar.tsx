@@ -15,7 +15,7 @@ export default function Topbar() {
           <ChevronDown className="text-[#384957] group-hover:text-yellow w-4 h-4" />
         </div>
 
-        <Link href="/contact" className="hover:text-yellow transition">
+        <Link href="/home" className="hover:text-yellow transition">
           Contact Us
         </Link>
 

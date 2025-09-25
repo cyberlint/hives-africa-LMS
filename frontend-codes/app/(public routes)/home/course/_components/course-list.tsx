@@ -2,38 +2,30 @@
 
 import Image from "next/image"
 import { Star } from "lucide-react"
-export interface Course {
-  id: number
-  title: string
-  instructor: string
-  category: string
-  duration: string
-  students: number
-  lessons: number
-  level: string
-  price: string
-  originalPrice?: string
-  rating: number
-  image: string
-  description: string
-  tags: string[]
-}
+import { CheckoutButton } from "@/components/lms/checkout-button"
+import { useRouter } from "next/navigation"
+import { Course } from "@/types/course"
 
 
 interface CourseListProps {
   courses: Course[]
-  onCourseSelect: (course: Course) => void
   isMobile: boolean
 }
 
-export function CourseList({ courses, onCourseSelect, isMobile }: CourseListProps) {
+export function CourseList({ courses, isMobile }: CourseListProps) {
+  const router = useRouter()
+
+  const handleCourseClick = (courseId: number) => {
+    router.push(`/home/course/${courseId}`)
+  }
+
   return (
     <div className="space-y-4 mb-8">
       {courses.map((course) => (
         <div
           key={course.id}
           className="bg-white rounded-xl shadow-sm border border-[#e9ecef] overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer group h-44"
-          onClick={() => onCourseSelect(course)}
+          onClick={() => handleCourseClick(course.id)}
         >
           <div className={`flex ${isMobile ? "flex-col" : ""} h-full`}>
             <div className={`relative ${isMobile ? "w-full h-48" : "w-44 h-44"} flex-shrink-0`}>
@@ -62,19 +54,19 @@ export function CourseList({ courses, onCourseSelect, isMobile }: CourseListProp
 
               <div className="flex items-center gap-4 mb-4 text-xs text-[#6c757d] flex-wrap">
                 <div className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-[#ff6b35] rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-yellow rounded-full"></div>
                   <span>{course.duration}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-[#ff6b35] rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-yellow rounded-full"></div>
                   <span>{course.students} Students</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-[#ff6b35] rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-yellow rounded-full"></div>
                   <span>{course.level}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-[#ff6b35] rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-yellow rounded-full"></div>
                   <span>{course.lessons} Lessons</span>
                 </div>
               </div>
@@ -90,15 +82,28 @@ export function CourseList({ courses, onCourseSelect, isMobile }: CourseListProp
                     {course.price}
                   </span>
                 </div>
-                <button
-                  className="text-[#ff6b35] hover:underline font-medium group-hover:text-[#ff6b35]/80 transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onCourseSelect(course)
-                  }}
-                >
-                  View More
-                </button>
+                <div className="flex items-center gap-3">
+                  <CheckoutButton
+                    courseId={course.id}
+                    price={course.price}
+                    size="sm"
+                    label={course.price === "Free" ? "Enroll" : "Add to Cart"}
+                    title={course.title}
+                    thumbnail={course.image}
+                    instructor={course.instructor}
+                    autoNavigate={false}
+                    className="shrink-0"
+                  />
+                  <button
+                    className="text-yellow hover:underline font-medium group-hover:text-yellow/80 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleCourseClick(course.id)
+                    }}
+                  >
+                    View More
+                  </button>
+                </div>
               </div>
             </div>
           </div>

@@ -1,6 +1,12 @@
 "use client"
 
-export default function EntryRequirements() {
+import { Course } from "@/types/course"
+
+interface EntryRequirementsProps {
+  course: Course
+}
+
+export default function EntryRequirements({ course }: EntryRequirementsProps) {
   return (
     <section id="requirements" className="py-12">
       <div className="container">
@@ -74,7 +80,7 @@ export default function EntryRequirements() {
                 </li>
                 <li className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-[#00BFA6] rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-[#0F1D2F]">Three years' relevant work experience</span>
+                  <span className="text-[#0F1D2F]">Three years&apos; relevant work experience</span>
                 </li>
               </ul>
             </div>

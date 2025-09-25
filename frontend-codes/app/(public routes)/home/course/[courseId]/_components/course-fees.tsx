@@ -4,7 +4,13 @@ import { useState } from "react"
 import { ChevronDown } from "lucide-react"
 import { CheckoutButton } from "@/components/lms/checkout-button"
 
-export default function CourseFees() {
+import { Course } from "@/types/course"
+
+interface CourseFeesProps {
+  course: Course
+}
+
+export default function CourseFees({ course }: CourseFeesProps) {
   const [selectedCountry, setSelectedCountry] = useState("nigeria")
 
   const feeData = {
@@ -77,9 +83,9 @@ export default function CourseFees() {
               <h3 className="text-lg font-semibold text-[#0F1D2F]">Get Started Now</h3>
               <p className="text-sm text-gray-600">Secure your seat and unlock full course materials.</p>
               <ul className="text-xs text-gray-600 space-y-2">
-                <li className="flex items-start gap-2"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-[#ff6b35]"></span>Immediate access after payment</li>
-                <li className="flex items-start gap-2"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-[#ff6b35]"></span>Certificate on completion</li>
-                <li className="flex items-start gap-2"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-[#ff6b35]"></span>Interactive community</li>
+                <li className="flex items-start gap-2"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-yellow"></span>Immediate access after payment</li>
+                <li className="flex items-start gap-2"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-yellow"></span>Certificate on completion</li>
+                <li className="flex items-start gap-2"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-yellow"></span>Interactive community</li>
               </ul>
               {/* TODO: Wire actual course id & metadata from parent context/provider */}
               <CheckoutButton courseId={""} price={currentFees.total} label="Add to Cart" autoNavigate={false} className="w-full" />

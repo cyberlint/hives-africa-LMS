@@ -1,10 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import Footer from "@/components/shared/footer";
 import { CourseHeader } from "@/components/lms/CourseHeader";
 import { CourseSidebar } from '@/components/lms/CourseSidebar';
-import { NavigationArrows } from '@/components/lms/NavigationArrows';
-
 import { useCourse, CourseProvider } from '@/app/(private routes)/(student)/courses/chapter/_components/CourseContext';
 const ChapterLayoutContent = ({
   children,
@@ -28,21 +25,23 @@ const ChapterLayoutContent = ({
   const [expandedSections, setExpandedSections] = useState<number[]>([1, 2, 3, 4, 5]);
 
   const toggleSectionExpanded = (sectionId: number) => {
-    setExpandedSections(prev => 
-      prev.includes(sectionId) 
+    setExpandedSections(prev =>
+      prev.includes(sectionId)
         ? prev.filter(id => id !== sectionId)
         : [...prev, sectionId]
     );
   };
 
-  const completionPercentage = (completedLectures.length / courseData.totalLectures) * 100;
+  const completionPercentage = courseData.totalLectures
+    ? (completedLectures.length / courseData.totalLectures) * 100
+    : (completedLectures.length / allLectures.length) * 100;
 
   // Keyboard navigation
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.target && (e.target as HTMLElement).tagName === 'INPUT') return;
       if (e.target && (e.target as HTMLElement).tagName === 'TEXTAREA') return;
-      
+
       switch (e.code) {
         case 'ArrowLeft':
           if (e.altKey) {
@@ -65,7 +64,7 @@ const ChapterLayoutContent = ({
 
   return (
     <div className='min-h-screen bg-[#1c1d1f] text-white'>
-      <CourseHeader 
+      <CourseHeader
         course={courseData}
         completionPercentage={completionPercentage}
         completedLectures={completedLectures.length}
@@ -73,10 +72,9 @@ const ChapterLayoutContent = ({
 
       <div className="flex flex-col md:flex-row h-[calc(100vh-80px)]  relative">
         {/* Content Area */}
-        <div 
-          className={`transition-all duration-300 relative ${
-            isSidebarCollapsed ? 'w-full' : 'w-full lg:w-[calc(100%-400px)]'
-          }`}
+        <div
+          className={`transition-all duration-300 relative ${isSidebarCollapsed ? 'w-full' : 'w-full lg:w-[calc(100%-400px)]'
+            }`}
         >
           {children}
 

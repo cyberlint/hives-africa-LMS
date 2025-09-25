@@ -52,7 +52,7 @@ export default function CartCheckoutPage() {
   const emptyState = (
     <div className="py-16 text-center">
       <p className="text-sm text-[#6E7485] mb-6">Your cart is empty. Browse courses to get started.</p>
-      <Button onClick={() => router.push("/home/course")} className="bg-orange hover:bg-orange/90">Browse Courses →</Button>
+      <Button onClick={() => router.push("/home/course")} className="bg-yellow hover:bg-yellow/90">Browse Courses →</Button>
     </div>
   );
 
@@ -139,7 +139,7 @@ export default function CartCheckoutPage() {
                     {coupon.code ? (
                       <Button variant="secondary" onClick={removeCoupon} className="h-10" aria-label="Remove coupon" disabled={loadingCoupon}>Remove</Button>
                     ) : (
-                      <Button onClick={handleApply} disabled={!couponInput || loadingCoupon} className="h-10 bg-orange hover:bg-orange/90" aria-label="Apply coupon">{loadingCoupon ? "..." : "Apply"}</Button>
+                      <Button onClick={handleApply} disabled={!couponInput || loadingCoupon} className="h-10 bg-yellow hover:bg-yellow/90" aria-label="Apply coupon">{loadingCoupon ? "..." : "Apply"}</Button>
                     )}
                   </div>
                   {coupon.code && (
@@ -186,7 +186,7 @@ export default function CartCheckoutPage() {
                   <Button
                     disabled={!hasItems || processing}
                     onClick={handleStartPayment}
-                    className="w-full mt-5 h-11 text-white font-semibold bg-orange hover:bg-orange/90"
+                    className="w-full mt-5 h-11 text-white font-semibold bg-yellow hover:bg-yellow/90"
                     aria-label="Proceed to payment"
                   >
                     {processing ? "Processing…" : "Pay Securely"}

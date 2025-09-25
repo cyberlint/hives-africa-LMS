@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Star, Clock, Users, BookOpen, Award, X } from "lucide-react"
 import Image from "next/image"
-// Reuse Course interface from course-grid for type safety
-import type { Course } from "./course-grid"
+import type { Course } from "@/types/course"
 import { CheckoutButton } from "@/components/lms/checkout-button"
 
 interface CourseModalProps {
@@ -96,7 +95,7 @@ export function CourseModal({ course, isOpen, onClose }: CourseModalProps) {
 
               <Button
                 variant="outline"
-                className="w-full border-[#ff6b35] text-[#ff6b35] hover:bg-[#ff6b35] hover:text-white bg-transparent"
+                className="w-full border-[#ff6b35] text-[#ff6b35] hover:bg-yellow hover:text-white bg-transparent"
               >
                 Add to Wishlist
               </Button>
@@ -135,22 +134,22 @@ export function CourseModal({ course, isOpen, onClose }: CourseModalProps) {
               </div>
 
               <div>
-                <h3 className="font-semibold text-[#2c3e50] mb-3">What you'll learn</h3>
+                <h3 className="font-semibold text-[#2c3e50] mb-3">What you&apos;ll learn</h3>
                 <ul className="space-y-2 text-[#6c757d]">
                   <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#ff6b35] rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-yellow rounded-full mt-2 flex-shrink-0"></div>
                     <span>Master the fundamentals and advanced concepts</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#ff6b35] rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-yellow rounded-full mt-2 flex-shrink-0"></div>
                     <span>Build real-world projects and applications</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#ff6b35] rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-yellow rounded-full mt-2 flex-shrink-0"></div>
                     <span>Get hands-on experience with industry tools</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-[#ff6b35] rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-yellow rounded-full mt-2 flex-shrink-0"></div>
                     <span>Receive certificate upon completion</span>
                   </li>
                 </ul>

@@ -1,6 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Star } from "lucide-react"
-import type { Course, FilterState } from "@/app/page"
+import type { Course, FilterState } from "@/types/course"
 
 interface SidebarProps {
   filters: FilterState
@@ -70,7 +70,7 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
                   id={category}
                   checked={filters.categories.includes(category)}
                   onCheckedChange={(checked) => handleFilterChange("categories", category, checked as boolean)}
-                  className="border-[#d1d5db] data-[state=checked]:bg-[#ff6b35] data-[state=checked]:border-[#ff6b35]"
+                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
                 />
                 <label htmlFor={category} className="text-sm text-[#2c3e50] cursor-pointer">
                   {category}
@@ -93,7 +93,7 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
                   id={instructor}
                   checked={filters.instructors.includes(instructor)}
                   onCheckedChange={(checked) => handleFilterChange("instructors", instructor, checked as boolean)}
-                  className="border-[#d1d5db] data-[state=checked]:bg-[#ff6b35] data-[state=checked]:border-[#ff6b35]"
+                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
                 />
                 <label htmlFor={instructor} className="text-sm text-[#2c3e50] cursor-pointer">
                   {instructor}
@@ -116,7 +116,7 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
                   id={price}
                   checked={filters.priceTypes.includes(price)}
                   onCheckedChange={(checked) => handleFilterChange("priceTypes", price, checked as boolean)}
-                  className="border-[#d1d5db] data-[state=checked]:bg-[#ff6b35] data-[state=checked]:border-[#ff6b35]"
+                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
                 />
                 <label htmlFor={price} className="text-sm text-[#2c3e50] cursor-pointer">
                   {price}
@@ -139,7 +139,7 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
                   id={`rating-${rating}`}
                   checked={filters.ratings.includes(rating)}
                   onCheckedChange={(checked) => handleFilterChange("ratings", rating, checked as boolean)}
-                  className="border-[#d1d5db] data-[state=checked]:bg-[#ff6b35] data-[state=checked]:border-[#ff6b35]"
+                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
                 />
                 <div className="flex items-center space-x-1">
                   {[...Array(5)].map((_, i) => (
@@ -168,7 +168,7 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
                   id={level}
                   checked={filters.levels.includes(level)}
                   onCheckedChange={(checked) => handleFilterChange("levels", level, checked as boolean)}
-                  className="border-[#d1d5db] data-[state=checked]:bg-[#ff6b35] data-[state=checked]:border-[#ff6b35]"
+                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
                 />
                 <label htmlFor={level} className="text-sm text-[#2c3e50] cursor-pointer">
                   {level}

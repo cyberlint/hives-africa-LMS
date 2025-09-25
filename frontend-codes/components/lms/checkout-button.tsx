@@ -95,8 +95,8 @@ export function CheckoutButton({
       disabled={loading || (!courseId && !slug)}
       className={cn(
         "font-semibold transition-colors",
-        variant === "primary" && "bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white",
-        variant === "outline" && "border-[#ff6b35] text-[#ff6b35] hover:bg-[#ff6b35] hover:text-white",
+        variant === "primary" && "bg-yellow hover:bg-yellow/90 text-white",
+        variant === "outline" && "border-yellow text-yellow hover:bg-yellow hover:text-white",
         size === "sm" && "h-8 px-3 text-xs",
         size === "md" && "h-10 px-4 text-sm",
         size === "lg" && "h-12 px-6 text-base",

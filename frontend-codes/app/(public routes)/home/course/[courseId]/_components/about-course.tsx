@@ -1,4 +1,11 @@
-export default function AboutCourse() {
+import { CheckoutButton } from "@/components/lms/checkout-button"
+import { Course } from "@/types/course"
+
+interface AboutCourseProps {
+  course: Course
+}
+
+export default function AboutCourse({ course }: AboutCourseProps) {
   return (
     <section id="about" className="py-12">
       <div className="container">
@@ -9,14 +16,25 @@ export default function AboutCourse() {
 
             <div className="max-w-4xl">
               <p className="text-[#0F1D2F] text-lg leading-relaxed mb-6">
-                This (Hons) Business and Management BSc course from University of Essex Online will help you adapt to
-                the ever-changing world of business. We'll examine a range of real-world business examples and use them
-                to develop the broad skillset that a good manager should be able to draw from.
+                {course.description}
               </p>
 
-              <a href="#" className="text-[#00BFA6] underline hover:no-underline">
-                Visit University Website →
-              </a>
+              <div className="mb-6">
+                <h3 className="font-semibold text-[#0F1D2F] mb-3">Course Tags:</h3>
+                <div className="flex flex-wrap gap-2">
+                  {course.tags.map((tag, index) => (
+                    <span key={index} className="bg-yellow/10 text-yellow px-3 py-1 rounded-full text-sm font-medium">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="text-sm text-gray-600">
+                <p><strong>Instructor:</strong> {course.instructor}</p>
+                <p><strong>Level:</strong> {course.level}</p>
+                <p><strong>Category:</strong> {course.category}</p>
+              </div>
             </div>
           </div>
 
@@ -26,9 +44,15 @@ export default function AboutCourse() {
               {/* Price Section */}
               <div className="mb-6">
                 <div className="flex items-center space-x-2 mb-2">
-                  <span className="text-3xl font-bold text-[#0F1D2F]">₦5,000</span>
-                  <span className="text-lg text-[#6B7280] line-through">₦10,000</span>
-                  <span className="bg-[#00BFA6] text-white text-xs px-2 py-1 rounded">50% off</span>
+                  <span className={`text-3xl font-bold ${course.price === "Free" ? "text-[#28a745]" : "text-[#0F1D2F]"}`}>
+                    {course.price}
+                  </span>
+                  {course.originalPrice && (
+                    <>
+                      <span className="text-lg text-[#6B7280] line-through">{course.originalPrice}</span>
+                      <span className="bg-yellow text-white text-xs px-2 py-1 rounded">Special Offer</span>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -37,25 +61,25 @@ export default function AboutCourse() {
                 <h3 className="font-semibold text-[#0F1D2F] mb-4">This Course Includes :</h3>
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-center space-x-3">
-                    <div className="w-4 h-4 bg-[#00BFA6] rounded-sm flex items-center justify-center">
+                    <div className="w-4 h-4 bg-yellow rounded-sm flex items-center justify-center">
                       <span className="text-white text-xs">▶</span>
                     </div>
-                    <span className="text-[#0F1D2F]">24 hour on-demand videos</span>
+                    <span className="text-[#0F1D2F]">{course.lessons} lessons</span>
                   </li>
                   <li className="flex items-center space-x-3">
-                    <div className="w-4 h-4 bg-[#00BFA6] rounded-sm flex items-center justify-center">
-                      <span className="text-white text-xs">📄</span>
+                    <div className="w-4 h-4 bg-yellow rounded-sm flex items-center justify-center">
+                      <span className="text-white text-xs">⏱</span>
                     </div>
-                    <span className="text-[#0F1D2F]">3 study materials</span>
+                    <span className="text-[#0F1D2F]">Duration: {course.duration}</span>
                   </li>
                   <li className="flex items-center space-x-3">
-                    <div className="w-4 h-4 bg-[#00BFA6] rounded-sm flex items-center justify-center">
+                    <div className="w-4 h-4 bg-yellow rounded-sm flex items-center justify-center">
                       <span className="text-white text-xs">∞</span>
                     </div>
                     <span className="text-[#0F1D2F]">Full lifetime access</span>
                   </li>
                   <li className="flex items-center space-x-3">
-                    <div className="w-4 h-4 bg-[#00BFA6] rounded-sm flex items-center justify-center">
+                    <div className="w-4 h-4 bg-yellow rounded-sm flex items-center justify-center">
                       <span className="text-white text-xs">🏆</span>
                     </div>
                     <span className="text-[#0F1D2F]">Certificate of completion</span>
@@ -64,9 +88,16 @@ export default function AboutCourse() {
               </div>
 
               {/* CTA Button */}
-              <button className="w-full bg-[#247BA0] text-white py-3 rounded-lg font-medium hover:bg-[#00A693] transition-colors mb-4">
-                Enroll Now →
-              </button>
+              <CheckoutButton
+                courseId={course.id}
+                price={course.price}
+                size="lg"
+                label={course.price === "Free" ? "Enroll Free" : "Enroll Now"}
+                title={course.title}
+                thumbnail={course.image}
+                instructor={course.instructor}
+                className="w-full mb-4"
+              />
             </div>
           </div>
         </div>

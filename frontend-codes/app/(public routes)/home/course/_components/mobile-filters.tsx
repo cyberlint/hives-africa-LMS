@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Star, X } from "lucide-react"
-import type { Course, FilterState } from "@/app/page"
+import type { Course, FilterState } from "@/types/course"
 
 interface MobileFiltersProps {
   isOpen: boolean
@@ -30,9 +30,9 @@ export function MobileFilters({ isOpen, onClose, filters, onFiltersChange, cours
       }
     } else {
       if (filterType === "ratings") {
-        newFilters[filterType] = newFilters[filterType].filter((item) => item !== value)
+        newFilters[filterType] = newFilters[filterType].filter((item: number) => item !== value)
       } else {
-        ;(newFilters[filterType] as string[]) = (newFilters[filterType] as string[]).filter((item) => item !== value)
+        ;(newFilters[filterType] as string[]) = (newFilters[filterType] as string[]).filter((item: string) => item !== value)
       }
     }
 
@@ -72,7 +72,7 @@ export function MobileFilters({ isOpen, onClose, filters, onFiltersChange, cours
                     id={`mobile-${category}`}
                     checked={filters.categories.includes(category)}
                     onCheckedChange={(checked) => handleFilterChange("categories", category, checked as boolean)}
-                    className="border-[#d1d5db] data-[state=checked]:bg-[#ff6b35] data-[state=checked]:border-[#ff6b35]"
+                    className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
                   />
                   <label htmlFor={`mobile-${category}`} className="text-sm text-[#2c3e50] cursor-pointer">
                     {category}
@@ -92,7 +92,7 @@ export function MobileFilters({ isOpen, onClose, filters, onFiltersChange, cours
                     id={`mobile-${instructor}`}
                     checked={filters.instructors.includes(instructor)}
                     onCheckedChange={(checked) => handleFilterChange("instructors", instructor, checked as boolean)}
-                    className="border-[#d1d5db] data-[state=checked]:bg-[#ff6b35] data-[state=checked]:border-[#ff6b35]"
+                    className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
                   />
                   <label htmlFor={`mobile-${instructor}`} className="text-sm text-[#2c3e50] cursor-pointer">
                     {instructor}
@@ -112,7 +112,7 @@ export function MobileFilters({ isOpen, onClose, filters, onFiltersChange, cours
                     id={`mobile-${price}`}
                     checked={filters.priceTypes.includes(price)}
                     onCheckedChange={(checked) => handleFilterChange("priceTypes", price, checked as boolean)}
-                    className="border-[#d1d5db] data-[state=checked]:bg-[#ff6b35] data-[state=checked]:border-[#ff6b35]"
+                    className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
                   />
                   <label htmlFor={`mobile-${price}`} className="text-sm text-[#2c3e50] cursor-pointer">
                     {price}
@@ -132,7 +132,7 @@ export function MobileFilters({ isOpen, onClose, filters, onFiltersChange, cours
                     id={`mobile-rating-${rating}`}
                     checked={filters.ratings.includes(rating)}
                     onCheckedChange={(checked) => handleFilterChange("ratings", rating, checked as boolean)}
-                    className="border-[#d1d5db] data-[state=checked]:bg-[#ff6b35] data-[state=checked]:border-[#ff6b35]"
+                    className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
                   />
                   <div className="flex items-center space-x-1">
                     {[...Array(5)].map((_, i) => (
@@ -158,7 +158,7 @@ export function MobileFilters({ isOpen, onClose, filters, onFiltersChange, cours
                     id={`mobile-${level}`}
                     checked={filters.levels.includes(level)}
                     onCheckedChange={(checked) => handleFilterChange("levels", level, checked as boolean)}
-                    className="border-[#d1d5db] data-[state=checked]:bg-[#ff6b35] data-[state=checked]:border-[#ff6b35]"
+                    className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
                   />
                   <label htmlFor={`mobile-${level}`} className="text-sm text-[#2c3e50] cursor-pointer">
                     {level}
@@ -177,7 +177,7 @@ export function MobileFilters({ isOpen, onClose, filters, onFiltersChange, cours
           >
             Clear All
           </Button>
-          <Button onClick={onClose} className="flex-1 bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white">
+          <Button onClick={onClose} className="flex-1 bg-yellow hover:bg-yellow/90 text-white">
             Apply Filters
           </Button>
         </div>

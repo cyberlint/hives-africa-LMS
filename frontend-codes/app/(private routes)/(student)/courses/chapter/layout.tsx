@@ -35,7 +35,18 @@ const ChapterLayoutContent = ({
     );
   };
 
-  const completionPercentage = (completedLectures.length / courseData.totalLectures) * 100;
+  // Ensure totalLectures is a defined positive number. Fall back to the length of
+  // `allLectures` if available, otherwise 0 to avoid division by undefined/zero.
+  const totalLectures = Number(
+    courseData?.totalLectures ?? allLectures?.length ?? 0
+  );
+
+  const completedCount = Array.isArray(completedLectures)
+    ? completedLectures.length
+    : 0;
+
+  const completionPercentage =
+    totalLectures > 0 ? Math.min(100, (completedCount / totalLectures) * 100) : 0;
 
   // Keyboard navigation
   useEffect(() => {
@@ -68,7 +79,7 @@ const ChapterLayoutContent = ({
       <CourseHeader 
         course={courseData}
         completionPercentage={completionPercentage}
-        completedLectures={completedLectures.length}
+        completedLectures={completedCount}
       />
 
       <div className="flex flex-col md:flex-row h-[calc(100vh-80px)]  relative">

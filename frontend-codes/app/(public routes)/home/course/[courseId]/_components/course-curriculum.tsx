@@ -42,7 +42,13 @@ const curriculumData = [
   },
 ]
 
-export default function CourseCurriculum() {
+import { Course } from "@/types/course"
+
+interface CourseCurriculumProps {
+  course: Course
+}
+
+export default function CourseCurriculum({ course }: CourseCurriculumProps) {
   const [expandedItems, setExpandedItems] = useState<number[]>([1])
 
   const toggleItem = (id: number) => {

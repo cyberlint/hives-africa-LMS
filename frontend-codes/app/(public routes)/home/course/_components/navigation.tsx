@@ -14,7 +14,7 @@ export function Navigation() {
             <span className="text-[#2c3e50] hover:text-[#ff6b35] cursor-pointer">Explore Courses</span>
             <span className="text-[#2c3e50] hover:text-[#ff6b35] cursor-pointer">Communities</span>
             <span className="text-[#2c3e50] hover:text-[#ff6b35] cursor-pointer">My Learnings</span>
-            <div className="w-8 h-8 bg-[#ff6b35] rounded-full"></div>
+            <div className="w-8 h-8 bg-yellow rounded-full"></div>
           </div>
         </div>
       </div>
