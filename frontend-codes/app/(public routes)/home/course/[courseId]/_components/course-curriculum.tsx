@@ -56,67 +56,59 @@ export default function CourseCurriculum({ course }: CourseCurriculumProps) {
   }
 
   return (
-    <>
-        <main className="flex flex-col gap-2" >
-            <div className="flex justify-between items-center">
-                      <h2 className="text-3xl font-bold text-[#0F1D2F]">Course Curriculum</h2>
-                      <button className="text-[#00BFA6] border border-[#00BFA6] px-4 py-2 rounded-lg hover:bg-[#00BFA6] hover:text-white transition-colors">
-                        Financial Aid →
-                      </button>
-                    </div>
-  {/* Stats */}
-            <div className="flex items-center space-x-6 mb-6 text-[#6B7280]">
-              <div className="flex items-center space-x-2">
-                <BookOpen className="w-4 h-4" />
-                <span>47 lectures</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Clock className="w-4 h-4" />
-                <span>10.4h duration</span>
-              </div>
+    <section id="curriculum" className="py-8 sm:py-12">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-4xl">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#0F1D2F]">Course Curriculum</h2>
+              <button className="text-yellow border border-yellow px-4 py-2 rounded-lg hover:bg-yellow hover:text-white transition-colors text-sm font-medium self-start sm:self-auto">
+                Financial Aid →
+              </button>
             </div>
 
-        </main>
-
-    <section id="curriculum" className="py-12 px-8 max-w-[821px] rounded-2xl bg-[#F5F7FA]">
-      <div className="container">
-        
-        <div className="flex flex-col gap-8">
-          {/* Main content - Left side */}
-          <div className="">
-          
-
-          
+            {/* Stats */}
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 mb-6 sm:mb-8 text-[#6B7280]">
+              <div className="flex items-center space-x-2">
+                <BookOpen className="w-4 h-4 flex-shrink-0" />
+                <span className="text-sm sm:text-base">{course.lessons} lessons</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Clock className="w-4 h-4 flex-shrink-0" />
+                <span className="text-sm sm:text-base">{course.duration} duration</span>
+              </div>
+            </div>
 
             {/* Curriculum List */}
-            <div className="space-y-2">
-              {curriculumData.map((item) => (
-                <div key={item.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                  <button
-                    onClick={() => toggleItem(item.id)}
-                    className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
-                  >
-                    <span className="font-medium text-[#0F1D2F]">{item.title}</span>
-                    {expandedItems.includes(item.id) ? (
-                      <ChevronUp className="w-5 h-5 text-[#6B7280]" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-[#6B7280]" />
-                    )}
-                  </button>
+            <div className="bg-[#F5F7FA] rounded-2xl p-4 sm:p-6 lg:p-8">
+              <div className="space-y-2">
+                {curriculumData.map((item) => (
+                  <div key={item.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    <button
+                      onClick={() => toggleItem(item.id)}
+                      className="w-full flex items-center justify-between p-3 sm:p-4 text-left hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="font-medium text-[#0F1D2F] text-sm sm:text-base pr-4">{item.title}</span>
+                      {expandedItems.includes(item.id) ? (
+                        <ChevronUp className="w-5 h-5 text-[#6B7280] flex-shrink-0" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-[#6B7280] flex-shrink-0" />
+                      )}
+                    </button>
 
-                  {expandedItems.includes(item.id) && (
-                    <div className="px-4 pb-4 bg-[#EFF4FB]">
-                      <p className="text-[#0F1D2F] leading-relaxed">{item.description}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
+                    {expandedItems.includes(item.id) && (
+                      <div className="px-3 sm:px-4 pb-3 sm:pb-4 bg-[#EFF4FB]">
+                        <p className="text-[#0F1D2F] leading-relaxed text-sm sm:text-base">{item.description}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>
-    </>
   )
 }

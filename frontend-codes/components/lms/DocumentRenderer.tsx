@@ -1,27 +1,21 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, CheckCircle, FileText, Download, ExternalLink } from 'lucide-react';
+import { CheckCircle, FileText, Download, ExternalLink } from 'lucide-react';
 import type { Lecture } from '@/types/course';
 
 interface DocumentRendererProps {
   lecture: Lecture;
-  onNext: () => void;
-  onPrevious: () => void;
   onMarkComplete: () => void;
   isCompleted: boolean;
 }
 
 export const DocumentRenderer: React.FC<DocumentRendererProps> = ({
   lecture,
-  onNext,
-  onPrevious,
   onMarkComplete,
   isCompleted
 }) => {
-  const [selectedAttachment, setSelectedAttachment] = useState(lecture.attachments?.[0]);
-
-  const handleDownload = (attachment: any) => {
+  const handleDownload = (attachment: NonNullable<Lecture['attachments']>[0]) => {
     // Simulate file download
     const element = document.createElement('a');
     const file = new Blob(['Sample document content'], { type: 'text/plain' });
@@ -35,7 +29,7 @@ export const DocumentRenderer: React.FC<DocumentRendererProps> = ({
     onMarkComplete();
   };
 
-  const handleViewAttachment = (attachment: any) => {
+  const handleViewAttachment = (attachment: NonNullable<Lecture['attachments']>[0]) => {
     window.open(`/attachment/${lecture.id}/${attachment.id}`, '_blank');
     onMarkComplete();
   };
@@ -47,7 +41,7 @@ export const DocumentRenderer: React.FC<DocumentRendererProps> = ({
           <div className="mb-6">
             <FileText className="w-16 h-16 text-[#fdb606] mx-auto mb-4" />
             <h2 className="text-2xl mb-4 text-white">{lecture.title}</h2>
-            <p className="mb-8 text-lg">{lecture.description}</p>
+            <p className="mb-8 text-lg">{lecture.description || 'Document content for this lecture'}</p>
           </div>
           
           {isCompleted && (

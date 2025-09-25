@@ -77,24 +77,13 @@ export function CourseGrid({ courses, isMobile, isTablet }: CourseGridProps) {
             </div>
 
             <div className="flex items-center justify-between gap-3">
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  {course.originalPrice && (
-                    <span className="text-sm text-[#6c757d] line-through">{course.originalPrice}</span>
-                  )}
-                  <span className={`text-lg font-bold ${course.price === "Free" ? "text-[#28a745]" : "text-[#2c3e50]"}`}>
-                    {course.price}
-                  </span>
-                </div>
-                <button
-                  className="text-yellow/90 hover:underline text-xs font-medium text-left mt-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCourseClick(course.id);
-                  }}
-                >
-                  View details
-                </button>
+              <div className="flex items-center gap-2">
+                {course.originalPrice && (
+                  <span className="text-sm text-[#6c757d] line-through">{course.originalPrice}</span>
+                )}
+                <span className={`text-lg font-bold ${course.price === "Free" ? "text-[#28a745]" : "text-[#2c3e50]"}`}>
+                  {course.price}
+                </span>
               </div>
               <CheckoutButton
                 courseId={course.id}

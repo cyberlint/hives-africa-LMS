@@ -5,14 +5,14 @@ export const dynamic = "force-dynamic";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { PaymentsService } from "@/services/payments";
+import { useInitializePayment } from "@/hooks/usePayments";
 
 export default function CartCheckoutPage() {
   const { items, removeItem, updateQuantity, subtotal, coupon, applyCoupon, removeCoupon, total, loadingCoupon, clearCart } = useCart();
@@ -29,8 +29,11 @@ export default function CartCheckoutPage() {
     await applyCoupon(couponInput);
   }, [couponInput, applyCoupon]);
 
+  const initializePaymentMutation = useInitializePayment();
+
   const handleStartPayment = useCallback(async () => {
     if (!hasItems) return;
+    
     // MVP strategy: initialize payment using first non-free course id and coupon (backend must handle multi later)
     const firstBillable = items.find(i => !i.isFree);
     if (!firstBillable) {
@@ -40,14 +43,31 @@ export default function CartCheckoutPage() {
       router.push("/learning");
       return;
     }
+
+    setProcessing(true);
+    
     try {
-      setProcessing(true);
-      const res = await PaymentsService.initializePayment({ course_id: firstBillable.id, coupon_code: coupon.code || undefined });
-      if (res?.authorization_url) window.location.href = res.authorization_url; else toast.error("Payment init failed");
-    } catch (e: any) {
-      toast.error(e?.message || "Unable to initialize payment");
-    } finally { setProcessing(false); }
-  }, [items, coupon, clearCart, router, hasItems]);
+      const response = await initializePaymentMutation.mutateAsync({
+        course_id: firstBillable.id,
+        coupon_code: coupon.code || undefined,
+      });
+
+      if (response?.authorization_url) {
+        // Store cart state before redirect (optional - for recovery)
+        localStorage.setItem('checkout_cart', JSON.stringify(items));
+        localStorage.setItem('checkout_coupon', JSON.stringify(coupon));
+        
+        // Redirect to Paystack checkout
+        window.location.href = response.authorization_url;
+      } else {
+        toast.error("Payment initialization failed - no authorization URL received");
+      }
+    } catch (error: any) {
+      toast.error(error?.message || "Unable to initialize payment");
+    } finally {
+      setProcessing(false);
+    }
+  }, [items, coupon, clearCart, router, hasItems, initializePaymentMutation]);
 
   const emptyState = (
     <div className="py-16 text-center">
@@ -184,12 +204,12 @@ export default function CartCheckoutPage() {
                     </div>
                   </div>
                   <Button
-                    disabled={!hasItems || processing}
+                    disabled={!hasItems || processing || initializePaymentMutation.isPending}
                     onClick={handleStartPayment}
                     className="w-full mt-5 h-11 text-white font-semibold bg-yellow hover:bg-yellow/90"
                     aria-label="Proceed to payment"
                   >
-                    {processing ? "Processing…" : "Pay Securely"}
+                    {processing || initializePaymentMutation.isPending ? "Processing…" : "Pay Securely"}
                   </Button>
                   <p className="text-[11px] text-[#6E7485] mt-3 text-center">Secured by Paystack. You may be redirected.</p>
                   <button onClick={() => router.back()} className="mt-4 w-full text-xs text-[#6E7485] hover:text-darkBlue-300">← Back</button>

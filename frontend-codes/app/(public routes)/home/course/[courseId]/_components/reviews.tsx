@@ -64,30 +64,36 @@ export default function Reviews({ course }: ReviewsProps) {
   }
 
   return (
-    <section id="reviews" className="py-12">
-      <div className="container">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main content - Left side */}
-          <div className="lg:col-span-2">
-            <h2 className="text-3xl font-bold text-[#0F1D2F] mb-8">Reviews</h2>
+    <section id="reviews" className="py-8 sm:py-12">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-4xl">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#0F1D2F]">Student Reviews</h2>
+              <div className="flex items-center space-x-2 text-sm text-[#6B7280]">
+                <Star className="w-4 h-4 fill-yellow text-yellow" />
+                <span className="font-medium text-[#0F1D2F]">{course.rating}</span>
+                <span>({course.students} reviews)</span>
+              </div>
+            </div>
 
             {/* Reviews Grid */}
-            <div className="grid md:grid-cols-2 gap-6 mb-8">
+            <div className="grid gap-4 sm:gap-6 md:grid-cols-2 mb-6 sm:mb-8">
               {getCurrentReviews().map((review) => (
-                <div key={review.id} className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <div key={review.id} className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 shadow-sm">
                   {/* Reviewer Info */}
                   <div className="flex items-center space-x-3 mb-4">
-                    <div className="w-12 h-12 bg-[#00BFA6] rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-semibold text-sm sm:text-base">
                         {review.name
                           .split(" ")
                           .map((n) => n[0])
                           .join("")}
                       </span>
                     </div>
-                    <div>
-                      <div className="font-semibold text-[#0F1D2F]">{review.name}</div>
-                      <div className="text-sm text-[#6B7280]">{review.role}</div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-[#0F1D2F] text-sm sm:text-base truncate">{review.name}</div>
+                      <div className="text-xs sm:text-sm text-[#6B7280] truncate">{review.role}</div>
                     </div>
                   </div>
 
@@ -96,13 +102,13 @@ export default function Reviews({ course }: ReviewsProps) {
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-4 h-4 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+                        className={`w-3 h-3 sm:w-4 sm:h-4 ${i < review.rating ? "fill-yellow text-yellow" : "text-gray-300"}`}
                       />
                     ))}
                   </div>
 
                   {/* Review Text */}
-                  <p className="text-[#0F1D2F] leading-relaxed">{review.review}</p>
+                  <p className="text-[#0F1D2F] leading-relaxed text-sm sm:text-base">{review.review}</p>
                 </div>
               ))}
             </div>
@@ -111,10 +117,10 @@ export default function Reviews({ course }: ReviewsProps) {
             <div className="flex items-center justify-center space-x-4">
               <button
                 onClick={prevSlide}
-                className="p-2 rounded-full border border-gray-300 hover:bg-gray-50 transition-colors"
+                className="p-2 rounded-full border border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={currentSlide === 0}
               >
-                <ChevronLeft className="w-5 h-5 text-[#6B7280]" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#6B7280]" />
               </button>
 
               {/* Pagination Dots */}
@@ -123,8 +129,8 @@ export default function Reviews({ course }: ReviewsProps) {
                   <button
                     key={i}
                     onClick={() => setCurrentSlide(i)}
-                    className={`w-3 h-3 rounded-full transition-colors ${
-                      i === currentSlide ? "bg-[#00BFA6]" : "bg-gray-300"
+                    className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-colors ${
+                      i === currentSlide ? "bg-yellow" : "bg-gray-300"
                     }`}
                   />
                 ))}
@@ -132,16 +138,13 @@ export default function Reviews({ course }: ReviewsProps) {
 
               <button
                 onClick={nextSlide}
-                className="p-2 rounded-full border border-gray-300 hover:bg-gray-50 transition-colors"
+                className="p-2 rounded-full border border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={currentSlide === totalSlides - 1}
               >
-                <ChevronRight className="w-5 h-5 text-[#6B7280]" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#6B7280]" />
               </button>
             </div>
           </div>
-
-          {/* Right side - Empty space to maintain layout */}
-          <div className="lg:col-span-1"></div>
         </div>
       </div>
     </section>

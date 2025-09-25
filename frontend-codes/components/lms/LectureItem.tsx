@@ -27,7 +27,7 @@ export const LectureItem: React.FC<LectureItemProps> = ({
     if (isCompleted) {
       return <CheckCircle className="w-4 h-4 text-green-500" />;
     }
-    
+
     switch (lecture.type) {
       case 'video':
         return <Play className="w-4 h-4 text-gray-400" />;
@@ -43,25 +43,22 @@ export const LectureItem: React.FC<LectureItemProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`w-full p-3 text-left rounded-lg transition-all group ${
-        isActive 
-          ? 'bg-[#fdb606] text-black' 
-          : 'hover:bg-[#3e4143] text-white'
-      }`}
+      className={`w-full p-3 text-left rounded-lg transition-all group ${isActive
+        ? 'bg-[#fdb606] text-black'
+        : 'hover:bg-[#3e4143] text-white'
+        }`}
     >
       <div className="flex items-start space-x-3">
         <div className="flex-shrink-0 mt-0.5">
           {getIcon()}
         </div>
         <div className="flex-1 min-w-0">
-          <h5 className={`font-medium text-sm truncate ${
-            isActive ? 'text-black' : 'text-white'
-          }`}>
+          <h5 className={`font-medium text-sm truncate ${isActive ? 'text-black' : 'text-white'
+            }`}>
             {lecture.title}
           </h5>
-          <div className={`flex items-center justify-between text-xs mt-1 ${
-            isActive ? 'text-black/70' : 'text-gray-400'
-          }`}>
+          <div className={`flex items-center justify-between text-xs mt-1 ${isActive ? 'text-black/70' : 'text-gray-400'
+            }`}>
             <span className="capitalize">{lecture.type}</span>
             {(lecture.duration || 0) > 0 && (
               <span>{formatDuration(lecture.duration || 0)}</span>

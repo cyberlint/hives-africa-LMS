@@ -44,11 +44,18 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
         <VideoPlayerSection
           lecture={lecture}
           onNext={onNext}
-          onPrevious={onPrevious}
-          onMarkComplete={onMarkComplete}
           isCompleted={isCompleted}
           onVideoEnd={onVideoEnd}
           onTimeUpdate={onTimeUpdate}
+        />
+      );
+    
+    case 'document':
+      return (
+        <DocumentRenderer
+          lecture={lecture}
+          onMarkComplete={onMarkComplete}
+          isCompleted={isCompleted}
         />
       );
     
@@ -56,8 +63,6 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
       return (
         <QuizRenderer
           lecture={lecture}
-          onNext={onNext}
-          onPrevious={onPrevious}
           onMarkComplete={onMarkComplete}
           isCompleted={isCompleted}
         />

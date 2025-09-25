@@ -24,7 +24,7 @@ export function CourseList({ courses, isMobile }: CourseListProps) {
       {courses.map((course) => (
         <div
           key={course.id}
-          className="bg-white rounded-xl shadow-sm border border-[#e9ecef] overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer group h-44"
+          className="bg-white rounded-xl shadow-sm border border-[#e9ecef] overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer group min-h-44"
           onClick={() => handleCourseClick(course.id)}
         >
           <div className={`flex ${isMobile ? "flex-col" : ""} h-full`}>
@@ -44,34 +44,36 @@ export function CourseList({ courses, isMobile }: CourseListProps) {
               </div>
             </div>
 
-            <div className="flex-1 p-5">
-              <p className="text-xs text-[#6c757d] mb-2">by {course.instructor}</p>
-              <h3 className="font-bold text-[#2c3e50] text-lg mb-3 group-hover:text-[#ff6b35] transition-colors">
-                {course.title}
-              </h3>
+            <div className="flex-1 p-5 flex flex-col justify-between">
+              <div className="flex-1">
+                <p className="text-xs text-[#6c757d] mb-2">by {course.instructor}</p>
+                <h3 className="font-bold text-[#2c3e50] text-lg mb-3 group-hover:text-[#ff6b35] transition-colors">
+                  {course.title}
+                </h3>
 
-              <p className="text-sm text-[#6c757d] mb-4 line-clamp-2">{course.description}</p>
+                <p className="text-sm text-[#6c757d] mb-4 line-clamp-2">{course.description}</p>
 
-              <div className="flex items-center gap-4 mb-4 text-xs text-[#6c757d] flex-wrap">
-                <div className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-yellow rounded-full"></div>
-                  <span>{course.duration}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-yellow rounded-full"></div>
-                  <span>{course.students} Students</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-yellow rounded-full"></div>
-                  <span>{course.level}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-yellow rounded-full"></div>
-                  <span>{course.lessons} Lessons</span>
+                <div className="flex items-center gap-4 mb-4 text-xs text-[#6c757d] flex-wrap">
+                  <div className="flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 bg-yellow rounded-full"></div>
+                    <span>{course.duration}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 bg-yellow rounded-full"></div>
+                    <span>{course.students} Students</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 bg-yellow rounded-full"></div>
+                    <span>{course.level}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 bg-yellow rounded-full"></div>
+                    <span>{course.lessons} Lessons</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mt-auto">
                 <div className="flex items-center gap-2">
                   {course.originalPrice && (
                     <span className="text-base text-[#6c757d] line-through">{course.originalPrice}</span>
@@ -82,28 +84,17 @@ export function CourseList({ courses, isMobile }: CourseListProps) {
                     {course.price}
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckoutButton
-                    courseId={course.id}
-                    price={course.price}
-                    size="sm"
-                    label={course.price === "Free" ? "Enroll" : "Add to Cart"}
-                    title={course.title}
-                    thumbnail={course.image}
-                    instructor={course.instructor}
-                    autoNavigate={false}
-                    className="shrink-0"
-                  />
-                  <button
-                    className="text-yellow hover:underline font-medium group-hover:text-yellow/80 transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleCourseClick(course.id)
-                    }}
-                  >
-                    View More
-                  </button>
-                </div>
+                <CheckoutButton
+                  courseId={course.id}
+                  price={course.price}
+                  size="sm"
+                  label={course.price === "Free" ? "Enroll" : "Add to Cart"}
+                  title={course.title}
+                  thumbnail={course.image}
+                  instructor={course.instructor}
+                  autoNavigate={false}
+                  className="shrink-0 whitespace-nowrap"
+                />
               </div>
             </div>
           </div>

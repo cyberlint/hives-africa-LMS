@@ -76,7 +76,7 @@ export default function CourseDetailPage() {
     <div className="min-h-screen bg-white">
       <HeroSection course={course} />
       <TabsNavigation activeTab={activeTab} onTabChange={handleTabChange} />
-      <main className="container mx-auto">
+      <main className="w-full">
         <div id="about">
           <AboutCourse course={course} />
         </div>

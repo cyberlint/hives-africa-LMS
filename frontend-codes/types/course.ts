@@ -31,11 +31,20 @@ export interface Lecture {
   videoUrl?: string
   duration?: number
   completed?: boolean
+  description?: string
   resources?: Array<{
     id: string
     title: string
     type: string
     url: string
+  }>
+  attachments?: Array<{
+    id: string
+    title: string
+    description?: string
+    type: string
+    url: string
+    fileSize?: string
   }>
 }
 

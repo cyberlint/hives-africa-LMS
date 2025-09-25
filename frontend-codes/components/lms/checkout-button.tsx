@@ -79,7 +79,7 @@ export function CheckoutButton({
           toast.success("Added to cart", { description: title || "Course added" });
         }
       }
-      if (autoNavigate) router.push(`/checkout`);
+      if (autoNavigate) router.push(`/home/checkout`);
     } finally {
       setLoading(false);
     }
