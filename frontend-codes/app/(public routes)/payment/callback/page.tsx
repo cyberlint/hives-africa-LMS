@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
-export default function PaymentCallbackPage() {
+// Force dynamic rendering to prevent prerender errors
+export const dynamic = 'force-dynamic';
+
+function PaymentCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -45,5 +48,29 @@ export default function PaymentCallbackPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-[#FAFAFB] flex items-center justify-center">
+      <div className="text-center space-y-4">
+        <Loader2 className="w-12 h-12 animate-spin text-yellow mx-auto" />
+        <h2 className="text-xl font-semibold text-darkBlue-300">
+          Processing Payment
+        </h2>
+        <p className="text-sm text-[#6E7485]">
+          Please wait while we process your payment...
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default function PaymentCallbackPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <PaymentCallbackContent />
+    </Suspense>
   );
 }

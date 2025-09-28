@@ -1,11 +1,15 @@
 "use client";
 
+import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { XCircle, RefreshCw } from 'lucide-react';
+import { XCircle, RefreshCw, Loader2 } from 'lucide-react';
 
-export default function PaymentFailurePage() {
+// Force dynamic rendering to prevent prerender errors
+export const dynamic = 'force-dynamic';
+
+function PaymentFailureContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const reference = searchParams.get('reference');
@@ -87,5 +91,26 @@ export default function PaymentFailurePage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-[#FAFAFB] flex items-center justify-center">
+      <div className="text-center space-y-4">
+        <Loader2 className="w-12 h-12 animate-spin text-yellow mx-auto" />
+        <h2 className="text-xl font-semibold text-darkBlue-300">
+          Loading...
+        </h2>
+      </div>
+    </div>
+  );
+}
+
+export default function PaymentFailurePage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <PaymentFailureContent />
+    </Suspense>
   );
 }

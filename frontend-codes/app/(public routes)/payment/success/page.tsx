@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { PaymentsService } from '@/services/payments';
@@ -9,7 +9,10 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function PaymentSuccessPage() {
+// Force dynamic rendering to prevent prerender errors
+export const dynamic = 'force-dynamic';
+
+function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const reference = searchParams.get('reference');
@@ -101,13 +104,13 @@ export default function PaymentSuccessPage() {
                 </div>
               )}
               <div className="space-y-2">
-                <Button 
+                <Button
                   onClick={handleContinue}
                   className="w-full bg-yellow hover:bg-yellow/90"
                 >
                   Start Learning
                 </Button>
-                <Button 
+                <Button
                   onClick={handleGoHome}
                   variant="outline"
                   className="w-full"
@@ -119,16 +122,16 @@ export default function PaymentSuccessPage() {
           ) : (
             <div className="text-center space-y-4">
               <p className="text-[#6E7485]">
-                We couldn't verify your payment. Please try again or contact support if the issue persists.
+                We couldn&apos;t verify your payment. Please try again or contact support if the issue persists.
               </p>
               <div className="space-y-2">
-                <Button 
+                <Button
                   onClick={handleContinue}
                   className="w-full bg-yellow hover:bg-yellow/90"
                 >
                   Try Again
                 </Button>
-                <Button 
+                <Button
                   onClick={handleGoHome}
                   variant="outline"
                   className="w-full"
@@ -138,7 +141,7 @@ export default function PaymentSuccessPage() {
               </div>
             </div>
           )}
-          
+
           {reference && (
             <div className="mt-6 pt-4 border-t border-gray-200">
               <p className="text-xs text-[#6E7485] text-center">
@@ -149,5 +152,26 @@ export default function PaymentSuccessPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-[#FAFAFB] flex items-center justify-center">
+      <div className="text-center space-y-4">
+        <Loader2 className="w-12 h-12 animate-spin text-yellow mx-auto" />
+        <h2 className="text-xl font-semibold text-darkBlue-300">
+          Loading...
+        </h2>
+      </div>
+    </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }
