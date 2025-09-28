@@ -35,7 +35,7 @@ const ChapterLayoutContent = ({
     );
   };
 
-  const completionPercentage = (completedLectures.length / courseData.totalLectures) * 100;
+  const completionPercentage = (completedLectures.length / (courseData.totalLectures || 1)) * 100;
 
   // Keyboard navigation
   useEffect(() => {

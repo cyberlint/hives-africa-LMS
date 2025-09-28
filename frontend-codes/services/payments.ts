@@ -60,17 +60,41 @@ export const PaymentsService = {
   },
 
   async initializePayment(payload: InitializePaymentPayload): Promise<InitializePaymentResponse> {
-    return await apiClient.post<InitializePaymentResponse>(
-      "/api/payments/initialize/",
-      payload
-    );
+    // Use Next.js API route which forwards to backend
+    const response = await fetch('/api/payments/initialize', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Payment initialization failed');
+    }
+
+    return await response.json();
   },
 
   async verifyPayment(reference: string): Promise<VerifyPaymentResponse> {
-    return await apiClient.post<VerifyPaymentResponse>(
-      "/api/payments/verify/",
-      { reference }
-    );
+    // Use Next.js API route which forwards to backend
+    const response = await fetch('/api/payments/verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+      body: JSON.stringify({ reference }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Payment verification failed');
+    }
+
+    return await response.json();
   },
 
   async getWallet(): Promise<WalletResponse> {

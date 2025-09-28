@@ -2,23 +2,10 @@
 import React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CurriculumSection } from '@/components/lms/CurriculumSection';
-
-interface Lecture {
-  id: number;
-  title: string;
-  duration: number;
-  type: 'video' | 'resource' | 'quiz';
-  completed: boolean;
-}
-
-interface Section {
-  id: number;
-  title: string;
-  lectures: Lecture[];
-}
+import { CourseSection } from '@/types/course';
 
 interface CurriculumListProps {
-  sections: Section[];
+  sections: CourseSection[];
   activeLectureId: number;
   expandedSections: number[];
   completedLectures: number[];

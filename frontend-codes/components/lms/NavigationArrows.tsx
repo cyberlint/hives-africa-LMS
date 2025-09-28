@@ -27,7 +27,7 @@ export const NavigationArrows: React.FC<NavigationArrowsProps> = ({
     <>
       {/* Previous Arrow */}
       {canGoPrevious && (
-       <div className="absolute left-0 inset-y-1/2 transform -translate-y-1/2 z-20 px-2 pointer-events-auto">
+        <div className="absolute left-0 inset-y-1/2 transform -translate-y-1/2 z-20 px-2 pointer-events-auto">
           <div className="relative">
             <Button
               onClick={onPrevious}
@@ -38,7 +38,7 @@ export const NavigationArrows: React.FC<NavigationArrowsProps> = ({
             >
               <ChevronLeft className="w-6 h-6" />
             </Button>
-            
+
             {showPreviousTooltip && previousTitle && (
               <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-black text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap max-w-64 shadow-lg border border-gray-600">
                 <div className="font-medium">Previous:</div>
@@ -63,7 +63,7 @@ export const NavigationArrows: React.FC<NavigationArrowsProps> = ({
             >
               <ChevronRight className="w-6 h-6" />
             </Button>
-            
+
             {showNextTooltip && nextTitle && (
               <div className="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 bg-black text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap max-w-64 shadow-lg border border-gray-600">
                 <div className="font-medium">Next:</div>

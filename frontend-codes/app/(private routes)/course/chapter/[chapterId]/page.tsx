@@ -44,11 +44,18 @@ const ContentPage: React.FC = () => {
         <VideoPlayerSection
           lecture={activeLecture}
           onNext={goToNextLecture}
-          onPrevious={goToPreviousLecture}
-          onMarkComplete={onMarkCompleteHandler}
           isCompleted={isCompleted}
           onVideoEnd={handleVideoEnd}
           onTimeUpdate={setCurrentTime}
+        />
+      );
+    
+    case 'document':
+      return (
+        <DocumentRenderer
+          lecture={activeLecture}
+          onMarkComplete={onMarkCompleteHandler}
+          isCompleted={isCompleted}
         />
       );
     
@@ -56,8 +63,6 @@ const ContentPage: React.FC = () => {
       return (
         <QuizRenderer
           lecture={activeLecture}
-          onNext={goToNextLecture}
-          onPrevious={goToPreviousLecture}
           onMarkComplete={onMarkCompleteHandler}
           isCompleted={isCompleted}
         />

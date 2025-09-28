@@ -2,23 +2,10 @@
 import React from 'react';
 import { LectureItem } from '@/components/lms/LectureItem';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-
-interface Lecture {
-  id: number;
-  title: string;
-  duration: number;
-  type: 'video' | 'resource' | 'quiz';
-  completed: boolean;
-}
-
-interface Section {
-  id: number;
-  title: string;
-  lectures: Lecture[];
-}
+import { CourseSection } from '@/types/course';
 
 interface CurriculumSectionProps {
-  section: Section;
+  section: CourseSection;
   isExpanded: boolean;
   activeLectureId: number;
   completedLectures: number[];
@@ -34,7 +21,7 @@ export const CurriculumSection: React.FC<CurriculumSectionProps> = ({
   onToggle,
   onLectureSelect
 }) => {
-  const totalDuration = section.lectures.reduce((sum, lecture) => sum + lecture.duration, 0);
+  const totalDuration = section.lectures.reduce((sum, lecture) => sum + (lecture.duration || 0), 0);
   const completedCount = section.lectures.filter(lecture => 
     completedLectures.includes(lecture.id)
   ).length;

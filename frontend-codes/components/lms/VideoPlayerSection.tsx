@@ -8,8 +8,6 @@ import { useCourse } from '@/app/(private routes)/(student)/courses/chapter/_com
 interface VideoPlayerSectionProps {
   lecture?: Lecture;
   onNext: () => void;
-  onPrevious: () => void;
-  onMarkComplete: () => void;
   isCompleted: boolean;
   onVideoEnd: () => void;
   onTimeUpdate?: (time: number) => void;
@@ -18,8 +16,6 @@ interface VideoPlayerSectionProps {
 export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
   lecture,
   onNext,
-  onPrevious,
-  onMarkComplete,
   isCompleted,
   onVideoEnd,
   onTimeUpdate
@@ -36,14 +32,14 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
   const [videoQuality, setVideoQuality] = useState('Auto');
   const [captionsEnabled, setCaptionsEnabled] = useState(false);
   const [availableQualities] = useState(['Auto', '1080p', '720p', '480p', '360p']);
-  
+
   const {
     goToNextLecture,
     goToPreviousLecture,
     allLectures,
     currentIndex
   } = useCourse();
-  
+
   const defaultVideoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 
   useEffect(() => {
@@ -110,7 +106,7 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
   const handleSeek = useCallback((time: number) => {
     const video = videoRef.current;
     if (!video) return;
-    
+
     video.currentTime = time;
     setCurrentTime(time);
   }, []);
@@ -118,14 +114,14 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
   const skipForward = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
-    
+
     video.currentTime = Math.min(video.currentTime + 10, duration);
   }, [duration]);
 
   const skipBackward = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
-    
+
     video.currentTime = Math.max(video.currentTime - 10, 0);
   }, []);
 
@@ -150,7 +146,7 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.target && (e.target as HTMLElement).tagName === 'INPUT') return;
-      
+
       switch (e.code) {
         case 'Space':
           e.preventDefault();
@@ -240,7 +236,7 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
             <div className="text-white">Loading video...</div>
           </div>
         )}
-        
+
         {/* Video Player with Navigation Arrows */}
         <div className="relative h-full w-full">
           <VideoPlayer
@@ -248,7 +244,7 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
             src={lecture.videoUrl || defaultVideoUrl}
             onMouseEnter={() => setShowControls(true)}
             onMouseLeave={() => setShowControls(false)}
-            
+
           />
 
           {/* Navigation Arrows Overlay */}
@@ -302,7 +298,7 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
               )}
               <div className="flex items-center gap-4 text-sm text-gray-400">
                 <span>Lecture {lecture.id}</span>
-                {lecture.duration > 0 && (
+                {lecture.duration && lecture.duration > 0 && (
                   <span>{Math.floor(lecture.duration / 60)}:{(lecture.duration % 60).toString().padStart(2, '0')}</span>
                 )}
                 <span className="capitalize">{lecture.type}</span>

@@ -1,13 +1,10 @@
 
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
+import { CourseData } from '@/types/course';
 
 interface CourseHeaderProps {
-  course?: {
-    title: string;
-    instructor: string;
-    totalLectures: number;
-  };
+  course?: CourseData;
   completionPercentage?: number;
   completedLectures?: number;
 }
@@ -32,7 +29,7 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
         <div className="flex items-center space-x-6 ml-6">
           <div className="text-right">
             <div className="text-sm font-medium text-white">
-              {completedLectures} of {course?.totalLectures} lectures completed
+              {completedLectures} of {course?.totalLectures || 0} lectures completed
             </div>
             <div className="text-xs text-gray-400 mt-1">
               {Math.round(completionPercentage!)}% complete

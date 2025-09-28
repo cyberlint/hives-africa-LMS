@@ -56,21 +56,21 @@ export const CourseLayout: React.FC<CourseLayoutProps> = ({
   }, [currentIndex, allLectures, onLectureSelect]);
 
   const toggleSectionExpanded = (sectionId: number) => {
-    setExpandedSections(prev => 
-      prev.includes(sectionId) 
+    setExpandedSections(prev =>
+      prev.includes(sectionId)
         ? prev.filter(id => id !== sectionId)
         : [...prev, sectionId]
     );
   };
 
-  const completionPercentage = (completedLectures.length / courseData.totalLectures) * 100;
+  const completionPercentage = (completedLectures.length / (courseData.totalLectures || 1)) * 100;
 
   // Keyboard navigation
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.target && (e.target as HTMLElement).tagName === 'INPUT') return;
       if (e.target && (e.target as HTMLElement).tagName === 'TEXTAREA') return;
-      
+
       switch (e.code) {
         case 'ArrowLeft':
           if (e.altKey) {
@@ -93,18 +93,17 @@ export const CourseLayout: React.FC<CourseLayoutProps> = ({
 
   return (
     <div className="min-h-screen bg-[#1c1d1f] text-white">
-      <CourseHeader 
+      <CourseHeader
         course={courseData}
         completionPercentage={completionPercentage}
         completedLectures={completedLectures.length}
       />
-      
+
       <div className="flex h-[calc(100vh-80px)] overflow-hidden relative">
         {/* Content Area */}
-        <div 
-          className={`transition-all duration-300 relative ${
-            isSidebarCollapsed ? 'w-full' : 'w-full lg:w-[calc(100%-400px)]'
-          }`}
+        <div
+          className={`transition-all duration-300 relative ${isSidebarCollapsed ? 'w-full' : 'w-full lg:w-[calc(100%-400px)]'
+            }`}
         >
           <ContentRenderer
             lecture={activeLecture}

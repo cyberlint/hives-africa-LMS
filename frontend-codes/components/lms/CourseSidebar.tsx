@@ -129,7 +129,7 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
                     <div key={section.id} className="p-3 bg-[#3e4143] rounded-lg">
                       <h6 className="text-white font-medium text-sm mb-1">{section.title}</h6>
                       <div className="text-xs text-gray-400">
-                        {section.lectures.length} lectures • {Math.floor(section.lectures.reduce((sum, lecture) => sum + lecture.duration, 0) / 60)} minutes
+                        {section.lectures.length} lectures • {Math.floor(section.lectures.reduce((sum, lecture) => sum + (lecture.duration || 0), 0) / 60)} minutes
                       </div>
                     </div>
                   ))}
@@ -140,13 +140,13 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
                 <h5 className="text-white font-medium mb-3">Course Statistics</h5>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-3 bg-[#3e4143] rounded-lg">
-                    <div className="text-xl font-bold text-[#fdb606]">{courseData.totalLectures}</div>
+                    <div className="text-xl font-bold text-[#fdb606]">{courseData.totalLectures || 0}</div>
                     <div className="text-xs">Total Lectures</div>
                   </div>
                   <div className="text-center p-3 bg-[#3e4143] rounded-lg">
                     <div className="text-xl font-bold text-[#fdb606]">
                       {Math.floor(courseData.sections.reduce((sum, section) => 
-                        sum + section.lectures.reduce((lectureSum, lecture) => lectureSum + lecture.duration, 0), 0
+                        sum + section.lectures.reduce((lectureSum, lecture) => lectureSum + (lecture.duration || 0), 0), 0
                       ) / 3600)}h
                     </div>
                     <div className="text-xs">Total Duration</div>
@@ -157,7 +157,7 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
                   </div>
                   <div className="text-center p-3 bg-[#3e4143] rounded-lg">
                     <div className="text-xl font-bold text-blue-400">
-                      {Math.round((completedLectures.length / courseData.totalLectures) * 100)}%
+                      {Math.round((completedLectures.length / (courseData.totalLectures || 1)) * 100)}%
                     </div>
                     <div className="text-xs">Progress</div>
                   </div>
