@@ -50,7 +50,10 @@ export function CheckoutButton({
 
   const isFree = (typeof price === "string" && price.toLowerCase() === "free") || Number(price) === 0;
 
-  const handleClick = useCallback(async () => {
+  const handleClick = useCallback(async (event: React.MouseEvent) => {
+    // Prevent event bubbling to parent elements (like course cards)
+    event.stopPropagation();
+
     if (!courseId && !slug) return;
     try {
       setLoading(true);
