@@ -10,10 +10,12 @@ import Topbar from "@/components/shared/topbar";
 export default function PublicRoutesLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+    <main className="overflow-x-hidden ">
       <Topbar />
       <Navbar />
       {children}
       <Footer />
+      </main>
     </>
   );
 }
