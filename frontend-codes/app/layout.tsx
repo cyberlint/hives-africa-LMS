@@ -5,6 +5,9 @@ import { QueryProvider } from "./providers/QueryProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/contexts/CartContext";
+import Footer from "@/components/shared/footer";
+import Navbar from "@/components/shared/navbar";
+import Topbar from "@/components/shared/topbar";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -34,17 +37,20 @@ export default function RootLayout({
         <QueryProvider>
           <AuthProvider>
             <CartProvider>
-              <Toaster 
+              <Toaster
                 position="top-right"
                 toastOptions={{
                   style: {
-                    background: 'white',
-                    border: '1px solid #e5e5e5',
-                    color: '#333',
+                    background: "white",
+                    border: "1px solid #e5e5e5",
+                    color: "#333",
                   },
                 }}
               />
+              <Topbar />
+              <Navbar />
               {children}
+              <Footer />
             </CartProvider>
           </AuthProvider>
         </QueryProvider>

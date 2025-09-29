@@ -1,10 +1,16 @@
  
-import Waitlist from "./(public routes)/waitlist/waitlist";
+import Home from "./(public routes)/home/page";
 
-export default function Home() {
+export const metadata = {
+  title: "Hive Africa | Home",
+  description: "A platform for online courses and learning",
+  generator: "Analytix-hive",
+};
+
+export default function Page() {
   return (
     <div className="">
-    <Waitlist/>
+      <Home />
     </div>
   );
 }
