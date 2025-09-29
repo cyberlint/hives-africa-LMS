@@ -70,7 +70,7 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
                   id={category}
                   checked={filters.categories.includes(category)}
                   onCheckedChange={(checked) => handleFilterChange("categories", category, checked as boolean)}
-                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
+                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-yellow"
                 />
                 <label htmlFor={category} className="text-sm text-[#2c3e50] cursor-pointer">
                   {category}
@@ -93,7 +93,7 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
                   id={instructor}
                   checked={filters.instructors.includes(instructor)}
                   onCheckedChange={(checked) => handleFilterChange("instructors", instructor, checked as boolean)}
-                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
+                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-yellow"
                 />
                 <label htmlFor={instructor} className="text-sm text-[#2c3e50] cursor-pointer">
                   {instructor}
@@ -116,7 +116,7 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
                   id={price}
                   checked={filters.priceTypes.includes(price)}
                   onCheckedChange={(checked) => handleFilterChange("priceTypes", price, checked as boolean)}
-                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
+                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-yellow"
                 />
                 <label htmlFor={price} className="text-sm text-[#2c3e50] cursor-pointer">
                   {price}
@@ -139,13 +139,13 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
                   id={`rating-${rating}`}
                   checked={filters.ratings.includes(rating)}
                   onCheckedChange={(checked) => handleFilterChange("ratings", rating, checked as boolean)}
-                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
+                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-yellow"
                 />
                 <div className="flex items-center space-x-1">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-3 h-3 ${i < rating ? "fill-[#ff6b35] text-[#ff6b35]" : "text-[#e9ecef]"}`}
+                      className={`w-3 h-3 ${i < rating ? "fill-yellow text-yellow" : "text-[#e9ecef]"}`}
                     />
                   ))}
                   <span className="text-xs text-[#6c757d] ml-1">& up</span>
@@ -168,7 +168,7 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
                   id={level}
                   checked={filters.levels.includes(level)}
                   onCheckedChange={(checked) => handleFilterChange("levels", level, checked as boolean)}
-                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
+                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-yellow"
                 />
                 <label htmlFor={level} className="text-sm text-[#2c3e50] cursor-pointer">
                   {level}

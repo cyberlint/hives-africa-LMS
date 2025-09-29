@@ -1,6 +1,8 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Course } from "../page";
 import { Star } from "lucide-react";
+import { CheckoutButton } from "@/components/lms/checkout-button";
 
 const CourseDetailCard = ({ course }: { course: Course }) => {
   return (
@@ -137,20 +139,26 @@ const CourseDetailCard = ({ course }: { course: Course }) => {
       </div>
 
       <div className="space-y-2 px-0 md:px-4">
-        <button className="flex justify-center items-center gap-2 bg-orange text-white font-semibold text-xs px-4 py-2 w-full">
-          <Image
-            src="/assets/courses/shopping_cart.png"
-            alt="shopping_cart"
-            width={50}
-            height={50}
-            className="h-4 w-4"
-          />
-          Add to Cart
-        </button>
+        {/* CheckoutButton expects course info; using current hovered course fields */}
+        <CheckoutButton
+          courseId={course.id}
+          price={course.discountCost || course.cost}
+          title={course.title}
+          thumbnail={course.image}
+          instructor={course.instructor?.name}
+          size="sm"
+          className="w-full rounded-none"
+          variant="primary"
+          label="Add to Cart"
+          autoNavigate={true}
+        />
 
-        <button className="bg-[#FFEEE8] text-orange text-xs font-semibold px-4 py-2 w-full">
+        <Link
+          href={`/course/${course.id}`}
+          className="block text-center bg-[#fffce8] hover:bg-[#FFEEE8CC] text-yellow text-xs font-semibold px-4 py-2 w-full"
+        >
           Course Detail
-        </button>
+        </Link>
       </div>
     </>
   );

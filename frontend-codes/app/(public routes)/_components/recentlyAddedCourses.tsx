@@ -5,6 +5,7 @@ import { Course } from "../page";
 import { useEffect, useRef, useState } from "react";
 import { Star } from "lucide-react";
 import CourseDetailCard from "./courseDetailCard";
+import Link from "next/link";
 
 const RecentlyAddedCourses = () => {
   const [hoveredCourse, setHoveredCourse] = useState<Course | null>(null);
@@ -15,6 +16,7 @@ const RecentlyAddedCourses = () => {
 
   const detailCardRef = useRef<HTMLDivElement | null>(null);
   const courseRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const updateScreenType = () => {
@@ -170,15 +172,22 @@ const RecentlyAddedCourses = () => {
           {recentlyAddedCourses.map((course) => (
             <div
               key={course.id}
-              className="relative group"
+              className="relative"
               ref={(el) => {
                 courseRefs.current[course.id] = el;
               }}
               onMouseEnter={() => {
-                if (!isMobile) handleCardHover(course);
+                if (isMobile) return;
+                if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+                handleCardHover(course);
               }}
               onMouseLeave={() => {
-                if (!isMobile) setHoveredCourse(null);
+                if (isMobile) return;
+                if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+                // Small delay to allow moving into the floating detail panel without flicker
+                closeTimerRef.current = setTimeout(() => {
+                  setHoveredCourse((prev) => (prev?.id === course.id ? null : prev));
+                }, 120);
               }}
             >
               {/* Course Card */}
@@ -204,7 +213,7 @@ const RecentlyAddedCourses = () => {
                       >
                         {course.category.name}
                       </p>
-                      <p className="text-xs md:text-sm font-semibold text-orange">
+                      <p className="text-xs md:text-sm font-semibold text-yellow">
                         ₦{course.cost}
                       </p>
                     </div>
@@ -239,25 +248,51 @@ const RecentlyAddedCourses = () => {
               </div>
 
               {/* Hover Detail Card (Desktop Only) */}
-              {!isMobile && hoveredCourse?.id === course.id && (
-                <div
-                  ref={detailCardRef}
-                  className={`absolute -top-1/4 ${
+              {!isMobile && (
+                (() => {
+                  const isActive = hoveredCourse?.id === course.id;
+                  const basePos =
                     detailCardDirection === "left"
-                      ? "right-full translate-x-16"
-                      : "left-full translate-x-0"
-                  } transition-opacity duration-300 ease-in-out opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-x-0 pointer-events-none space-y-4 border rounded shadow-[0px_11.12px_29.65px_0px_#1D20261A] bg-white z-50 -ml-16 py-6 w-84`}
-                >
-                  <CourseDetailCard course={hoveredCourse} />
-                </div>
+                      ? isActive
+                        ? "right-full translate-x-0"
+                        : "right-full translate-x-16"
+                      : "left-full translate-x-0";
+                  return (
+                    <div
+                      ref={detailCardRef}
+                      onMouseEnter={() => {
+                        if (isMobile) return;
+                        if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+                        // Keep it open while hovering detail card
+                        if (hoveredCourse?.id !== course.id) handleCardHover(course);
+                      }}
+                      onMouseLeave={() => {
+                        if (isMobile) return;
+                        if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+                        closeTimerRef.current = setTimeout(() => {
+                          setHoveredCourse((prev) => (prev?.id === course.id ? null : prev));
+                        }, 120);
+                      }}
+                      className={`absolute -top-1/4 ${basePos} -ml-16 py-6 w-84 space-y-4 border rounded shadow-[0px_11.12px_29.65px_0px_#1D20261A] bg-white z-50 transition-all duration-200 ease-in-out ${
+                        isActive
+                          ? "opacity-100 scale-100 pointer-events-auto"
+                          : "opacity-0 scale-95 pointer-events-none"
+                      }`}
+                    >
+                      {hoveredCourse && <CourseDetailCard course={hoveredCourse} />}
+                    </div>
+                  );
+                })()
               )}
             </div>
           ))}
         </div>
       </div>
 
-      <button className="cursor-pointer bg-[#FFEEE8] hover:bg-[#FFEEE8CA] text-orange text-xs font-semibold px-6 py-3">
+      <button className="cursor-pointer bg-[#fffce8] hover:bg-[#FFEEE8CA] text-yellow text-xs font-semibold px-6 py-3">
+        <Link href="/course">
         Browse All Courses →
+        </Link>
       </button>
     </>
   );

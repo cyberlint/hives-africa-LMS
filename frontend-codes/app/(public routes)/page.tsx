@@ -4,6 +4,7 @@ import Image from "next/image";
 import FeaturedCourses from "./_components/featuredCourses";
 import BestSellingCourses from "./_components/bestSellingCourses";
 import RecentlyAddedCourses from "./_components/recentlyAddedCourses";
+import Link from "next/link";
 
 
 interface Category {
@@ -127,7 +128,7 @@ const Home = () => {
           </p>
           <button 
             onClick={() => window.location.href = '/auth?mode=signup'}
-            className="bg-orange text-white text-xs md:text-sm font-medium px-6 py-3 cursor-pointer hover:bg-orange/90 transition"
+            className="bg-yellow text-white text-xs md:text-sm font-medium px-6 py-3 cursor-pointer hover:bg-yellow/90 transition"
           >
             Get Started for Free
           </button>
@@ -184,8 +185,10 @@ const Home = () => {
 
         <p className="text-center text-xs md:text-sm text-[#6E7485] font-medium">
           We have more category & subcategory.{" "}
-          <span className="text-orange cursor-pointer hover:underline">
+          <span className="text-yellow cursor-pointer hover:underline">
+            <Link href="/course">
             Browse All →
+            </Link>
           </span>
         </p>
       </section>
@@ -223,7 +226,7 @@ const Home = () => {
                 love.
               </p>
 
-              <button className="bg-white cursor-pointer text-orange font-semibold text-xs md:text-sm px-6 py-3 mt-2 mb-6 w-fit hover:bg-white/95 transition">
+              <button className="bg-white cursor-pointer text-yellow font-semibold text-xs md:text-sm px-6 py-3 mt-2 mb-6 w-fit hover:bg-white/95 transition">
                 Start Teaching →
               </button>
             </div>
