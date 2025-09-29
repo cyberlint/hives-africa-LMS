@@ -5,6 +5,7 @@ import FeaturedCourses from "./_components/featuredCourses";
 import BestSellingCourses from "./_components/bestSellingCourses";
 import RecentlyAddedCourses from "./_components/recentlyAddedCourses";
 
+
 interface Category {
   name: string;
   icon: string;

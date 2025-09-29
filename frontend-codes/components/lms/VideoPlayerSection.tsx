@@ -3,7 +3,7 @@ import { VideoPlayer } from '@/components/lms/VideoPlayer';
 import { VideoControls } from '@/components/lms/VideoControls';
 import { CheckCircle } from 'lucide-react';
 import type { Lecture } from '@/types/course';
-import { NavigationArrows } from '@/app/(private routes)/course/chapter/_components/NavigationArrows';
+import { NavigationArrows } from '@/app/(private routes)/oldcourse/chapter/_components/NavigationArrows';
 import { useCourse } from '@/app/(private routes)/(student)/courses/chapter/_components/CourseContext';
 interface VideoPlayerSectionProps {
   lecture?: Lecture;

@@ -78,7 +78,7 @@ const Navbar = () => {
         <div className="flex items-center gap-4 md:w-[30%] justify-end">
           {/* Cart Icon */}
           <button
-            onClick={() => router.push("/home/checkout")}
+            onClick={() => router.push("/checkout")}
             className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
             aria-label="Shopping Cart"
           >

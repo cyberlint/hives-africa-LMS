@@ -47,7 +47,7 @@ types/
 
 ## Payment Flow
 
-### 1. Checkout Page (`/home/checkout`)
+### 1. Checkout Page (`/checkout`)
 - User reviews cart items
 - Applies coupon codes (optional)
 - Clicks "Pay Securely" button

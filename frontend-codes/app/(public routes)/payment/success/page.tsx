@@ -44,7 +44,7 @@ function PaymentSuccessContent() {
     if (verificationStatus === 'success') {
       router.push('/learning');
     } else {
-      router.push('/home/checkout');
+  router.push('/checkout');
     }
   };
 

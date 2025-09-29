@@ -16,7 +16,7 @@ function PaymentFailureContent() {
   const message = searchParams.get('message') || 'Payment was not completed successfully.';
 
   const handleRetry = () => {
-    router.push('/home/checkout');
+  router.push('/checkout');
   };
 
   const handleGoHome = () => {

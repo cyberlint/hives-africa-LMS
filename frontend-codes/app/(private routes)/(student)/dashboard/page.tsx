@@ -20,7 +20,7 @@ import Image from "next/image"
 function DashboardOverview() {
 
 const {  user, enrolledCourses,  handleTabChange} = useDashboard()
-const { user: authUser } = useAuth()
+// const { user: authUser } = useAuth()
   const totalProgress = user.progress.reduce((acc, p) => acc + p.progress, 0) / user.progress.length
   const completedCourses = user.progress.filter((p) => p.progress === 100).length
   const inProgressCourses = user.progress.filter((p) => p.progress > 0 && p.progress < 100).length
@@ -59,7 +59,7 @@ const { user: authUser } = useAuth()
       </div>
 
       {/* User Type Indicator for non-student users */}
-      {authUser && <UserTypeIndicator user={authUser} showMessage={true} />}
+      {/* {authUser && <UserTypeIndicator user={authUser} showMessage={true} />} */}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
@@ -237,5 +237,6 @@ const { user: authUser } = useAuth()
     </div>
   )
 }
+export default DashboardOverview;
 
-export default withAuth(DashboardOverview);
+// export default withAuth(DashboardOverview);

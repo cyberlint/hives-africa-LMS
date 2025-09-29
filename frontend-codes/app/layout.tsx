@@ -1,13 +1,13 @@
+
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
+// Declared in a d.ts shim for CSS modules; Next.js allows global CSS here.
 import "./globals.css";
 import { QueryProvider } from "./providers/QueryProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/contexts/CartContext";
-import Footer from "@/components/shared/footer";
-import Navbar from "@/components/shared/navbar";
-import Topbar from "@/components/shared/topbar";
+// Site-wide chrome (Topbar, Navbar, Footer) moved into `(public routes)/layout.tsx` to avoid rendering inside private student dashboard.
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -47,10 +47,7 @@ export default function RootLayout({
                   },
                 }}
               />
-              <Topbar />
-              <Navbar />
               {children}
-              <Footer />
             </CartProvider>
           </AuthProvider>
         </QueryProvider>

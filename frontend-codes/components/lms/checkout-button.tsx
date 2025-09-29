@@ -87,7 +87,7 @@ export function CheckoutButton({
           }
         }
       }
-      if (autoNavigate) router.push(`/home/checkout`);
+  if (autoNavigate) router.push(`/checkout`);
     } finally {
       setLoading(false);
     }

@@ -23,7 +23,7 @@ export function CourseGrid({ courses, isMobile, isTablet }: CourseGridProps) {
   }
 
   const handleCourseClick = (courseId: number) => {
-    router.push(`/home/course/${courseId}`)
+    router.push(`/course/${courseId}`)
   }
 
   return (

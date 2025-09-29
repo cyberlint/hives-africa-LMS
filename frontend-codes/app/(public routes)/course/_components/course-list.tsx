@@ -16,7 +16,7 @@ export function CourseList({ courses, isMobile }: CourseListProps) {
   const router = useRouter()
 
   const handleCourseClick = (courseId: number) => {
-    router.push(`/home/course/${courseId}`)
+    router.push(`/course/${courseId}`)
   }
 
   return (
