@@ -65,14 +65,24 @@ export function CheckoutButton({
         return;
       }
       if (courseId) {
+        // Normalize numeric price (strip currency symbols / commas if any)
         const numericPrice = typeof price === "string"
           ? (price.toLowerCase() === "free" ? 0 : Number(price.replace(/[^0-9.]/g, "")) || 0)
           : Number(price || 0);
-        const already = items.find(i => i.id === idStr);
+
+        const already = items.some(i => i.id === idStr);
         if (already) {
-          if (showAddedToast) toast.message("Already in cart", { description: title || "This course is already added" });
-        } else {
-          addItem({
+          if (showAddedToast) {
+            toast.message("Already in cart", {
+              description: title || "This course is already in your cart",
+            });
+          }
+          // Still navigate if autoNavigate is true
+          if (autoNavigate) router.push(`/checkout`);
+          return; // Early exit; avoid duplicate add logic
+        }
+
+        addItem({
             id: idStr,
             title: title || `Course ${idStr}`,
             slug,
@@ -81,17 +91,17 @@ export function CheckoutButton({
             quantity: 1,
             isFree: numericPrice === 0,
             instructor,
-          });
-          if (showAddedToast) {
-            toast.success("Added to cart", { description: title || "Course added" });
-          }
+        });
+        if (showAddedToast) {
+          toast.success("Added to cart", { description: title || "Course added" });
         }
       }
-  if (autoNavigate) router.push(`/checkout`);
+
+      if (autoNavigate) router.push(`/checkout`);
     } finally {
       setLoading(false);
     }
-  }, [courseId, slug, isFree, router, onFreeEnroll, addItem, price, title, thumbnail, instructor, autoNavigate, showAddedToast]);
+  }, [courseId, slug, isFree, router, onFreeEnroll, addItem, price, title, thumbnail, instructor, autoNavigate, showAddedToast, items]);
 
   const text = label || (isFree ? "Enroll Free" : autoNavigate ? "Buy Now" : "Add to Cart");
 
