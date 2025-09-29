@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { useInitializePayment } from "@/hooks/usePayments";
 
 export default function CartCheckoutPage() {
-  const { items, removeItem, updateQuantity, subtotal, coupon, applyCoupon, removeCoupon, total, loadingCoupon, clearCart } = useCart();
+  const { items, removeItem, /* updateQuantity (deprecated single-item mode) */ subtotal, coupon, applyCoupon, removeCoupon, total, loadingCoupon, clearCart } = useCart();
   const router = useRouter();
   const [couponInput, setCouponInput] = useState("");
   const [processing, setProcessing] = useState(false);
@@ -91,7 +91,7 @@ export default function CartCheckoutPage() {
 
         {!hasItems && emptyState}
         {hasItems && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
             {/* Items & coupon */}
             <div className="lg:col-span-2 space-y-6">
               <Card className="border-gray-200">
@@ -100,8 +100,11 @@ export default function CartCheckoutPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {items.map(item => (
-                    <div key={item.id} className="flex gap-4 border border-gray-100 rounded-md p-3 bg-white">
-                      <div className="relative h-20 w-32 overflow-hidden rounded bg-gray-100 flex-shrink-0">
+                    <div
+                      key={item.id}
+                      className="flex flex-col sm:flex-row gap-3 sm:gap-4 border border-gray-100 rounded-md p-3 md:p-4 bg-white"
+                    >
+                      <div className="relative h-32 w-full sm:h-20 sm:w-32 overflow-hidden rounded bg-gray-100 flex-shrink-0">
                         {item.thumbnail ? (
                           <Image src={item.thumbnail} alt={item.title} fill className="object-cover" />
                         ) : (
@@ -109,29 +112,14 @@ export default function CartCheckoutPage() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0 space-y-1">
-                        <p className="text-sm font-medium text-darkBlue-300 line-clamp-2">{item.title}</p>
+                        <p className="text-sm font-medium text-darkBlue-300 line-clamp-2 md:line-clamp-3">{item.title}</p>
                         {item.instructor && <p className="text-xs text-[#6E7485]">By {item.instructor}</p>}
                         {item.isFree && <p className="text-[11px] text-green-700">Free course</p>}
-                        {!item.isFree && (
-                          <div className="flex items-center gap-2 mt-1">
-                            <label className="text-[11px] text-[#6E7485]" htmlFor={`qty-${item.id}`}>Qty</label>
-                            <input
-                              id={`qty-${item.id}`}
-                              type="number"
-                              min={1}
-                              value={item.quantity}
-                              onChange={(e) => updateQuantity(item.id, Number(e.target.value) || 1)}
-                              className="w-16 h-8 rounded border border-gray-300 bg-white px-2 text-sm"
-                            />
-                          </div>
-                        )}
+                        {/* Quantity controls removed for single-item-per-course mode */}
                       </div>
-                      <div className="text-right flex flex-col justify-between">
-                        <div>
-                          <p className="text-sm font-semibold text-darkBlue-300">{item.isFree ? "₦0" : `₦${(item.unitPrice * item.quantity).toLocaleString()}`}</p>
-                          {!item.isFree && item.quantity > 1 && (
-                            <p className="text-[10px] text-[#6E7485]">₦{item.unitPrice.toLocaleString()} ea</p>
-                          )}
+                      <div className="flex sm:flex-col justify-between sm:justify-between items-end sm:items-end gap-2 sm:gap-0">
+                        <div className="text-right">
+                          <p className="text-sm font-semibold text-darkBlue-300">{item.isFree ? "₦0" : `₦${(item.unitPrice).toLocaleString()}`}</p>
                         </div>
                         <button
                           onClick={() => removeItem(item.id)}
@@ -148,12 +136,12 @@ export default function CartCheckoutPage() {
                   <h2 className="text-lg font-semibold text-darkBlue-300">Coupon Code</h2>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col xs:flex-row sm:flex-row gap-2 sm:items-stretch">
                     <Input
                       value={couponInput}
                       onChange={(e) => setCouponInput(e.target.value)}
                       placeholder="Enter coupon"
-                      className="h-10"
+                      className="h-10 flex-1"
                       aria-label="Coupon code"
                     />
                     {coupon.code ? (
@@ -182,7 +170,7 @@ export default function CartCheckoutPage() {
             </div>
 
             {/* Summary */}
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 hidden lg:block">
               <Card className="border-gray-200 sticky top-6">
                 <CardHeader>
                   <h2 className="text-lg font-semibold text-darkBlue-300">Payment Summary</h2>
@@ -219,6 +207,31 @@ export default function CartCheckoutPage() {
           </div>
         )}
       </div>
+
+      {/* Mobile sticky summary bar */}
+      {hasItems && (
+        <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/75 px-4 py-3 shadow-lg">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <p className="text-[11px] uppercase tracking-wide text-[#6E7485]">Total</p>
+              <p className="text-base font-semibold text-darkBlue-300">₦{total.toLocaleString()}</p>
+              {discount > 0 && <p className="text-[10px] text-green-700">You save ₦{discount.toLocaleString()}</p>}
+            </div>
+            <Button
+              disabled={!hasItems || processing || initializePaymentMutation.isPending}
+              onClick={handleStartPayment}
+              className="h-11 px-6 font-semibold bg-yellow hover:bg-yellow/90 text-white"
+              aria-label="Pay securely"
+            >
+              {processing || initializePaymentMutation.isPending ? "Processing…" : "Checkout"}
+            </Button>
+          </div>
+          <div className="flex justify-between text-[10px] text-[#6E7485]">
+            <button onClick={() => router.back()} className="hover:text-darkBlue-300">← Back</button>
+            {coupon.code && <span>Coupon: {coupon.code}</span>}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

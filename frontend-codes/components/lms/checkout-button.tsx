@@ -46,7 +46,7 @@ export function CheckoutButton({
 }: CheckoutButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const { addItem } = useCart();
+  const { addItem, items } = useCart();
 
   const isFree = (typeof price === "string" && price.toLowerCase() === "free") || Number(price) === 0;
 
@@ -68,18 +68,23 @@ export function CheckoutButton({
         const numericPrice = typeof price === "string"
           ? (price.toLowerCase() === "free" ? 0 : Number(price.replace(/[^0-9.]/g, "")) || 0)
           : Number(price || 0);
-        addItem({
-          id: idStr,
-          title: title || `Course ${idStr}`,
-          slug,
-          thumbnail,
-          unitPrice: numericPrice,
-          quantity: 1,
-          isFree: numericPrice === 0,
-          instructor,
-        });
-        if (showAddedToast) {
-          toast.success("Added to cart", { description: title || "Course added" });
+        const already = items.find(i => i.id === idStr);
+        if (already) {
+          if (showAddedToast) toast.message("Already in cart", { description: title || "This course is already added" });
+        } else {
+          addItem({
+            id: idStr,
+            title: title || `Course ${idStr}`,
+            slug,
+            thumbnail,
+            unitPrice: numericPrice,
+            quantity: 1,
+            isFree: numericPrice === 0,
+            instructor,
+          });
+          if (showAddedToast) {
+            toast.success("Added to cart", { description: title || "Course added" });
+          }
         }
       }
       if (autoNavigate) router.push(`/home/checkout`);

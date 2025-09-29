@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { PaymentsService } from "@/services/payments";
 
 export default function CartCheckoutPage() {
-  const { items, removeItem, updateQuantity, subtotal, coupon, applyCoupon, removeCoupon, total, loadingCoupon, clearCart } = useCart();
+  const { items, removeItem, /* updateQuantity deprecated */ subtotal, coupon, applyCoupon, removeCoupon, total, loadingCoupon, clearCart } = useCart();
   const router = useRouter();
   const [couponInput, setCouponInput] = useState("");
   const [processing, setProcessing] = useState(false);
@@ -92,26 +92,11 @@ export default function CartCheckoutPage() {
                         <p className="text-sm font-medium text-darkBlue-300 line-clamp-2">{item.title}</p>
                         {item.instructor && <p className="text-xs text-[#6E7485]">By {item.instructor}</p>}
                         {item.isFree && <p className="text-[11px] text-green-700">Free course</p>}
-                        {!item.isFree && (
-                          <div className="flex items-center gap-2 mt-1">
-                            <label className="text-[11px] text-[#6E7485]" htmlFor={`qty-${item.id}`}>Qty</label>
-                            <input
-                              id={`qty-${item.id}`}
-                              type="number"
-                              min={1}
-                              value={item.quantity}
-                              onChange={(e) => updateQuantity(item.id, Number(e.target.value) || 1)}
-                              className="w-16 h-8 rounded border border-gray-300 bg-white px-2 text-sm"
-                            />
-                          </div>
-                        )}
+                        {/* Quantity controls removed in single-item mode */}
                       </div>
                       <div className="text-right flex flex-col justify-between">
                         <div>
-                          <p className="text-sm font-semibold text-darkBlue-300">{item.isFree ? "₦0" : `₦${(item.unitPrice * item.quantity).toLocaleString()}`}</p>
-                          {!item.isFree && item.quantity > 1 && (
-                            <p className="text-[10px] text-[#6E7485]">₦{item.unitPrice.toLocaleString()} ea</p>
-                          )}
+                          <p className="text-sm font-semibold text-darkBlue-300">{item.isFree ? "₦0" : `₦${(item.unitPrice).toLocaleString()}`}</p>
                         </div>
                         <button
                           onClick={() => removeItem(item.id)}
