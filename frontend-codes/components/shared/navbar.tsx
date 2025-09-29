@@ -93,7 +93,7 @@ const Navbar = () => {
           <ul className="flex justify-end items-center gap-4">
             <li>
               <button
-                onClick={() => router.push("/auth?mode=login")}
+                onClick={() => router.push("/signin")}
                 className="bg-[#3086EE1A] text-darkBlue-500 text-sm lg:text-base font-semibold px-6 py-3 rounded-full hover:bg-[#3086EE2A] transition-colors"
               >
                 Login
@@ -101,7 +101,7 @@ const Navbar = () => {
             </li>
             <li>
               <button
-                onClick={() => router.push("/auth?mode=signup")}
+                onClick={() => router.push("/signup")}
                 className="bg-yellow text-white text-sm lg:text-base font-semibold px-6 py-3 rounded-full hover:bg-yellow/80 transition-colors"
               >
                 Signup
