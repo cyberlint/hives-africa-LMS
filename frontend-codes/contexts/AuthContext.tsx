@@ -66,12 +66,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     initializeAuth()
   }, [])
 
-  // Handle route protection - only on client side
-  useEffect(() => {
-    if (!isLoading && typeof window !== 'undefined') {
-      handleRouteProtection()
-    }
-  }, [isLoading, isAuthenticated])
+  // Handle route protection - DISABLED
+  // Route protection should be handled at the component level using withAuth HOC
+  // or in middleware, not globally in the AuthContext
+  // useEffect(() => {
+  //   if (!isLoading && typeof window !== 'undefined') {
+  //     handleRouteProtection()
+  //   }
+  // }, [isLoading, isAuthenticated])
 
   const initializeAuth = async () => {
     try {
@@ -108,27 +110,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  const handleRouteProtection = () => {
-    // Only run on client side
-    if (typeof window === 'undefined') return
-    
-    const currentPath = window.location.pathname
-
-    // If user is not authenticated and trying to access protected route
-    if (!isAuthenticated && isProtectedRoute(currentPath)) {
-      if (currentPath !== '/auth') {
-        router.push('/auth')
-      }
-      return
-    }
-
-    // If user is authenticated and on auth page, redirect to dashboard
-    if (isAuthenticated && currentPath === '/auth') {
-      const redirectPath = getRedirectPath(user?.user_type)
-      router.replace(redirectPath) // Use replace instead of push to avoid history issues
-      return
-    }
-  }
+  // DISABLED: Route protection moved to component level
+  // Use withAuth HOC or middleware for route protection instead
+  // const handleRouteProtection = () => {
+  //   // Only run on client side
+  //   if (typeof window === 'undefined') return
+  //   
+  //   const currentPath = window.location.pathname
+  //
+  //   // If user is not authenticated and trying to access protected route
+  //   if (!isAuthenticated && isProtectedRoute(currentPath)) {
+  //     if (currentPath !== '/auth') {
+  //       router.push('/auth')
+  //     }
+  //     return
+  //   }
+  //
+  //   // If user is authenticated and on auth page, redirect to dashboard
+  //   if (isAuthenticated && currentPath === '/auth') {
+  //     const redirectPath = getRedirectPath(user?.user_type)
+  //     router.replace(redirectPath) // Use replace instead of push to avoid history issues
+  //     return
+  //   }
+  // }
 
   const verifyToken = async (token: string): Promise<boolean> => {
     try {

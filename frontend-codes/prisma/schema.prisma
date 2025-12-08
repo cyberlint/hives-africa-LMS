@@ -1,0 +1,232 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  courses       Course[]
+  enrollments   Enrollment[]
+  lessonProgress LessonProgress[]
+
+  role       String?
+  banned     Boolean?  @default(false)
+  banReason  String?
+  banExpires DateTime?
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
+
+model Course {
+  id String @id @default(uuid())
+
+  title            String
+  description      String
+  fileKey          String
+  price            Float
+  duration         Int // duration in hours
+  level            CourseLevel  @default(Beginner)
+  category         String
+  shortdescription String
+  slug             String       @unique
+  status           CourseStatus @default(Draft) // draft, inreview, published, archived
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @default(now()) @updatedAt
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           String
+
+  module Module[]
+  enrollments Enrollment[]
+}
+
+enum CourseLevel {
+  Beginner
+  Intermediate
+  Advanced
+}
+
+enum CourseStatus {
+  Draft
+  InReview
+  Published
+  Archived
+}
+
+model Module {
+  id String @id @default(uuid())
+
+  title    String
+  position Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String
+
+  lessons Lesson[]
+}
+
+model Lesson {
+  id String @id @default(uuid())
+
+  title        String
+  description  String?
+  thumbnailKey String?
+  videoKey     String?
+  position     Int
+  type         LessonType @default(Video) // video, document, quiz, resource
+  content      String?    // For document/quiz content
+  duration     Int?       // Duration in seconds for videos
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  moduleId String
+
+  attachments    Attachment[]
+  lessonProgress LessonProgress[]
+}
+
+enum LessonType {
+  Video
+  Document
+  Quiz
+  Resource
+}
+
+model Attachment {
+  id String @id @default(uuid())
+
+  title       String
+  description String?
+  type        String // document, quiz, video, etc
+  url         String
+  fileSize    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId String
+}
+
+model Enrollment {
+  id String @id @default(uuid())
+
+  enrolledAt DateTime @default(now())
+  completedAt DateTime?
+  progress   Float    @default(0) // Percentage 0-100
+
+  User     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  Course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String
+
+  // Payment tracking
+  paymentReference String?
+  paymentStatus    PaymentStatus @default(Pending)
+  paymentAmount    Float?
+  paidAt           DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+enum PaymentStatus {
+  Pending
+  Completed
+  Failed
+  Refunded
+}
+
+model LessonProgress {
+  id String @id @default(uuid())
+
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  currentTime Int?     // Current playback time in seconds for videos
+
+  User     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  Lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([lessonId])
+}

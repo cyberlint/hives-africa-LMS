@@ -4,21 +4,27 @@ import { VideoControls } from '@/components/lms/VideoControls';
 import { CheckCircle } from 'lucide-react';
 import type { Lecture } from '@/types/course';
 import { NavigationArrows } from '@/app/(private routes)/oldcourse/chapter/_components/NavigationArrows';
-import { useCourse } from '@/app/(private routes)/(student)/courses/chapter/_components/CourseContext';
+
 interface VideoPlayerSectionProps {
   lecture?: Lecture;
   onNext: () => void;
+  onPrevious: () => void;
   isCompleted: boolean;
   onVideoEnd: () => void;
   onTimeUpdate?: (time: number) => void;
+  allLectures: Lecture[];
+  currentIndex: number;
 }
 
 export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
   lecture,
   onNext,
+  onPrevious,
   isCompleted,
   onVideoEnd,
-  onTimeUpdate
+  onTimeUpdate,
+  allLectures,
+  currentIndex
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -32,13 +38,6 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
   const [videoQuality, setVideoQuality] = useState('Auto');
   const [captionsEnabled, setCaptionsEnabled] = useState(false);
   const [availableQualities] = useState(['Auto', '1080p', '720p', '480p', '360p']);
-
-  const {
-    goToNextLecture,
-    goToPreviousLecture,
-    allLectures,
-    currentIndex
-  } = useCourse();
 
   const defaultVideoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 
@@ -251,8 +250,8 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
           <NavigationArrows
             canGoPrevious={currentIndex > 0}
             canGoNext={currentIndex < allLectures.length - 1}
-            onPrevious={goToPreviousLecture}
-            onNext={goToNextLecture}
+            onPrevious={onPrevious}
+            onNext={onNext}
             previousTitle={currentIndex > 0 ? allLectures[currentIndex - 1].title : ''}
             nextTitle={currentIndex < allLectures.length - 1 ? allLectures[currentIndex + 1].title : ''}
           />

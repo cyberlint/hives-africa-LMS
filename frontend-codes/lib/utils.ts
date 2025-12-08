@@ -53,7 +53,9 @@ export const userStorage = {
   }
 }
 
-// Route protection
+// Route protection - DEPRECATED
+// Route protection is now handled at component level using withAuth HOC
+// or in Next.js middleware, not in the AuthContext
 export const isProtectedRoute = (pathname: string): boolean => {
   const protectedRoutes = ['/dashboard', '/learning', '/student']
   return protectedRoutes.some(route => pathname.startsWith(route))

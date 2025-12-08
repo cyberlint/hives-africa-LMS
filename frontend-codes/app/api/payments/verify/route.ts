@@ -1,7 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/db';
+import { auth } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth.api.getSession({ headers: request.headers });
+    
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const userId = session.user.id;
     const body = await request.json();
     const { reference } = body;
 
@@ -49,6 +61,48 @@ export async function POST(request: NextRequest) {
         { error: data.message || data.error || 'Payment verification failed' },
         { status: response.status }
       );
+    }
+
+    // If payment is successful, create enrollment
+    if (data.status === 'success' && data.transaction) {
+      const courseId = data.transaction.metadata?.course_id;
+      
+      if (courseId) {
+        // Check if enrollment already exists
+        const existingEnrollment = await prisma.enrollment.findUnique({
+          where: {
+            userId_courseId: {
+              userId,
+              courseId,
+            },
+          },
+        });
+
+        if (!existingEnrollment) {
+          // Create new enrollment
+          await prisma.enrollment.create({
+            data: {
+              userId,
+              courseId,
+              paymentReference: reference,
+              paymentStatus: 'Completed',
+              paymentAmount: data.transaction.amount / 100, // Convert from kobo to naira
+              paidAt: new Date(data.transaction.paid_at),
+            },
+          });
+        } else if (existingEnrollment.paymentStatus !== 'Completed') {
+          // Update existing enrollment
+          await prisma.enrollment.update({
+            where: { id: existingEnrollment.id },
+            data: {
+              paymentReference: reference,
+              paymentStatus: 'Completed',
+              paymentAmount: data.transaction.amount / 100,
+              paidAt: new Date(data.transaction.paid_at),
+            },
+          });
+        }
+      }
     }
 
     return NextResponse.json(data);

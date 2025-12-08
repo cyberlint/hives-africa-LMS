@@ -27,6 +27,8 @@ import {
 import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
 import Image from "next/image"
+import { useDashboard } from "../studentContext"
+import { constructUrl } from "@/lib/construct-url"
 
 interface Course {
   id: string
@@ -50,106 +52,7 @@ interface ViewAllProps {
   onTabChange: (tab: string) => void
 }
 
-const mockCourses: Course[] = [
-  {
-    id: "1",
-    title: "Complete React Developer Course",
-    instructor: "John Smith",
-    category: "Web Development",
-    level: "Intermediate",
-    rating: 4.8,
-    students: 15420,
-    duration: "40 hours",
-    price: 89.99,
-    originalPrice: 199.99,
-    thumbnail: "/ai.png?height=200&width=300",
-    description: "Master React from basics to advanced concepts with hands-on projects",
-    progress: 65,
-    status: "enrolled",
-    tags: ["React", "JavaScript", "Frontend"],
-  },
-  {
-    id: "2",
-    title: "Python for Data Science",
-    instructor: "Sarah Johnson",
-    category: "Data Science",
-    level: "Beginner",
-    rating: 4.9,
-    students: 23100,
-    duration: "35 hours",
-    price: 79.99,
-    originalPrice: 149.99,
-    thumbnail: "/ai.png",
-    description: "Learn Python programming for data analysis and machine learning",
-    progress: 100,
-    status: "completed",
-    tags: ["Python", "Data Science", "Machine Learning"],
-  },
-  {
-    id: "3",
-    title: "UI/UX Design Masterclass",
-    instructor: "Mike Chen",
-    category: "Design",
-    level: "Advanced",
-    rating: 4.7,
-    students: 8900,
-    duration: "28 hours",
-    price: 99.99,
-    thumbnail: "/ai.png?height=200&width=300",
-    description: "Complete guide to user interface and user experience design",
-    status: "wishlist",
-    tags: ["UI/UX", "Design", "Figma"],
-  },
-  {
-    id: "4",
-    title: "Node.js Backend Development",
-    instructor: "Alex Rodriguez",
-    category: "Backend Development",
-    level: "Intermediate",
-    rating: 4.6,
-    students: 12300,
-    duration: "45 hours",
-    price: 94.99,
-    originalPrice: 179.99,
-    thumbnail: "/ai.png?height=200&width=300",
-    description: "Build scalable backend applications with Node.js and Express",
-    progress: 30,
-    status: "enrolled",
-    tags: ["Node.js", "Backend", "API"],
-  },
-  {
-    id: "5",
-    title: "Digital Marketing Strategy",
-    instructor: "Emma Wilson",
-    category: "Marketing",
-    level: "Beginner",
-    rating: 4.5,
-    students: 18700,
-    duration: "25 hours",
-    price: 69.99,
-    thumbnail: "/ai.png?height=200&width=300",
-    description: "Learn effective digital marketing strategies and techniques",
-    status: "not-started",
-    tags: ["Marketing", "SEO", "Social Media"],
-  },
-  {
-    id: "6",
-    title: "Machine Learning with TensorFlow",
-    instructor: "David Park",
-    category: "Machine Learning",
-    level: "Advanced",
-    rating: 4.8,
-    students: 9500,
-    duration: "50 hours",
-    price: 129.99,
-    originalPrice: 249.99,
-    thumbnail: "/ai.png?height=200&width=300",
-    description: "Deep dive into machine learning using TensorFlow framework",
-    progress: 100,
-    status: "completed",
-    tags: ["TensorFlow", "ML", "AI"],
-  },
-]
+// Courses will be fetched from API via context
 
 export default function ViewAll() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -161,6 +64,39 @@ export default function ViewAll() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [showFilters, setShowFilters] = useState(false)
   const [activeTab, setActiveTab] = useState("all")
+
+  // Get courses from context
+  const { courses: allCourses, enrolledCourses, user, loading, error } = useDashboard()
+
+  // Transform courses to match the Course interface
+  const mockCourses: Course[] = useMemo(() => {
+    return allCourses.map((course) => {
+      const userProgress = user.progress.find((p) => p.courseId === course.id)
+      const isEnrolled = user.enrolledCourses.includes(course.id)
+      const thumbnailUrl = constructUrl(course.fileKey)
+      
+      return {
+        id: course.id,
+        title: course.title,
+        instructor: course.instructor.name,
+        category: course.category,
+        level: course.level as "Beginner" | "Intermediate" | "Advanced",
+        rating: course.rating,
+        students: 0, // TODO: Add to API
+        duration: `${Math.floor(course.duration / 60)}h ${course.duration % 60}m`,
+        price: course.price,
+        thumbnail: thumbnailUrl,
+        description: course.description,
+        progress: userProgress?.progress,
+        status: userProgress?.progress === 100 
+          ? "completed" 
+          : isEnrolled 
+          ? "enrolled" 
+          : "not-started",
+        tags: [], // TODO: Add tags to API
+      }
+    })
+  }, [allCourses, user.progress, user.enrolledCourses])
 
   // Filter and sort courses
   const filteredAndSortedCourses = useMemo(() => {
@@ -224,7 +160,7 @@ export default function ViewAll() {
     })
 
     return filtered
-  }, [searchQuery, selectedCategory, selectedLevel, selectedStatus, sortBy, sortDirection, activeTab])
+  }, [searchQuery, selectedCategory, selectedLevel, selectedStatus, sortBy, sortDirection, activeTab, mockCourses])
 
   // Statistics
   const stats = useMemo(() => {
@@ -234,7 +170,34 @@ export default function ViewAll() {
       completed: mockCourses.filter((c) => c.status === "completed").length,
       wishlist: mockCourses.filter((c) => c.status === "wishlist").length,
     }
-  }, [])
+  }, [mockCourses])
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#fdb606] mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading courses...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center max-w-md">
+          <h2 className="text-2xl font-bold mb-2 text-red-600">Unable to load courses</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>
+            Try Again
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   const handleCourseAction = (action: string, courseId: string) => {
     console.log(`${action} course:`, courseId)

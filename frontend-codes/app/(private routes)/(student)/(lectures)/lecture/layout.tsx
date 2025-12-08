@@ -14,7 +14,6 @@ export default function LectureLayout({
   return (
     <main>
       {children}
-      <Footer />
     </main>
   );
 }

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useState, useCallback } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
+import { useEnrollment } from "@/hooks/useEnrollment";
 
 export interface CheckoutButtonProps {
   courseId?: string | number; // Accept number from mock list, convert to string
@@ -22,6 +23,7 @@ export interface CheckoutButtonProps {
   showAddedToast?: boolean; // show toast feedback
   analyticsId?: string; // Optional analytics hook id
   onFreeEnroll?: (courseId?: string) => Promise<void> | void; // Allows parent to handle free enrollment
+  isEnrolled?: boolean; // Check if user is already enrolled
 }
 
 /**
@@ -43,10 +45,12 @@ export function CheckoutButton({
   showAddedToast = true,
   analyticsId,
   onFreeEnroll,
+  isEnrolled = false,
 }: CheckoutButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { addItem, items } = useCart();
+  const { enrollInFreeCourse } = useEnrollment();
 
   const isFree = (typeof price === "string" && price.toLowerCase() === "free") || Number(price) === 0;
 
@@ -55,15 +59,37 @@ export function CheckoutButton({
     event.stopPropagation();
 
     if (!courseId && !slug) return;
+    
     try {
       setLoading(true);
       const idStr = String(courseId ?? "");
-      if (isFree) {
-        // Free enrollment path: still treat as immediate access
-        if (onFreeEnroll) await onFreeEnroll(idStr);
-        router.push(`/learning?courseId=${idStr}`);
+      
+      // If already enrolled, go to learning page
+      if (isEnrolled) {
+        router.push(`/${idStr}/chapter/1`);
         return;
       }
+
+      if (isFree) {
+        // Free enrollment path: enroll user and redirect to course
+        try {
+          if (onFreeEnroll) {
+            await onFreeEnroll(idStr);
+          } else {
+            await enrollInFreeCourse(idStr);
+          }
+          toast.success("Enrolled successfully!", {
+            description: "You can now access the course content",
+          });
+          router.push(`/${idStr}/chapter/1`);
+        } catch (error) {
+          toast.error("Enrollment failed", {
+            description: error instanceof Error ? error.message : "Please try again",
+          });
+        }
+        return;
+      }
+      
       if (courseId) {
         // Normalize numeric price (strip currency symbols / commas if any)
         const numericPrice = typeof price === "string"
@@ -101,9 +127,9 @@ export function CheckoutButton({
     } finally {
       setLoading(false);
     }
-  }, [courseId, slug, isFree, router, onFreeEnroll, addItem, price, title, thumbnail, instructor, autoNavigate, showAddedToast, items]);
+  }, [courseId, slug, isFree, isEnrolled, router, onFreeEnroll, enrollInFreeCourse, addItem, price, title, thumbnail, instructor, autoNavigate, showAddedToast, items]);
 
-  const text = label || (isFree ? "Enroll Free" : autoNavigate ? "Buy Now" : "Add to Cart");
+  const text = label || (isEnrolled ? "Continue Learning" : isFree ? "Enroll Free" : autoNavigate ? "Buy Now" : "Add to Cart");
 
   return (
     <Button

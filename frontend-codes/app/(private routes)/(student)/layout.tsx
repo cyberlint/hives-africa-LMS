@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import { DashboardProvider } from "./studentContext"
+import { usePathname } from "next/navigation"
 
 import Header from "@/components/header"
 import Sidebar from "@/components/sidebar"
@@ -15,8 +16,12 @@ interface ResponsiveLayoutProps {
 }
 
 export default function ResponsiveLayout({ children,  }: ResponsiveLayoutProps) {
+  const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+
+  // Check if current route is a chapter route (lecture learning interface)
+  const isChapterRoute = pathname.includes('/lecture/chapter') ||  pathname.includes('/[courseId]/chapter')
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -46,13 +51,19 @@ export default function ResponsiveLayout({ children,  }: ResponsiveLayoutProps) 
     setIsMobileMenuOpen(false)
   }
 
-
-
-   
+  // If it's a chapter route, render children without the student layout wrapper
+  if (isChapterRoute) {
+    return (
+      <DashboardProvider>
+           {/* Header */}
+     <Header   />
+        {children}
+      </DashboardProvider>
+    )
+  }
 
   return (
     <>
-
     <DashboardProvider>
        
     <div className="min-h-screen bg-gray-50">
@@ -60,8 +71,8 @@ export default function ResponsiveLayout({ children,  }: ResponsiveLayoutProps) 
      <Header   />
 
       <div className="flex relative">
-        {/* Desktop Sidebar - Hidden on mobile */}
-        <div className="hidden md:block"><Sidebar  /></div>
+        {/* Desktop Sidebar - HIDDEN by default for clean UX */}
+        {/* Navigation is now in the profile dropdown in Header */}
 
         {/* Mobile Menu Button - Only visible on mobile */}
         {isMobile && (
@@ -110,8 +121,13 @@ export default function ResponsiveLayout({ children,  }: ResponsiveLayoutProps) 
           </SheetContent>
         </Sheet>
 
-        {/* Main Content */}
-        <main className={cn("flex-1 transition-all duration-300", "p-4 md:p-6", isMobile ? "pt-20" : "pt-0")}>
+        {/* Main Content - Full width without sidebar */}
+        <main className={cn(
+          "flex-1 transition-all duration-300", 
+          "max-w-[1440px] mx-auto w-full",
+          "p-4 md:p-6", 
+          isMobile ? "pt-20" : "pt-0"
+        )}>
           {children}
         </main>
       </div>

@@ -1,18 +1,26 @@
 export interface Course {
-  id: number
+  id: string
   title: string
   instructor: string
+  instructorId: string
   category: string
-  duration: string
+  duration: number // in hours
   students: number
   lessons: number
-  level: string
-  price: string
-  originalPrice?: string
-  rating: number
+  level: 'Beginner' | 'Intermediate' | 'Advanced'
+  price: number
+  originalPrice?: number
+  rating?: number
   image: string
   description: string
-  tags: string[]
+  shortDescription: string
+  tags?: string[]
+  slug: string
+  status: 'Draft' | 'InReview' | 'Published' | 'Archived'
+  createdAt: string
+  updatedAt: string
+  isEnrolled?: boolean
+  enrollmentId?: string
 }
 
 export interface FilterState {
@@ -23,34 +31,35 @@ export interface FilterState {
   levels: string[]
 }
 
+export interface Attachment {
+  id: string
+  title: string
+  description?: string
+  type: string
+  url: string
+  fileSize?: string
+}
+
 export interface Lecture {
-  id: number
+  id: string
   title: string
   type: 'video' | 'document' | 'resource' | 'quiz'
   content?: string
   videoUrl?: string
-  duration?: number
+  videoKey?: string
+  thumbnailKey?: string
+  duration?: number // in seconds
   completed?: boolean
   description?: string
-  resources?: Array<{
-    id: string
-    title: string
-    type: string
-    url: string
-  }>
-  attachments?: Array<{
-    id: string
-    title: string
-    description?: string
-    type: string
-    url: string
-    fileSize?: string
-  }>
+  position: number
+  attachments?: Attachment[]
+  currentTime?: number
 }
 
 export interface CourseSection {
-  id: number
+  id: string
   title: string
+  position: number
   lectures: Lecture[]
 }
 
@@ -58,9 +67,45 @@ export interface CourseData {
   id: string
   title: string
   description: string
+  shortDescription: string
   instructor: string
+  instructorId: string
+  price: number
+  duration: number
+  level: 'Beginner' | 'Intermediate' | 'Advanced'
+  category: string
+  image: string
+  slug: string
+  status: 'Draft' | 'InReview' | 'Published' | 'Archived'
   lectures: Lecture[]
   sections: CourseSection[]
   completedLectures?: number
   totalLectures?: number
+  progress?: number
+  isEnrolled?: boolean
+  enrollmentId?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface EnrollmentData {
+  id: string
+  userId: string
+  courseId: string
+  enrolledAt: string
+  completedAt?: string
+  progress: number
+  paymentReference?: string
+  paymentStatus: 'Pending' | 'Completed' | 'Failed' | 'Refunded'
+  paymentAmount?: number
+  paidAt?: string
+}
+
+export interface LessonProgressData {
+  id: string
+  userId: string
+  lessonId: string
+  completed: boolean
+  completedAt?: string
+  currentTime?: number
 }
