@@ -1,11 +1,12 @@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Star } from "lucide-react"
-import type { Course, FilterState } from "@/types/course"
+import type { FilterState } from "@/types/course"
+import type { CourseListItem } from "@/hooks/useAllCourses"
 
 interface SidebarProps {
   filters: FilterState
   onFiltersChange: (filters: FilterState) => void
-  courses: Course[]
+  courses: CourseListItem[]
 }
 
 export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
@@ -23,8 +24,8 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
 
   const getPriceCount = (priceType: string) => {
     if (priceType === "All") return courses.length
-    if (priceType === "Free") return courses.filter((course) => course.price === "Free").length
-    if (priceType === "Paid") return courses.filter((course) => course.price !== "Free").length
+    if (priceType === "Free") return courses.filter((course) => course.price === 0).length
+    if (priceType === "Paid") return courses.filter((course) => course.price > 0).length
     return 0
   }
 

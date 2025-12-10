@@ -6,12 +6,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/contexts/CartContext";
+import { authClient } from "@/lib/auth-client";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   const { items } = useCart();
+  const { data: session } = authClient.useSession(); // Use Better Auth like admin
   
   const cartItemsCount = items.reduce((total, item) => total + item.quantity, 0);
 
@@ -90,24 +92,27 @@ const Navbar = () => {
             )}
           </button>
 
-          <ul className="flex justify-end items-center gap-4">
-            <li>
-              <button
-                onClick={() => router.push("/signin")}
-                className="bg-[#3086EE1A] text-darkBlue-500 text-sm lg:text-base font-semibold px-6 py-3 rounded-full hover:bg-[#3086EE2A] transition-colors"
-              >
-                Login
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => router.push("/signup")}
-                className="bg-yellow text-white text-sm lg:text-base font-semibold px-6 py-3 rounded-full hover:bg-yellow/80 transition-colors"
-              >
-                Signup
-              </button>
-            </li>
-          </ul>
+          {/* Only show login/signup if user is not authenticated */}
+          {!session && (
+            <ul className="flex justify-end items-center gap-4">
+              <li>
+                <button
+                  onClick={() => router.push("/signin")}
+                  className="bg-[#3086EE1A] text-darkBlue-500 text-sm lg:text-base font-semibold px-6 py-3 rounded-full hover:bg-[#3086EE2A] transition-colors"
+                >
+                  Login
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => router.push("/signup")}
+                  className="bg-yellow text-white text-sm lg:text-base font-semibold px-6 py-3 rounded-full hover:bg-yellow/80 transition-colors"
+                >
+                  Signup
+                </button>
+              </li>
+            </ul>
+          )}
 
           <button
             className="lg:hidden"

@@ -23,7 +23,7 @@ export default function Topbar() {
           +1 888 240 6923
         </span>
 
-        <Link href="/auth?mode=login" className="hover:text-yellow transition">
+        <Link href="/signin" className="hover:text-yellow transition">
           Login
         </Link>
 

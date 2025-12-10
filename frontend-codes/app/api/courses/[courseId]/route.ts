@@ -35,15 +35,15 @@ export async function GET(
         },
         enrollments: userId
           ? {
-              where: { userId },
-              select: {
-                id: true,
-                progress: true,
-                paymentStatus: true,
-                enrolledAt: true,
-                completedAt: true,
-              },
-            }
+            where: { userId },
+            select: {
+              id: true,
+              progress: true,
+              paymentStatus: true,
+              enrolledAt: true,
+              completedAt: true,
+            },
+          }
           : false,
       },
     });

@@ -4,11 +4,12 @@ import Image from "next/image"
 import { Star } from "lucide-react"
 import { CheckoutButton } from "@/components/lms/checkout-button"
 import { useRouter } from "next/navigation"
-import { Course } from "@/types/course"
+import { CourseListItem } from "@/hooks/useAllCourses"
+import { constructUrl } from "@/lib/construct-url"
 
 
 interface CourseGridProps {
-  courses: Course[]
+  courses: CourseListItem[]
   isMobile: boolean
   isTablet: boolean
 }
@@ -22,7 +23,7 @@ export function CourseGrid({ courses, isMobile, isTablet }: CourseGridProps) {
     return "grid-cols-2"
   }
 
-  const handleCourseClick = (courseId: number) => {
+  const handleCourseClick = (courseId: string) => {
     router.push(`/course/${courseId}`)
   }
 
@@ -36,7 +37,7 @@ export function CourseGrid({ courses, isMobile, isTablet }: CourseGridProps) {
         >
           <div className="relative">
             <Image
-              src={course.image || "/placeholder.svg"}
+              src={course.image ? constructUrl(course.image) : "/placeholder.svg"}
               alt={course.title}
               width={360}
               height={200}
@@ -72,28 +73,26 @@ export function CourseGrid({ courses, isMobile, isTablet }: CourseGridProps) {
               </div>
               <div className="flex items-center gap-1">
                 <div className="w-1.5 h-1.5 bg-yellow/90 rounded-full"></div>
-                <span>{course.lessons} Lessons</span>
+                <span>{course.totalLessons} Lessons</span>
               </div>
             </div>
 
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                {course.originalPrice && (
-                  <span className="text-sm text-[#6c757d] line-through">{course.originalPrice}</span>
-                )}
-                <span className={`text-lg font-bold ${course.price === "Free" ? "text-[#28a745]" : "text-[#2c3e50]"}`}>
-                  {course.price}
+                <span className={`text-lg font-bold ${course.price === 0 ? "text-[#28a745]" : "text-[#2c3e50]"}`}>
+                  {course.price === 0 ? "Free" : `₦${course.price.toLocaleString()}`}
                 </span>
               </div>
               <CheckoutButton
                 courseId={course.id}
                 price={course.price}
                 size="sm"
-                label={course.price === "Free" ? "Enroll" : "Add to Cart"}
+                label={course.isEnrolled ? "Continue Learning" : (course.price === 0 ? "Enroll" : "Add to Cart")}
                 title={course.title}
                 thumbnail={course.image}
                 instructor={course.instructor}
                 autoNavigate={false}
+                isEnrolled={course.isEnrolled}
                 className="shrink-0"
               />
             </div>

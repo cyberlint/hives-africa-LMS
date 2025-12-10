@@ -3,6 +3,7 @@
 import { Star, User, Users, Clock } from "lucide-react"
 import Image from "next/image"
 import { CheckoutButton } from "@/components/lms/checkout-button"
+import { constructUrl } from "@/lib/construct-url"
 
 import { Course } from "@/types/course"
 
@@ -32,7 +33,7 @@ export default function HeroSection({ course }: HeroSectionProps) {
 
       {/* Hero Banner */}
       <div className="relative min-h-[480px] sm:h-[380px] bg-gradient-to-r from-[#0F1D2F]/80 to-[#0F1D2F]/60">
-        <Image src={course.image || "/placeholder.svg"} alt="Course background" fill className="object-cover -z-10" />
+        <Image src={course.image ? constructUrl(course.image) : "/placeholder.svg"} alt="Course background" fill className="object-cover -z-10" />
 
         <div className="w-full px-4 sm:px-6 lg:px-8 h-full">
           <div className="max-w-7xl mx-auto h-full">
@@ -40,11 +41,17 @@ export default function HeroSection({ course }: HeroSectionProps) {
               {/* Left content */}
               <div className="text-white space-y-4 lg:space-y-6">
                 <div className="flex flex-wrap gap-2">
-                  {course.tags.map((tag, index) => (
-                    <span key={index} className="text-yellow underline text-sm">
-                      {tag}
+                  {course.tags && course.tags.length > 0 ? (
+                    course.tags.map((tag, index) => (
+                      <span key={index} className="text-yellow underline text-sm">
+                        {tag}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-yellow underline text-sm">
+                      {course.category}
                     </span>
-                  ))}
+                  )}
                 </div>
 
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight">{course.title}</h1>
@@ -62,7 +69,7 @@ export default function HeroSection({ course }: HeroSectionProps) {
                   </div>
                   <div className="flex items-center space-x-2">
                     <Users className="w-4 h-4 flex-shrink-0" />
-                    <span>{course.students}+ Learners</span>
+                    <span>{course.students || 0}+ Learners</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Clock className="w-4 h-4 flex-shrink-0" />
@@ -74,9 +81,9 @@ export default function HeroSection({ course }: HeroSectionProps) {
 
                   <div className="flex items-center space-x-1">
                     <Star className="w-4 h-4 fill-yellow text-yellow" />
-                    <span className="font-medium">{course.rating}</span>
+                    <span className="font-medium">{course.rating || 4.5}</span>
                   </div>
-                  <span className="text-white/80">({course.students} students) • {course.lessons} lessons</span>
+                  <span className="text-white/80">({course.students || 0} students) • {course.lessons || course.totalLectures || 0} lessons</span>
                 </div>
                 </section>
 
@@ -90,12 +97,12 @@ export default function HeroSection({ course }: HeroSectionProps) {
                   {/* Price */}
                   <div className="mb-4">
                     <div className="flex items-center space-x-2 mb-2 flex-wrap">
-                      <span className={`text-2xl sm:text-3xl font-bold ${course.price === "Free" ? "text-[#28a745]" : "text-[#0F1D2F]"}`}>
-                        {course.price}
+                      <span className={`text-2xl sm:text-3xl font-bold ${course.price === 0 ? "text-[#28a745]" : "text-[#0F1D2F]"}`}>
+                        {course.price === 0 ? "Free" : `₦${course.price.toLocaleString()}`}
                       </span>
-                      {course.originalPrice && (
+                      {course.originalPrice && course.originalPrice > 0 && (
                         <>
-                          <span className="text-base sm:text-lg text-[#6B7280] line-through">{course.originalPrice}</span>
+                          <span className="text-base sm:text-lg text-[#6B7280] line-through">₦{course.originalPrice.toLocaleString()}</span>
                           <span className="bg-yellow text-white text-xs px-2 py-1 rounded">Special Offer</span>
                         </>
                       )}
@@ -103,15 +110,15 @@ export default function HeroSection({ course }: HeroSectionProps) {
                     <p className="text-sm text-gray-600">Level: {course.level}</p>
                   </div>
 
-                  {/* CTA Button */}
                   <CheckoutButton
                     courseId={course.id}
                     price={course.price}
                     size="lg"
-                    label={course.price === "Free" ? "Enroll Free" : "Enroll Now"}
+                    label={course.isEnrolled ? "Continue Learning" : (course.price === 0 ? "Enroll Free" : "Enroll Now")}
                     title={course.title}
-                    thumbnail={course.image}
+                    thumbnail={course.image ? constructUrl(course.image) : undefined}
                     instructor={course.instructor}
+                    isEnrolled={course.isEnrolled}
                     className="w-full mb-4"
                   />
 
@@ -123,11 +130,11 @@ export default function HeroSection({ course }: HeroSectionProps) {
                     </div>
                     <div className="flex justify-between">
                       <span>Lessons:</span>
-                      <span>{course.lessons}</span>
+                      <span>{course.lessons || course.totalLectures || 0}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Students:</span>
-                      <span>{course.students}</span>
+                      <span>{course.students || 0}</span>
                     </div>
                   </div>
                 </div>

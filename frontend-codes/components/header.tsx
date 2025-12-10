@@ -18,6 +18,7 @@ import { useDashboard } from "@/app/(private routes)/(student)/studentContext"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { authClient } from "@/lib/auth-client"
 
 
 
@@ -26,11 +27,13 @@ export default function Header() {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false)
 
   const { activeTab, handleTabChange, handleCartClick } = useDashboard()
-  // Default user data to prevent undefined errors
-  const defaultUser = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    avatar: "/ai.png?height=40&width=40",
+  const { data: session } = authClient.useSession() // Use Better Auth
+  
+  // Use session data or fallback
+  const user = session?.user || {
+    name: "Guest User",
+    email: "guest@example.com",
+    image: "/ai.png",
   }
 
   const handleNotificationClick = (notification: string) => {
@@ -168,18 +171,18 @@ export default function Header() {
                   aria-label="User menu"
                 >
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={defaultUser.avatar || "/placeholder.svg"} alt={defaultUser.name} />
-                    <AvatarFallback>{defaultUser.name.charAt(0)}</AvatarFallback>
+                    <AvatarImage src={user.image || "/placeholder.svg"} alt={user.name} />
+                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  <span className="hidden sm:block font-medium">{defaultUser.name}</span>
+                  <span className="hidden sm:block font-medium">{user.name}</span>
                   <ChevronDown className="h-4 w-4 text-gray-500" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64">
                 {/* User Info */}
                 <div className="px-3 py-2 border-b">
-                  <p className="font-medium text-sm">{defaultUser.name}</p>
-                  <p className="text-xs text-gray-500">{defaultUser.email}</p>
+                  <p className="font-medium text-sm">{user.name}</p>
+                  <p className="text-xs text-gray-500">{user.email}</p>
                 </div>
 
                 {/* Main Navigation */}

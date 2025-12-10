@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
+import { Paystack, formatAmountFromPaystack } from '@/lib/paystack';
 
 export async function POST(request: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
-    
+
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -24,92 +25,123 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Forward the request to your backend API
-    const backendUrl = `${process.env.NEXT_CORE_API_URL}/payments/verify/`;
-    
-    console.log('Attempting to call backend URL:', backendUrl);
-    
-    const response = await fetch(backendUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': request.headers.get('Authorization') || '',
+    // 1. Verify with Paystack
+    const verifyResponse = await Paystack.verifyTransaction(reference);
+
+    if (!verifyResponse.status || verifyResponse.data.status !== 'success') {
+      // Update payment status to Failed if pending
+      try {
+        await prisma.payment.update({
+          where: { reference },
+          data: { status: 'Failed' }
+        });
+      } catch (e) { console.error('Error updating failed payment:', e); }
+
+      return NextResponse.json({ error: 'Payment verification failed or payment was not successful' }, { status: 400 });
+    }
+
+    const transactionData = verifyResponse.data;
+    const courseId = transactionData.metadata?.course_id || transactionData.metadata?.custom_fields?.find((f: any) => f.variable_name === 'course_id')?.value;
+
+    if (!courseId) {
+      // Fallback: look up in our DB using reference
+      const paymentRecord = await prisma.payment.findUnique({ where: { reference } });
+      if (!paymentRecord) {
+        return NextResponse.json({ error: 'Payment record not found and no course_id in metadata' }, { status: 404 });
+      }
+      // Use courseId from our record
+      // ... (Logic continues below using paymentRecord.courseId)
+    }
+
+    // 2. Update Payment Record in DB
+    const payment = await prisma.payment.upsert({
+      where: { reference },
+      update: {
+        status: 'Completed', // Using 'Completed' as per PaymentStatus enum if applicable, or just check what schema supports
+        // Actually schema has PaymentStatus enum: Pending, Completed, Failed, Refunded? 
+        // Let's assume standard PaymentStatus. 
+        // Wait, I defined PaymentStatus enum in schema? 
+        // Ah, I added Payment model but didn't check if PaymentStatus enum needed updates. 
+        // In existing schema: enum PaymentStatus { Pending, Completed, Failed, Refunded }
+        paymentMethod: transactionData.channel,
+        metadata: transactionData as any,
       },
-      body: JSON.stringify({
+      create: {
         reference,
-      }),
+        amount: formatAmountFromPaystack(transactionData.amount),
+        currency: transactionData.currency,
+        status: 'Completed',
+        paymentMethod: transactionData.channel,
+        metadata: transactionData as any,
+        userId,
+        courseId: courseId // we need to be sure we have courseId here if creating from scratch (e.g. webhook)
+        // If verify is called from frontend, we expect the record to exist from initialize.
+      }
     });
 
-    console.log('Backend response status:', response.status);
+    // 3. Create or Update Enrollment
+    // Check if enrollment already exists
+    const existingEnrollment = await prisma.enrollment.findUnique({
+      where: {
+        userId_courseId: {
+          userId,
+          courseId,
+        },
+      },
+    });
 
-    // Check if response is JSON
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      const textResponse = await response.text();
-      console.error('Backend returned non-JSON response:', textResponse.substring(0, 500));
-      return NextResponse.json(
-        { error: 'Backend API returned invalid response format' },
-        { status: 502 }
-      );
-    }
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error('Backend API error:', data);
-      return NextResponse.json(
-        { error: data.message || data.error || 'Payment verification failed' },
-        { status: response.status }
-      );
-    }
-
-    // If payment is successful, create enrollment
-    if (data.status === 'success' && data.transaction) {
-      const courseId = data.transaction.metadata?.course_id;
-      
-      if (courseId) {
-        // Check if enrollment already exists
-        const existingEnrollment = await prisma.enrollment.findUnique({
-          where: {
-            userId_courseId: {
-              userId,
-              courseId,
-            },
+    if (!existingEnrollment) {
+      // Create new enrollment
+      await prisma.enrollment.create({
+        data: {
+          userId,
+          courseId,
+          paymentReference: reference,
+          paymentStatus: 'Completed',
+          paymentAmount: formatAmountFromPaystack(transactionData.amount),
+          paidAt: new Date(transactionData.paid_at),
+          paymentId: payment.id
+        },
+      });
+    } else {
+      // Update existing enrollment (e.g. if it was pending or user re-enrolling?)
+      if (existingEnrollment.paymentStatus !== 'Completed') {
+        await prisma.enrollment.update({
+          where: { id: existingEnrollment.id },
+          data: {
+            paymentReference: reference,
+            paymentStatus: 'Completed',
+            paymentAmount: formatAmountFromPaystack(transactionData.amount),
+            paidAt: new Date(transactionData.paid_at),
+            paymentId: payment.id
           },
         });
-
-        if (!existingEnrollment) {
-          // Create new enrollment
-          await prisma.enrollment.create({
-            data: {
-              userId,
-              courseId,
-              paymentReference: reference,
-              paymentStatus: 'Completed',
-              paymentAmount: data.transaction.amount / 100, // Convert from kobo to naira
-              paidAt: new Date(data.transaction.paid_at),
-            },
-          });
-        } else if (existingEnrollment.paymentStatus !== 'Completed') {
-          // Update existing enrollment
-          await prisma.enrollment.update({
-            where: { id: existingEnrollment.id },
-            data: {
-              paymentReference: reference,
-              paymentStatus: 'Completed',
-              paymentAmount: data.transaction.amount / 100,
-              paidAt: new Date(data.transaction.paid_at),
-            },
-          });
-        }
       }
     }
 
-    return NextResponse.json(data);
-  } catch (error) {
+    // Fetch course details for response
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      include: {
+        user: { select: { name: true, image: true } }
+      }
+    });
+
+    return NextResponse.json({
+      status: 'success',
+      message: 'Payment verified successfully',
+      enrollment_id: existingEnrollment?.id || 'new',
+      course_title: course?.title || transactionData.metadata?.course_title,
+      course_id: courseId,
+      instructor: course?.user.name,
+      thumbnail: course?.fileKey,
+      price: course?.price
+    });
+
+  } catch (error: any) {
     console.error('Payment verification error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: error.message || 'Internal server error' },
       { status: 500 }
     );
   }

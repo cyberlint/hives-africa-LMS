@@ -72,8 +72,8 @@ export default function Reviews({ course }: ReviewsProps) {
               <h2 className="text-2xl sm:text-3xl font-bold text-[#0F1D2F]">Student Reviews</h2>
               <div className="flex items-center space-x-2 text-sm text-[#6B7280]">
                 <Star className="w-4 h-4 fill-yellow text-yellow" />
-                <span className="font-medium text-[#0F1D2F]">{course.rating}</span>
-                <span>({course.students} reviews)</span>
+                <span className="font-medium text-[#0F1D2F]">{course.rating || 4.5}</span>
+                <span>({course.students || 0} reviews)</span>
               </div>
             </div>
 

@@ -5,8 +5,9 @@ export interface Course {
   instructorId: string
   category: string
   duration: number // in hours
-  students: number
-  lessons: number
+  students?: number
+  lessons?: number
+  totalLectures?: number // from API
   level: 'Beginner' | 'Intermediate' | 'Advanced'
   price: number
   originalPrice?: number
@@ -21,6 +22,10 @@ export interface Course {
   updatedAt: string
   isEnrolled?: boolean
   enrollmentId?: string
+  sections?: CourseSection[] // from API
+  lectures?: Lecture[] // from API
+  completedLectures?: number
+  progress?: number
 }
 
 export interface FilterState {

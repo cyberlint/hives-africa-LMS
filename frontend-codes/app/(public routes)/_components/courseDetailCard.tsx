@@ -1,21 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Course } from "../page";
 import { Star } from "lucide-react";
 import { CheckoutButton } from "@/components/lms/checkout-button";
+import { CourseListItem } from "@/services/courses";
 
-const CourseDetailCard = ({ course }: { course: Course }) => {
+const CourseDetailCard = ({ course }: { course: CourseListItem }) => {
+  const discountPercentage = course.original_price && course.original_price > course.current_price
+    ? Math.round(((course.original_price - course.current_price) / course.original_price) * 100)
+    : 0;
+
   return (
     <>
       <div className="flex px-0 md:px-4">
-        <p
-          className="uppercase text-[8px] font-semibold p-1"
-          style={{
-            background: course.category.bgColor,
-            color: course.category.textColor,
-          }}
-        >
-          {course.category.name}
+        <p className="uppercase text-[8px] font-semibold p-1 bg-[#E1F7E3] text-[#15711F]">
+          {course.category?.name || "General"}
         </p>
       </div>
 
@@ -25,17 +23,15 @@ const CourseDetailCard = ({ course }: { course: Course }) => {
 
       <div className="flex justify-between items-center gap-2 px-0 md:px-4">
         <div className="flex justify-center items-center gap-2">
-          <Image
-            src={course.instructor!.photo}
-            alt="Instructor Photo"
-            width={50}
-            height={50}
-            className="h-8 w-8"
-          />
+          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+            <span className="text-xs font-semibold text-gray-600">
+              {course.instructor?.first_name?.[0] || "I"}
+            </span>
+          </div>
 
           <p className="flex flex-col text-[10px] text-[#4E5566] font-medium">
             <span className="text-[#8C94A3] font-normal">Course by</span>
-            {course.instructor?.name}
+            {course.instructor?.full_name || "Instructor"}
           </p>
         </div>
 
@@ -44,10 +40,10 @@ const CourseDetailCard = ({ course }: { course: Course }) => {
             <span>
               <Star fill="#FD8E1F" strokeWidth={0} size={12} />
             </span>
-            {course.rating}
+            {course.average_rating.toFixed(1)}
           </p>
 
-          <p className="text-[#A1A5B3]">({course.numberOfReviews})</p>
+          <p className="text-[#A1A5B3]">({course.total_reviews.toLocaleString()})</p>
         </div>
       </div>
 
@@ -62,7 +58,7 @@ const CourseDetailCard = ({ course }: { course: Course }) => {
           />
 
           <p className="font-semibold">
-            {course.numberOfEnrolees}{" "}
+            {course.total_enrollments.toLocaleString()}{" "}
             <span className="font-normal text-[#8C94A3]">students</span>
           </p>
         </div>
@@ -70,42 +66,46 @@ const CourseDetailCard = ({ course }: { course: Course }) => {
         <div className="flex items-center gap-1">
           <Image
             src="/assets/courses/level.png"
-            alt="User"
+            alt="Level"
             width={50}
             height={50}
             className="h-4 w-4"
           />
 
-          <p className="font-medium">{course.level}</p>
+          <p className="font-medium capitalize">{course.difficulty || "All Levels"}</p>
         </div>
 
         <div className="flex items-center gap-1">
           <Image
             src="/assets/courses/clock.png"
-            alt="User"
+            alt="Duration"
             width={50}
             height={50}
             className="h-4 w-4"
           />
 
-          <p className="font-medium">{course.duration}</p>
+          <p className="font-medium">Self-paced</p>
         </div>
       </div>
 
       <div className="flex flex-wrap justify-between items-center px-0 md:px-4">
         <div className="flex justify-between items-center gap-2">
           <p className="flex items-center gap-1 text-sm text-darkBlue-300 font-medium">
-            ₦{course.discountCost}{" "}
-            <span className="text-[10px] text-[#A1A5B3] line-through">
-              ₦{course.cost}
-            </span>
+            ₦{course.current_price.toLocaleString()}{" "}
+            {course.original_price && course.original_price > course.current_price && (
+              <span className="text-[10px] text-[#A1A5B3] line-through">
+                ₦{course.original_price.toLocaleString()}
+              </span>
+            )}
           </p>
 
-          <div className="flex">
-            <p className="uppercase text-[8px] bg-[#FFEEE8] text-orange font-semibold p-1">
-              {course.discount} OFF
-            </p>
-          </div>
+          {discountPercentage > 0 && (
+            <div className="flex">
+              <p className="uppercase text-[8px] bg-[#FFEEE8] text-orange font-semibold p-1">
+                {discountPercentage}% OFF
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="bg-[#FFEEE8] p-1">
@@ -119,33 +119,20 @@ const CourseDetailCard = ({ course }: { course: Course }) => {
         </div>
       </div>
 
-      <div className="space-y-2 text-[10px] border-y border-[#E9EAF0] px-0 md:px-4 py-3">
-        <p className="text-darkBlue-300 font-medium">WHAT YOU&apos;LL LEARN</p>
-
-        <ul className="space-y-2">
-          {course.learningOutcomes?.map((item, index) => (
-            <li key={index} className="flex gap-1 text-[#6E7485]">
-              <Image
-                src="/assets/courses/check.png"
-                alt="check"
-                width={50}
-                height={50}
-                className="h-4 w-4"
-              />
-              {item}
-            </li>
-          ))}
-        </ul>
-      </div>
+      {course.short_description && (
+        <div className="space-y-2 text-[10px] border-y border-[#E9EAF0] px-0 md:px-4 py-3">
+          <p className="text-darkBlue-300 font-medium">ABOUT THIS COURSE</p>
+          <p className="text-[#6E7485] line-clamp-3">{course.short_description}</p>
+        </div>
+      )}
 
       <div className="space-y-2 px-0 md:px-4">
-        {/* CheckoutButton expects course info; using current hovered course fields */}
         <CheckoutButton
           courseId={course.id}
-          price={course.discountCost || course.cost}
+          price={course.current_price.toString()}
           title={course.title}
-          thumbnail={course.image}
-          instructor={course.instructor?.name}
+          thumbnail={course.thumbnail}
+          instructor={course.instructor?.full_name}
           size="sm"
           className="w-full rounded-none"
           variant="primary"
@@ -154,7 +141,7 @@ const CourseDetailCard = ({ course }: { course: Course }) => {
         />
 
         <Link
-          href={`/course/${course.id}`}
+          href={`/course/${course.slug || course.id}`}
           className="block text-center bg-[#fffce8] hover:bg-[#FFEEE8CC] text-yellow text-xs font-semibold px-4 py-2 w-full"
         >
           Course Detail

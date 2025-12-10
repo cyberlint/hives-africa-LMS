@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -55,6 +56,7 @@ interface ViewAllProps {
 // Courses will be fetched from API via context
 
 export default function ViewAll() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [selectedLevel, setSelectedLevel] = useState("all")
@@ -200,8 +202,27 @@ export default function ViewAll() {
   }
 
   const handleCourseAction = (action: string, courseId: string) => {
-    console.log(`${action} course:`, courseId)
-    // Implement course actions here
+    switch (action) {
+      case "continue":
+        router.push(`/${courseId}/chapter/1`)
+        break
+      case "enroll":
+      case "cart":
+        router.push(`/course/${courseId}`)
+        break
+      case "review":
+        router.push(`/${courseId}/chapter/1#reviews`)
+        break
+      case "wishlist":
+        console.log("wishlist", courseId)
+        break
+      case "share":
+        // Optional: Implement share functionality
+        console.log("share", courseId)
+        break
+      default:
+        console.log(`${action} course:`, courseId)
+    }
   }
 
   const clearFilters = () => {

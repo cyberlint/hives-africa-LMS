@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { useInitializePayment } from "@/hooks/usePayments";
+import { constructUrl } from "@/lib/construct-url";
 
 export default function CartCheckoutPage() {
   const { items, removeItem, /* updateQuantity (deprecated single-item mode) */ subtotal, coupon, applyCoupon, removeCoupon, total, loadingCoupon, clearCart } = useCart();
@@ -47,9 +48,13 @@ export default function CartCheckoutPage() {
     setProcessing(true);
     
     try {
+      // Construct the callback URL for Paystack to redirect to after payment
+      const callbackUrl = `${window.location.origin}/payment/callback`;
+      
       const response = await initializePaymentMutation.mutateAsync({
         course_id: firstBillable.id,
         coupon_code: coupon.code || undefined,
+        redirect_url: callbackUrl,
       });
 
       if (response?.authorization_url) {
@@ -106,7 +111,7 @@ export default function CartCheckoutPage() {
                     >
                       <div className="relative h-32 w-full sm:h-20 sm:w-32 overflow-hidden rounded bg-gray-100 flex-shrink-0">
                         {item.thumbnail ? (
-                          <Image src={item.thumbnail} alt={item.title} fill className="object-cover" />
+                          <Image src={constructUrl(item.thumbnail)} alt={item.title} fill className="object-cover" />
                         ) : (
                           <div className="h-full w-full grid place-items-center text-[10px] text-gray-400">No image</div>
                         )}

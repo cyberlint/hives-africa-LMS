@@ -52,13 +52,13 @@ export async function GET(request: NextRequest) {
         },
         enrollments: userId
           ? {
-              where: { userId },
-              select: {
-                id: true,
-                progress: true,
-                paymentStatus: true,
-              },
-            }
+            where: { userId },
+            select: {
+              id: true,
+              progress: true,
+              paymentStatus: true,
+            },
+          }
           : false,
       },
       orderBy: {

@@ -1,5 +1,6 @@
 import { CheckoutButton } from "@/components/lms/checkout-button"
 import { Course } from "@/types/course"
+import { constructUrl } from "@/lib/construct-url"
 
 interface AboutCourseProps {
   course: Course
@@ -20,16 +21,18 @@ export default function AboutCourse({ course }: AboutCourseProps) {
                   {course.description}
                 </p>
 
-                <div className="mb-4 sm:mb-6">
-                  <h3 className="font-semibold text-[#0F1D2F] mb-3">Course Tags:</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {course.tags.map((tag, index) => (
-                      <span key={index} className="bg-yellow/10 text-yellow px-3 py-1 rounded-full text-sm font-medium">
-                        {tag}
-                      </span>
-                    ))}
+                {course.tags && course.tags.length > 0 && (
+                  <div className="mb-4 sm:mb-6">
+                    <h3 className="font-semibold text-[#0F1D2F] mb-3">Course Tags:</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {course.tags.map((tag, index) => (
+                        <span key={index} className="bg-yellow/10 text-yellow px-3 py-1 rounded-full text-sm font-medium">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div className="text-sm text-gray-600 space-y-1">
                   <p><strong>Instructor:</strong> {course.instructor}</p>
@@ -45,12 +48,12 @@ export default function AboutCourse({ course }: AboutCourseProps) {
                 {/* Price Section */}
                 <div className="mb-4 sm:mb-6">
                   <div className="flex items-center space-x-2 mb-2 flex-wrap">
-                    <span className={`text-2xl sm:text-3xl font-bold ${course.price === "Free" ? "text-[#28a745]" : "text-[#0F1D2F]"}`}>
-                      {course.price}
+                    <span className={`text-2xl sm:text-3xl font-bold ${course.price === 0 ? "text-[#28a745]" : "text-[#0F1D2F]"}`}>
+                      {course.price === 0 ? "Free" : `₦${course.price.toLocaleString()}`}
                     </span>
-                    {course.originalPrice && (
+                    {course.originalPrice && course.originalPrice > 0 && (
                       <>
-                        <span className="text-base sm:text-lg text-[#6B7280] line-through">{course.originalPrice}</span>
+                        <span className="text-base sm:text-lg text-[#6B7280] line-through">₦{course.originalPrice.toLocaleString()}</span>
                         <span className="bg-yellow text-white text-xs px-2 py-1 rounded">Special Offer</span>
                       </>
                     )}
@@ -65,7 +68,7 @@ export default function AboutCourse({ course }: AboutCourseProps) {
                       <div className="w-4 h-4 bg-yellow rounded-sm flex items-center justify-center flex-shrink-0">
                         <span className="text-white text-xs">▶</span>
                       </div>
-                      <span className="text-[#0F1D2F]">{course.lessons} lessons</span>
+                      <span className="text-[#0F1D2F]">{course.lessons || course.totalLectures || 0} lessons</span>
                     </li>
                     <li className="flex items-center space-x-3">
                       <div className="w-4 h-4 bg-yellow rounded-sm flex items-center justify-center flex-shrink-0">
@@ -93,9 +96,9 @@ export default function AboutCourse({ course }: AboutCourseProps) {
                   courseId={course.id}
                   price={course.price}
                   size="lg"
-                  label={course.price === "Free" ? "Enroll Free" : "Enroll Now"}
+                  label={course.price === 0 ? "Enroll Free" : "Enroll Now"}
                   title={course.title}
-                  thumbnail={course.image}
+                  thumbnail={course.image ? constructUrl(course.image) : undefined}
                   instructor={course.instructor}
                   className="w-full mb-4"
                 />

@@ -4,14 +4,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Star, X } from "lucide-react"
-import type { Course, FilterState } from "@/types/course"
+import type { FilterState } from "@/types/course"
+import type { CourseListItem } from "@/hooks/useAllCourses"
 
 interface MobileFiltersProps {
   isOpen: boolean
   onClose: () => void
   filters: FilterState
   onFiltersChange: (filters: FilterState) => void
-  courses: Course[]
+  courses: CourseListItem[]
 }
 
 export function MobileFilters({ isOpen, onClose, filters, onFiltersChange, courses }: MobileFiltersProps) {

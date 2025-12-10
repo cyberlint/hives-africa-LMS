@@ -14,23 +14,24 @@ datasource db {
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  courses       Course[]
-  enrollments   Enrollment[]
+  id             String           @id
+  name           String
+  email          String
+  emailVerified  Boolean          @default(false)
+  image          String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @default(now()) @updatedAt
+  sessions       Session[]
+  accounts       Account[]
+  courses        Course[]
+  enrollments    Enrollment[]
   lessonProgress LessonProgress[]
 
   role       String?
   banned     Boolean?  @default(false)
   banReason  String?
   banExpires DateTime?
+  payments   Payment[]
 
   @@unique([email])
   @@map("user")
@@ -101,8 +102,9 @@ model Course {
   user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId           String
 
-  module Module[]
+  module      Module[]
   enrollments Enrollment[]
+  payments    Payment[]
 }
 
 enum CourseLevel {
@@ -142,8 +144,8 @@ model Lesson {
   videoKey     String?
   position     Int
   type         LessonType @default(Video) // video, document, quiz, resource
-  content      String?    // For document/quiz content
-  duration     Int?       // Duration in seconds for videos
+  content      String? // For document/quiz content
+  duration     Int? // Duration in seconds for videos
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -181,9 +183,9 @@ model Attachment {
 model Enrollment {
   id String @id @default(uuid())
 
-  enrolledAt DateTime @default(now())
+  enrolledAt  DateTime  @default(now())
   completedAt DateTime?
-  progress   Float    @default(0) // Percentage 0-100
+  progress    Float     @default(0) // Percentage 0-100
 
   User     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   String
@@ -195,6 +197,9 @@ model Enrollment {
   paymentStatus    PaymentStatus @default(Pending)
   paymentAmount    Float?
   paidAt           DateTime?
+
+  payment   Payment? @relation(fields: [paymentId], references: [id])
+  paymentId String?  @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -214,9 +219,9 @@ enum PaymentStatus {
 model LessonProgress {
   id String @id @default(uuid())
 
-  completed   Boolean  @default(false)
+  completed   Boolean   @default(false)
   completedAt DateTime?
-  currentTime Int?     // Current playback time in seconds for videos
+  currentTime Int? // Current playback time in seconds for videos
 
   User     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   String
@@ -229,4 +234,28 @@ model LessonProgress {
   @@unique([userId, lessonId])
   @@index([userId])
   @@index([lessonId])
+}
+
+model Payment {
+  id String @id @default(uuid())
+
+  reference     String        @unique
+  amount        Float
+  currency      String        @default("NGN")
+  status        PaymentStatus @default(Pending)
+  paymentMethod String?
+  metadata      Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String
+
+  enrollment Enrollment?
+
+  @@index([userId])
+  @@index([courseId])
 }

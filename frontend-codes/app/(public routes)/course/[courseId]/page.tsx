@@ -11,20 +11,15 @@ import EntryRequirements from "./_components/entry-requirements"
 import CourseFees from "./_components/course-fees"
 import Reviews from "./_components/reviews"
 
-import { Course } from "@/types/course"
-import { courses } from "@/data/courses"
+import { useCourseData } from "@/hooks/useCourseData"
 
 export default function CourseDetailPage() {
   const params = useParams()
-  const courseId = parseInt(params.courseId as string)
+  const courseId = params.courseId as string
   const [activeTab, setActiveTab] = useState("about")
-  const [course, setCourse] = useState<Course | null>(null)
-
-  // Find the course by ID
-  useEffect(() => {
-    const foundCourse = courses.find(c => c.id === courseId)
-    setCourse(foundCourse || null)
-  }, [courseId])
+  
+  // Fetch course data from API
+  const { courseData, loading, error } = useCourseData(courseId)
 
   // Update active tab based on scroll position
   useEffect(() => {
@@ -61,7 +56,38 @@ export default function CourseDetailPage() {
     }
   }
 
-  if (!course) {
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading course details...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">Error Loading Course</h1>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-yellow text-white rounded-md hover:bg-yellow/90"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Course not found state
+  if (!courseData) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
@@ -74,23 +100,23 @@ export default function CourseDetailPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <HeroSection course={course} />
+      <HeroSection course={courseData} />
       <TabsNavigation activeTab={activeTab} onTabChange={handleTabChange} />
       <main className="w-full">
         <div id="about">
-          <AboutCourse course={course} />
+          <AboutCourse course={courseData} />
         </div>
         <div id="curriculum">
-          <CourseCurriculum course={course} />
+          <CourseCurriculum course={courseData} />
         </div>
         <div id="requirements">
-          <EntryRequirements course={course} />
+          <EntryRequirements course={courseData} />
         </div>
         <div id="fees">
-          <CourseFees course={course} />
+          <CourseFees course={courseData} />
         </div>
         <div id="reviews">
-          <Reviews course={course} />
+          <Reviews course={courseData} />
         </div>
       </main>
     </div>

@@ -1,39 +1,89 @@
+import axios from 'axios';
+
 // Paystack configuration and utilities
 
 export const PAYSTACK_CONFIG = {
   publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
+  secretKey: process.env.PAYSTACK_SECRET_KEY || '',
   baseUrl: 'https://api.paystack.co',
-  checkoutUrl: 'https://checkout.paystack.com',
 };
 
-export interface PaystackCallbackParams {
-  reference: string;
-  trxref: string;
-  status: 'success' | 'cancelled' | 'failed';
+export interface PaystackInitializeResponse {
+  status: boolean;
+  message: string;
+  data: {
+    authorization_url: string;
+    access_code: string;
+    reference: string;
+  };
 }
 
-export interface PaystackInitializeData {
-  email: string;
-  amount: number; // in kobo (smallest currency unit)
-  currency?: string;
-  reference?: string;
-  callback_url?: string;
-  metadata?: Record<string, any>;
-  channels?: string[];
-  split_code?: string;
-  subaccount?: string;
-  transaction_charge?: number;
-  bearer?: 'account' | 'subaccount';
+export interface PaystackVerifyResponse {
+  status: boolean;
+  message: string;
+  data: {
+    status: string;
+    reference: string;
+    amount: number;
+    gateway_response: string;
+    channel: string;
+    currency: string;
+    metadata: any;
+    paid_at: string;
+    // Add other fields as needed
+  };
 }
 
-export const formatAmountForPaystack = (amount: number): number => {
-  // Convert from Naira to Kobo (multiply by 100)
-  return Math.round(amount * 100);
-};
+export const Paystack = {
+  // Initialize a transaction
+  async initializeTransaction(
+    email: string,
+    amount: number, // in kobo
+    callbackUrl?: string,
+    metadata?: any,
+    channels?: string[]
+  ): Promise<PaystackInitializeResponse> {
+    try {
+      const response = await axios.post(
+        `${PAYSTACK_CONFIG.baseUrl}/transaction/initialize`,
+        {
+          email,
+          amount,
+          callback_url: callbackUrl,
+          metadata,
+          channels,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${PAYSTACK_CONFIG.secretKey}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error('Paystack initialization error:', error.response?.data || error);
+      throw new Error(error.response?.data?.message || 'Paystack initialization failed');
+    }
+  },
 
-export const formatAmountFromPaystack = (amount: number): number => {
-  // Convert from Kobo to Naira (divide by 100)
-  return amount / 100;
+  // Verify a transaction
+  async verifyTransaction(reference: string): Promise<PaystackVerifyResponse> {
+    try {
+      const response = await axios.get(
+        `${PAYSTACK_CONFIG.baseUrl}/transaction/verify/${reference}`,
+        {
+          headers: {
+            Authorization: `Bearer ${PAYSTACK_CONFIG.secretKey}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error('Paystack verification error:', error.response?.data || error);
+      throw new Error(error.response?.data?.message || 'Paystack verification failed');
+    }
+  },
 };
 
 export const generatePaymentReference = (): string => {
@@ -42,16 +92,12 @@ export const generatePaymentReference = (): string => {
   return `TXN-${timestamp}-${random}`.toUpperCase();
 };
 
-export const getCallbackUrl = (baseUrl: string): string => {
-  return `${baseUrl}/payment/callback`;
+// Helper to convert Amount to Kobo
+export const formatAmountForPaystack = (amount: number): number => {
+  return Math.round(amount * 100);
 };
 
-export const getSuccessUrl = (baseUrl: string, reference: string): string => {
-  return `${baseUrl}/payment/success?reference=${reference}`;
-};
-
-export const getFailureUrl = (baseUrl: string, reference: string, message?: string): string => {
-  const params = new URLSearchParams({ reference });
-  if (message) params.append('message', message);
-  return `${baseUrl}/payment/failure?${params.toString()}`;
+// Helper to convert Kobo to Amount
+export const formatAmountFromPaystack = (amount: number): number => {
+  return amount / 100;
 };

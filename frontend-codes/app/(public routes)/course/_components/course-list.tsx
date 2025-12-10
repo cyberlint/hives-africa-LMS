@@ -4,18 +4,19 @@ import Image from "next/image"
 import { Star } from "lucide-react"
 import { CheckoutButton } from "@/components/lms/checkout-button"
 import { useRouter } from "next/navigation"
-import { Course } from "@/types/course"
+import { CourseListItem } from "@/hooks/useAllCourses"
+import { constructUrl } from "@/lib/construct-url"
 
 
 interface CourseListProps {
-  courses: Course[]
+  courses: CourseListItem[]
   isMobile: boolean
 }
 
 export function CourseList({ courses, isMobile }: CourseListProps) {
   const router = useRouter()
 
-  const handleCourseClick = (courseId: number) => {
+  const handleCourseClick = (courseId: string) => {
     router.push(`/course/${courseId}`)
   }
 
@@ -30,7 +31,7 @@ export function CourseList({ courses, isMobile }: CourseListProps) {
           <div className={`flex ${isMobile ? "flex-col" : ""} h-full`}>
             <div className={`relative ${isMobile ? "w-full h-48" : "w-44 h-44"} flex-shrink-0`}>
               <Image
-                src={course.image || "/placeholder.svg"}
+                src={course.image ? constructUrl(course.image) : "/placeholder.svg"}
                 alt={course.title}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-200"
@@ -68,31 +69,29 @@ export function CourseList({ courses, isMobile }: CourseListProps) {
                   </div>
                   <div className="flex items-center gap-1">
                     <div className="w-1.5 h-1.5 bg-yellow rounded-full"></div>
-                    <span>{course.lessons} Lessons</span>
+                    <span>{course.totalLessons} Lessons</span>
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center justify-between mt-auto">
                 <div className="flex items-center gap-2">
-                  {course.originalPrice && (
-                    <span className="text-base text-[#6c757d] line-through">{course.originalPrice}</span>
-                  )}
                   <span
-                    className={`text-xl font-bold ${course.price === "Free" ? "text-[#28a745]" : "text-[#2c3e50]"}`}
+                    className={`text-xl font-bold ${course.price === 0 ? "text-[#28a745]" : "text-[#2c3e50]"}`}
                   >
-                    {course.price}
+                    {course.price === 0 ? "Free" : `₦${course.price.toLocaleString()}`}
                   </span>
                 </div>
                 <CheckoutButton
                   courseId={course.id}
                   price={course.price}
                   size="sm"
-                  label={course.price === "Free" ? "Enroll" : "Add to Cart"}
+                  label={course.isEnrolled ? "Continue Learning" : (course.price === 0 ? "Enroll" : "Add to Cart")}
                   title={course.title}
                   thumbnail={course.image}
                   instructor={course.instructor}
                   autoNavigate={false}
+                  isEnrolled={course.isEnrolled}
                   className="shrink-0 whitespace-nowrap"
                 />
               </div>

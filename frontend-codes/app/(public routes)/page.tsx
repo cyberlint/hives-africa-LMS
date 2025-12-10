@@ -5,6 +5,8 @@ import FeaturedCourses from "./_components/featuredCourses";
 import BestSellingCourses from "./_components/bestSellingCourses";
 import RecentlyAddedCourses from "./_components/recentlyAddedCourses";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { CoursesService } from "@/services/courses";
 
 
 interface Category {
@@ -39,6 +41,22 @@ export interface Course {
 }
 
 const Home = () => {
+  // Fetch all course data at parent level
+  const { data: featuredCourses } = useQuery({
+    queryKey: ['featured-courses'],
+    queryFn: () => CoursesService.getFeaturedCourses(),
+  });
+
+  const { data: bestSellingCourses } = useQuery({
+    queryKey: ['best-selling-courses'],
+    queryFn: () => CoursesService.getBestSellingCourses(8),
+  });
+
+  const { data: recentlyAddedCourses } = useQuery({
+    queryKey: ['recently-added-courses'],
+    queryFn: () => CoursesService.getRecentlyAddedCourses(8),
+  });
+
   const categories: Category[] = [
     {
       name: "Label",
@@ -193,19 +211,28 @@ const Home = () => {
         </p>
       </section>
 
-      <section className="space-y-12 bg-[#F5F7FA] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-68">
-        <BestSellingCourses />
-      </section>
+      {/* Only render Best Selling section if data exists */}
+      {bestSellingCourses && bestSellingCourses.length > 0 && (
+        <section className="space-y-12 bg-[#F5F7FA] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-68">
+          <BestSellingCourses courses={bestSellingCourses} />
+        </section>
+      )}
 
-      <section className="space-y-12 bg-white px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-25 sm:pb-30 lg:pb-35">
-        <div className="bg-white space-y-8 border border-[#E9EAF0] rounded-2xl px-6 py-16 md:p-16 -mt-64">
-          <FeaturedCourses />
-        </div>
+      {/* <section className="space-y-12 bg-white px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-25 sm:pb-30 lg:pb-35"> */}
+        {/* Only render Featured section if data exists */}
+        {featuredCourses && featuredCourses.length > 0 && (
+          <div className="bg-white space-y-8 border border-[#E9EAF0] rounded-2xl px-6 py-16 md:p-16 -mt-64">
+            <FeaturedCourses courses={featuredCourses} />
+          </div>
+        )}
 
-        <div className="flex flex-col items-center space-y-8 mx-auto w-full">
-          <RecentlyAddedCourses />
-        </div>
-      </section>
+        {/* Only render Recently Added section if data exists */}
+        {recentlyAddedCourses && recentlyAddedCourses.length > 0 && (
+          <div className="flex flex-col items-center space-y-8 mx-auto w-full">
+            <RecentlyAddedCourses courses={recentlyAddedCourses} />
+          </div>
+        )}
+      {/* </section> */}
 
       <section className="flex flex-col xl:flex-row justify-between items-stretch gap-8 bg-[#F5F7FA] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-20 w-full">
         <div

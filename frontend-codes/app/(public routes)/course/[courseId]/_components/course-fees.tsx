@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { ChevronDown } from "lucide-react"
 import { CheckoutButton } from "@/components/lms/checkout-button"
+import { constructUrl } from "@/lib/construct-url"
 
 import { Course } from "@/types/course"
 
@@ -98,9 +99,9 @@ export default function CourseFees({ course }: CourseFeesProps) {
                   courseId={course.id} 
                   price={course.price} 
                   title={course.title}
-                  thumbnail={course.image}
+                  thumbnail={course.image ? constructUrl(course.image) : undefined}
                   instructor={course.instructor}
-                  label={course.price === "Free" ? "Enroll Free" : "Enroll Now"} 
+                  label={course.price === 0 ? "Enroll Free" : "Enroll Now"} 
                   className="w-full" 
                 />
                 <p className="text-xs text-gray-500 text-center">Secured payment. Discounts applied automatically.</p>

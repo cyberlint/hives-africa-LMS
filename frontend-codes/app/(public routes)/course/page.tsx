@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 // import { Header } from "@/components/header"
 // import { Navigation } from "@/components/navigation"
 import { Sidebar } from "./_components/sidebar"
@@ -15,8 +15,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useMediaQuery } from "@/hooks/use-media-query"
 
-import { Course, FilterState } from "@/types/course"
-import { courses } from "@/data/courses"
+import { FilterState } from "@/types/course"
+import { useAllCourses, CourseListItem } from "@/hooks/useAllCourses"
 
 const ITEMS_PER_PAGE = 6
 
@@ -37,39 +37,46 @@ export default function CoursesPage() {
   const isMobile = useMediaQuery("(max-width: 768px)")
   const isTablet = useMediaQuery("(max-width: 1024px)")
 
-  // Filter and search logic
+  // Determine server-side filters (category and level)
+  const serverCategory = filters.categories.length === 1 ? filters.categories[0] : undefined
+  const serverLevel = filters.levels.length === 1 && filters.levels[0] !== "All levels" ? filters.levels[0] : undefined
+
+  // Fetch courses from API with server-side filters
+  const { courses: apiCourses, loading, error } = useAllCourses({
+    category: serverCategory,
+    level: serverLevel,
+    search: searchQuery,
+  })
+
+  // Client-side filtering for remaining filters (instructor, price, rating)
   const filteredCourses = useMemo(() => {
-    return courses.filter((course) => {
-      // Search filter
-      const matchesSearch =
-        searchQuery === "" ||
-        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.instructor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-
-      // Category filter
-      const matchesCategory = filters.categories.length === 0 || filters.categories.includes(course.category)
-
+    return apiCourses.filter((course) => {
       // Instructor filter
       const matchesInstructor = filters.instructors.length === 0 || filters.instructors.includes(course.instructor)
 
       // Price filter
       const matchesPrice =
         filters.priceTypes.length === 0 ||
-        (filters.priceTypes.includes("Free") && course.price === "Free") ||
-        (filters.priceTypes.includes("Paid") && course.price !== "Free") ||
+        (filters.priceTypes.includes("Free") && course.price === 0) ||
+        (filters.priceTypes.includes("Paid") && course.price > 0) ||
         filters.priceTypes.includes("All")
 
       // Rating filter
       const matchesRating = filters.ratings.length === 0 || filters.ratings.some((rating) => course.rating >= rating)
 
-      // Level filter
-      const matchesLevel =
-        filters.levels.length === 0 || filters.levels.includes(course.level) || filters.levels.includes("All levels")
+      // Category filter (client-side for multiple selections)
+      const matchesCategory = 
+        filters.categories.length === 0 || 
+        filters.categories.length > 1 && filters.categories.includes(course.category)
 
-      return matchesSearch && matchesCategory && matchesInstructor && matchesPrice && matchesRating && matchesLevel
+      // Level filter (client-side for multiple selections)
+      const matchesLevel =
+        filters.levels.length === 0 || 
+        filters.levels.length > 1 && (filters.levels.includes(course.level) || filters.levels.includes("All levels"))
+
+      return matchesInstructor && matchesPrice && matchesRating && matchesCategory && matchesLevel
     })
-  }, [searchQuery, filters])
+  }, [apiCourses, filters])
 
   // Pagination logic
   const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE)
@@ -100,6 +107,36 @@ export default function CoursesPage() {
   }
 
   const activeFiltersCount = Object.values(filters).reduce((count, filterArray) => count + filterArray.length, 0)
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow mx-auto mb-4"></div>
+          <p className="text-[#6c757d]">Loading courses...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-[#2c3e50] mb-4">Error Loading Courses</h1>
+          <p className="text-[#6c757d] mb-4">{error}</p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            className="bg-yellow hover:bg-yellow/90 text-white"
+          >
+            Try Again
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -205,7 +242,7 @@ export default function CoursesPage() {
           )}
         </main>
 
-        {!isMobile && <Sidebar filters={filters} onFiltersChange={handleFilterChange} courses={courses} />}
+        {!isMobile && <Sidebar filters={filters} onFiltersChange={handleFilterChange} courses={apiCourses} />}
       </div>
 
       {/* <Footer /> */}
@@ -219,7 +256,7 @@ export default function CoursesPage() {
           onClose={() => setMobileFiltersOpen(false)}
           filters={filters}
           onFiltersChange={handleFilterChange}
-          courses={courses}
+          courses={apiCourses}
         />
       )}
     </div>

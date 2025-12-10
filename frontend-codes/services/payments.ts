@@ -16,6 +16,8 @@ export interface CouponValidationResult {
 export interface InitializePaymentPayload {
   course_id: string; // UUID
   coupon_code?: string;
+  redirect_url?: string;
+  channels?: string[];
 }
 
 export interface InitializePaymentResponse {
@@ -33,6 +35,10 @@ export interface VerifyPaymentResponse {
   message: string;
   enrollment_id?: string;
   course_title?: string;
+  thumbnail?: string;
+  instructor?: string;
+  course_id?: string;
+  price?: number;
 }
 
 export interface WalletResponse {

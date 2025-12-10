@@ -14,38 +14,42 @@ function PaymentCallbackContent() {
   useEffect(() => {
     const reference = searchParams.get('reference');
     const trxref = searchParams.get('trxref'); // Paystack also sends trxref
-    const status = searchParams.get('status');
-
+    
     // Use reference or trxref (Paystack sends both)
     const transactionRef = reference || trxref;
 
     if (transactionRef) {
-      if (status === 'success' || status === 'successful') {
-        // Redirect to success page for verification
-        router.replace(`/payment/success?reference=${transactionRef}`);
-      } else if (status === 'cancelled' || status === 'failed') {
-        // Redirect to failure page
-        router.replace(`/payment/failure?reference=${transactionRef}&message=Payment was ${status}`);
-      } else {
-        // Unknown status, still try to verify
-        router.replace(`/payment/success?reference=${transactionRef}`);
-      }
+      // Redirect to unified payment status page for verification
+      // The status page will handle verification and display success/failure
+      router.replace(`/payment/success?reference=${transactionRef}`);
     } else {
-      // No reference found, redirect to failure
-      router.replace('/payment/failure?message=No transaction reference found');
+      // No reference found, redirect to status page which will show error
+      router.replace('/payment/success');
     }
   }, [router, searchParams]);
 
   return (
-    <div className="min-h-screen bg-[#FAFAFB] flex items-center justify-center">
-      <div className="text-center space-y-4">
-        <Loader2 className="w-12 h-12 animate-spin text-yellow mx-auto" />
-        <h2 className="text-xl font-semibold text-darkBlue-300">
-          Processing Payment
-        </h2>
-        <p className="text-sm text-[#6E7485]">
-          Please wait while we process your payment...
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-[#FAFAFB] to-[#F0F0F2] flex items-center justify-center p-4">
+      <div className="text-center space-y-6">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-20 h-20 bg-yellow/10 rounded-full animate-pulse"></div>
+          </div>
+          <Loader2 className="w-16 h-16 animate-spin text-yellow mx-auto relative z-10" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold text-darkBlue-300">
+            Processing Payment
+          </h2>
+          <p className="text-sm text-[#6E7485] max-w-sm mx-auto">
+            Please wait while we redirect you to verify your payment...
+          </p>
+        </div>
+        <div className="flex items-center justify-center gap-1">
+          <div className="w-2 h-2 bg-yellow rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+          <div className="w-2 h-2 bg-yellow rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+          <div className="w-2 h-2 bg-yellow rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+        </div>
       </div>
     </div>
   );
