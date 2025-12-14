@@ -75,7 +75,7 @@ function PaymentStatusContent() {
   // Pending/Verifying State
   if (verificationStatus === 'pending') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#FAFAFB] to-[#F0F0F2] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-br from-[#FAFAFB] to-[#F0F0F2] flex items-center justify-center p-4">
         <Card className="w-full max-w-md border-gray-200 shadow-lg">
           <CardContent className="pt-12 pb-8">
             <div className="text-center space-y-6">
@@ -108,7 +108,7 @@ function PaymentStatusContent() {
   // Success State
   if (verificationStatus === 'success') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-[#FAFAFB] to-yellow-50 flex items-center justify-center p-4 lg:p-8">
+      <div className="min-h-screen bg-linear-to-br from-green-50 via-[#FAFAFB] to-yellow-50 flex items-center justify-center p-4 lg:p-8">
         <Card className="w-full max-w-md lg:max-w-3xl border-green-200 shadow-xl">
           <CardHeader className="text-center pb-4">
             <div className="relative mb-4">
@@ -133,7 +133,7 @@ function PaymentStatusContent() {
               {paymentDetails?.course_title && (
                 <div className="bg-white border border-green-200 rounded-xl p-4 shadow-sm flex flex-col md:flex-row gap-4 items-center md:items-start text-left">
                   {paymentDetails.thumbnail ? (
-                    <div className="relative w-full md:w-32 h-32 md:h-24 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="relative w-full md:w-32 h-32 md:h-24 rounded-lg overflow-hidden shrink-0">
                        {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img 
                         src={constructUrl(paymentDetails.thumbnail)} 
@@ -142,7 +142,7 @@ function PaymentStatusContent() {
                       />
                     </div>
                   ) : (
-                    <div className="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
                       <BookOpen className="w-8 h-8 text-green-600" />
                     </div>
                   )}
@@ -213,7 +213,7 @@ function PaymentStatusContent() {
 
   // Failure State
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-[#FAFAFB] to-orange-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-red-50 via-[#FAFAFB] to-orange-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-lg border-red-200 shadow-xl">
         <CardHeader className="text-center pb-4">
           <div className="relative mb-4">
