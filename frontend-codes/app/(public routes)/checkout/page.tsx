@@ -76,21 +76,21 @@ export default function CartCheckoutPage() {
 
   const emptyState = (
     <div className="py-16 text-center">
-      <p className="text-sm text-[#6E7485] mb-6">Your cart is empty. Browse courses to get started.</p>
+      <p className="text-sm text-[#6E7485] dark:text-gray-400 mb-6">Your cart is empty. Browse courses to get started.</p>
   <Button onClick={() => router.push("/course")} className="bg-yellow hover:bg-yellow/90">Browse Courses →</Button>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#FAFAFB]">
+    <div className="min-h-screen bg-[#FAFAFB] dark:bg-[#1d2026] transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="mb-8 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-2xl md:text-3xl font-semibold text-darkBlue-300">Checkout</h1>
-            <p className="text-sm text-[#6E7485]">Review your cart and complete payment</p>
+            <h1 className="text-2xl md:text-3xl font-semibold text-darkBlue-300 dark:text-gray-100">Checkout</h1>
+            <p className="text-sm text-[#6E7485] dark:text-gray-400">Review your cart and complete payment</p>
           </div>
           {hasItems && (
-            <button onClick={clearCart} className="text-xs text-[#6E7485] hover:text-red-600">Clear Cart</button>
+            <button onClick={clearCart} className="text-xs text-[#6E7485] dark:text-gray-400 hover:text-red-600 dark:hover:text-red-500">Clear Cart</button>
           )}
         </div>
 
@@ -99,17 +99,17 @@ export default function CartCheckoutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
             {/* Items & coupon */}
             <div className="lg:col-span-2 space-y-6">
-              <Card className="border-gray-200">
+              <Card className="border-gray-200 dark:border-[#404854] dark:bg-[#2a2f3a]">
                 <CardHeader>
-                  <h2 className="text-lg font-semibold text-darkBlue-300">Courses ({items.length})</h2>
+                  <h2 className="text-lg font-semibold text-darkBlue-300 dark:text-gray-100">Courses ({items.length})</h2>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {items.map(item => (
                     <div
                       key={item.id}
-                      className="flex flex-col sm:flex-row gap-3 sm:gap-4 border border-gray-100 rounded-md p-3 md:p-4 bg-white"
+                      className="flex flex-col sm:flex-row gap-3 sm:gap-4 border border-gray-100 dark:border-[#404854] rounded-md p-3 md:p-4 bg-white dark:bg-[#1d2026]"
                     >
-                      <div className="relative h-32 w-full sm:h-20 sm:w-32 overflow-hidden rounded bg-gray-100 flex-shrink-0">
+                      <div className="relative h-32 w-full sm:h-20 sm:w-32 overflow-hidden rounded bg-gray-100 dark:bg-[#404854] flex-shrink-0">
                         {item.thumbnail ? (
                           <Image src={constructUrl(item.thumbnail)} alt={item.title} fill className="object-cover" />
                         ) : (
@@ -117,18 +117,18 @@ export default function CartCheckoutPage() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0 space-y-1">
-                        <p className="text-sm font-medium text-darkBlue-300 line-clamp-2 md:line-clamp-3">{item.title}</p>
-                        {item.instructor && <p className="text-xs text-[#6E7485]">By {item.instructor}</p>}
-                        {item.isFree && <p className="text-[11px] text-green-700">Free course</p>}
+                        <p className="text-sm font-medium text-darkBlue-300 dark:text-gray-100 line-clamp-2 md:line-clamp-3">{item.title}</p>
+                        {item.instructor && <p className="text-xs text-[#6E7485] dark:text-gray-400">By {item.instructor}</p>}
+                        {item.isFree && <p className="text-[11px] text-green-700 dark:text-green-400">Free course</p>}
                         {/* Quantity controls removed for single-item-per-course mode */}
                       </div>
                       <div className="flex sm:flex-col justify-between sm:justify-between items-end sm:items-end gap-2 sm:gap-0">
                         <div className="text-right">
-                          <p className="text-sm font-semibold text-darkBlue-300">{item.isFree ? "₦0" : `₦${(item.unitPrice).toLocaleString()}`}</p>
+                          <p className="text-sm font-semibold text-darkBlue-300 dark:text-gray-100">{item.isFree ? "₦0" : `₦${(item.unitPrice).toLocaleString()}`}</p>
                         </div>
                         <button
                           onClick={() => removeItem(item.id)}
-                          className="text-[11px] text-[#6E7485] hover:text-red-600"
+                          className="text-[11px] text-[#6E7485] dark:text-gray-400 hover:text-red-600 dark:hover:text-red-500"
                         >Remove</button>
                       </div>
                     </div>
@@ -136,9 +136,9 @@ export default function CartCheckoutPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-gray-200">
+              <Card className="border-gray-200 dark:border-[#404854] dark:bg-[#2a2f3a]">
                 <CardHeader>
-                  <h2 className="text-lg font-semibold text-darkBlue-300">Coupon Code</h2>
+                  <h2 className="text-lg font-semibold text-darkBlue-300 dark:text-gray-100">Coupon Code</h2>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-col xs:flex-row sm:flex-row gap-2 sm:items-stretch">
@@ -146,7 +146,7 @@ export default function CartCheckoutPage() {
                       value={couponInput}
                       onChange={(e) => setCouponInput(e.target.value)}
                       placeholder="Enter coupon"
-                      className="h-10 flex-1"
+                      className="h-10 flex-1 dark:bg-[#1d2026] dark:border-[#404854] dark:text-gray-100"
                       aria-label="Coupon code"
                     />
                     {coupon.code ? (
@@ -156,19 +156,19 @@ export default function CartCheckoutPage() {
                     )}
                   </div>
                   {coupon.code && (
-                    <p className="text-xs text-green-700 mt-2">Applied {coupon.code}. You save ₦{discount.toLocaleString()}.</p>
+                    <p className="text-xs text-green-700 dark:text-green-400 mt-2">Applied {coupon.code}. You save ₦{discount.toLocaleString()}.</p>
                   )}
                   {coupon.code && items.length > 1 && (
-                    <p className="text-[10px] text-[#6E7485] mt-1">Discount validated against first course. Future enhancement: proportional distribution.</p>
+                    <p className="text-[10px] text-[#6E7485] dark:text-gray-400 mt-1">Discount validated against first course. Future enhancement: proportional distribution.</p>
                   )}
                 </CardContent>
               </Card>
 
               <div className="grid md:grid-cols-3 gap-4">
                 {[{title:"Secure Payment",desc:"256-bit encryption & PCI compliant"},{title:"Instant Access",desc:"Start learning immediately"},{title:"Support",desc:"Email & community help"}].map(b => (
-                  <div key={b.title} className="rounded-md bg-white border border-gray-200 p-4">
-                    <p className="text-sm font-semibold text-darkBlue-300">{b.title}</p>
-                    <p className="text-[11px] text-[#6E7485] mt-1 leading-relaxed">{b.desc}</p>
+                  <div key={b.title} className="rounded-md bg-white dark:bg-[#2a2f3a] border border-gray-200 dark:border-[#404854] p-4">
+                    <p className="text-sm font-semibold text-darkBlue-300 dark:text-gray-100">{b.title}</p>
+                    <p className="text-[11px] text-[#6E7485] dark:text-gray-400 mt-1 leading-relaxed">{b.desc}</p>
                   </div>
                 ))}
               </div>
@@ -176,24 +176,24 @@ export default function CartCheckoutPage() {
 
             {/* Summary */}
             <div className="lg:col-span-1 hidden lg:block">
-              <Card className="border-gray-200 sticky top-6">
+              <Card className="border-gray-200 dark:border-[#404854] dark:bg-[#2a2f3a] sticky top-6">
                 <CardHeader>
-                  <h2 className="text-lg font-semibold text-darkBlue-300">Payment Summary</h2>
+                  <h2 className="text-lg font-semibold text-darkBlue-300 dark:text-gray-100">Payment Summary</h2>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-[#6E7485]">Subtotal</span>
-                      <span className="font-medium text-darkBlue-300">₦{subtotal.toLocaleString()}</span>
+                      <span className="text-[#6E7485] dark:text-gray-400">Subtotal</span>
+                      <span className="font-medium text-darkBlue-300 dark:text-gray-100">₦{subtotal.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[#6E7485]">Discount</span>
-                      <span className="text-green-700">-₦{discount.toLocaleString()}</span>
+                      <span className="text-[#6E7485] dark:text-gray-400">Discount</span>
+                      <span className="text-green-700 dark:text-green-400">-₦{discount.toLocaleString()}</span>
                     </div>
-                    <Separator className="my-2" />
+                    <Separator className="my-2 dark:bg-[#404854]" />
                     <div className="flex justify-between text-base">
-                      <span className="font-medium text-darkBlue-300">Total</span>
-                      <span className="font-semibold text-darkBlue-300">₦{total.toLocaleString()}</span>
+                      <span className="font-medium text-darkBlue-300 dark:text-gray-100">Total</span>
+                      <span className="font-semibold text-darkBlue-300 dark:text-gray-100">₦{total.toLocaleString()}</span>
                     </div>
                   </div>
                   <Button
@@ -204,8 +204,8 @@ export default function CartCheckoutPage() {
                   >
                     {processing || initializePaymentMutation.isPending ? "Processing…" : "Pay Securely"}
                   </Button>
-                  <p className="text-[11px] text-[#6E7485] mt-3 text-center">Secured by Paystack. You may be redirected.</p>
-                  <button onClick={() => router.back()} className="mt-4 w-full text-xs text-[#6E7485] hover:text-darkBlue-300">← Back</button>
+                  <p className="text-[11px] text-[#6E7485] dark:text-gray-400 mt-3 text-center">Secured by Paystack. You may be redirected.</p>
+                  <button onClick={() => router.back()} className="mt-4 w-full text-xs text-[#6E7485] dark:text-gray-400 hover:text-darkBlue-300 dark:hover:text-gray-100">← Back</button>
                 </CardContent>
               </Card>
             </div>
@@ -215,12 +215,12 @@ export default function CartCheckoutPage() {
 
       {/* Mobile sticky summary bar */}
       {hasItems && (
-        <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/75 px-4 py-3 shadow-lg">
+        <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 dark:border-[#404854] bg-white/95 dark:bg-[#1d2026]/95 backdrop-blur supports-[backdrop-filter]:bg-white/75 dark:supports-[backdrop-filter]:bg-[#1d2026]/75 px-4 py-3 shadow-lg dark:shadow-xl">
           <div className="flex items-center justify-between mb-2">
             <div>
-              <p className="text-[11px] uppercase tracking-wide text-[#6E7485]">Total</p>
-              <p className="text-base font-semibold text-darkBlue-300">₦{total.toLocaleString()}</p>
-              {discount > 0 && <p className="text-[10px] text-green-700">You save ₦{discount.toLocaleString()}</p>}
+              <p className="text-[11px] uppercase tracking-wide text-[#6E7485] dark:text-gray-400">Total</p>
+              <p className="text-base font-semibold text-darkBlue-300 dark:text-gray-100">₦{total.toLocaleString()}</p>
+              {discount > 0 && <p className="text-[10px] text-green-700 dark:text-green-400">You save ₦{discount.toLocaleString()}</p>}
             </div>
             <Button
               disabled={!hasItems || processing || initializePaymentMutation.isPending}
@@ -231,8 +231,8 @@ export default function CartCheckoutPage() {
               {processing || initializePaymentMutation.isPending ? "Processing…" : "Checkout"}
             </Button>
           </div>
-          <div className="flex justify-between text-[10px] text-[#6E7485]">
-            <button onClick={() => router.back()} className="hover:text-darkBlue-300">← Back</button>
+          <div className="flex justify-between text-[10px] text-[#6E7485] dark:text-gray-400">
+            <button onClick={() => router.back()} className="hover:text-darkBlue-300 dark:hover:text-gray-100">← Back</button>
             {coupon.code && <span>Coupon: {coupon.code}</span>}
           </div>
         </div>

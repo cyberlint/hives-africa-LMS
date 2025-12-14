@@ -148,7 +148,7 @@ const icons: iconsProps[] = [
 const Footer = () => {
   return (
     <>
-      <div className="flex flex-col gap-8 sm:gap-16 bg-darkBlue-500 rounded-t-[64px] text-white px-8 sm:px-16 xl:px-32 pt-20 pb-12 w-full">
+      <div className="flex flex-col gap-8 sm:gap-16 bg-darkBlue-500 dark:bg-[#0f1419] rounded-t-[64px] text-white px-8 sm:px-16 xl:px-32 pt-20 pb-12 w-full transition-colors duration-300">
         <main className="flex flex-col lg:flex-row justify-start items-start gap-12 sm:gap-16 xl:gap-24">
           <section className="flex flex-col gap-4 w-full lg:w-1/4">
             <Image
@@ -178,8 +178,8 @@ const Footer = () => {
 
           <section className="flex flex-col sm:flex-row justify-between items-start gap-8 w-full lg:w-3/4">
             <section className="flex flex-col gap-4">
-              <h1 className=" text-lg xl:text-xl">Analytix Hive Schools</h1>
-              <ul className="flex flex-col gap-2 text-white/50">
+              <h1 className="text-lg xl:text-xl">Analytix Hive Schools</h1>
+              <ul className="flex flex-col gap-2 text-white/50 dark:text-gray-400">
                 {footerLinks.map((link, index) => (
                   <li key={index}>
                     <Link href={link.href} className="text-sm xl:text-base">
@@ -192,7 +192,7 @@ const Footer = () => {
 
             <section className="flex flex-col gap-4">
               <h1 className="text-lg xl:text-xl">Featured Programs</h1>
-              <ul className="flex flex-col gap-2 text-white/50">
+              <ul className="flex flex-col gap-2 text-white/50 dark:text-gray-400">
                 {programs.map((link, index) => (
                   <li key={index}>
                     <Link href={link.href} className="text-sm xl:text-base">
@@ -205,7 +205,7 @@ const Footer = () => {
 
             <section className="flex flex-col gap-4">
               <h1 className="text-lg xl:text-xl">Company</h1>
-              <ul className="flex flex-col gap-2 text-white/50">
+              <ul className="flex flex-col gap-2 text-white/50 dark:text-gray-400">
                 {company.map((link, index) => (
                   <li key={index}>
                     <Link href={link.href} className="text-sm xl:text-base">
@@ -219,11 +219,11 @@ const Footer = () => {
         </main>
 
         <section className="flex flex-col lg:flex-row gap-4 lg:gap-16 xl:gap-24 border-t border-white/10 pt-4 w-full">
-          <p className="text-xs xl:text-sm text-white/50 w-full lg:w-1/4">
+          <p className="text-xs xl:text-sm text-white/50 dark:text-gray-400 w-full lg:w-1/4">
             Copyright Analytix Hive 2025
           </p>
 
-          <ul className="flex flex-wrap gap-x-4 sm:gap-x-8 gap-y-2 text-white/70 w-full lg:w-3/4">
+          <ul className="flex flex-wrap gap-x-4 sm:gap-x-8 gap-y-2 text-white/70 dark:text-gray-400 w-full lg:w-3/4">
             {quickLinks.map((link, index) => (
               <li key={index} className="inline-flex">
                 <Link href={link.href} className="text-xs xl:text-sm">

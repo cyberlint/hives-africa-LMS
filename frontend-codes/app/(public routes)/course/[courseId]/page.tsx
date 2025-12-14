@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
+import { Loader } from "lucide-react"
 
 import HeroSection from "./_components/hero-section"
 import TabsNavigation from "./_components/tabs-navigation"
@@ -59,10 +60,9 @@ export default function CourseDetailPage() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading course details...</p>
+      <div className="min-h-screen bg-white dark:bg-[#1d2026] transition-colors duration-300 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader className="h-8 w-8 animate-spin text-yellow" />
         </div>
       </div>
     )
@@ -71,10 +71,10 @@ export default function CourseDetailPage() {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-[#1d2026] transition-colors duration-300 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">Error Loading Course</h1>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Error Loading Course</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
           <button 
             onClick={() => window.location.reload()} 
             className="px-4 py-2 bg-yellow text-white rounded-md hover:bg-yellow/90"
@@ -89,17 +89,17 @@ export default function CourseDetailPage() {
   // Course not found state
   if (!courseData) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-[#1d2026] transition-colors duration-300 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">Course Not Found</h1>
-          <p className="text-gray-600">The course you&apos;re looking for doesn&apos;t exist.</p>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Course Not Found</h1>
+          <p className="text-gray-600 dark:text-gray-400">The course you&apos;re looking for doesn&apos;t exist.</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-[#1d2026] transition-colors duration-300">
       <HeroSection course={courseData} />
       <TabsNavigation activeTab={activeTab} onTabChange={handleTabChange} />
       <main className="w-full">

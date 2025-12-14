@@ -2,11 +2,18 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { VideoPlayer } from '@/components/lms/VideoPlayer';
 import { VideoControls } from '@/components/lms/VideoControls';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
-import type { Lecture } from '@/types/course';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ChevronRight, ChevronLeft, Check, Clock, Star, BookOpen, AlertCircle, Quote } from 'lucide-react';
+import type { Lecture, CourseData } from '@/types/course';
+import { constructUrl } from '@/lib/construct-url';
+import { cn } from '@/lib/utils';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 interface VideoPanelProps {
   lecture?: Lecture;
+  courseData?: CourseData;
   onTimeUpdate?: (time: number) => void;
   onVideoEnd?: () => void;
   isCollapsed: boolean;
@@ -16,6 +23,7 @@ interface VideoPanelProps {
 
 export const VideoPanel: React.FC<VideoPanelProps> = ({
   lecture,
+  courseData,
   onTimeUpdate,
   onVideoEnd,
   isCollapsed,
@@ -34,6 +42,7 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
   const [videoQuality, setVideoQuality] = useState('Auto');
   const [captionsEnabled, setCaptionsEnabled] = useState(false);
   const [availableQualities] = useState(['Auto', '1080p', '720p', '480p', '360p']);
+  const [activeTab, setActiveTab] = useState("overview");
 
   const defaultVideoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 
@@ -162,152 +171,252 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
     }
   };
 
-  // Keyboard shortcuts
+  // Memoized handlers to keep dependence stable
+  const handlers = React.useMemo(() => ({
+      togglePlay,
+      toggleFullscreen,
+      toggleMute,
+      handleVolumeChange,
+      volume
+  }), [togglePlay, toggleFullscreen, toggleMute, handleVolumeChange, volume]);
+
+
+  // Optimized Keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.target && (e.target as HTMLElement).tagName === 'INPUT') return;
-      if (e.target && (e.target as HTMLElement).tagName === 'TEXTAREA') return;
+      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return;
 
       switch (e.code) {
         case 'Space':
           e.preventDefault();
-          togglePlay();
-          break;
-        case 'ArrowLeft':
-          if (!e.altKey) {
-            e.preventDefault();
-            skipBackward();
-          }
-          break;
-        case 'ArrowRight':
-          if (!e.altKey) {
-            e.preventDefault();
-            skipForward();
-          }
+          handlers.togglePlay();
           break;
         case 'KeyF':
           e.preventDefault();
-          toggleFullscreen();
+          handlers.toggleFullscreen();
           break;
         case 'KeyM':
           e.preventDefault();
-          toggleMute();
+          handlers.toggleMute();
           break;
         case 'ArrowUp':
           e.preventDefault();
-          handleVolumeChange(Math.min(volume + 0.1, 1));
+          handlers.handleVolumeChange(Math.min(handlers.volume + 0.1, 1));
           break;
         case 'ArrowDown':
           e.preventDefault();
-          handleVolumeChange(Math.max(volume - 0.1, 0));
+          handlers.handleVolumeChange(Math.max(handlers.volume - 0.1, 0));
           break;
       }
     };
-
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [volume, togglePlay, skipForward, skipBackward, toggleMute, handleVolumeChange]);
+  }, [handlers]);
+
+  const videoSrc = lecture?.videoUrl || (lecture?.videoKey ? constructUrl(lecture.videoKey) : undefined);
 
   if (isCollapsed) {
     return (
-      <div className="fixed right-0 top-[80px] border-l h-[calc(100vh-80px)] z-20 lg:relative lg:top-0 lg:h-full">
+      <div className="fixed right-0 top-[80px] border-l h-[calc(100vh-80px)] z-20 lg:relative lg:top-0 lg:h-full bg-white">
         <div className="h-full flex items-center">
           <Button 
-            variant="ghost"
-            size="sm"
+            variant="ghost" 
+            size="sm" 
             onClick={onToggleCollapse}
-            className="text-gray-700 hover:bg-gray-100 p-3 rounded-l-lg rounded-r-none bg-white border border-gray-200 shadow-lg transition-all duration-200"
-            title="Show video"
-            aria-label="Show video player"
+            className="rounded-l-lg rounded-r-none bg-white border border-gray-200 shadow-sm p-2 hover:bg-gray-50"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-5 h-5 text-gray-500" />
           </Button>
         </div>
       </div>
     );
   }
 
-  if (!lecture || !lecture.videoUrl) {
+  if (!lecture || !videoSrc) {
     return null;
   }
 
+  const whatYouWillLearn = [
+      "Setting up the environment",
+      "Advanced HTML Practices",
+      "Build a portfolio website",
+      "Responsive Designs",
+      "Understand HTML Programming",
+      "Code HTML",
+      "Start building beautiful websites"
+  ]; 
+
+  const faqs = [
+      {
+          question: "Do I need any prior knowledge?",
+          answer: "No, this course is designed for beginners. We start from the very basics and work our way up."
+      },
+      {
+          question: "Is there a certificate upon completion?",
+          answer: "Yes, you will receive a verifiable certificate once you complete all lectures and quizzes."
+      },
+      {
+          question: "Can I access the course on mobile?",
+          answer: "Absolutely! Our platform is fully responsive and works great on mobile devices."
+      },
+      {
+          question: "Do I have lifetime access?",
+          answer: "Yes, once you enroll, you have unlimited lifetime access to the course content and any future updates."
+      }
+  ];
+
   return (
     <div 
-      className={`
-        h-full bg-white border-l border-r border-gray-200 flex flex-col p-1
-        ${isMobile ? 'w-full' : 'w-[480px]'}
-        transition-all duration-300 ease-in-out
-      `}
+      className={cn(
+        "bg-white border-l border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out overflow-y-auto custom-scrollbar-on-hover",
+        isMobile ? "w-full min-h-[50vh] max-h-screen" : "w-[480px] h-full max-h-screen"
+      )}
     >
-      {/* Header */}
-      <div className="flex-shrink-0 p-4 border-b border-gray-200 bg-white">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-gray-900">Video</h3>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggleCollapse}
-            className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 p-2 transition-colors"
-            title="Hide video"
-            aria-label="Hide video player"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </Button>
+      {/* Video Header (Minimal) */}
+      <div className="flex-shrink-0 p-3 flex justify-between items-center bg-gray-50/50 border-b border-gray-100">
+        <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Now Playing</span>
+            <h4 className="text-sm font-medium text-gray-900 line-clamp-1 max-w-[200px]">{lecture.title}</h4>
         </div>
+        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-900" onClick={onToggleCollapse}>
+          <ChevronRight className="w-5 h-5" />
+        </Button>
       </div>
 
-      {/* Video Player */}
-      <div className="flex-1 min-h-0 relative group">
+      {/* Video Player Container */}
+      <div 
+        className="flex-shrink-0 aspect-video bg-black relative w-full group"
+        onMouseEnter={() => setShowControls(true)}
+        onMouseLeave={() => setShowControls(false)}
+      >
         {isLoading && (
-          <div className="absolute inset-0 bg-black flex items-center justify-center z-10">
-            <div className="text-white text-sm">Loading video...</div>
+          <div className="absolute inset-0 bg-black flex items-center justify-center z-20">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
           </div>
         )}
 
-        <div className="relative h-full w-full">
-          <VideoPlayer
-            ref={videoRef}
-            src={lecture.videoUrl || defaultVideoUrl}
-            onMouseEnter={() => setShowControls(true)}
-            onMouseLeave={() => setShowControls(false)}
-          />
+       <VideoPlayer
+          ref={videoRef}
+          src={videoSrc || defaultVideoUrl}
+          onMouseEnter={() => setShowControls(true)}
+          onMouseLeave={() => setShowControls(false)}
+        />
 
-          {/* Video Controls */}
-          <VideoControls
-            isPlaying={isPlaying}
-            currentTime={currentTime}
-            duration={duration}
-            volume={volume}
-            isMuted={isMuted}
-            playbackRate={playbackRate}
-            videoQuality={videoQuality}
-            captionsEnabled={captionsEnabled}
-            availableQualities={availableQualities}
-            showControls={showControls}
-            onTogglePlay={togglePlay}
-            onSeek={handleSeek}
-            onSkipForward={skipForward}
-            onSkipBackward={skipBackward}
-            onVolumeChange={handleVolumeChange}
-            onToggleMute={toggleMute}
-            onPlaybackRateChange={changePlaybackRate}
-            onQualityChange={handleQualityChange}
-            onToggleCaptions={toggleCaptions}
-            onToggleFullscreen={toggleFullscreen}
-          />
-        </div>
+        <VideoControls
+          isPlaying={isPlaying}
+          currentTime={currentTime}
+          duration={duration}
+          volume={volume}
+          isMuted={isMuted}
+          playbackRate={playbackRate}
+          videoQuality={videoQuality}
+          captionsEnabled={captionsEnabled}
+          availableQualities={availableQualities}
+          showControls={showControls}
+          onTogglePlay={togglePlay}
+          onSeek={handleSeek}
+          onSkipForward={skipForward}
+          onSkipBackward={skipBackward}
+          onVolumeChange={handleVolumeChange}
+          onToggleMute={toggleMute}
+          onPlaybackRateChange={changePlaybackRate}
+          onQualityChange={handleQualityChange}
+          onToggleCaptions={toggleCaptions}
+          onToggleFullscreen={toggleFullscreen}
+        />
       </div>
 
-      {/* Video Info */}
-      <div className="flex-shrink-0 p-4  bg-white">
-        <h4 className="text-sm font-medium text-gray-900 mb-1 line-clamp-2">
-          {lecture.title}
-        </h4>
-        {lecture.description && (
-          <p className="text-xs text-gray-600 line-clamp-2">
-            {lecture.description}
-          </p>
-        )}
+      {/* Tabs Section */}
+      <div className="flex-shrink-0 flex flex-col bg-white">
+        <Tabs defaultValue="overview" className="flex flex-col w-full" value={activeTab} onValueChange={setActiveTab}>
+            <div className="border-b border-gray-100 px-4 flex-shrink-0">
+                <TabsList className="bg-transparent h-12 w-full justify-start gap-4 p-0">
+                    {["Overview", "Author", "FAQ"].map((tab) => (
+                        <TabsTrigger 
+                            key={tab} 
+                            value={tab.toLowerCase()}
+                            className="bg-transparent data-[state=active]:bg-[#fdb606]/10 data-[state=active]:text-[#fdb606] text-gray-500 rounded-lg px-3 py-1.5 h-auto text-xs font-medium transition-all"
+                        >
+                            {tab}
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
+            </div>
+
+            <div className="overflow-y-auto flex-1">
+                <div className="p-6 pb-12">
+                    <TabsContent value="overview" className="mt-0 space-y-8 animate-in fade-in-50 duration-300">
+                        {/* Course Data Header inside Overview */}
+                         <div className="space-y-4">
+                            <h2 className="text-xl font-bold text-gray-900">{courseData?.title || "Course Title"}</h2>
+                            <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500">
+                                <div className="flex items-center gap-1.5">
+                                    <Clock className="w-4 h-4 text-gray-400" />
+                                    <span>{courseData?.duration ? `${courseData.duration}h duration` : "4h 30min"}</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <BookOpen className="w-4 h-4 text-gray-400" />
+                                    <span>{courseData?.totalLectures || 0} lessons</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <Star className="w-4 h-4 text-yellow fill-yellow" />
+                                    <span>4.5 (126 reviews)</span>
+                                </div>
+                                <Badge variant="secondary" className="bg-yellow/10 text-yellow border-yellow/20 font-normal">
+                                    {courseData?.level || "Beginner"}
+                                </Badge>
+                            </div>
+                         </div>
+
+                        {/* About Course */}
+                        <div>
+                            <h3 className="text-base font-bold text-gray-900 mb-3">About Course</h3>
+                            <div className="text-sm text-gray-600 leading-relaxed space-y-4">
+                                <p>{courseData?.description ? courseData.description.replace(/<[^>]*>?/gm, '').slice(0, 300) + "..." : lecture.description || "Unlock the power of your potential with this comprehensive online course. Whether you're a novice or looking to enhance your skills, this course will guide you through robust features and workflows."}</p>
+                            </div>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="author" className="mt-0 animate-in fade-in-50 duration-300">
+                         <div className="flex items-center gap-4 mb-6">
+                            <Avatar className="w-16 h-16 border-2 border-white shadow-sm">
+                                <AvatarImage src={`https://ui-avatars.com/api/?name=${courseData?.instructor || 'Instructor'}&background=random`} />
+                                <AvatarFallback>{courseData?.instructor?.charAt(0) || 'I'}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-900">{courseData?.instructor || "Instructor Name"}</h3>
+                                <p className="text-sm text-gray-500">Senior Instructor at Hive LMS</p>
+                            </div>
+                         </div>
+                         <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 mb-6">
+                            <Quote className="w-8 h-8 text-yellow/40 mb-2" />
+                            <p className="text-sm text-gray-700 italic">"Teaching is not just about imparting knowledge, but about inspiring minds to seek it."</p>
+                         </div>
+                         <div className="text-sm text-gray-600 space-y-4">
+                             <p>Passionate educator and industry expert with over 10 years of experience in the field. Dedicated to helping students achieve their goals through practical, hands-on learning.</p>
+                         </div>
+                    </TabsContent>
+
+                    <TabsContent value="faq" className="mt-0 animate-in fade-in-50 duration-300">
+                         <div className="space-y-4">
+                            <h3 className="text-base font-bold text-gray-900 mb-2">Frequently Asked Questions</h3>
+                            <Accordion type="single" collapsible className="w-full">
+                                {faqs.map((faq, index) => (
+                                    <AccordionItem key={index} value={`item-${index}`}>
+                                        <AccordionTrigger className="text-sm font-medium hover:text-[#fdb606] text-left">
+                                            {faq.question}
+                                        </AccordionTrigger>
+                                        <AccordionContent className="text-sm text-gray-600">
+                                            {faq.answer}
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                ))}
+                            </Accordion>
+                         </div>
+                    </TabsContent>
+                </div>
+            </div>
+        </Tabs>
       </div>
     </div>
   );

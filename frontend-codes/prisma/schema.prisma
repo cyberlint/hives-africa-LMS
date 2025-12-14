@@ -19,6 +19,8 @@ model User {
   email          String
   emailVerified  Boolean          @default(false)
   image          String?
+  bio            String?
+  website        String?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @default(now()) @updatedAt
   sessions       Session[]
@@ -144,8 +146,10 @@ model Lesson {
   videoKey     String?
   position     Int
   type         LessonType @default(Video) // video, document, quiz, resource
-  content      String? // For document/quiz content
+  content      String? // For content text
   duration     Int? // Duration in seconds for videos
+  documentKey  String?
+  quizConfig   Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -227,6 +231,8 @@ model LessonProgress {
   userId   String
   Lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   lessonId String
+
+  score Float?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

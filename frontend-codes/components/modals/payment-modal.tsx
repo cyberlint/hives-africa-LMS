@@ -539,7 +539,7 @@ export default function PaymentModal({ isOpen, onClose, items, total }: PaymentM
                         {item.type}
                       </Badge>
                     </div>
-                    <span className="font-medium">${item.price.toFixed(2)}</span>
+                    <span className="font-medium">₦{item.price.toFixed(2)}</span>
                   </div>
                 ))}
 
@@ -548,22 +548,22 @@ export default function PaymentModal({ isOpen, onClose, items, total }: PaymentM
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>₦{total.toFixed(2)}</span>
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between text-green-600">
                       <span>Discount</span>
-                      <span>-${discount.toFixed(2)}</span>
+                      <span>-₦{discount.toFixed(2)}</span>
                     </div>
                   )}
                   <div className="flex justify-between">
                     <span>Tax</span>
-                    <span>${tax.toFixed(2)}</span>
+                    <span>₦{tax.toFixed(2)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
-                    <span>${(finalTotal + tax).toFixed(2)}</span>
+                    <span>₦{(finalTotal + tax).toFixed(2)}</span>
                   </div>
                 </div>
               </div>

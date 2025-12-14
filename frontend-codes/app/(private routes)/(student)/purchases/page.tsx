@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -29,142 +29,73 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
+  Loader,
 } from "lucide-react"
 import Image from "next/image"
+import {
+  type Purchase,
+  filterPurchases,
+  sortPurchases,
+  calculatePurchaseStats,
+  downloadReceipt,
+  formatDate,
+  formatCurrency,
+} from "@/lib/purchases"
+import { constructUrl } from "@/lib/construct-url"
 
-interface Purchase {
-  id: string
-  courseTitle: string
-  instructor: string
-  instructorAvatar: string
-  courseThumbnail: string
-  purchaseDate: string
-  amount: number
-  originalPrice: number
-  discount: number
-  paymentMethod: string
-  status: "completed" | "pending" | "refunded"
-  receiptUrl: string
-  category: string
-  rating?: number
-}
 
-const dummyPurchases: Purchase[] = [
-  {
-    id: "1",
-    courseTitle: "Complete React Developer Course",
-    instructor: "Sarah Johnson",
-    instructorAvatar: "/ai.png?height=32&width=32",
-    courseThumbnail: "/ai.png?height=120&width=200",
-    purchaseDate: "2024-01-15",
-    amount: 44.99,
-    originalPrice: 89.99,
-    discount: 50,
-    paymentMethod: "Visa ****4242",
-    status: "completed",
-    receiptUrl: "#",
-    category: "Web Development",
-    rating: 4.8,
-  },
-  {
-    id: "2",
-    courseTitle: "JavaScript Fundamentals",
-    instructor: "Mike Chen",
-    instructorAvatar: "/ai.png?height=32&width=32",
-    courseThumbnail: "/ai.png?height=120&width=200",
-    purchaseDate: "2024-01-10",
-    amount: 34.99,
-    originalPrice: 69.99,
-    discount: 50,
-    paymentMethod: "Visa ****4242",
-    status: "completed",
-    receiptUrl: "#",
-    category: "Programming",
-    rating: 4.6,
-  },
-  {
-    id: "3",
-    courseTitle: "UI/UX Design Masterclass",
-    instructor: "Emma Wilson",
-    instructorAvatar: "/ai.png?height=32&width=32",
-    courseThumbnail: "/ai.png?height=120&width=200",
-    purchaseDate: "2024-01-05",
-    amount: 129.99,
-    originalPrice: 129.99,
-    discount: 0,
-    paymentMethod: "PayPal",
-    status: "completed",
-    receiptUrl: "#",
-    category: "Design",
-    rating: 4.9,
-  },
-  {
-    id: "4",
-    courseTitle: "Advanced Node.js Development",
-    instructor: "David Kumar",
-    instructorAvatar: "/ai.png?height=32&width=32",
-    courseThumbnail: "/ai.png?height=120&width=200",
-    purchaseDate: "2024-01-20",
-    amount: 79.99,
-    originalPrice: 99.99,
-    discount: 20,
-    paymentMethod: "Visa ****4242",
-    status: "pending",
-    receiptUrl: "#",
-    category: "Backend Development",
-  },
-  {
-    id: "5",
-    courseTitle: "Digital Marketing Strategy",
-    instructor: "Lisa Rodriguez",
-    instructorAvatar: "/ai.png?height=32&width=32",
-    courseThumbnail: "/ai.png?height=120&width=200",
-    purchaseDate: "2023-12-28",
-    amount: 39.99,
-    originalPrice: 79.99,
-    discount: 50,
-    paymentMethod: "Visa ****4242",
-    status: "refunded",
-    receiptUrl: "#",
-    category: "Marketing",
-  },
-]
+const dummyPurchases: Purchase[] = []
 
 export default function PurchaseHistory() {
-  const [purchases] = useState<Purchase[]>(dummyPurchases)
+  const [purchases, setPurchases] = useState<Purchase[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
   const [sortBy, setSortBy] = useState("recent")
   const [selectedPurchase, setSelectedPurchase] = useState<Purchase | null>(null)
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const filteredPurchases = purchases.filter((purchase) => {
-    const matchesSearch =
-      purchase.courseTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      purchase.instructor.toLowerCase().includes(searchQuery.toLowerCase())
+  // Fetch purchases from API
+  useEffect(() => {
+    const fetchPurchases = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const response = await fetch("/api/purchases")
 
-    if (filterStatus === "all") return matchesSearch
-    return matchesSearch && purchase.status === filterStatus
-  })
+        if (!response.ok) {
+          throw new Error("Failed to fetch purchases")
+        }
 
-  const sortedPurchases = [...filteredPurchases].sort((a, b) => {
-    if (sortBy === "recent") {
-      return new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime()
+        const data = await response.json()
+        setPurchases(data.data || [])
+      } catch (err) {
+        console.error("Error fetching purchases:", err)
+        setError(err instanceof Error ? err.message : "Failed to load purchases")
+        setPurchases([])
+      } finally {
+        setIsLoading(false)
+      }
     }
-    if (sortBy === "amount") {
-      return b.amount - a.amount
-    }
-    if (sortBy === "alphabetical") {
-      return a.courseTitle.localeCompare(b.courseTitle)
-    }
-    return 0
-  })
 
-  const totalSpent = purchases.filter((p) => p.status === "completed").reduce((sum, p) => sum + p.amount, 0)
+    fetchPurchases()
+  }, [])
 
-  const totalSaved = purchases
-    .filter((p) => p.status === "completed")
-    .reduce((sum, p) => sum + (p.originalPrice - p.amount), 0)
+  const filteredPurchases = filterPurchases(purchases, searchQuery, filterStatus)
+  const sortedPurchases = sortPurchases(filteredPurchases, sortBy)
+  const stats = calculatePurchaseStats(purchases)
+  const totalSpent = stats.totalSpent
+  const totalSaved = stats.totalSaved
+
+  const handleDownloadReceipt = async (paymentId: string, receiptUrl?: string) => {
+    try {
+      await downloadReceipt(paymentId, receiptUrl)
+    } catch (error) {
+      console.error("Failed to download receipt:", error)
+      alert("Failed to download receipt. Please try again.")
+    }
+  }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -202,7 +133,33 @@ export default function PurchaseHistory() {
         </div>
       </div>
 
+      {/* Error State */}
+      {error && (
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-red-600" />
+              <div>
+                <p className="font-medium text-red-900">Failed to load purchases</p>
+                <p className="text-sm text-red-800">{error}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-12">
+          <div className="flex flex-col items-center gap-3">
+            <Loader className="h-8 w-8 animate-spin text-yellow" />
+            {/* <p className="text-gray-600">Loading your purchases...</p> */}
+          </div>
+        </div>
+      )}
+
       {/* Stats Cards */}
+      {!isLoading && (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -210,7 +167,7 @@ export default function PurchaseHistory() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">${totalSpent.toFixed(2)}</div>
+            <div className="text-xl sm:text-2xl font-bold">₦{totalSpent.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">Across all purchases</p>
           </CardContent>
         </Card>
@@ -221,7 +178,7 @@ export default function PurchaseHistory() {
             <Badge className="bg-green-500 text-white">Savings</Badge>
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold text-green-600">${totalSaved.toFixed(2)}</div>
+            <div className="text-xl sm:text-2xl font-bold text-green-600">₦{totalSaved.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">From discounts</p>
           </CardContent>
         </Card>
@@ -250,8 +207,10 @@ export default function PurchaseHistory() {
           </CardContent>
         </Card>
       </div>
+      )}
 
       {/* Filters */}
+      {!isLoading && (
       <Card>
         <CardContent className="p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row gap-4">
@@ -290,8 +249,10 @@ export default function PurchaseHistory() {
           </div>
         </CardContent>
       </Card>
+      )}
 
       {/* Purchase List */}
+      {!isLoading && (
       <div className="space-y-4">
         {sortedPurchases.map((purchase) => (
           <Card key={purchase.id} className="hover:shadow-md transition-shadow">
@@ -300,9 +261,11 @@ export default function PurchaseHistory() {
                 {/* Course Image - Hidden on mobile, shown on larger screens */}
                 <div className="hidden sm:block">
                   <Image
-                    src={purchase.courseThumbnail || "/ai.png"}
+                    src={purchase.courseThumbnail ? constructUrl(purchase.courseThumbnail) : "/ai.png"}
                     alt={purchase.courseTitle}
-                    className="w-32 h-20 object-cover rounded-lg"
+                    width={128}
+                    height={80}
+                    className="object-cover rounded-lg"
                   />
                 </div>
 
@@ -336,14 +299,14 @@ export default function PurchaseHistory() {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                     <div>
                       <p className="text-gray-500">Purchase Date</p>
-                      <p className="font-medium">{new Date(purchase.purchaseDate).toLocaleDateString()}</p>
+                      <p className="font-medium">{formatDate(purchase.purchaseDate)}</p>
                     </div>
                     <div>
                       <p className="text-gray-500">Amount Paid</p>
                       <div className="flex items-center space-x-2">
-                        <p className="font-medium text-[#fdb606]">${purchase.amount}</p>
+                        <p className="font-medium text-[#fdb606]">₦{purchase.amount}</p>
                         {purchase.discount > 0 && (
-                          <span className="text-xs text-gray-500 line-through">${purchase.originalPrice}</span>
+                          <span className="text-xs text-gray-500 line-through">₦{purchase.originalPrice}</span>
                         )}
                       </div>
                     </div>
@@ -365,7 +328,7 @@ export default function PurchaseHistory() {
                   {purchase.discount > 0 && (
                     <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                       <p className="text-sm text-green-800">
-                        🎉 You saved ${(purchase.originalPrice - purchase.amount).toFixed(2)} ({purchase.discount}% off)
+                        🎉 You saved ₦{(purchase.originalPrice - purchase.amount).toFixed(2)} ({purchase.discount}% off)
                       </p>
                     </div>
                   )}
@@ -395,30 +358,33 @@ export default function PurchaseHistory() {
                             </div>
                             <div className="flex justify-between">
                               <span className="text-sm text-gray-600">Purchase Date:</span>
-                              <span className="text-sm">{new Date(purchase.purchaseDate).toLocaleDateString()}</span>
+                              <span className="text-sm">{formatDate(purchase.purchaseDate)}</span>
                             </div>
                             <Separator />
                             <div className="flex justify-between">
                               <span className="text-sm text-gray-600">Original Price:</span>
-                              <span className="text-sm">${purchase.originalPrice}</span>
+                              <span className="text-sm">₦{purchase.originalPrice}</span>
                             </div>
                             {purchase.discount > 0 && (
                               <div className="flex justify-between text-green-600">
                                 <span className="text-sm">Discount ({purchase.discount}%):</span>
                                 <span className="text-sm">
-                                  -${(purchase.originalPrice - purchase.amount).toFixed(2)}
+                                  -₦{(purchase.originalPrice - purchase.amount).toFixed(2)}
                                 </span>
                               </div>
                             )}
                             <Separator />
                             <div className="flex justify-between font-semibold">
                               <span>Total Paid:</span>
-                              <span className="text-[#fdb606]">${purchase.amount}</span>
+                              <span className="text-[#fdb606]">₦{purchase.amount}</span>
                             </div>
                           </div>
                         </div>
                         <DialogFooter>
-                          <Button className="bg-[#fdb606] hover:bg-[#f39c12]">
+                          <Button 
+                            className="bg-[#fdb606] hover:bg-[#f39c12]"
+                            onClick={() => selectedPurchase && handleDownloadReceipt(selectedPurchase.id, selectedPurchase.receiptUrl)}
+                          >
                             <Download className="h-4 w-4 mr-2" />
                             Download PDF
                           </Button>
@@ -426,7 +392,11 @@ export default function PurchaseHistory() {
                       </DialogContent>
                     </Dialog>
 
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => purchase && handleDownloadReceipt(purchase.id, purchase.receiptUrl)}
+                    >
                       <Download className="h-4 w-4 mr-2" />
                       Download
                     </Button>
@@ -443,9 +413,10 @@ export default function PurchaseHistory() {
           </Card>
         ))}
       </div>
+      )}
 
-      {sortedPurchases.length === 0 && (
-        <Card>
+      {!isLoading && sortedPurchases.length === 0 && (
+      <Card>
           <CardContent className="text-center py-12">
             <Receipt className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">No purchases found</h3>

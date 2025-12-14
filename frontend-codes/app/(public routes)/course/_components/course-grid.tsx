@@ -32,7 +32,7 @@ export function CourseGrid({ courses, isMobile, isTablet }: CourseGridProps) {
       {courses.map((course) => (
         <div
           key={course.id}
-          className="bg-white rounded-xl shadow-sm border border-[#e9ecef] overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer group"
+          className="bg-white dark:bg-[#2a2f3a] rounded-xl shadow-sm border border-[#e9ecef] dark:border-[#404854] overflow-hidden hover:shadow-lg dark:hover:shadow-lg/50 transition-all duration-200 cursor-pointer group"
           onClick={() => handleCourseClick(course.id)}
         >
           <div className="relative">
@@ -48,17 +48,17 @@ export function CourseGrid({ courses, isMobile, isTablet }: CourseGridProps) {
             </div>
             <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2 py-1 rounded">
               <Star className="w-3 h-3 fill-yellow/90 text-yellow/90" />
-              <span className="text-xs font-medium">{course.rating}</span>
+              <span className="text-xs dark:text-black font-medium">{course.rating}</span>
             </div>
           </div>
 
           <div className="p-4">
-            <p className="text-xs text-[#6c757d] mb-2">by {course.instructor}</p>
-            <h3 className="font-bold text-[#2c3e50] text-base mb-3 line-clamp-2 leading-tight group-hover:text-yellow/90 transition-colors">
+            <p className="text-xs text-[#6c757d] dark:text-gray-400 mb-2">by {course.instructor}</p>
+            <h3 className="font-bold text-[#2c3e50] dark:text-gray-100 text-base mb-3 line-clamp-2 leading-tight group-hover:text-yellow/90 transition-colors">
               {course.title}
             </h3>
 
-            <div className="flex items-center gap-3 mb-4 text-xs text-[#6c757d] flex-wrap">
+            <div className="flex items-center gap-3 mb-4 text-xs text-[#6c757d] dark:text-gray-400 flex-wrap">
               <div className="flex items-center gap-1">
                 <div className="w-1.5 h-1.5 bg-yellow/90 rounded-full"></div>
                 <span>{course.duration}</span>
@@ -79,7 +79,7 @@ export function CourseGrid({ courses, isMobile, isTablet }: CourseGridProps) {
 
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className={`text-lg font-bold ${course.price === 0 ? "text-[#28a745]" : "text-[#2c3e50]"}`}>
+                <span className={`text-lg font-bold ${course.price === 0 ? "text-[#28a745]" : "text-[#2c3e50] dark:text-gray-100"}`}>
                   {course.price === 0 ? "Free" : `₦${course.price.toLocaleString()}`}
                 </span>
               </div>

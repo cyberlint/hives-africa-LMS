@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, HelpCircle } from 'lucide-react';
+import { CheckCircle, HelpCircle, Play } from 'lucide-react';
 import type { Lecture } from '@/types/course';
 
 interface QuizRendererProps {
@@ -23,46 +23,43 @@ export const QuizRenderer: React.FC<QuizRendererProps> = ({
   };
 
   return (
-    <div className="flex-1 bg-black flex flex-col h-full">
-      <div className="flex-1 flex items-center justify-center">
-        <div className="text-center text-gray-400 max-w-2xl p-8">
-          <div className="mb-6">
-            <HelpCircle className="w-16 h-16 text-[#fdb606] mx-auto mb-4" />
-            <h2 className="text-2xl mb-4 text-white">{lecture.title}</h2>
-            <p className="mb-8 text-lg">{lecture.description || 'Test your knowledge with this quiz'}</p>
+    <div className="flex-1 bg-white flex flex-col h-full overflow-y-auto">
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="text-center max-w-2xl w-full">
+          <div className="mb-8">
+            <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <HelpCircle className="w-8 h-8 text-purple-600" />
+            </div>
+            
+            <h2 className="text-2xl font-bold mb-3 text-gray-900">{lecture.title}</h2>
+            <p className="text-gray-600 leading-relaxed text-lg mb-8">
+              {lecture.description || 'Test your knowledge with this quiz'}
+            </p>
           </div>
 
           {isCompleted && (
-            <div className="flex items-center justify-center gap-2 text-green-400 mb-6">
-              <CheckCircle className="w-5 h-5" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium mb-8">
+              <CheckCircle className="w-4 h-4" />
               <span>Quiz Completed</span>
             </div>
           )}
 
-          <div className="flex gap-4 justify-center">
-            <Button
-              onClick={handleStartQuiz}
-              className="bg-[#fdb606] hover:bg-[#e6a406] text-black font-medium px-8 py-3"
-            >
-              {isCompleted ? 'Retake Quiz' : 'Start Quiz'}
-            </Button>
+          <div className="bg-gray-50 border border-gray-100 rounded-xl p-8 max-w-lg mx-auto">
+             <div className="flex flex-col items-center">
+                 <h3 className="font-semibold text-gray-900 mb-2">Ready to start?</h3>
+                 <p className="text-sm text-gray-500 mb-6 max-w-xs">
+                    This quiz contains questions to test your understanding of the material.
+                 </p>
+                 <Button
+                  onClick={handleStartQuiz}
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-8 py-6 h-auto text-base shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
+                >
+                  <Play className="w-5 h-5 mr-2" />
+                  {isCompleted ? 'Retake Quiz' : 'Start Quiz'}
+                </Button>
+             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Bottom Controls */}
-      <div className="bg-[#2d2f31] p-6 border-t border-[#3e4143] shrink-0">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4 text-sm text-gray-400">
-            <span>Lecture {lecture.id}</span>
-            <span className="capitalize">{lecture.type}</span>
-            {isCompleted && (
-              <span className="flex items-center gap-1 text-green-400">
-                <CheckCircle className="w-4 h-4" />
-                Completed
-              </span>
-            )}
-          </div>
         </div>
       </div>
     </div>

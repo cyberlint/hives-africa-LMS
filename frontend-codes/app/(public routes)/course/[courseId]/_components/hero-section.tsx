@@ -17,7 +17,7 @@ export default function HeroSection({ course }: HeroSectionProps) {
       {/* Breadcrumb */}
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto pb-4">
-          <nav className="text-sm text-[#6B7280] overflow-x-auto">
+          <nav className="text-sm text-[#6B7280] dark:text-gray-400 overflow-x-auto">
             <div className="flex items-center space-x-2 whitespace-nowrap">
               <span>Home</span>
               <span>{">"}</span>
@@ -93,21 +93,21 @@ export default function HeroSection({ course }: HeroSectionProps) {
 
               {/* Right card */}
               <div className="lg:justify-self-end w-full max-w-md">
-                <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg w-full   mx-auto lg:mx-0">
+                <div className="bg-white dark:bg-[#2a2f3a] rounded-2xl p-4 sm:p-6 shadow-lg dark:shadow-xl w-full mx-auto lg:mx-0 border border-gray-200 dark:border-[#404854] transition-colors duration-300">
                   {/* Price */}
                   <div className="mb-4">
                     <div className="flex items-center space-x-2 mb-2 flex-wrap">
-                      <span className={`text-2xl sm:text-3xl font-bold ${course.price === 0 ? "text-[#28a745]" : "text-[#0F1D2F]"}`}>
+                      <span className={`text-2xl sm:text-3xl font-bold ${course.price === 0 ? "text-[#28a745]" : "text-[#0F1D2F] dark:text-gray-100"}`}>
                         {course.price === 0 ? "Free" : `₦${course.price.toLocaleString()}`}
                       </span>
                       {course.originalPrice && course.originalPrice > 0 && (
                         <>
-                          <span className="text-base sm:text-lg text-[#6B7280] line-through">₦{course.originalPrice.toLocaleString()}</span>
+                          <span className="text-base sm:text-lg text-[#6B7280] dark:text-gray-400 line-through">₦{course.originalPrice.toLocaleString()}</span>
                           <span className="bg-yellow text-white text-xs px-2 py-1 rounded">Special Offer</span>
                         </>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600">Level: {course.level}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Level: {course.level}</p>
                   </div>
 
                   <CheckoutButton
@@ -123,18 +123,18 @@ export default function HeroSection({ course }: HeroSectionProps) {
                   />
 
                   {/* Course Info */}
-                  <div className="space-y-2 text-sm text-gray-600">
+                  <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-[#404854] pt-4 mt-4">
                     <div className="flex justify-between">
                       <span>Duration:</span>
-                      <span>{course.duration}</span>
+                      <span className="text-[#0F1D2F] dark:text-gray-300 font-medium">{course.duration}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Lessons:</span>
-                      <span>{course.lessons || course.totalLectures || 0}</span>
+                      <span className="text-[#0F1D2F] dark:text-gray-300 font-medium">{course.lessons || course.totalLectures || 0}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Students:</span>
-                      <span>{course.students || 0}</span>
+                      <span className="text-[#0F1D2F] dark:text-gray-300 font-medium">{course.students || 0}</span>
                     </div>
                   </div>
                 </div>

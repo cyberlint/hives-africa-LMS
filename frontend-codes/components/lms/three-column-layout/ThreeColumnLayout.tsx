@@ -73,7 +73,7 @@ export const ThreeColumnLayout: React.FC<ThreeColumnLayoutProps> = ({
   const shouldShowVideo = showVideo && !isVideoCollapsed;
 
   return (
-    <div className={`flex ${getLayoutClasses()} min-h-screen w-full bg-white overflow-auto`}>
+    <div className={`flex ${getLayoutClasses()} min-h-screen w-full bg-white overflow-auto hide-scrollbar`}>
       {/* Left Column: Chapter Navigation */}
       {(shouldShowChapters || !isMobile) && (
         <ChapterNavigationPanel
@@ -103,6 +103,7 @@ export const ThreeColumnLayout: React.FC<ThreeColumnLayoutProps> = ({
         
         <VideoPanel
           lecture={activeLecture}
+          courseData={courseData}
           onTimeUpdate={onTimeUpdate}
           onVideoEnd={onVideoEnd}
           isCollapsed={isVideoCollapsed}

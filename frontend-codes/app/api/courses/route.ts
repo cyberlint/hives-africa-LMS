@@ -34,9 +34,27 @@ export async function GET(request: NextRequest) {
       ];
     }
 
+    // OrderBy logic
+    let orderBy: any = { createdAt: 'desc' };
+    const ordering = searchParams.get('ordering');
+    const limit = searchParams.get('limit');
+
+    if (ordering === '-total_enrollments') {
+      orderBy = {
+        enrollments: {
+          _count: 'desc',
+        },
+      };
+    } else if (ordering === '-created_at') {
+      orderBy = {
+        createdAt: 'desc',
+      };
+    }
+
     // Fetch courses
     const courses = await prisma.course.findMany({
       where,
+      take: limit ? parseInt(limit) : undefined,
       include: {
         user: {
           select: {
@@ -60,10 +78,13 @@ export async function GET(request: NextRequest) {
             },
           }
           : false,
+        _count: {
+          select: {
+            enrollments: true,
+          },
+        },
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy,
     });
 
     // Transform data
@@ -84,7 +105,7 @@ export async function GET(request: NextRequest) {
         duration: course.duration,
         totalLessons,
         rating: 4.5, // TODO: Calculate from reviews
-        students: 0, // TODO: Count enrollments
+        students: (course as any)._count?.enrollments || 0,
         price: course.price,
         category: course.category,
         level: course.level,

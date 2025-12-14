@@ -98,6 +98,8 @@ export async function GET(
           position: lesson.position,
           currentTime: progress?.currentTime,
           attachments: hasAccess ? lesson.attachments : [],
+          documentKey: hasAccess ? lesson.documentKey : undefined,
+          quizConfig: hasAccess ? lesson.quizConfig : undefined,
         };
       }),
     }));

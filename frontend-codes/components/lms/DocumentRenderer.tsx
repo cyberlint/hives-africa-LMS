@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, FileText, Download, ExternalLink } from 'lucide-react';
 import type { Lecture } from '@/types/course';
+import { constructUrl } from '@/lib/construct-url';
 
 interface DocumentRendererProps {
   lecture: Lecture;
@@ -15,108 +16,129 @@ export const DocumentRenderer: React.FC<DocumentRendererProps> = ({
   onMarkComplete,
   isCompleted
 }) => {
-  const handleDownload = (attachment: NonNullable<Lecture['attachments']>[0]) => {
-    // Simulate file download
-    const element = document.createElement('a');
-    const file = new Blob(['Sample document content'], { type: 'text/plain' });
-    element.href = URL.createObjectURL(file);
-    element.download = `${attachment.title}.txt`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-    
-    // Mark as complete after download
+  const documentUrl = lecture.documentKey ? constructUrl(lecture.documentKey) : undefined;
+
+  const handleDownload = (url: string, title: string) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = title;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     onMarkComplete();
   };
 
-  const handleViewAttachment = (attachment: NonNullable<Lecture['attachments']>[0]) => {
-    window.open(`/attachment/${lecture.id}/${attachment.id}`, '_blank');
+  const handleView = (url: string) => {
+    window.open(url, '_blank');
     onMarkComplete();
   };
 
   return (
-    <div className="flex-1 bg-black flex flex-col h-full">
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="text-center text-gray-400 max-w-4xl w-full">
-          <div className="mb-6">
-            <FileText className="w-16 h-16 text-[#fdb606] mx-auto mb-4" />
-            <h2 className="text-2xl mb-4 text-white">{lecture.title}</h2>
-            <p className="mb-8 text-lg">{lecture.description || 'Document content for this lecture'}</p>
+    <div className="flex-1 bg-white flex flex-col h-full overflow-y-auto">
+      <div className="flex-1 flex flex-col items-center p-8">
+        <div className="text-center max-w-4xl w-full">
+          <div className="mb-8">
+            <div className="w-16 h-16 bg-yellow/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <FileText className="w-8 h-8 text-yellow" />
+            </div>
+            <h2 className="text-2xl font-bold mb-3 text-gray-900">{lecture.title}</h2>
+            <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
+              {lecture.description || 'Document content for this lecture'}
+            </p>
           </div>
           
           {isCompleted && (
-            <div className="flex items-center justify-center gap-2 text-green-400 mb-6">
-              <CheckCircle className="w-5 h-5" />
+             <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium mb-8">
+              <CheckCircle className="w-4 h-4" />
               <span>Completed</span>
             </div>
           )}
 
+          {/* Primary Document Action */}
+          {documentUrl ? (
+             <div className="bg-gray-50 border border-gray-100 rounded-xl p-8 mb-10 max-w-2xl mx-auto">
+                <div className="flex flex-col items-center">
+                   <FileText className="w-12 h-12 text-gray-400 mb-4" />
+                   <h3 className="font-semibold text-gray-900 mb-2">Main Document</h3>
+                   <p className="text-sm text-gray-500 mb-6">Access the main learning material for this lecture</p>
+                   <div className="flex gap-3">
+                      <Button
+                        onClick={() => handleView(documentUrl)}
+                        className="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                        variant="outline"
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Open in New Tab
+                      </Button>
+                      <Button
+                        onClick={() => handleDownload(documentUrl, lecture.title)}
+                        className="bg-yellow hover:bg-yellow/90 text-black border-none"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Download PDF
+                      </Button>
+                   </div>
+                </div>
+             </div>
+          ) : (
+             !lecture.attachments?.length && (
+                <div className="text-center p-8 bg-gray-50 rounded-xl border border-dashed border-gray-200 mb-8">
+                  <p className="text-gray-500">No document file available for this lecture.</p>
+                </div>
+             )
+          )}
+
+          {/* Attachments Section */}
           {lecture.attachments && lecture.attachments.length > 0 && (
-            <div className="mb-8">
-              <h3 className="text-lg font-medium text-white mb-4">Available Resources:</h3>
-              <div className="grid gap-4 max-w-2xl mx-auto">
+            <div className="max-w-3xl mx-auto">
+              <div className="flex items-center gap-4 mb-6">
+                 <div className="h-px bg-gray-200 flex-1"></div>
+                 <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Additional Resources</span>
+                 <div className="h-px bg-gray-200 flex-1"></div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {lecture.attachments.map((attachment) => (
                   <div
                     key={attachment.id}
-                    className="p-4 border border-[#3e4143] rounded-lg hover:border-[#fdb606] transition-colors group bg-[#2d2f31]"
+                    className="p-4 bg-white border border-gray-200 rounded-xl hover:border-yellow/50 hover:shadow-sm transition-all group text-left"
                   >
-                    <h4 className="font-medium text-white group-hover:text-[#fdb606] mb-2">
-                      {attachment.title}
-                    </h4>
-                    <p className="text-sm text-gray-400 mb-3">{attachment.description}</p>
-                    
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2 text-xs">
-                        <span className="text-[#fdb606] capitalize">{attachment.type}</span>
-                        {attachment.fileSize && (
-                          <>
-                            <span className="text-gray-500">•</span>
-                            <span className="text-gray-500">{attachment.fileSize}</span>
-                          </>
-                        )}
-                      </div>
-                      
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={() => handleViewAttachment(attachment)}
-                          size="sm"
-                          variant="outline"
-                          className="text-white border-[#3e4143] hover:bg-[#3e4143]"
-                        >
-                          <ExternalLink className="w-4 h-4 mr-1" />
-                          View
-                        </Button>
-                        <Button
-                          onClick={() => handleDownload(attachment)}
-                          size="sm"
-                          className="bg-[#fdb606] hover:bg-[#e6a406] text-black"
-                        >
-                          <Download className="w-4 h-4 mr-1" />
-                          Download
-                        </Button>
-                      </div>
+                    <div className="flex items-start gap-3">
+                       <div className="p-2 bg-gray-50 rounded-lg group-hover:bg-yellow/10 transition-colors">
+                          <FileText className="w-5 h-5 text-gray-500 group-hover:text-yellow" />
+                       </div>
+                       <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-gray-900 truncate mb-1">
+                            {attachment.title}
+                          </h4>
+                          <p className="text-xs text-gray-500 line-clamp-2 mb-3">
+                            {attachment.description || "No description available"}
+                          </p>
+                          
+                          <div className="flex items-center justify-between">
+                             <div className="flex items-center gap-2 text-xs text-gray-400">
+                                <span className="capitalize bg-gray-100 px-2 py-0.5 rounded text-gray-600">{attachment.type}</span>
+                                {attachment.fileSize && <span>{attachment.fileSize}</span>}
+                             </div>
+                             
+                             <div className="flex gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-gray-400 hover:text-yellow hover:bg-yellow/10"
+                                  onClick={() => window.open(attachment.url, '_blank')} // Assuming attachment.url is already complete or handled elsewhere
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                </Button>
+                             </div>
+                          </div>
+                       </div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Bottom Controls */}
-      <div className="bg-[#2d2f31] p-6 border-t border-[#3e4143] shrink-0">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4 text-sm text-gray-400">
-            <span>Lecture {lecture.id}</span>
-            <span className="capitalize">{lecture.type}</span>
-            {isCompleted && (
-              <span className="flex items-center gap-1 text-green-400">
-                <CheckCircle className="w-4 h-4" />
-                Completed
-              </span>
-            )}
-          </div>
         </div>
       </div>
     </div>

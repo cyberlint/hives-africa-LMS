@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { useRouter } from 'next/navigation'
 import { tokenStorage, userStorage, getRedirectPath, isProtectedRoute } from '@/lib/utils'
 import { toast } from 'sonner'
+import { Loader } from 'lucide-react'
 
 // Types
 export interface User {
@@ -280,7 +281,9 @@ export function withAuth<P extends object>(Component: React.ComponentType<P>) {
     if (isLoading) {
       return (
         <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500"></div>
+          <div className="flex flex-col items-center gap-3">
+            <Loader className="h-8 w-8 animate-spin text-yellow" />
+          </div>
         </div>
       )
     }

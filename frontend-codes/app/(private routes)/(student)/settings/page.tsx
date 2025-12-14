@@ -84,8 +84,16 @@ interface LearningPreferences {
   weeklyGoal: number
 }
 
+interface Purchase {
+  id: string;
+  courseTitle: string;
+  amount: number;
+  currency: string;
+  date: string;
+}
+
 export default function AccountSettings() {
-    const { user  } = useDashboard()
+    const { user, refetch  } = useDashboard()
   const [activeTab, setActiveTab] = useState("profile")
   const [showPassword, setShowPassword] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -94,15 +102,56 @@ export default function AccountSettings() {
   const [isPhotoDialogOpen, setIsPhotoDialogOpen] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>("")
+  const [purchases, setPurchases] = useState<Purchase[]>([])
+
+  // Fetch data
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('/api/user/settings');
+        if (response.ok) {
+          const data = await response.json();
+          const backendUser = data.user;
+          const [firstName, ...lastNameParts] = (backendUser.name || "").split(" ");
+          
+          setProfileData({
+            firstName: firstName || "",
+            lastName: lastNameParts.join(" ") || "",
+            email: backendUser.email || "",
+            bio: backendUser.bio || "",
+            website: backendUser.website || "",
+            avatar: backendUser.image || backendUser.avatar || "",
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch user settings", error);
+      }
+    };
+
+    const fetchPurchases = async () => {
+      try {
+        const response = await fetch('/api/user/purchases');
+        if (response.ok) {
+          const data = await response.json();
+          setPurchases(data.purchases);
+        }
+      } catch (error) {
+        console.error("Failed to fetch purchases", error);
+      }
+    };
+
+    fetchUserData();
+    fetchPurchases();
+  }, []);
 
   // Form states
   const [profileData, setProfileData] = useState<ProfileData>({
     firstName: user.name.split(" ")[0] || "",
     lastName: user.name.split(" ")[1] || "",
-    email: user.email,
+    email: user.email || "",
     bio: "",
     website: "",
-    avatar: user.avatar,
+    avatar: user.avatar || "",
   })
 
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
@@ -270,38 +319,36 @@ export default function AccountSettings() {
 
   const handleSaveProfile = async () => {
     if (!validateProfileForm()) {
-      toast.error(
-   "Validation Error",
-        {description: "Please fix the errors below",
-      
-      })
-      return
+      toast.error("Validation Error", { description: "Please fix the errors below" });
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const response = await fetch('/api/user/settings', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: `${profileData.firstName} ${profileData.lastName}`,
+          email: profileData.email,
+          bio: profileData.bio,
+          website: profileData.website,
+          avatar: profileData.avatar,
+        }),
+      });
 
-      const updatedUser: User = {
-        ...user,
-        name: `${profileData.firstName} ${profileData.lastName}`,
-        email: profileData.email,
-        avatar: profileData.avatar,
-      }
+      if (!response.ok) throw new Error("Failed to update");
 
-     
-
-      toast.success( "Profile updated successfully",
-        {description: "Your profile information has been saved",
-      })
+      toast.success("Profile updated successfully", { description: "Your profile information has been saved" });
+      
+      if (refetch) refetch(); 
+      
     } catch (error) {
-      toast( "Update failed",
-        {description: "Failed to update profile. Please try again.",
-     
-      })
+       toast.error("Update failed", { description: "Failed to update profile. Please try again." });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
@@ -361,17 +408,6 @@ export default function AccountSettings() {
     setIsLoading(true)
     try {
       await new Promise((resolve) => setTimeout(resolve, 800))
-
-      const updatedUser: User = {
-        ...user,
-        preferences: {
-          language: learningPreferences.language,
-          autoplay: learningPreferences.autoplay,
-          quality: learningPreferences.downloadQuality,
-        },
-      }
-
-      
 
       toast( "Preferences updated",
         {description: "Your learning preferences have been saved",
@@ -958,30 +994,26 @@ export default function AccountSettings() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b space-y-2 sm:space-y-0">
-                      <div className="flex-1">
-                        <p className="font-medium">Complete React Developer Course</p>
-                        <p className="text-sm text-gray-500">January 15, 2024</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">$89.99</p>
-                        <Button variant="ghost" size="sm">
-                          Download Receipt
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b space-y-2 sm:space-y-0">
-                      <div className="flex-1">
-                        <p className="font-medium">JavaScript Fundamentals</p>
-                        <p className="text-sm text-gray-500">January 10, 2024</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">$69.99</p>
-                        <Button variant="ghost" size="sm">
-                          Download Receipt
-                        </Button>
-                      </div>
-                    </div>
+                    {purchases.length === 0 ? (
+                        <p className="text-center text-gray-500 py-4">No purchase history found.</p>
+                    ) : (
+                        purchases.map((purchase) => (
+                            <div key={purchase.id} className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b space-y-2 sm:space-y-0">
+                            <div className="flex-1">
+                                <p className="font-medium">{purchase.courseTitle}</p>
+                                <p className="text-sm text-gray-500">{new Date(purchase.date).toLocaleDateString()}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="font-medium">
+                                    {purchase.currency} {purchase.amount.toLocaleString()}
+                                </p>
+                                <Button variant="ghost" size="sm">
+                                Download Receipt
+                                </Button>
+                            </div>
+                            </div>
+                        ))
+                    )}
                   </div>
                 </CardContent>
               </Card>

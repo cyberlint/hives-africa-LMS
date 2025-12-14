@@ -52,10 +52,10 @@ export function MobileFilters({ isOpen, onClose, filters, onFiltersChange, cours
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-sm max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-sm max-h-[90vh] overflow-y-auto dark:bg-[#2a2f3a] dark:border-[#404854]">
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle>Filters</DialogTitle>
+            <DialogTitle className="dark:text-gray-100">Filters</DialogTitle>
             <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0">
               <X className="w-4 h-4" />
             </Button>
@@ -65,7 +65,7 @@ export function MobileFilters({ isOpen, onClose, filters, onFiltersChange, cours
         <div className="space-y-6">
           {/* Course Category */}
           <div>
-            <h3 className="font-bold text-[#2c3e50] mb-4">Course Category</h3>
+            <h3 className="font-bold text-[#2c3e50] dark:text-gray-100 mb-4">Course Category</h3>
             <div className="space-y-3">
               {categories.map((category) => (
                 <div key={category} className="flex items-center space-x-3">
@@ -73,9 +73,9 @@ export function MobileFilters({ isOpen, onClose, filters, onFiltersChange, cours
                     id={`mobile-${category}`}
                     checked={filters.categories.includes(category)}
                     onCheckedChange={(checked) => handleFilterChange("categories", category, checked as boolean)}
-                    className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
+                    className="border-[#d1d5db] dark:border-[#404854] data-[state=checked]:bg-yellow data-[state=checked]:border-[#ff6b35]"
                   />
-                  <label htmlFor={`mobile-${category}`} className="text-sm text-[#2c3e50] cursor-pointer">
+                  <label htmlFor={`mobile-${category}`} className="text-sm text-[#2c3e50] dark:text-gray-300 cursor-pointer">
                     {category}
                   </label>
                 </div>
@@ -85,7 +85,7 @@ export function MobileFilters({ isOpen, onClose, filters, onFiltersChange, cours
 
           {/* Instructors */}
           <div>
-            <h3 className="font-bold text-[#2c3e50] mb-4">Instructors</h3>
+            <h3 className="font-bold text-[#2c3e50] dark:text-gray-100 mb-4">Instructors</h3>
             <div className="space-y-3">
               {instructors.map((instructor) => (
                 <div key={instructor} className="flex items-center space-x-3">

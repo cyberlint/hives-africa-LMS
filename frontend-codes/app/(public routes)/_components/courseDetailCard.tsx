@@ -17,37 +17,37 @@ const CourseDetailCard = ({ course }: { course: CourseListItem }) => {
         </p>
       </div>
 
-      <p className="text-[10px] sm:text-xs font-semibold text-darkBlue-300 line-clamp-2 px-0 md:px-4">
+      <p className="text-[10px] sm:text-xs font-semibold text-darkBlue-300 dark:text-gray-100 line-clamp-2 px-0 md:px-4">
         {course.title}
       </p>
 
       <div className="flex justify-between items-center gap-2 px-0 md:px-4">
         <div className="flex justify-center items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-            <span className="text-xs font-semibold text-gray-600">
+          <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-[#2a2f3a] flex items-center justify-center">
+            <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
               {course.instructor?.first_name?.[0] || "I"}
             </span>
           </div>
 
-          <p className="flex flex-col text-[10px] text-[#4E5566] font-medium">
-            <span className="text-[#8C94A3] font-normal">Course by</span>
+          <p className="flex flex-col text-[10px] text-[#4E5566] dark:text-gray-400 font-medium">
+            <span className="text-[#8C94A3] dark:text-gray-500 font-normal">Course by</span>
             {course.instructor?.full_name || "Instructor"}
           </p>
         </div>
 
         <div className="flex items-center gap-1 text-[10px]">
-          <p className="flex items-center gap-1 font-semibold text-darkBlue-300">
+          <p className="flex items-center gap-1 font-semibold text-darkBlue-300 dark:text-gray-100">
             <span>
               <Star fill="#FD8E1F" strokeWidth={0} size={12} />
             </span>
             {course.average_rating.toFixed(1)}
           </p>
 
-          <p className="text-[#A1A5B3]">({course.total_reviews.toLocaleString()})</p>
+          <p className="text-[#A1A5B3] dark:text-gray-500">({course.total_reviews.toLocaleString()})</p>
         </div>
       </div>
 
-      <div className="flex flex-wrap justify-between items-center gap-y-1 text-[#4E5566] text-[10px] px-0 md:px-4 w-full">
+      <div className="flex flex-wrap justify-between items-center gap-y-1 text-[#4E5566] dark:text-gray-400 text-[10px] px-0 md:px-4 w-full">
         <div className="flex items-center gap-1">
           <Image
             src="/assets/courses/user.png"
@@ -90,10 +90,10 @@ const CourseDetailCard = ({ course }: { course: CourseListItem }) => {
 
       <div className="flex flex-wrap justify-between items-center px-0 md:px-4">
         <div className="flex justify-between items-center gap-2">
-          <p className="flex items-center gap-1 text-sm text-darkBlue-300 font-medium">
+          <p className="flex items-center gap-1 text-sm text-darkBlue-300 dark:text-gray-100 font-medium">
             ₦{course.current_price.toLocaleString()}{" "}
             {course.original_price && course.original_price > course.current_price && (
-              <span className="text-[10px] text-[#A1A5B3] line-through">
+              <span className="text-[10px] text-[#A1A5B3] dark:text-gray-500 line-through">
                 ₦{course.original_price.toLocaleString()}
               </span>
             )}
@@ -101,14 +101,14 @@ const CourseDetailCard = ({ course }: { course: CourseListItem }) => {
 
           {discountPercentage > 0 && (
             <div className="flex">
-              <p className="uppercase text-[8px] bg-[#FFEEE8] text-orange font-semibold p-1">
+              <p className="uppercase text-[8px] bg-[#FFEEE8] dark:bg-orange/20 text-orange dark:text-orange font-semibold p-1">
                 {discountPercentage}% OFF
               </p>
             </div>
           )}
         </div>
 
-        <div className="bg-[#FFEEE8] p-1">
+        <div className="bg-[#FFEEE8] dark:bg-orange/20 p-1">
           <Image
             src="/assets/courses/heart.png"
             alt="heart"
@@ -120,9 +120,9 @@ const CourseDetailCard = ({ course }: { course: CourseListItem }) => {
       </div>
 
       {course.short_description && (
-        <div className="space-y-2 text-[10px] border-y border-[#E9EAF0] px-0 md:px-4 py-3">
-          <p className="text-darkBlue-300 font-medium">ABOUT THIS COURSE</p>
-          <p className="text-[#6E7485] line-clamp-3">{course.short_description}</p>
+        <div className="space-y-2 text-[10px] border-y border-[#E9EAF0] dark:border-[#404854] px-0 md:px-4 py-3">
+          <p className="text-darkBlue-300 dark:text-gray-100 font-medium">ABOUT THIS COURSE</p>
+          <p className="text-[#6E7485] dark:text-gray-400 line-clamp-3">{course.short_description}</p>
         </div>
       )}
 
@@ -142,7 +142,7 @@ const CourseDetailCard = ({ course }: { course: CourseListItem }) => {
 
         <Link
           href={`/course/${course.slug || course.id}`}
-          className="block text-center bg-[#fffce8] hover:bg-[#FFEEE8CC] text-yellow text-xs font-semibold px-4 py-2 w-full"
+          className="block text-center bg-[#fffce8] dark:bg-yellow/20 hover:bg-[#FFEEE8CC] dark:hover:bg-yellow/30 text-yellow dark:text-yellow text-xs font-semibold px-4 py-2 w-full transition-colors duration-300"
         >
           Course Detail
         </Link>

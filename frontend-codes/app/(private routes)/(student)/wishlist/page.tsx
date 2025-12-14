@@ -5,44 +5,83 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Heart, ShoppingCart, Star, Clock, Users, Share2, Filter, MoreVertical } from "lucide-react"
+import { Heart, ShoppingCart, Star, Clock, Users, Share2, Filter, MoreVertical, CheckCircle } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import type { Course } from "@/types"
 import ShareWishlistModal from "@/components/modals/share-wishlist-modal"
 import Image from "next/image"
 import { useDashboard } from "../studentContext"
+import { constructUrl } from "@/lib/construct-url"
+import { useCart } from "@/contexts/CartContext"
+import { toast } from "sonner"
+import Link from "next/link"
+
 interface WishlistProps {
   courses: Course[]
   onCourseSelect: (course: Course) => void
 }
 
-
-
-
 const Wishlist = () => {
   const [selectedCourses, setSelectedCourses] = useState<string[]>([])
   const [isShareWishlistModalOpen, setIsShareWishlistModalOpen] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
-const {courses}=useDashboard()
+  const { courses, enrolledCourses } = useDashboard()
+  const { addItem } = useCart()
+  
+  // Get enrolled course IDs for comparison
+  const enrolledCourseIds = enrolledCourses.map((course) => course.id)
+
   const toggleCourseSelection = (courseId: string) => {
+    // Don't allow selecting enrolled courses
+    if (enrolledCourseIds.includes(courseId)) {
+      toast.error("You're already enrolled in this course")
+      return
+    }
     setSelectedCourses((prev) => (prev.includes(courseId) ? prev.filter((id) => id !== courseId) : [...prev, courseId]))
   }
 
-  const addToCart = (courseId: string) => {
-    console.log("Added to cart:", courseId)
+  const addToCart = (course: Course) => {
+    // Check if user is already enrolled
+    if (enrolledCourseIds.includes(course.id)) {
+      toast.error("You're already enrolled in this course")
+      return
+    }
+
+    // Check if already in cart
+    addItem({
+      id: course.id,
+      title: course.title,
+      slug: course.id,
+      thumbnail: course.thumbnail,
+      unitPrice: course.price,
+      isFree: course.price === 0,
+      instructor: course.instructor.name,
+    })
+    toast.success(`${course.title} added to cart`)
   }
 
   const removeFromWishlist = (courseId: string) => {
+    // TODO: Implement wishlist removal from API
     console.log("Removed from wishlist:", courseId)
+    toast.success("Removed from wishlist")
   }
 
   const addAllToCart = () => {
-    selectedCourses.forEach((courseId) => addToCart(courseId))
+    const selectedCoursesToAdd = courses.filter(
+      (course) => selectedCourses.includes(course.id) && !enrolledCourseIds.includes(course.id)
+    )
+
+    if (selectedCoursesToAdd.length === 0) {
+      toast.error("All selected courses are either already enrolled or cannot be added")
+      return
+    }
+
+    selectedCoursesToAdd.forEach((course) => addToCart(course))
     setSelectedCourses([])
   }
 
   const handleCourseClick = (course: Course) => {
-    // onCourseSelect(course)
+    // Navigate to course detail
   }
 
   const handleShareWishlist = () => {
@@ -120,24 +159,36 @@ const {courses}=useDashboard()
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {courses.map((course) => (
-            <Card key={course.id} className="hover:shadow-lg transition-shadow">
+          {courses.map((course) => {
+            const isEnrolled = enrolledCourseIds.includes(course.id)
+            
+            return (
+            <Card key={course.id} className={`hover:shadow-lg transition-shadow ${isEnrolled ? "opacity-60" : ""}`}>
               <CardContent className="p-0">
                 <div className="relative">
                   <Image
-                    src={course.thumbnail || "/ai.png"}
+                    src={course?.thumbnail ? constructUrl(course?.thumbnail) : "/ai.png"}
                     alt={course.title}
                     width={300}
                     height={200}
                     className="w-full h-32 sm:h-48 object-cover rounded-t-lg cursor-pointer"
                     onClick={() => handleCourseClick(course)}
                   />
+                  {isEnrolled && (
+                    <div className="absolute inset-0 bg-black/40 rounded-t-lg flex items-center justify-center">
+                      <div className="bg-white/90 px-3 py-1 rounded-full flex items-center gap-1">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <span className="text-sm font-medium text-gray-800">Enrolled</span>
+                      </div>
+                    </div>
+                  )}
                   <div className="absolute top-2 left-2">
                     <input
                       type="checkbox"
                       checked={selectedCourses.includes(course.id)}
                       onChange={() => toggleCourseSelection(course.id)}
-                      className="w-4 h-4 text-[#fdb606] bg-white border-gray-300 rounded focus:ring-[#fdb606]"
+                      disabled={isEnrolled}
+                      className="w-4 h-4 text-[#fdb606] bg-white border-gray-300 rounded focus:ring-[#fdb606] disabled:opacity-50"
                     />
                   </div>
                   <div className="absolute top-2 right-2">
@@ -150,7 +201,7 @@ const {courses}=useDashboard()
                       <Heart className="h-4 w-4 fill-current" />
                     </Button>
                   </div>
-                  {course.price < 100 && (
+                  {course.price < 100 && !isEnrolled && (
                     <div className="absolute bottom-2 left-2">
                       <Badge className="bg-red-500 text-xs">50% OFF</Badge>
                     </div>
@@ -205,20 +256,31 @@ const {courses}=useDashboard()
                   </div>
 
                   <div className="flex gap-2">
-                    <Button
-                      className="flex-1 bg-[#fdb606] hover:bg-[#f39c12] text-sm"
-                      onClick={() => addToCart(course.id)}
-                    >
-                      <ShoppingCart className="h-4 w-4 mr-2" />
-                      Add to Cart
-                    </Button>
+                    {isEnrolled ? (
+                      <Button
+                        className="flex-1 bg-green-600 hover:bg-green-700 text-sm disabled"
+                        disabled
+                      >
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Already Enrolled
+                      </Button>
+                    ) : (
+                      <Button
+                        className="flex-1 bg-[#fdb606] hover:bg-[#f39c12] text-sm"
+                        onClick={() => addToCart(course)}
+                      >
+                        <ShoppingCart className="h-4 w-4 mr-2" />
+                        Add to Cart
+                      </Button>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleCourseClick(course)}
                       className="text-xs sm:text-sm"
+                      asChild
                     >
-                      Preview
+                      <Link href={`/learning/${course.id}`}>Preview</Link>
                     </Button>
                   </div>
 
@@ -228,7 +290,8 @@ const {courses}=useDashboard()
                 </div>
               </CardContent>
             </Card>
-          ))}
+            )
+          })}
         </div>
       )}
 

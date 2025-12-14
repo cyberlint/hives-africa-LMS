@@ -21,10 +21,10 @@ class ApiClient {
 
   constructor() {
     // Use the current host for the API base URL in development
-    this.baseURL = process.env.NEXT_CORE_API_URL || 
-                   (typeof window !== 'undefined' 
-                     ? `${window.location.protocol}//${window.location.hostname}:8000`
-                     : 'http://0.0.0.0:8000')
+    this.baseURL = process.env.NEXT_CORE_API_URL ||
+      (typeof window !== 'undefined'
+        ? ''
+        : 'http://localhost:3000')
 
     this.client = axios.create({
       baseURL: this.baseURL,

@@ -81,17 +81,17 @@ export default function Sidebar({ activeTab, onTabChange, className }: SidebarPr
   const { user } = useAuth()
 
   return (
-    <div className={cn("w-64 min-h-screen bg-white border-r border-gray-200 h-full overflow-y-auto", className)}>
+    <div className={cn("w-64 min-h-screen bg-white dark:bg-[#1d2026] border-r border-gray-200 dark:border-[#0a0f19] h-full overflow-y-auto transition-colors duration-300", className)}>
       <div className="p-4">
         {/* User Type Indicator */}
         {user && (
-          <div className="mb-4 pb-4 border-b border-gray-200">
+          <div className="mb-4 pb-4 border-b border-gray-200 dark:border-[#0a0f19]">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">Account Type</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Account Type</span>
               <UserTypeIndicator user={user} showMessage={false} />
             </div>
             {(user.user_type === 'instructor' || user.user_type === 'admin') && (
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-600">
                 {user.user_type === 'instructor' ? 'Instructor' : 'Admin'} dashboard coming soon
               </p>
             )}
@@ -111,8 +111,8 @@ export default function Sidebar({ activeTab, onTabChange, className }: SidebarPr
                   "min-h-[44px] px-3 py-2",
                   isActive
                     ? "bg-[#fdb606] hover:bg-[#f39c12] text-white shadow-sm"
-                    : "hover:bg-gray-100 text-gray-700 hover:text-gray-900",
-                  "focus:outline-none focus:ring-2 focus:ring-[#fdb606] focus:ring-offset-2",
+                    : "hover:bg-gray-100 dark:hover:bg-[#0a0f19] text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white",
+                  "focus:outline-none focus:ring-2 focus:ring-[#fdb606] focus:ring-offset-2 dark:focus:ring-offset-[#1d2026]",
                 )}
                
                 aria-current={isActive ? "page" : undefined}

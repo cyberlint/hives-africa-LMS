@@ -20,9 +20,6 @@ export default function ResponsiveLayout({ children,  }: ResponsiveLayoutProps) 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
-  // Check if current route is a chapter route (lecture learning interface)
-  const isChapterRoute = pathname.includes('/lecture/chapter') ||  pathname.includes('/[courseId]/chapter')
-
   useEffect(() => {
     const checkScreenSize = () => {
       const mobile = window.innerWidth < 768
@@ -51,8 +48,25 @@ export default function ResponsiveLayout({ children,  }: ResponsiveLayoutProps) 
     setIsMobileMenuOpen(false)
   }
 
-  // If it's a chapter route, render children without the student layout wrapper
-  if (isChapterRoute) {
+  // Define the routes that should have the sidebar and standard layout
+  const sidebarRoutes = [
+    '/dashboard',
+    '/courses',
+    '/settings',
+    '/achievements',
+    '/analytics',
+    '/cart',
+    '/help',
+    '/learning',
+    '/purchases',
+    '/wishlist'
+  ];
+
+  // Check if current route is a sidebar route
+  const isSidebarRoute = sidebarRoutes.some(route => pathname.startsWith(route)) || pathname === '/' || pathname === '/profile';
+
+  // If it's not a sidebar route (i.e. it's a course ID root or chapter page), render full width
+  if (!isSidebarRoute) {
     return (
       <DashboardProvider>
            {/* Header */}
@@ -66,7 +80,7 @@ export default function ResponsiveLayout({ children,  }: ResponsiveLayoutProps) 
     <>
     <DashboardProvider>
        
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white dark:bg-[#1d2026] transition-colors duration-300">
       {/* Header */}
      <Header   />
 
@@ -81,18 +95,18 @@ export default function ResponsiveLayout({ children,  }: ResponsiveLayoutProps) 
             size="icon"
             className={cn(
               "fixed top-20 left-4 z-50 md:hidden",
-              "bg-white shadow-lg border-2 border-gray-200",
-              "hover:bg-gray-50 hover:border-[#fdb606]",
-              "active:bg-gray-100 active:scale-95",
+              "bg-white dark:bg-[#1d2026] shadow-lg border-2 border-gray-200 dark:border-[#0a0f19]",
+              "hover:bg-gray-50 dark:hover:bg-[#0a0f19] hover:border-[#fdb606]",
+              "active:bg-gray-100 dark:active:bg-[#0a0f19] active:scale-95",
               "transition-all duration-200 ease-in-out",
               "w-12 h-12 rounded-full",
-              "focus:outline-none focus:ring-2 focus:ring-[#fdb606] focus:ring-offset-2",
+              "focus:outline-none focus:ring-2 focus:ring-[#fdb606] focus:ring-offset-2 dark:focus:ring-offset-[#1d2026]",
             )}
             onClick={handleMobileMenuToggle}
             aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={isMobileMenuOpen}
           >
-            {isMobileMenuOpen ? <X className="h-5 w-5 text-gray-700" /> : <Menu className="h-5 w-5 text-gray-700" />}
+            {isMobileMenuOpen ? <X className="h-5 w-5 text-gray-700 dark:text-gray-300" /> : <Menu className="h-5 w-5 text-gray-700 dark:text-gray-300" />}
           </Button>
         )}
 
@@ -100,16 +114,16 @@ export default function ResponsiveLayout({ children,  }: ResponsiveLayoutProps) 
         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
           <SheetContent
             side="left"
-            className={cn("p-0 w-72 sm:w-80", "bg-white border-r border-gray-200", "shadow-xl")}
+            className={cn("p-0 w-72 sm:w-80", "bg-white dark:bg-[#1d2026] border-r border-gray-200 dark:border-[#0a0f19]", "shadow-xl")}
           >
             {/* Sheet Header */}
-            <div className="flex items-center justify-between p-4 border-b bg-white sticky top-0 z-10">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-[#0a0f19] bg-white dark:bg-[#1d2026] sticky top-0 z-10 transition-colors">
               <div className="text-xl font-bold text-[#fdb606]">LearnHub</div>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={closeMobileMenu}
-                className="hover:bg-gray-100 rounded-full"
+                className="hover:bg-gray-100 dark:hover:bg-[#0a0f19] rounded-full transition-colors"
                 aria-label="Close navigation menu"
               >
                 <X className="h-5 w-5" />
@@ -117,7 +131,7 @@ export default function ResponsiveLayout({ children,  }: ResponsiveLayoutProps) 
             </div>
 
             {/* Sheet Content */}
-            <div className="bg-white h-full overflow-y-auto"><Sidebar/></div>
+            <div className="bg-white dark:bg-[#1d2026] h-full overflow-y-auto transition-colors"><Sidebar/></div>
           </SheetContent>
         </Sheet>
 

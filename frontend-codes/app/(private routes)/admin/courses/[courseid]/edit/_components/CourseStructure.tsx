@@ -23,7 +23,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { AdminCourseSingularType } from "@/app/data/admin/admin-get-course";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, FileText, GripVertical, GripVerticalIcon, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, FileText, GripVertical, GripVerticalIcon, Trash2, PlayCircle, HelpCircle, Folder } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -33,6 +33,7 @@ import { NewModuleModal } from "./NewModuleModal";
 import { NewLessonModal } from "./NewLessonModal";
 import { DeleteLesson } from "./DeleteLesson";
 import { DeleteModule } from "./DeleteModule";
+import { EditLessonSheet } from "./EditLessonSheet";
 
 interface iAppProps {
   data: AdminCourseSingularType;
@@ -87,13 +88,21 @@ export function CourseStructure({ data }: iAppProps) {
         id: lesson.id,
         title: lesson.title,
         order: lesson.position,
+        description: lesson.description,
+        thumbnailKey: lesson.thumbnailKey,
+        videoKey: lesson.videoKey,
+        type: lesson.type,
+        content: lesson.content,
+        duration: lesson.duration,
+        documentKey: lesson.documentKey,
+        quizConfig: lesson.quizConfig,
       })),
     })) || [];
 
   const [items, setItems] = useState(initialItems);
 
 useEffect(() => {
-  setItems((prevItems) => {
+  setItems((prevItems: any) => {
     const updatedItems = data.module.map((module: ModuleType) => ({
       id: module.id,
       title: module.title,
@@ -103,6 +112,14 @@ useEffect(() => {
         id: lesson.id,
         title: lesson.title,
         order: lesson.position,
+        description: lesson.description,
+        thumbnailKey: lesson.thumbnailKey,
+        videoKey: lesson.videoKey,
+        type: lesson.type,
+        content: lesson.content,
+        duration: lesson.duration,
+        documentKey: lesson.documentKey,
+        quizConfig: lesson.quizConfig,
       })),
     })) || [];
 
@@ -360,11 +377,23 @@ useEffect(() => {
                                             >
                                               <GripVerticalIcon className="size-4" />
                                             </Button>
-                                            <FileText className="size-4" />
-                                            <Link 
-                                            href={`/admin/courses/${data.id}/${item.id}/${lesson.id}`}
-                                            > 
-                                            {lesson.title}</Link>
+                                            <div className="flex items-center gap-2">
+                                            {lesson.type === 'Video' && <PlayCircle className="size-4 text-blue-500" />}
+                                            {lesson.type === 'Document' && <FileText className="size-4 text-orange-500" />}
+                                            {lesson.type === 'Quiz' && <HelpCircle className="size-4 text-green-500" />}
+                                            {lesson.type === 'Resource' && <Folder className="size-4 text-purple-500" />}
+                                            <EditLessonSheet 
+                                              lesson={lesson}
+                                              moduleId={item.id}
+                                              courseId={data.id}
+                                              trigger={
+                                                <span className="cursor-pointer hover:underline">
+                                                  {lesson.title}
+                                                </span>
+                                              }
+                                            />
+                                            </div>
+
                                           </div>
                                           <DeleteLesson 
                                           moduleId={item.id}
