@@ -7,6 +7,7 @@ import { QueryProvider } from "./providers/QueryProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/contexts/CartContext";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 // Site-wide chrome (Topbar, Navbar, Footer) moved into `(public routes)/layout.tsx` to avoid rendering inside private student dashboard.
 
 const montserrat = Montserrat({
@@ -32,25 +33,32 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${montserrat.className}`}>
-        <QueryProvider>
-          <AuthProvider>
-            <CartProvider>
-              <Toaster
-                position="top-right"
-                toastOptions={{
-                  style: {
-                    background: "white",
-                    border: "1px solid #e5e5e5",
-                    color: "#333",
-                  },
-                }}
-              />
-              {children}
-            </CartProvider>
-          </AuthProvider>
-        </QueryProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${montserrat.className} bg-white dark:bg-[#1d2026] text-gray-900 dark:text-gray-100 transition-colors duration-300`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <QueryProvider>
+            <AuthProvider>
+              <CartProvider>
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    style: {
+                      background: "var(--background)",
+                      color: "var(--foreground)",
+                      border: "1px solid var(--border)",
+                    },
+                  }}
+                />
+                {children}
+              </CartProvider>
+            </AuthProvider>
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -108,16 +108,21 @@ export const moduleSchema = z.object({
 });
 
 
+// --- Enums ---
+export const lessonTypes = ["Video", "Document", "Quiz", "Resource"] as const;
+
 export const lessonSchema = z.object({
-    name: z.string()
-        .min(5, "Lesson name must be at least 5 characters."),
+    name: z.string().min(3, "Lesson name must be at least 3 characters."),
     courseId: z.string().uuid({ message: "Invalid course id" }),
     moduleId: z.string().uuid({ message: "Invalid module id" }),
-    description: z.string()
-        .min(5, { message: "Lesson description must be at least 5 characters." })
-        .optional(),
+    description: z.string().optional(),
     thumbnailKey: z.string().optional(),
     videoKey: z.string().optional(),
+    type: z.enum(lessonTypes).default("Video"),
+    content: z.string().optional(),
+    duration: z.coerce.number().optional(),
+    documentKey: z.string().optional(),
+    quizConfig: z.any().optional(),
 });
 
 

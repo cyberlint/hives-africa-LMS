@@ -9,10 +9,13 @@ import {
   SkipForward, 
   Volume2, 
   VolumeX, 
-  Maximize 
+  Maximize,
+  Settings,
+  Minimize
 } from 'lucide-react';
 import { VideoSettingsMenu } from '@/components/lms/VideoSettingsMenu';
 import { CaptionsToggle } from '@/components/lms/CaptionsToggle';
+import { cn } from '@/lib/utils';
 
 interface VideoControlsProps {
   isPlaying: boolean;
@@ -35,6 +38,7 @@ interface VideoControlsProps {
   onQualityChange: (quality: string) => void;
   onToggleCaptions: () => void;
   onToggleFullscreen: () => void;
+  isFullscreen?: boolean;
 }
 
 export const VideoControls: React.FC<VideoControlsProps> = ({
@@ -57,9 +61,9 @@ export const VideoControls: React.FC<VideoControlsProps> = ({
   onPlaybackRateChange,
   onQualityChange,
   onToggleCaptions,
-  onToggleFullscreen
+  onToggleFullscreen,
+  isFullscreen
 }) => {
-  const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
   const formatTime = (time: number) => {
@@ -94,119 +98,112 @@ export const VideoControls: React.FC<VideoControlsProps> = ({
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className={`absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-      {/* Play/Pause overlay */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <Button
-          size="lg"
-          variant="ghost"
-          className="w-20 h-20 rounded-full bg-black/50 hover:bg-black/70 text-white transition-all duration-200 hover:scale-110"
-          onClick={onTogglePlay}
-        >
-          {isPlaying ? <Pause className="w-10 h-10" /> : <Play className="w-10 h-10 ml-1" />}
-        </Button>
-      </div>
+    <div 
+      className={cn(
+        "absolute inset-0 flex flex-col justify-end transition-opacity duration-300",
+        showControls ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+      )}
+    >
+      {/* Dark gradient overlay for bottom controls visibility */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
 
-      {/* Bottom controls */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 space-y-3">
-        {/* Progress bar */}
-        <div className="flex items-center space-x-3 text-white text-sm">
-          <span className="min-w-[50px] text-center">{formatTime(currentTime)}</span>
-          <div 
-            className="flex-1 h-2 bg-white/20 rounded-full cursor-pointer relative group"
-            onClick={handleProgressClick}
-            onMouseDown={handleProgressMouseDown}
-            onMouseMove={handleProgressMouseMove}
-            onMouseUp={handleProgressMouseUp}
-            onMouseLeave={handleProgressMouseUp}
+      {/* Center Play Button Overlay (Only when paused) */}
+      {!isPlaying && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
+          <Button
+            size="icon"
+            className="w-20 h-20 rounded-full bg-[#fdb606] hover:bg-[#e0a205] text-white shadow-xl transition-transform duration-200 hover:scale-110 flex items-center justify-center pl-2"
+            onClick={onTogglePlay}
           >
-            <div 
-              className="h-full bg-[#fdb606] rounded-full relative transition-all duration-150"
-              style={{ width: `${progress}%` }}
-            >
-              <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-[#fdb606] rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"></div>
-            </div>
-          </div>
-          <span className="min-w-[50px] text-center">{formatTime(duration)}</span>
+            <Play className="w-10 h-10 fill-current" />
+          </Button>
+        </div>
+      )}
+
+      {/* Bottom Control Bar */}
+      <div className="relative z-10 px-4 pb-4 pt-8 space-y-2 pointer-events-auto">
+        
+        {/* Progress Bar */}
+        <div 
+          className="relative h-1.5 w-full bg-white/30 rounded-full cursor-pointer group/progress touch-none"
+          onClick={handleProgressClick}
+          onMouseDown={handleProgressMouseDown}
+          onMouseMove={handleProgressMouseMove}
+          onMouseUp={handleProgressMouseUp}
+          onMouseLeave={handleProgressMouseUp}
+        >
+          {/* Progress fill */}
+          <div 
+            className="absolute top-0 left-0 h-full bg-[#fdb606] rounded-full"
+            style={{ width: `${progress}%` }}
+          />
+          
+          {/* Handle (visible on hover) */}
+          <div 
+            className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-md scale-0 group-hover/progress:scale-100 transition-transform duration-200"
+            style={{ left: `${progress}%` }}
+          />
         </div>
 
-        {/* Control buttons */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+        {/* Controls Row */}
+        <div className="flex items-center justify-between text-white">
+          
+          {/* Left: Playback & Volume */}
+          <div className="flex items-center spacing-x-1 sm:spacing-x-4 gap-2">
+            
             <Button 
-              size="sm" 
+              size="icon" 
               variant="ghost" 
-              className="text-white hover:bg-white/20 p-2 transition-colors"
-              onClick={onSkipBackward}
-              title="Skip backward 10s"
-            >
-              <SkipBack className="w-5 h-5" />
-            </Button>
-            <Button 
-              size="sm" 
-              variant="ghost" 
-              className="text-white hover:bg-white/20 p-2 transition-colors" 
+              className="text-white hover:bg-white/10 w-9 h-9 transition-colors"
               onClick={onTogglePlay}
-              title={isPlaying ? "Pause" : "Play"}
             >
-              {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+              {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
             </Button>
-            <Button 
-              size="sm" 
-              variant="ghost" 
-              className="text-white hover:bg-white/20 p-2 transition-colors"
-              onClick={onSkipForward}
-              title="Skip forward 10s"
-            >
-              <SkipForward className="w-5 h-5" />
-            </Button>
-            
-            {/* Volume Control */}
-            <div 
-              className="relative flex items-center"
-              onMouseEnter={() => setShowVolumeSlider(true)}
-              onMouseLeave={() => setShowVolumeSlider(false)}
-            >
-              <Button 
-                size="sm" 
-                variant="ghost" 
-                className="text-white hover:bg-white/20 p-2 transition-colors" 
-                onClick={onToggleMute}
-                title={isMuted ? "Unmute" : "Mute"}
-              >
-                {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-              </Button>
-              
-              {showVolumeSlider && (
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 p-3 bg-black/90 rounded-lg backdrop-blur-sm border border-gray-600 z-50">
-                  <div className="h-20 flex items-center">
-                    <Slider
-                      value={[volume * 100]}
-                      onValueChange={(value) => onVolumeChange(value[0] / 100)}
-                      max={100}
-                      step={1}
-                      className="w-6 [&_.bg-primary]:bg-[#fdb606] [&_.border-primary]:border-[#fdb606]"
-                      orientation="vertical"
-                    />
-                  </div>
-                  <div className="text-xs text-center text-white mt-2">
-                    {Math.round(volume * 100)}%
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            <span className="text-xs text-gray-300 px-1">
-              {playbackRate}x
+
+            <span className="text-xs font-medium min-w-[3rem]">
+              {formatTime(currentTime)} / {formatTime(duration)}
             </span>
+
+            {/* Volume Control */}
+            <div className="hidden sm:flex items-center group/volume hover:bg-black/40 rounded-full pr-2 transition-colors">
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="text-white hover:bg-white/10 w-9 h-9 transition-colors rounded-full"
+                onClick={onToggleMute}
+              >
+                {isMuted || volume === 0 ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+              </Button>
+              <div className="w-0 overflow-hidden transition-all duration-300 group-hover/volume:w-24">
+                <Slider
+                  value={[isMuted ? 0 : volume * 100]}
+                  onValueChange={(val) => onVolumeChange(val[0] / 100)}
+                  max={100}
+                  step={1}
+                  className="w-20 cursor-pointer [&_.bg-primary]:bg-[#fdb606] [&_.border-primary]:border-transparent"
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <CaptionsToggle 
-              enabled={captionsEnabled}
-              onToggle={onToggleCaptions}
-            />
+          {/* Right: Settings, Captions, Fullscreen */}
+          <div className="flex items-center gap-1 sm:gap-2">
             
+             <span className="text-xs font-medium text-white/80 px-2 border-r border-white/20 hidden md:inline-block">
+                {parseFloat(playbackRate.toString())}x
+             </span>
+
+            {/* Skip Buttons (Optional, kept small) */}
+            <div className="flex items-center hidden sm:flex">
+                <Button variant="ghost" size="icon" className="w-8 h-8 text-white/80 hover:bg-white/10" onClick={onSkipBackward} title="-10s">
+                    <SkipBack className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="w-8 h-8 text-white/80 hover:bg-white/10" onClick={onSkipForward} title="+10s">
+                    <SkipForward className="w-4 h-4" />
+                </Button>
+            </div>
+
+            {/* Video Settings */}
             <VideoSettingsMenu
               playbackRate={playbackRate}
               videoQuality={videoQuality}
@@ -216,15 +213,14 @@ export const VideoControls: React.FC<VideoControlsProps> = ({
               onQualityChange={onQualityChange}
               onToggleCaptions={onToggleCaptions}
             />
-            
+
             <Button 
-              size="sm" 
+              size="icon" 
               variant="ghost" 
-              className="text-white hover:bg-white/20 p-2 transition-colors" 
+              className="text-white hover:bg-white/10 w-9 h-9 transition-colors"
               onClick={onToggleFullscreen}
-              title="Fullscreen"
             >
-              <Maximize className="w-5 h-5" />
+              {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
             </Button>
           </div>
         </div>
@@ -232,3 +228,4 @@ export const VideoControls: React.FC<VideoControlsProps> = ({
     </div>
   );
 };
+

@@ -177,7 +177,7 @@ export default function ShareWishlistModal({ isOpen, onClose, courses }: ShareWi
                 />
                 <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600">
                   <span>{courses.length} courses</span>
-                  <span>${totalValue.toFixed(2)} total value</span>
+                  <span>₦{totalValue.toFixed(2)} total value</span>
                   <span>
                     {Math.floor(totalDuration / 60)}h {totalDuration % 60}m duration
                   </span>
@@ -207,7 +207,7 @@ export default function ShareWishlistModal({ isOpen, onClose, courses }: ShareWi
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-sm">${course.price}</p>
+                    <p className="font-semibold text-sm">₦{course.price}</p>
                   </div>
                 </div>
               ))}

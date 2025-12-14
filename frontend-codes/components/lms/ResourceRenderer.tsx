@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, CheckCircle, FileText, ExternalLink } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, FileText, ExternalLink, Folder } from 'lucide-react';
 import type { Lecture } from '@/types/course';
 
 interface ResourceRendererProps {
@@ -25,54 +25,73 @@ export const ResourceRenderer: React.FC<ResourceRendererProps> = ({
   };
 
   return (
-    <div className="flex-1 bg-black flex flex-col h-full">
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="text-center text-gray-400 max-w-2xl">
-          <div className="mb-6">
-            <FileText className="w-16 h-16 text-[#fdb606] mx-auto mb-4" />
-            <h2 className="text-2xl mb-4 text-white">{lecture.title}</h2>
-            <p className="mb-8 text-lg">{lecture.description}</p>
+    <div className="flex-1 bg-white flex flex-col h-full overflow-y-auto">
+      <div className="flex-1 flex flex-col items-center p-8">
+        <div className="text-center max-w-2xl w-full">
+          <div className="mb-8">
+            <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Folder className="w-8 h-8 text-orange-600" />
+            </div>
+            
+            <h2 className="text-2xl font-bold mb-3 text-gray-900">{lecture.title}</h2>
+            <p className="text-gray-600 leading-relaxed text-lg mb-8">
+              {lecture.description}
+            </p>
           </div>
           
           {isCompleted && (
-            <div className="flex items-center justify-center gap-2 text-green-400 mb-6">
-              <CheckCircle className="w-5 h-5" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium mb-8">
+              <CheckCircle className="w-4 h-4" />
               <span>Completed</span>
             </div>
           )}
           
-          {lecture.attachments && lecture.attachments.length > 0 && (
-            <div className="mb-8">
-              <h3 className="text-lg font-medium text-white mb-4">Available Resources:</h3>
-              <div className="grid gap-4 max-w-md mx-auto">
+          {lecture.attachments && lecture.attachments.length > 0 ? (
+            <div className="w-full bg-gray-50 border border-gray-100 rounded-xl p-6 mb-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 text-left">Available Resources</h3>
+              <div className="grid gap-3">
                 {lecture.attachments.map((attachment) => (
                   <a
                     key={attachment.id}
-                    href={attachment.type === 'quiz' ? `/quiz/${lecture.id}/${attachment.id}` : `/attachment/${lecture.id}/${attachment.id}`}
+                    href={attachment.type === 'quiz' ? `/quiz/${lecture.id}/${attachment.id}` : attachment.url} // Use direct URL for generic attachments
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={handleResourceAccess}
-                    className="p-4 border border-[#3e4143] rounded-lg hover:border-[#fdb606] transition-colors group"
+                    className="flex items-center p-3 bg-white border border-gray-200 rounded-lg hover:border-orange-300 hover:shadow-sm transition-all group text-left"
                   >
-                    <h4 className="font-medium text-white group-hover:text-[#fdb606] mb-2">
-                      {attachment.title}
-                    </h4>
-                    <p className="text-sm text-gray-400 mb-2">{attachment.description}</p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-[#fdb606] capitalize">{attachment.type}</span>
+                     <div className="p-2 bg-orange-50 rounded-md mr-3 group-hover:bg-orange-100 transition-colors">
+                        <FileText className="w-5 h-5 text-orange-600" />
+                     </div>
+                     <div className="flex-1 min-w-0">
+                         <h4 className="font-medium text-gray-900 group-hover:text-orange-700 truncate">
+                          {attachment.title}
+                        </h4>
+                        {attachment.description && (
+                            <p className="text-xs text-gray-500 line-clamp-1 mt-0.5">{attachment.description}</p>
+                        )}
+                     </div>
+                    
+                    <div className="flex flex-col items-end gap-1 ml-3">
+                      <span className="text-xs font-medium text-orange-600 px-2 py-0.5 bg-orange-50 rounded-full capitalize">
+                        {attachment.type}
+                      </span>
                       {attachment.fileSize && (
-                        <span className="text-xs text-gray-500">{attachment.fileSize}</span>
+                        <span className="text-[10px] text-gray-400">{attachment.fileSize}</span>
                       )}
                     </div>
                   </a>
                 ))}
               </div>
             </div>
+          ) : (
+             <div className="text-center p-8 bg-gray-50 rounded-xl border border-dashed border-gray-200 mb-8">
+               <p className="text-gray-500">No resources available for this lecture.</p>
+             </div>
           )}
           
           <Button
             onClick={handleResourceAccess}
-            className="bg-[#fdb606] hover:bg-[#e6a406] text-black font-medium"
+            className="bg-orange-600 hover:bg-orange-700 text-white font-medium"
           >
             <ExternalLink className="w-4 h-4 mr-2" />
             Access Resources
@@ -80,21 +99,7 @@ export const ResourceRenderer: React.FC<ResourceRendererProps> = ({
         </div>
       </div>
 
-      {/* Bottom Controls */}
-      <div className="bg-[#2d2f31] p-6 border-t border-[#3e4143] shrink-0">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4 text-sm text-gray-400">
-            <span>Lecture {lecture.id}</span>
-            <span className="capitalize">{lecture.type}</span>
-            {isCompleted && (
-              <span className="flex items-center gap-1 text-green-400">
-                <CheckCircle className="w-4 h-4" />
-                Completed
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
+      {/* Bottom Controls - kept simple as request was focused on main area styling */}
     </div>
   );
 };

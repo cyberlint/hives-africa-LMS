@@ -134,12 +134,12 @@ const Home = () => {
 
   return (
     <main className="-mb-16">
-      <section className="flex flex-col lg:flex-row justify-between items-center gap-x-4 gap-y-12 bg-[linear-gradient(5.92deg,_#F9FAFB_6.98%,_#FEFEFF_95.46%)] px-4 md:px-16 py-8 lg:py-4 lg:pr-0 lg:pl-16 xl:pl-36 w-full">
+      <section className="flex flex-col lg:flex-row justify-between items-center gap-x-4 gap-y-12 bg-[linear-gradient(5.92deg,_#F9FAFB_6.98%,_#FEFEFF_95.46%)] dark:bg-[linear-gradient(5.92deg,_#1d2026_6.98%,_#2a2f3a_95.46%)] px-4 md:px-16 py-8 lg:py-4 lg:pr-0 lg:pl-16 xl:pl-36 w-full transition-colors duration-300">
         <div className="text-center lg:text-start space-y-4 w-full lg:w-[45%]">
-          <h3 className="text-[38px] md:text-5xl text-[#303030] font-bold leading-12 md:leading-14">
+          <h3 className="text-[38px] md:text-5xl text-[#303030] dark:text-gray-100 font-bold leading-12 md:leading-14">
             Learn with experts anytime, anywhere.
           </h3>
-          <p className="text-sm md:text-base text-[#303030] leading-6">
+          <p className="text-sm md:text-base text-[#303030] dark:text-gray-300 leading-6">
             Join the next generation of African data leaders. Learn in-demand
             tech skills through culturally relevant content tailored for your
             journey.
@@ -163,8 +163,8 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="space-y-12 px-4 md:px-16 xl:px-36 py-16 lg:py-20 xl:py-24">
-        <h4 className="text-center text-[32px] md:text-4xl leading-10 text-darkBlue-300 font-semibold">
+      <section className="space-y-12 px-4 md:px-16 xl:px-36 py-16 lg:py-20 xl:py-24 bg-white dark:bg-[#1d2026] transition-colors duration-300">
+        <h4 className="text-center text-[32px] md:text-4xl leading-10 text-darkBlue-300 dark:text-gray-100 font-semibold">
           Browse Top Category
         </h4>
 
@@ -172,36 +172,38 @@ const Home = () => {
           {categories.map((category, index) => (
             <div
               key={index}
-              className={`flex justify-between items-center gap-2 px-2 py-5 cursor-pointer w-full ${
+              className={`flex justify-between items-center gap-2 px-2 py-5 cursor-pointer w-full transition-all duration-300 ${
                 category.color === "#FFFFFF"
-                  ? "shadow-[0px_11.12px_29.65px_0px_#1D20261A]"
+                  ? "shadow-[0px_11.12px_29.65px_0px_#1D20261A] dark:shadow-none"
                   : ""
               }`}
               style={{
                 background: category.color,
               }}
             >
-              <div className="flex justify-center items-center w-[30%]">
-                <Image
-                  src={category.icon}
-                  alt="Category Icon"
-                  width={60}
-                  height={60}
-                  className="object-cover"
-                />
-              </div>
+                <Link href={`/course?category=${encodeURIComponent(category.name)}`} className="w-full flex justify-between items-center gap-2">
+                  <div className="flex justify-center items-center w-[30%]">
+                    <Image
+                      src={category.icon}
+                      alt="Category Icon"
+                      width={60}
+                      height={60}
+                      className="object-cover"
+                    />
+                  </div>
 
-              <div className="flex flex-col gap-2 w-[70%]">
-                <p className="text-sm font-medium">{category.name}</p>
-                <p className="text-xs text-[#6E7485]">
-                  {category.numberOfCourses} Courses
-                </p>
-              </div>
+                  <div className="flex flex-col gap-2 w-[70%]">
+                    <p className="text-sm font-medium text-gray-900">{category.name}</p>
+                    <p className="text-xs text-[#6E7485]">
+                      {category.numberOfCourses} Courses
+                    </p>
+                  </div>
+                </Link>
             </div>
           ))}
         </div>
 
-        <p className="text-center text-xs md:text-sm text-[#6E7485] font-medium">
+        <p className="text-center text-xs md:text-sm text-[#6E7485] dark:text-gray-400 font-medium">
           We have more category & subcategory.{" "}
           <span className="text-yellow cursor-pointer hover:underline">
             <Link href="/course">
@@ -213,15 +215,15 @@ const Home = () => {
 
       {/* Only render Best Selling section if data exists */}
       {bestSellingCourses && bestSellingCourses.length > 0 && (
-        <section className="space-y-12 bg-[#F5F7FA] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-68">
+        <section className="space-y-12 bg-[#F5F7FA] dark:bg-[#2a2f3a] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-68 transition-colors duration-300">
           <BestSellingCourses courses={bestSellingCourses} />
         </section>
       )}
 
-      {/* <section className="space-y-12 bg-white px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-25 sm:pb-30 lg:pb-35"> */}
+      <section className="space-y-12 bg-white dark:bg-[#1d2026] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-25 sm:pb-30 lg:pb-35 transition-colors duration-300">
         {/* Only render Featured section if data exists */}
         {featuredCourses && featuredCourses.length > 0 && (
-          <div className="bg-white space-y-8 border border-[#E9EAF0] rounded-2xl px-6 py-16 md:p-16 -mt-64">
+          <div className="bg-white dark:bg-[#2a2f3a] space-y-8 border border-[#E9EAF0] dark:border-[#404854] rounded-2xl px-6 py-16 md:p-16 -mt-64 transition-colors duration-300">
             <FeaturedCourses courses={featuredCourses} />
           </div>
         )}
@@ -232,9 +234,9 @@ const Home = () => {
             <RecentlyAddedCourses courses={recentlyAddedCourses} />
           </div>
         )}
-      {/* </section> */}
+      </section>
 
-      <section className="flex flex-col xl:flex-row justify-between items-stretch gap-8 bg-[#F5F7FA] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-20 w-full">
+      <section className="flex flex-col xl:flex-row justify-between items-stretch gap-8 bg-[#F5F7FA] dark:bg-[#2a2f3a] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-20 w-full transition-colors duration-300">
         <div
           className="flex-1 px-8 pt-10 w-full xl:w-1/2"
           style={{
@@ -270,8 +272,8 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="flex flex-col justify-center flex-1 space-y-6 bg-white p-8 w-full xl:w-1/2">
-          <p className="text-darkBlue-300 text-xl md:text-2xl font-semibold">
+        <div className="flex flex-col justify-center flex-1 space-y-6 bg-white dark:bg-[#1d2026] p-8 w-full xl:w-1/2 transition-colors duration-300">
+          <p className="text-darkBlue-300 dark:text-gray-100 text-xl md:text-2xl font-semibold">
             Your teaching & earning steps
           </p>
 
@@ -310,7 +312,7 @@ const Home = () => {
                   {item.num}
                 </span>
 
-                <p className="text-darkBlue-300 text-[10px] md:text-sm font-medium">
+                <p className="text-darkBlue-300 dark:text-gray-100 text-[10px] md:text-sm font-medium">
                   {item.text}
                 </p>
               </div>
@@ -319,13 +321,13 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="flex flex-col lg:flex-row justify-between items-center gap-8 bg-white px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-35 w-full">
+      <section className="flex flex-col lg:flex-row justify-between items-center gap-8 bg-white dark:bg-[#1d2026] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-35 w-full transition-colors duration-300">
         <div className="space-y-4 w-full lg:w-[30%]">
-          <p className="font-semibold text-2xl text-darkBlue-300">
+          <p className="font-semibold text-2xl text-darkBlue-300 dark:text-gray-100">
             Hive Africa, Trusted companies
           </p>
 
-          <p className="text-xs text-[#6E7485] w-4/5">
+          <p className="text-xs text-[#6E7485] dark:text-gray-400 w-4/5">
             Nullam egestas tellus at enim ornare tristique. Class aptent taciti
             sociosqu ad litora torquent per conubia nostra.
           </p>
@@ -368,7 +370,7 @@ const Home = () => {
           ].map((logo) => (
             <div
               key={logo.id}
-              className="flex justify-center items-center bg-white shadow-[0px_0px_28.48px_0px_#091A4412] px-4"
+              className="flex justify-center items-center bg-white dark:bg-[#2a2f3a] shadow-[0px_0px_28.48px_0px_#091A4412] dark:shadow-[0px_0px_28.48px_0px_#000000] px-4 transition-colors duration-300"
             >
               <Image
                 src={logo.image}

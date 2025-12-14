@@ -48,46 +48,46 @@ function PaymentFailureContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFB] flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-red-100 shadow-xl">
+    <div className="min-h-screen bg-[#FAFAFB] dark:bg-[#1d2026] transition-colors duration-300 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md border-red-100 dark:border-red-900/50 dark:bg-[#2a2f3a] shadow-xl">
         <CardHeader className="text-center pb-2">
-          <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <XCircle className="w-10 h-10 text-red-500" />
+          <div className="w-20 h-20 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <XCircle className="w-10 h-10 text-red-500 dark:text-red-400" />
           </div>
-          <h1 className="text-2xl font-bold text-darkBlue-300">
+          <h1 className="text-2xl font-bold text-darkBlue-300 dark:text-gray-100">
             Payment Failed
           </h1>
-          <p className="text-sm text-[#6E7485] mt-1">
+          <p className="text-sm text-[#6E7485] dark:text-gray-400 mt-1">
             We couldn't process your transaction
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="text-center space-y-4">
            
-            <div className="bg-red-50 border border-red-100 rounded-xl p-4 text-left">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/50 rounded-xl p-4 text-left">
               <div className="flex gap-3">
                  <div className="mt-0.5">
-                    <XCircle className="w-4 h-4 text-red-600" />
+                    <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
                  </div>
                  <div>
-                    <h4 className="text-sm font-semibold text-red-900 mb-1">Transaction Error</h4>
-                    <p className="text-xs text-red-700 leading-relaxed">
+                    <h4 className="text-sm font-semibold text-red-900 dark:text-red-300 mb-1">Transaction Error</h4>
+                    <p className="text-xs text-red-700 dark:text-red-400 leading-relaxed">
                       {message}
                     </p>
                  </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 text-xs text-left text-[#6E7485] bg-gray-50 p-4 rounded-lg">
+            <div className="grid grid-cols-2 gap-3 text-xs text-left text-[#6E7485] dark:text-gray-400 bg-gray-50 dark:bg-[#1d2026] p-4 rounded-lg">
                <div>
-                  <span className="block font-medium text-darkBlue-300 mb-1">Possible Reasons:</span>
+                  <span className="block font-medium text-darkBlue-300 dark:text-gray-100 mb-1">Possible Reasons:</span>
                   <ul className="list-disc list-inside space-y-1">
                     <li>Insufficient funds</li>
                     <li>Bank decline</li>
                   </ul>
                </div>
                <div>
-                  <span className="block font-medium text-darkBlue-300 mb-1">&nbsp;</span>
+                  <span className="block font-medium text-darkBlue-300 dark:text-gray-100 mb-1">&nbsp;</span>
                   <ul className="list-disc list-inside space-y-1">
                     <li>Network timeout</li>
                     <li>Cancelled by user</li>
@@ -96,7 +96,7 @@ function PaymentFailureContent() {
             </div>
 
             <div className="space-y-3 pt-2">
-              <Button 
+              <Button
                 onClick={handleRetry}
                 className="w-full h-11 bg-yellow hover:bg-yellow/90 font-semibold shadow-sm"
               >
@@ -107,14 +107,14 @@ function PaymentFailureContent() {
                  <Button 
                   onClick={handleGoHome}
                   variant="outline"
-                  className="w-full h-10 text-xs"
+                  className="w-full h-10 text-xs border-gray-300 dark:border-[#404854] dark:bg-[#1d2026] dark:text-gray-100 dark:hover:bg-[#2a2f3a]"
                 >
                   Return Home
                 </Button>
                 <Button 
                   onClick={handleContactSupport}
                   variant="outline"
-                  className="w-full h-10 text-xs"
+                  className="w-full h-10 text-xs border-gray-300 dark:border-[#404854] dark:bg-[#1d2026] dark:text-gray-100 dark:hover:bg-[#2a2f3a]"
                 >
                   Help Center
                 </Button>
@@ -123,9 +123,9 @@ function PaymentFailureContent() {
           </div>
           
           {reference && (
-            <div className="pt-4 border-t border-gray-100 flex justify-between items-center text-xs text-[#6E7485]">
+            <div className="pt-4 border-t border-gray-100 dark:border-[#404854] flex justify-between items-center text-xs text-[#6E7485] dark:text-gray-400">
               <span>Transaction Ref:</span>
-              <span className="font-mono bg-gray-100 px-2 py-1 rounded select-all">{reference}</span>
+              <span className="font-mono bg-gray-100 dark:bg-[#1d2026] px-2 py-1 rounded select-all">{reference}</span>
             </div>
           )}
         </CardContent>
@@ -136,10 +136,10 @@ function PaymentFailureContent() {
 
 function LoadingFallback() {
   return (
-    <div className="min-h-screen bg-[#FAFAFB] flex items-center justify-center">
+    <div className="min-h-screen bg-[#FAFAFB] dark:bg-[#1d2026] transition-colors duration-300 flex items-center justify-center">
       <div className="text-center space-y-4">
         <Loader2 className="w-12 h-12 animate-spin text-yellow mx-auto" />
-        <h2 className="text-xl font-semibold text-darkBlue-300">
+        <h2 className="text-xl font-semibold text-darkBlue-300 dark:text-gray-100">
           Loading...
         </h2>
       </div>

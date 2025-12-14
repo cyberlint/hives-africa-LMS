@@ -34,6 +34,11 @@ export async function adminGetCourse(id: string) {
                             thumbnailKey: true,
                             videoKey: true,
                             position: true,
+                            type: true,
+                            content: true,
+                            duration: true,
+                            documentKey: true,
+                            quizConfig: true,
                         }
                     }
                 }

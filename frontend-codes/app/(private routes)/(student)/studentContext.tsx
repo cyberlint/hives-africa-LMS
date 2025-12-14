@@ -13,7 +13,7 @@ interface TransformedCourse {
   description: string
   instructor: {
     name: string
-    avatar?: string
+    avatar: string
   }
   thumbnail: string
   fileKey: string
@@ -36,7 +36,7 @@ interface User {
   id: string
   name: string
   email: string
-  avatar?: string
+  avatar: string
   enrolledCourses: string[]
   wishlist: string[]
   progress: CourseProgress[]
@@ -101,7 +101,7 @@ export const DashboardProvider = ({
     description: course.description,
     instructor: {
       name: course.instructor,
-      avatar: undefined, // TODO: Add instructor avatar to API
+      avatar: "", // TODO: Add instructor avatar to API
     },
     thumbnail: course.image || course.thumbnail || "/ai.png",
     fileKey: course.image || course.thumbnail || "",
@@ -121,7 +121,7 @@ export const DashboardProvider = ({
     description: course.description,
     instructor: {
       name: course.instructor,
-      avatar: course.instructorAvatar,
+      avatar: course.instructorAvatar || "",
     },
     thumbnail: course.thumbnail || "/ai.png",
     fileKey: course.thumbnail || "",
@@ -139,7 +139,7 @@ export const DashboardProvider = ({
     id: authUser?.id || "guest",
     name: authUser?.full_name || authUser?.first_name || "Guest User",
     email: authUser?.email || "guest@example.com",
-    avatar: authUser?.profile_picture,
+    avatar: authUser?.profile_picture || "",
     enrolledCourses: enrolledCoursesData.map((c) => c.courseId),
     wishlist: [], // TODO: Implement wishlist API
     progress: enrolledCoursesData.map((c) => ({

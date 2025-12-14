@@ -59,10 +59,10 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
   }
 
   return (
-    <aside className="w-72 bg-[#f8f9fa] p-6 min-h-screen border-l border-[#e9ecef]">
+    <aside className="w-72 bg-[#f8f9fa] dark:bg-[#2a2f3a] p-6 min-h-screen border-l border-[#e9ecef] dark:border-[#404854] transition-colors duration-300">
       {/* Course Category */}
       <div className="mb-8">
-        <h3 className="font-bold text-[#2c3e50] mb-4">Course Category</h3>
+        <h3 className="font-bold text-[#2c3e50] dark:text-gray-100 mb-4">Course Category</h3>
         <div className="space-y-3">
           {categories.map((category) => (
             <div key={category} className="flex items-center justify-between py-1">
@@ -71,13 +71,13 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
                   id={category}
                   checked={filters.categories.includes(category)}
                   onCheckedChange={(checked) => handleFilterChange("categories", category, checked as boolean)}
-                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-yellow"
+                  className="border-[#d1d5db] dark:border-[#404854] data-[state=checked]:bg-yellow data-[state=checked]:border-yellow"
                 />
-                <label htmlFor={category} className="text-sm text-[#2c3e50] cursor-pointer">
+                <label htmlFor={category} className="text-sm text-[#2c3e50] dark:text-gray-300 cursor-pointer">
                   {category}
                 </label>
               </div>
-              <span className="text-sm text-[#6c757d] font-medium">{getCategoryCount(category)}</span>
+              <span className="text-sm text-[#6c757d] dark:text-gray-400 font-medium">{getCategoryCount(category)}</span>
             </div>
           ))}
         </div>
@@ -85,7 +85,7 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
 
       {/* Instructors */}
       <div className="mb-8">
-        <h3 className="font-bold text-[#2c3e50] mb-4">Instructors</h3>
+        <h3 className="font-bold text-[#2c3e50] dark:text-gray-100 mb-4">Instructors</h3>
         <div className="space-y-3">
           {instructors.map((instructor) => (
             <div key={instructor} className="flex items-center justify-between py-1">
@@ -94,13 +94,13 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
                   id={instructor}
                   checked={filters.instructors.includes(instructor)}
                   onCheckedChange={(checked) => handleFilterChange("instructors", instructor, checked as boolean)}
-                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-yellow"
+                  className="border-[#d1d5db] dark:border-[#404854] data-[state=checked]:bg-yellow data-[state=checked]:border-yellow"
                 />
-                <label htmlFor={instructor} className="text-sm text-[#2c3e50] cursor-pointer">
+                <label htmlFor={instructor} className="text-sm text-[#2c3e50] dark:text-gray-300 cursor-pointer">
                   {instructor}
                 </label>
               </div>
-              <span className="text-sm text-[#6c757d] font-medium">{getInstructorCount(instructor)}</span>
+              <span className="text-sm text-[#6c757d] dark:text-gray-400 font-medium">{getInstructorCount(instructor)}</span>
             </div>
           ))}
         </div>
@@ -108,7 +108,7 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
 
       {/* Price */}
       <div className="mb-8">
-        <h3 className="font-bold text-[#2c3e50] mb-4">Price</h3>
+        <h3 className="font-bold text-[#2c3e50] dark:text-gray-100 mb-4">Price</h3>
         <div className="space-y-3">
           {["All", "Free", "Paid"].map((price) => (
             <div key={price} className="flex items-center justify-between py-1">
@@ -117,13 +117,13 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
                   id={price}
                   checked={filters.priceTypes.includes(price)}
                   onCheckedChange={(checked) => handleFilterChange("priceTypes", price, checked as boolean)}
-                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-yellow"
+                  className="border-[#d1d5db] dark:border-[#404854] data-[state=checked]:bg-yellow data-[state=checked]:border-yellow"
                 />
-                <label htmlFor={price} className="text-sm text-[#2c3e50] cursor-pointer">
+                <label htmlFor={price} className="text-sm text-[#2c3e50] dark:text-gray-300 cursor-pointer">
                   {price}
                 </label>
               </div>
-              <span className="text-sm text-[#6c757d] font-medium">{getPriceCount(price)}</span>
+              <span className="text-sm text-[#6c757d] dark:text-gray-400 font-medium">{getPriceCount(price)}</span>
             </div>
           ))}
         </div>
@@ -131,7 +131,7 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
 
       {/* Review */}
       <div className="mb-8">
-        <h3 className="font-bold text-[#2c3e50] mb-4">Review</h3>
+        <h3 className="font-bold text-[#2c3e50] dark:text-gray-100 mb-4">Review</h3>
         <div className="space-y-3">
           {[5, 4, 3, 2, 1].map((rating) => (
             <div key={rating} className="flex items-center justify-between py-1">
@@ -140,19 +140,19 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
                   id={`rating-${rating}`}
                   checked={filters.ratings.includes(rating)}
                   onCheckedChange={(checked) => handleFilterChange("ratings", rating, checked as boolean)}
-                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-yellow"
+                  className="border-[#d1d5db] dark:border-[#404854] data-[state=checked]:bg-yellow data-[state=checked]:border-yellow"
                 />
                 <div className="flex items-center space-x-1">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-3 h-3 ${i < rating ? "fill-yellow text-yellow" : "text-[#e9ecef]"}`}
+                      className={`w-3 h-3 ${i < rating ? "fill-yellow text-yellow" : "text-[#e9ecef] dark:text-[#404854]"}`}
                     />
                   ))}
-                  <span className="text-xs text-[#6c757d] ml-1">& up</span>
+                  <span className="text-xs text-[#6c757d] dark:text-gray-400 ml-1">& up</span>
                 </div>
               </div>
-              <span className="text-sm text-[#6c757d] font-medium">({getRatingCount(rating)})</span>
+              <span className="text-sm text-[#6c757d] dark:text-gray-400 font-medium">({getRatingCount(rating)})</span>
             </div>
           ))}
         </div>
@@ -160,7 +160,7 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
 
       {/* Level */}
       <div className="mb-8">
-        <h3 className="font-bold text-[#2c3e50] mb-4">Level</h3>
+        <h3 className="font-bold text-[#2c3e50] dark:text-gray-100 mb-4">Level</h3>
         <div className="space-y-3">
           {["All levels", ...levels.filter((level) => level !== "All levels")].map((level) => (
             <div key={level} className="flex items-center justify-between py-1">
@@ -169,13 +169,13 @@ export function Sidebar({ filters, onFiltersChange, courses }: SidebarProps) {
                   id={level}
                   checked={filters.levels.includes(level)}
                   onCheckedChange={(checked) => handleFilterChange("levels", level, checked as boolean)}
-                  className="border-[#d1d5db] data-[state=checked]:bg-yellow data-[state=checked]:border-yellow"
+                  className="border-[#d1d5db] dark:border-[#404854] data-[state=checked]:bg-yellow data-[state=checked]:border-yellow"
                 />
-                <label htmlFor={level} className="text-sm text-[#2c3e50] cursor-pointer">
+                <label htmlFor={level} className="text-sm text-[#2c3e50] dark:text-gray-300 cursor-pointer">
                   {level}
                 </label>
               </div>
-              <span className="text-sm text-[#6c757d] font-medium">{getLevelCount(level)}</span>
+              <span className="text-sm text-[#6c757d] dark:text-gray-400 font-medium">{getLevelCount(level)}</span>
             </div>
           ))}
         </div>

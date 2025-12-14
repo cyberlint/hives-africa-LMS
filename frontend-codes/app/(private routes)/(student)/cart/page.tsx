@@ -1,461 +1,243 @@
-"use client"
+"use client";
+// Student cart page - fully functional with API integration
+// Always dynamic due to client cart state & coupon validation.
+export const dynamic = "force-dynamic";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { toast } from "sonner"
-import { Trash2, Plus, Minus, Star, Clock, Users, Tag, CreditCard, Shield, Gift } from "lucide-react"
-
-import PaymentModal from "@/components/modals/payment-modal"
-import Image from "next/image"
-interface CartItem {
-  id: string
-  courseId: string
-  title: string
-  instructor: string
-  instructorAvatar: string
-  thumbnail: string
-  originalPrice: number
-  discountPrice?: number
-  discount?: number
-  rating: number
-  duration: number
-  studentsCount: number
-  level: string
-  quantity: number
-  addedAt: string
-}
-
-interface CheckoutData {
-  subtotal: number
-  discount: number
-  tax: number
-  total: number
-  savings: number
-}
-
-const dummyCartItems: CartItem[] = [
-  {
-    id: "cart-1",
-    courseId: "4",
-    title: "Python for Data Science",
-    instructor: "David Kumar",
-    instructorAvatar: "/ai.png?height=32&width=32",
-    thumbnail: "/ai.png?height=120&width=200",
-    originalPrice: 99.99,
-    discountPrice: 49.99,
-    discount: 50,
-    rating: 4.7,
-    duration: 2700,
-    studentsCount: 15420,
-    level: "Intermediate",
-    quantity: 1,
-    addedAt: "2024-01-20",
-  },
-  {
-    id: "cart-2",
-    courseId: "5",
-    title: "Digital Marketing Strategy",
-    instructor: "Lisa Rodriguez",
-    instructorAvatar: "/ai.png?height=32&width=32",
-    thumbnail: "/ai.png?height=120&width=200",
-    originalPrice: 79.99,
-    discountPrice: 39.99,
-    discount: 50,
-    rating: 4.5,
-    duration: 2100,
-    studentsCount: 8930,
-    level: "Beginner",
-    quantity: 1,
-    addedAt: "2024-01-19",
-  },
-]
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState, useCallback } from "react";
+import { useCart } from "@/contexts/CartContext";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
+import { useInitializePayment } from "@/hooks/usePayments";
+import { constructUrl } from "@/lib/construct-url";
+import { Trash2, CreditCard, Shield } from "lucide-react"
 
 export default function Cart() {
-  const [cartItems, setCartItems] = useState<CartItem[]>(dummyCartItems)
-  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false)
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [promoCode, setPromoCode] = useState("")
-  const [appliedPromo, setAppliedPromo] = useState<string | null>(null)
-  const [promoDiscount, setPromoDiscount] = useState(0)
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
+  const { items, removeItem, subtotal, coupon, applyCoupon, removeCoupon, total, loadingCoupon, clearCart } = useCart();
+  const router = useRouter();
+  const [couponInput, setCouponInput] = useState("");
+  const [processing, setProcessing] = useState(false);
 
-  // Calculate totals
-  const calculateTotals = (): CheckoutData => {
-    const subtotal = cartItems.reduce((sum, item) => {
-      const price = item.discountPrice || item.originalPrice
-      return sum + price * item.quantity
-    }, 0)
+  // Derived values
+  const hasItems = items.length > 0;
+  const discount = coupon.discountAmount || 0;
 
-    const originalTotal = cartItems.reduce((sum, item) => {
-      return sum + item.originalPrice * item.quantity
-    }, 0)
+  const handleApply = useCallback(async () => {
+    if (!couponInput) return toast.message("Enter a coupon code");
+    await applyCoupon(couponInput);
+    setCouponInput("");
+  }, [couponInput, applyCoupon]);
 
-    const courseDiscount = originalTotal - subtotal
-    const promoDiscountAmount = (subtotal * promoDiscount) / 100
-    const discountedSubtotal = subtotal - promoDiscountAmount
-    const tax = discountedSubtotal * 0.08 // 8% tax
-    const total = discountedSubtotal + tax
-    const totalSavings = courseDiscount + promoDiscountAmount
+  const initializePaymentMutation = useInitializePayment();
 
-    return {
-      subtotal,
-      discount: courseDiscount + promoDiscountAmount,
-      tax,
-      total,
-      savings: totalSavings,
-    }
-  }
-
-  const totals = calculateTotals()
-
-  const updateQuantity = (itemId: string, newQuantity: number) => {
-    if (newQuantity < 1) return
-
-    setCartItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, quantity: newQuantity } : item)))
-
-    toast( "Quantity updated",
-      {description: "Cart has been updated successfully",
-    })
-  }
-
-  const removeItem = (itemId: string) => {
-    const item = cartItems.find((item) => item.id === itemId)
-    setCartItems((prev) => prev.filter((item) => item.id !== itemId))
-
-    toast( "Item removed",
-      {description: `${item?.title} has been removed from your cart`,
-    })
-  }
-
-  const clearCart = () => {
-    setCartItems([])
-    toast( "Cart cleared",
-      {description: "All items have been removed from your cart",
-    })
-  }
-
-  const applyPromoCode = () => {
-    const validPromoCodes = {
-      SAVE20: 20,
-      STUDENT15: 15,
-      WELCOME10: 10,
+  const handleStartPayment = useCallback(async () => {
+    if (!hasItems) return;
+    
+    // MVP strategy: initialize payment using first non-free course id and coupon (backend must handle multi later)
+    const firstBillable = items.find(i => !i.isFree);
+    if (!firstBillable) {
+      toast.success("All courses are free – enrolling...");
+      // Simulate enrollment and redirect to learning dashboard.
+      clearCart();
+      router.push("/learning");
+      return;
     }
 
-    const upperPromoCode = promoCode.toUpperCase()
-
-    if (validPromoCodes[upperPromoCode as keyof typeof validPromoCodes]) {
-      const discount = validPromoCodes[upperPromoCode as keyof typeof validPromoCodes]
-      setAppliedPromo(upperPromoCode)
-      setPromoDiscount(discount)
-      setPromoCode("")
-
-      toast( "Promo code applied!",
-        {description: `You saved ${discount}% with code ${upperPromoCode}`,
-      })
-    } else {
-      toast( "Invalid promo code",
-        {description: "Please check your code and try again",
-       
-      })
-    }
-  }
-
-  const removePromoCode = () => {
-    setAppliedPromo(null)
-    setPromoDiscount(0)
-    toast( "Promo code removed",
-      {description: "Promo code discount has been removed",
-    })
-  }
-
-  const handleCheckout = async () => {
-    setIsProcessing(true)
+    setProcessing(true);
+    
     try {
-      // Simulate payment processing
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-
-      toast( "Purchase successful!",
-        {description: `You've successfully enrolled in ${cartItems.length} course${cartItems.length > 1 ? "s" : ""}`,
-      })
-
-      // Clear cart after successful purchase
-      setCartItems([])
-      setIsCheckoutModalOpen(false)
-      setAppliedPromo(null)
-      setPromoDiscount(0)
-    } catch (error) {
-      toast( "Payment failed",
-        {description: "Please try again or contact support",
+      // Construct the callback URL for Paystack to redirect to after payment
+      const callbackUrl = `${window.location.origin}/payment/callback`;
       
-      })
+      const response = await initializePaymentMutation.mutateAsync({
+        course_id: firstBillable.id,
+        coupon_code: coupon.code || undefined,
+        redirect_url: callbackUrl,
+      });
+
+      if (response?.authorization_url) {
+        // Store cart state before redirect (optional - for recovery)
+        localStorage.setItem('checkout_cart', JSON.stringify(items));
+        localStorage.setItem('checkout_coupon', JSON.stringify(coupon));
+        
+        // Redirect to Paystack checkout
+        window.location.href = response.authorization_url;
+      } else {
+        toast.error("Payment initialization failed - no authorization URL received");
+      }
+    } catch (error: any) {
+      toast.error(error?.message || "Unable to initialize payment");
     } finally {
-      setIsProcessing(false)
+      setProcessing(false);
     }
-  }
+  }, [items, coupon, clearCart, router, hasItems, initializePaymentMutation]);
 
-  if (cartItems.length === 0) {
-    return (
-      <div className="space-y-6">
-        <h1 className="text-2xl sm:text-3xl font-bold">Shopping Cart</h1>
-
-        <Card>
-          <CardContent className="text-center py-12">
-            <Image
-              src="/ai.png?height=16&width=16"
-              alt="Cart"
-              className="h-16 w-16 text-gray-300 mx-auto mb-4"
-            />
-            <h3 className="text-xl font-semibold mb-2">Your cart is empty</h3>
-            <p className="text-gray-600 mb-6">Browse our course catalog and add courses to your cart to get started.</p>
-            <Button className="bg-[#fdb606] hover:bg-[#f39c12]">Browse Courses</Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
+  const emptyState = (
+    <div className="py-16 text-center">
+      <p className="text-sm text-gray-600 mb-6">Your cart is empty. Browse courses to get started.</p>
+      <Button onClick={() => router.push("/courses")} className="bg-[#fdb606] hover:bg-[#fdb606]/90">Browse Courses →</Button>
+    </div>
+  );
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Shopping Cart</h1>
-          <p className="text-gray-600">
-            {cartItems.length} item{cartItems.length > 1 ? "s" : ""} in your cart
-          </p>
-        </div>
-        <Button variant="outline" onClick={clearCart}>
-          <Trash2 className="h-4 w-4 mr-2" />
-          Clear Cart
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Cart Items */}
-        <div className="lg:col-span-2 space-y-4">
-          {cartItems.map((item) => (
-            <Card key={item.id}>
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  {/* Course Image */}
-                  <div className="flex-shrink-0">
-                    <Image
-                      src={item.thumbnail || "/ai.png"}
-                      alt={item.title}
-                      className="w-full sm:w-32 h-20 object-cover rounded-lg"
-                    />
-                  </div>
-
-                  {/* Course Details */}
-                  <div className="flex-1 space-y-3">
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg line-clamp-2">{item.title}</h3>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <Avatar className="h-5 w-5">
-                            <AvatarImage src={item.instructorAvatar || "/ai.png"} />
-                            <AvatarFallback>{item.instructor.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          <span className="text-sm text-gray-600">{item.instructor}</span>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeItem(item.id)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                      <div className="flex items-center space-x-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span>{item.rating}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Clock className="h-4 w-4" />
-                        <span>
-                          {Math.floor(item.duration / 60)}h {item.duration % 60}m
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Users className="h-4 w-4" />
-                        <span>{item.studentsCount.toLocaleString()}</span>
-                      </div>
-                      <Badge variant="outline" className="text-xs">
-                        {item.level}
-                      </Badge>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      {/* Quantity Controls */}
-                      <div className="flex items-center space-x-3">
-                        <span className="text-sm font-medium">Quantity:</span>
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            disabled={item.quantity <= 1}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Minus className="h-4 w-4" />
-                          </Button>
-                          <span className="w-8 text-center font-medium">{item.quantity}</span>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* Price */}
-                      <div className="text-right">
-                        <div className="flex items-center space-x-2">
-                          {item.discountPrice ? (
-                            <>
-                              <span className="text-xl font-bold text-[#fdb606]">
-                                ${(item.discountPrice * item.quantity).toFixed(2)}
-                              </span>
-                              <span className="text-sm text-gray-500 line-through">
-                                ${(item.originalPrice * item.quantity).toFixed(2)}
-                              </span>
-                              {item.discount && <Badge className="bg-red-500 text-white">{item.discount}% OFF</Badge>}
-                            </>
-                          ) : (
-                            <span className="text-xl font-bold">
-                              ${(item.originalPrice * item.quantity).toFixed(2)}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+    <div className="min-h-screen bg-white dark:bg-[#1d2026]">
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <div className="mb-8 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white">Shopping Cart</h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Review your cart and complete payment</p>
+          </div>
+          {hasItems && (
+            <button onClick={clearCart} className="text-xs text-gray-600 dark:text-gray-400 hover:text-red-600">Clear Cart</button>
+          )}
         </div>
 
-        {/* Order Summary */}
-        <div className="lg:col-span-1">
-          <Card className="sticky top-6">
-            <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Promo Code */}
-              <div className="space-y-3">
-                <h4 className="font-medium">Promo Code</h4>
-                {appliedPromo ? (
-                  <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="flex items-center space-x-2">
-                      <Tag className="h-4 w-4 text-green-600" />
-                      <span className="font-medium text-green-800">{appliedPromo}</span>
-                      <Badge className="bg-green-500 text-white">-{promoDiscount}%</Badge>
+        {!hasItems && emptyState}
+        {hasItems && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+            {/* Items & coupon */}
+            <div className="lg:col-span-2 space-y-6">
+              <Card className="border-gray-200 dark:border-[#2a3547] dark:bg-[#0a0f19]">
+                <CardHeader>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Courses ({items.length})</h2>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {items.map(item => (
+                    <div
+                      key={item.id}
+                      className="flex flex-col sm:flex-row gap-3 sm:gap-4 border border-gray-100 dark:border-[#2a3547] rounded-md p-3 md:p-4 bg-white dark:bg-[#1d2026]"
+                    >
+                      <div className="relative h-32 w-full sm:h-20 sm:w-32 overflow-hidden rounded bg-gray-100 flex-shrink-0">
+                        {item.thumbnail ? (
+                          <Image src={constructUrl(item.thumbnail)} alt={item.title} fill className="object-cover" />
+                        ) : (
+                          <div className="h-full w-full grid place-items-center text-[10px] text-gray-400">No image</div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 md:line-clamp-3">{item.title}</p>
+                        {item.instructor && <p className="text-xs text-gray-600 dark:text-gray-400">By {item.instructor}</p>}
+                        {item.isFree && <p className="text-[11px] text-green-700">Free course</p>}
+                      </div>
+                      <div className="flex sm:flex-col justify-between sm:justify-between items-end sm:items-end gap-2 sm:gap-0">
+                        <div className="text-right">
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white">{item.isFree ? "₦0" : `₦${(item.unitPrice).toLocaleString()}`}</p>
+                        </div>
+                        <button
+                          onClick={() => removeItem(item.id)}
+                          className="text-[11px] text-gray-600 dark:text-gray-400 hover:text-red-600"
+                        >Remove</button>
+                      </div>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={removePromoCode}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex space-x-2">
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card className="border-gray-200 dark:border-[#2a3547] dark:bg-[#0a0f19]">
+                <CardHeader>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Coupon Code</h2>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col xs:flex-row sm:flex-row gap-2 sm:items-stretch">
                     <Input
-                      placeholder="Enter promo code"
-                      value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && applyPromoCode()}
+                      value={couponInput}
+                      onChange={(e) => setCouponInput(e.target.value)}
+                      placeholder="Enter coupon"
+                      className="h-10 flex-1 bg-white dark:bg-[#1d2026] dark:border-[#2a3547] dark:text-white"
+                      aria-label="Coupon code"
                     />
-                    <Button variant="outline" onClick={applyPromoCode} disabled={!promoCode.trim()}>
-                      Apply
-                    </Button>
+                    {coupon.code ? (
+                      <Button variant="secondary" onClick={removeCoupon} className="h-10 dark:bg-[#2a3547] dark:hover:bg-[#3a4557] dark:text-white" aria-label="Remove coupon" disabled={loadingCoupon}>Remove</Button>
+                    ) : (
+                      <Button onClick={handleApply} disabled={!couponInput || loadingCoupon} className="h-10 bg-[#fdb606] hover:bg-[#f39c12] text-black" aria-label="Apply coupon">{loadingCoupon ? "..." : "Apply"}</Button>
+                    )}
                   </div>
-                )}
-                <p className="text-xs text-gray-500">Try: SAVE20, STUDENT15, or WELCOME10</p>
+                  {coupon.code && (
+                    <p className="text-xs text-green-700 mt-2">Applied {coupon.code}. You save ₦{discount.toLocaleString()}.</p>
+                  )}
+                  {coupon.code && items.length > 1 && (
+                    <p className="text-[10px] text-gray-600 dark:text-gray-400 mt-1">Discount applied to first course. Multi-course support coming soon.</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                {[{title:"Secure Payment",desc:"256-bit encryption & PCI compliant"},{title:"Instant Access",desc:"Start learning immediately"},{title:"Support",desc:"Email & community help"}].map(b => (
+                  <div key={b.title} className="rounded-md bg-white dark:bg-[#1d2026] border border-gray-200 dark:border-[#2a3547] p-4">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{b.title}</p>
+                    <p className="text-[11px] text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">{b.desc}</p>
+                  </div>
+                ))}
               </div>
+            </div>
 
-              <Separator />
-
-              {/* Price Breakdown */}
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span>${totals.subtotal.toFixed(2)}</span>
-                </div>
-
-                {totals.discount > 0 && (
-                  <div className="flex justify-between text-green-600">
-                    <span>Discount</span>
-                    <span>-${totals.discount.toFixed(2)}</span>
-                  </div>
-                )}
-
-                <div className="flex justify-between">
-                  <span>Tax</span>
-                  <span>${totals.tax.toFixed(2)}</span>
-                </div>
-
-                <Separator />
-
-                <div className="flex justify-between text-lg font-bold">
-                  <span>Total</span>
-                  <span>${totals.total.toFixed(2)}</span>
-                </div>
-
-                {totals.savings > 0 && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <div className="flex items-center space-x-2">
-                      <Gift className="h-4 w-4 text-green-600" />
-                      <span className="text-sm font-medium text-green-800">You save ${totals.savings.toFixed(2)}!</span>
+            {/* Summary */}
+            <div className="lg:col-span-1 hidden lg:block">
+              <Card className="border-gray-200 dark:border-[#2a3547] dark:bg-[#0a0f19] sticky top-6">
+                <CardHeader>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Payment Summary</h2>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
+                      <span className="font-medium text-gray-900 dark:text-white">₦{subtotal.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Discount</span>
+                      <span className="text-green-700">-₦{discount.toLocaleString()}</span>
+                    </div>
+                    <Separator className="my-2 dark:bg-[#2a3547]" />
+                    <div className="flex justify-between text-base">
+                      <span className="font-medium text-gray-900 dark:text-white">Total</span>
+                      <span className="font-semibold text-gray-900 dark:text-white">₦{total.toLocaleString()}</span>
                     </div>
                   </div>
-                )}
-              </div>
-
-              <Separator />
-
-              {/* Checkout Button */}
-              <Button
-                className="w-full bg-[#fdb606] hover:bg-[#f39c12] text-lg py-6"
-                onClick={() => setIsPaymentModalOpen(true)}
-              >
-                <CreditCard className="h-5 w-5 mr-2" />
-                Proceed to Checkout
-              </Button>
-
-              {/* Security Badge */}
-              <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
-                <Shield className="h-4 w-4" />
-                <span>Secure 256-bit SSL encryption</span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                  <Button
+                    disabled={!hasItems || processing || initializePaymentMutation.isPending}
+                    onClick={handleStartPayment}
+                    className="w-full mt-5 h-11 text-black font-semibold bg-[#fdb606] hover:bg-[#f39c12]"
+                    aria-label="Proceed to payment"
+                  >
+                    {processing || initializePaymentMutation.isPending ? "Processing…" : "Pay Securely"}
+                  </Button>
+                  <p className="text-[11px] text-gray-600 dark:text-gray-400 mt-3 text-center">Secured by Paystack. You may be redirected.</p>
+                  <button onClick={() => router.back()} className="mt-4 w-full text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">← Back</button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Payment Modal */}
-      <PaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        items={cartItems.map((item) => ({
-          id: item.id,
-          name: item.title,
-          price: item.discountPrice || item.originalPrice,
-          type: "course" as const,
-        }))}
-        total={totals.total}
-      />
+      {/* Mobile sticky summary bar */}
+      {hasItems && (
+        <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 dark:border-[#2a3547] bg-white/95 dark:bg-[#0a0f19]/95 backdrop-blur supports-[backdrop-filter]:bg-white/75 dark:supports-[backdrop-filter]:bg-[#0a0f19]/75 px-4 py-3 shadow-lg">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <p className="text-[11px] uppercase tracking-wide text-gray-600 dark:text-gray-400">Total</p>
+              <p className="text-base font-semibold text-gray-900 dark:text-white">₦{total.toLocaleString()}</p>
+              {discount > 0 && <p className="text-[10px] text-green-700">You save ₦{discount.toLocaleString()}</p>}
+            </div>
+            <Button
+              disabled={!hasItems || processing || initializePaymentMutation.isPending}
+              onClick={handleStartPayment}
+              className="h-11 px-6 font-semibold bg-[#fdb606] hover:bg-[#f39c12] text-black"
+              aria-label="Pay securely"
+            >
+              {processing || initializePaymentMutation.isPending ? "Processing…" : "Checkout"}
+            </Button>
+          </div>
+          <div className="flex justify-between text-[10px] text-gray-600 dark:text-gray-400">
+            <button onClick={() => router.back()} className="hover:text-gray-900 dark:hover:text-white">← Back</button>
+            {coupon.code && <span>Coupon: {coupon.code}</span>}
+          </div>
+        </div>
+      )}
     </div>
-  )
+  );
 }

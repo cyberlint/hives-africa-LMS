@@ -4,7 +4,7 @@ import { CourseData } from '@/types/course';
 // Fetch function
 async function fetchCourse(courseId: string): Promise<CourseData> {
   const response = await fetch(`/api/courses/${courseId}`);
-  
+
   if (!response.ok) {
     const errorData = await response.json();
     throw new Error(errorData.error || 'Failed to fetch course');
@@ -22,8 +22,8 @@ export function useCourseData(courseId: string) {
     queryKey: ['course', courseId],
     queryFn: () => fetchCourse(courseId),
     enabled: !!courseId, // Only fetch if courseId exists
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 15 * 60 * 1000, // 15 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
   });
 
   return {

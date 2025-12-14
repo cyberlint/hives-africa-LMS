@@ -3,11 +3,14 @@ import React, { useEffect } from 'react';
 import { ThreeColumnLayout } from '@/components/lms/three-column-layout';
 import { useCourse, CourseProvider } from './_components/CourseContext';
 
+import { useRouter } from 'next/navigation';
+
 const ChapterLayoutContent = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
+  const router = useRouter();
   const {
     activeLectureId,
     activeLecture,
@@ -21,6 +24,30 @@ const ChapterLayoutContent = ({
     goToPreviousLecture,
     setCurrentTime,
   } = useCourse();
+
+  // Redirect to first lecture if none selected
+  useEffect(() => {
+    if (!loading && courseData && !activeLectureId) {
+      // Find first lecture
+      let firstLectureId = null;
+      
+      if (courseData.sections && courseData.sections.length > 0) {
+        // Find first section with lectures
+        const firstSection = courseData.sections.find(s => s.lectures && s.lectures.length > 0);
+        if (firstSection) {
+          firstLectureId = firstSection.lectures[0].id;
+        }
+      } 
+      
+      if (!firstLectureId && courseData.lectures && courseData.lectures.length > 0) {
+        firstLectureId = courseData.lectures[0].id;
+      }
+
+      if (firstLectureId) {
+        router.replace(`/${courseData.id}/chapter/${firstLectureId}`);
+      }
+    }
+  }, [courseData, loading, activeLectureId, router]);
 
   // Keyboard navigation for lecture switching - MUST be before conditional returns
   useEffect(() => {

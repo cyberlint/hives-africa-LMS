@@ -4,6 +4,7 @@ import { useRouter, useParams } from 'next/navigation';
 import type { CourseData, Lecture } from '@/types/course';
 import { useCourseData } from '@/hooks/useCourseData';
 import { useLessonProgress } from '@/hooks/useLessonProgress';
+import { toast } from "sonner";
 
 interface CourseContextType {
   activeLectureId: string;
@@ -72,16 +73,22 @@ export const CourseProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const handleMarkComplete = async (lectureId: string) => {
     if (!completedLectures.includes(lectureId)) {
+      // Optimistic update
+      setCompletedLectures(prev => [...prev, lectureId]);
+      toast.success("Lesson marked as completed");
+
       try {
         await markComplete(lectureId);
-        setCompletedLectures(prev => [...prev, lectureId]);
         
-        // Update course data
+        // Update course data object locally if needed, though invalidation handles fetch
         if (courseData) {
           courseData.completedLectures = (courseData.completedLectures || 0) + 1;
         }
       } catch (error) {
         console.error('Failed to mark lecture as complete:', error);
+        // Revert on failure
+        setCompletedLectures(prev => prev.filter(id => id !== lectureId));
+        toast.error("Failed to mark lesson as complete");
       }
     }
   };

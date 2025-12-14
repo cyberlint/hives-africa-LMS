@@ -25,7 +25,7 @@ export function CourseList({ courses, isMobile }: CourseListProps) {
       {courses.map((course) => (
         <div
           key={course.id}
-          className="bg-white rounded-xl shadow-sm border border-[#e9ecef] overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer group min-h-44"
+          className="bg-white dark:bg-[#2a2f3a] rounded-xl shadow-sm border border-[#e9ecef] dark:border-[#404854] overflow-hidden hover:shadow-lg dark:hover:shadow-lg/50 transition-all duration-200 cursor-pointer group min-h-44"
           onClick={() => handleCourseClick(course.id)}
         >
           <div className={`flex ${isMobile ? "flex-col" : ""} h-full`}>
@@ -47,14 +47,14 @@ export function CourseList({ courses, isMobile }: CourseListProps) {
 
             <div className="flex-1 p-5 flex flex-col justify-between">
               <div className="flex-1">
-                <p className="text-xs text-[#6c757d] mb-2">by {course.instructor}</p>
-                <h3 className="font-bold text-[#2c3e50] text-lg mb-3 group-hover:text-[#ff6b35] transition-colors">
+                <p className="text-xs text-[#6c757d] dark:text-gray-400 mb-2">by {course.instructor}</p>
+                <h3 className="font-bold text-[#2c3e50] dark:text-gray-100 text-lg mb-3 group-hover:text-[#ff6b35] transition-colors">
                   {course.title}
                 </h3>
 
-                <p className="text-sm text-[#6c757d] mb-4 line-clamp-2">{course.description}</p>
+                <p className="text-sm text-[#6c757d] dark:text-gray-400 mb-4 line-clamp-2">{course.description}</p>
 
-                <div className="flex items-center gap-4 mb-4 text-xs text-[#6c757d] flex-wrap">
+                <div className="flex items-center gap-4 mb-4 text-xs text-[#6c757d] dark:text-gray-400 flex-wrap">
                   <div className="flex items-center gap-1">
                     <div className="w-1.5 h-1.5 bg-yellow rounded-full"></div>
                     <span>{course.duration}</span>
@@ -77,7 +77,7 @@ export function CourseList({ courses, isMobile }: CourseListProps) {
               <div className="flex items-center justify-between mt-auto">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`text-xl font-bold ${course.price === 0 ? "text-[#28a745]" : "text-[#2c3e50]"}`}
+                    className={`text-xl font-bold ${course.price === 0 ? "text-[#28a745]" : "text-[#2c3e50] dark:text-gray-100"}`}
                   >
                     {course.price === 0 ? "Free" : `₦${course.price.toLocaleString()}`}
                   </span>

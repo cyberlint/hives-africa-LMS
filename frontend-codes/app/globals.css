@@ -126,7 +126,214 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+
+@layer utilities {
+  .custom-scrollbar-on-hover {
+    /* Reserves space for the scrollbar, preventing any content compression. */
+    scrollbar-gutter: stable;
+  }
+
+  /* For Chrome, Safari, Edge, etc. */
+  .custom-scrollbar-on-hover::-webkit-scrollbar {
+    width: 8px;
+    /* Set the width of the scrollbar gutter */
+  }
+
+  .custom-scrollbar-on-hover::-webkit-scrollbar-track {
+    background: transparent;
+    /* Makes the track area invisible */
+  }
+
+  .custom-scrollbar-on-hover::-webkit-scrollbar-thumb {
+    background: transparent;
+    /* Makes the scrollbar thumb invisible by default */
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar-on-hover:hover::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    /* The thumb becomes visible on hover */
+  }
+
+  /* For Firefox */
+  .custom-scrollbar-on-hover {
+    scrollbar-width: thin;
+    /* Or 'auto' */
+    scrollbar-color: transparent transparent;
+    /* thumb color track color */
+  }
+
+  .custom-scrollbar-on-hover:hover {
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  /*New list custom scrollbar */
+
+  .scrollbar-styled {
+    /* Prevents layout shift when scrollbar appears */
+    scrollbar-gutter: stable;
+
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  /* WebKit browsers (Chrome, Safari, Edge) */
+  .scrollbar-styled::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .scrollbar-styled::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-styled::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 4px;
+  }
+
+  /* Column scrollbar that's hidden by default, visible on hover */
+  .scrollbar-hover-column {
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-hover-column::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .scrollbar-hover-column::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-hover-column::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
+
+  .scrollbar-hover-column:hover::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+  }
+
+  /* Mobile-responsive scrollbar for board columns */
+  .scrollbar-mobile {
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+
+  /* Desktop scrollbar styling */
+  @media (min-width: 768px) {
+    .scrollbar-mobile {
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+      transition: scrollbar-color 0.2s ease;
+    }
+
+    .scrollbar-mobile:hover {
+      scrollbar-color: hsl(var(--border)) transparent;
+    }
+
+    .scrollbar-mobile::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .scrollbar-mobile::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .scrollbar-mobile::-webkit-scrollbar-thumb {
+      background: transparent;
+      border-radius: 4px;
+      transition: background 0.2s ease;
+    }
+
+    .scrollbar-mobile:hover::-webkit-scrollbar-thumb {
+      background: hsl(var(--border));
+    }
+  }
+
+  /* Mobile scrollbar - force override browser defaults */
+  @media (max-width: 767px) {
+    .scrollbar-mobile {
+      /* Enable smooth scrolling on iOS */
+      -webkit-overflow-scrolling: touch;
+      /* Force custom scrollbar on mobile */
+      scrollbar-width: thin;
+    }
+
+    /* WebKit scrollbar for mobile Chrome/Safari */
+    .scrollbar-mobile::-webkit-scrollbar {
+      width: 4px !important;
+      height: 4px !important;
+    }
+
+    .scrollbar-mobile::-webkit-scrollbar-track {
+      background: transparent !important;
+      border-radius: 2px !important;
+    }
+
+    .scrollbar-mobile::-webkit-scrollbar-corner {
+      background: transparent !important;
+    }
+
+    /* Light mode - use exact card background color */
+    .scrollbar-mobile::-webkit-scrollbar-thumb {
+      background: #8b95ee33 !important;
+      /* Exact same as card background */
+      border-radius: 2px !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .scrollbar-mobile::-webkit-scrollbar-thumb:hover {
+      background: #8b95ee66 !important;
+      /* Double opacity on hover */
+    }
+
+    .scrollbar-mobile::-webkit-scrollbar-thumb:active {
+      background: #8b95ee99 !important;
+      /* Higher opacity when active */
+    }
+
+    /* Firefox mobile scrollbar */
+    .scrollbar-mobile {
+      scrollbar-color: #8b95ee33 transparent !important;
+    }
+
+    /* Dark mode - override everything */
+    .dark .scrollbar-mobile::-webkit-scrollbar-thumb {
+      background: hsl(var(--border)) !important;
+    }
+
+    .dark .scrollbar-mobile::-webkit-scrollbar-thumb:hover {
+      background: hsl(var(--border)) !important;
+    }
+
+    .dark .scrollbar-mobile::-webkit-scrollbar-thumb:active {
+      background: hsl(var(--border)) !important;
+    }
+
+    .dark .scrollbar-mobile {
+      scrollbar-color: hsl(var(--border)) transparent !important;
+    }
   }
 }

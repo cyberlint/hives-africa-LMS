@@ -68,7 +68,7 @@ export function CourseCard({
           </div>
           
           <div className="flex items-center justify-between">
-            <span className="font-bold text-lg">${price}</span>
+            <span className="font-bold text-lg">₦{price}</span>
             <Button asChild size="sm">
               <Link href={`/courses/${id}`}>View Course</Link>
             </Button>

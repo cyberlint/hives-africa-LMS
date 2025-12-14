@@ -6,6 +6,7 @@ import { Star } from "lucide-react";
 import { CourseListItem } from "@/services/courses";
 import CourseDetailCard from "./courseDetailCard";
 import Link from "next/link";
+import { constructUrl } from "@/lib/construct-url";
 
 interface RecentlyAddedCoursesProps {
   courses: CourseListItem[];
@@ -52,7 +53,7 @@ const RecentlyAddedCourses = ({ courses }: RecentlyAddedCoursesProps) => {
 
   return (
     <>
-      <h4 className="text-center text-3xl md:text-[32px] text-darkBlue-300 font-semibold w-full">
+      <h4 className="text-center text-3xl md:text-[32px] text-darkBlue-300 dark:text-gray-100 font-semibold w-full">
         Recently Added Courses
       </h4>
 
@@ -79,9 +80,9 @@ const RecentlyAddedCourses = ({ courses }: RecentlyAddedCoursesProps) => {
                 }}
               >
                 {/* Course Card */}
-                <div className="cursor-pointer border border-[#E9EAF0] w-full hover:shadow-lg transition-shadow">
+                <div className="cursor-pointer border border-[#E9EAF0] dark:border-[#404854] w-full hover:shadow-lg dark:hover:shadow-lg/50 transition-shadow">
                   <Image
-                    src={course.thumbnail || "/assets/courses/course-img11.png"}
+                    src={course?.thumbnail ? constructUrl(course?.thumbnail) : "/assets/courses/course-img11.png"}
                     alt={course.title}
                     width={400}
                     height={300}
@@ -89,24 +90,24 @@ const RecentlyAddedCourses = ({ courses }: RecentlyAddedCoursesProps) => {
                   />
 
                   {/* Text content */}
-                  <div className="bg-white w-full">
+                  <div className="bg-white dark:bg-[#2a2f3a] w-full transition-colors duration-300">
                     <div className="space-y-4 p-3">
                       <div className="flex flex-wrap justify-between items-center gap-1">
-                        <p className="uppercase text-[8px] font-semibold p-1 bg-[#FFEEE8] text-[#993D20]">
+                        <p className="uppercase text-[8px] font-semibold p-1 bg-[#FFEEE8] dark:bg-orange/20 text-[#993D20] dark:text-orange">
                           {course.category?.name || "General"}
                         </p>
-                        <p className="text-xs md:text-sm font-semibold text-yellow">
+                        <p className="text-xs md:text-sm font-semibold text-yellow dark:text-yellow">
                           ₦{course.current_price.toLocaleString()}
                         </p>
                       </div>
 
-                      <p className="text-[10px] sm:text-xs font-semibold text-darkBlue-300 line-clamp-2">
+                      <p className="text-[10px] sm:text-xs font-semibold text-darkBlue-300 dark:text-gray-100 line-clamp-2">
                         {course.title}
                       </p>
                     </div>
 
-                    <div className="flex flex-wrap justify-between items-center gap-y-1 border-t border-[#E9EAF0] text-[#4E5566] text-[10px] sm:text-xs p-3 w-full">
-                      <p className="flex items-center gap-1 font-semibold">
+                    <div className="flex flex-wrap justify-between items-center gap-y-1 border-t border-[#E9EAF0] dark:border-[#404854] text-[#4E5566] dark:text-gray-400 text-[10px] sm:text-xs p-3 w-full">
+                      <p className="flex items-center gap-1 font-semibold text-darkBlue-300 dark:text-gray-100">
                         <Star fill="#FD8E1F" strokeWidth={0} size={16} />
                         {course.average_rating.toFixed(1)}
                       </p>
@@ -118,9 +119,9 @@ const RecentlyAddedCourses = ({ courses }: RecentlyAddedCoursesProps) => {
                           height={50}
                           className="h-4 w-4"
                         />
-                        <p className="font-semibold">
+                        <p className="font-semibold text-darkBlue-300 dark:text-gray-100">
                           {course.total_enrollments.toLocaleString()}{" "}
-                          <span className="font-normal text-[#8C94A3]">students</span>
+                          <span className="font-normal text-[#8C94A3] dark:text-gray-500">students</span>
                         </p>
                       </div>
                     </div>
@@ -152,7 +153,7 @@ const RecentlyAddedCourses = ({ courses }: RecentlyAddedCoursesProps) => {
                             setHoveredCourse((prev) => (prev?.id === course.id ? null : prev));
                           }, 120);
                         }}
-                        className={`absolute -top-1/4 ${basePos} -ml-16 py-6 w-84 space-y-4 border rounded shadow-[0px_11.12px_29.65px_0px_#1D20261A] bg-white z-50 transition-all duration-200 ease-in-out ${
+                        className={`absolute -top-1/4 ${basePos} -ml-16 py-6 w-84 space-y-4 border border-[#E9EAF0] dark:border-[#404854] rounded shadow-[0px_11.12px_29.65px_0px_#1D20261A] dark:shadow-[0px_11.12px_29.65px_0px_#000000] bg-white dark:bg-[#2a2f3a] z-50 transition-all duration-200 ease-in-out ${
                           isActive
                             ? "opacity-100 scale-100 pointer-events-auto"
                             : "opacity-0 scale-95 pointer-events-none"
@@ -169,7 +170,7 @@ const RecentlyAddedCourses = ({ courses }: RecentlyAddedCoursesProps) => {
         </div>
       </div>
 
-      <button className="cursor-pointer bg-[#fffce8] hover:bg-[#FFEEE8CA] text-yellow text-xs font-semibold px-6 py-3">
+      <button className="cursor-pointer bg-[#fffce8] dark:bg-yellow/20 hover:bg-[#FFEEE8CA] dark:hover:bg-yellow/30 text-yellow dark:text-yellow text-xs font-semibold px-6 py-3 transition-colors duration-300">
         <Link href="/course">Browse All Courses →</Link>
       </button>
     </>

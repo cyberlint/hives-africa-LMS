@@ -29,7 +29,7 @@ function PaymentCallbackContent() {
   }, [router, searchParams]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FAFAFB] to-[#F0F0F2] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#FAFAFB] dark:from-[#1d2026] to-[#F0F0F2] dark:to-[#2a2f3a] transition-colors duration-300 flex items-center justify-center p-4">
       <div className="text-center space-y-6">
         <div className="relative">
           <div className="absolute inset-0 flex items-center justify-center">
@@ -38,10 +38,10 @@ function PaymentCallbackContent() {
           <Loader2 className="w-16 h-16 animate-spin text-yellow mx-auto relative z-10" />
         </div>
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold text-darkBlue-300">
+          <h2 className="text-2xl font-bold text-darkBlue-300 dark:text-gray-100">
             Processing Payment
           </h2>
-          <p className="text-sm text-[#6E7485] max-w-sm mx-auto">
+          <p className="text-sm text-[#6E7485] dark:text-gray-400 max-w-sm mx-auto">
             Please wait while we redirect you to verify your payment...
           </p>
         </div>
@@ -57,13 +57,13 @@ function PaymentCallbackContent() {
 
 function LoadingFallback() {
   return (
-    <div className="min-h-screen bg-[#FAFAFB] flex items-center justify-center">
+    <div className="min-h-screen bg-[#FAFAFB] dark:bg-[#1d2026] transition-colors duration-300 flex items-center justify-center">
       <div className="text-center space-y-4">
         <Loader2 className="w-12 h-12 animate-spin text-yellow mx-auto" />
-        <h2 className="text-xl font-semibold text-darkBlue-300">
+        <h2 className="text-xl font-semibold text-darkBlue-300 dark:text-gray-100">
           Processing Payment
         </h2>
-        <p className="text-sm text-[#6E7485]">
+        <p className="text-sm text-[#6E7485] dark:text-gray-400">
           Please wait while we process your payment...
         </p>
       </div>

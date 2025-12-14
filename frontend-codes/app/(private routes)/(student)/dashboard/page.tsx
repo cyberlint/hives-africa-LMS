@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { BookOpen, Clock, Award, TrendingUp, Play } from "lucide-react"
+import { BookOpen, Clock, Award, TrendingUp, Play, Loader } from "lucide-react"
 import type { Course, User } from "@/types"
 
 import { toast } from "sonner"
@@ -15,20 +15,35 @@ import { UserTypeIndicator } from "@/components/shared/user-type-indicator"
 import Link from "next/link"
 import Image from "next/image"
 import { constructUrl } from "@/lib/construct-url"
-
+import { authClient } from "@/lib/auth-client"
 
 
 function DashboardOverview() {
+  const { data: session } = authClient.useSession() // Use Better Auth
+  const { enrolledCourses, loading, error, user: dashboardUser } = useDashboard()
+  // Use session data or fallback
+  const sessionUser = session?.user || {
+    name: "Guest User",
+    email: "guest@example.com",
+    image: "/ai.png",
+  }
 
-const {  user, enrolledCourses, loading, error } = useDashboard()
+  // Combine session user with dashboard user info
+  const user = {
+    name: sessionUser.name || dashboardUser.name,
+    email: sessionUser.email || dashboardUser.email,
+    image: sessionUser.image || dashboardUser.avatar || "/ai.png",
+  }
+
+  // Get progress from dashboard context (already populated from Enrollment model)
+  const userProgress = dashboardUser.progress
 
   // Show loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#fdb606] mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your dashboard...</p>
+        <div className="flex flex-col items-center gap-3">
+          <Loader className="h-8 w-8 animate-spin text-yellow" />
         </div>
       </div>
     )
@@ -64,11 +79,11 @@ const {  user, enrolledCourses, loading, error } = useDashboard()
     )
   }
 
-  const totalProgress = user.progress.length > 0 
-    ? user.progress.reduce((acc, p) => acc + p.progress, 0) / user.progress.length 
+  const totalProgress = userProgress.length > 0 
+    ? userProgress.reduce((acc: number, p) => acc + p.progress, 0) / userProgress.length 
     : 0
-  const completedCourses = user.progress.filter((p) => p.progress === 100).length
-  const inProgressCourses = user.progress.filter((p) => p.progress > 0 && p.progress < 100).length
+  const completedCourses = userProgress.filter((p) => p.progress === 100).length
+  const inProgressCourses = userProgress.filter((p) => p.progress > 0 && p.progress < 100).length
 
   // Check if user has no enrolled courses - show empty state
   const hasNoCourses = enrolledCourses.length === 0
@@ -177,7 +192,7 @@ const {  user, enrolledCourses, loading, error } = useDashboard()
             <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
               <div className="mb-6">
                 <svg
-                  className="mx-auto h-32 w-32 text-gray-300"
+                  className="mx-auto h-32 w-32 text-gray-300 dark:text-[#2a3547]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -190,10 +205,10 @@ const {  user, enrolledCourses, loading, error } = useDashboard()
                   />
                 </svg>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 No courses yet
               </h3>
-              <p className="text-gray-600 mb-6 max-w-md text-sm sm:text-base">
+              <p className="text-gray-600 dark:text-gray-500 mb-6 max-w-md text-sm sm:text-base">
                 You haven&apos;t enrolled in any courses yet. Start your learning journey by exploring our course catalog and find something that interests you!
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
@@ -210,6 +225,7 @@ const {  user, enrolledCourses, loading, error } = useDashboard()
                 <Button 
                   asChild 
                   variant="outline"
+                  className="text-gray-900 dark:text-white border-gray-300 dark:border-[#2a3547] hover:bg-gray-100 dark:hover:bg-[#0a0f19]"
                   size="lg"
                 >
                   <Link href={"/learning"}>
@@ -219,8 +235,8 @@ const {  user, enrolledCourses, loading, error } = useDashboard()
               </div>
               
               {/* Quick Stats for Empty State */}
-              <div className="mt-8 pt-8 border-t border-gray-200 w-full max-w-2xl">
-                <p className="text-sm text-gray-500 mb-4">Popular categories to get started:</p>
+              <div className="mt-8 pt-8 border-t border-gray-200 dark:border-[#2a3547] w-full max-w-2xl">
+                <p className="text-sm text-gray-500 dark:text-gray-600 mb-4">Popular categories to get started:</p>
                 <div className="flex flex-wrap gap-2 justify-center">
                   <Badge variant="secondary" className="cursor-pointer hover:bg-[#fdb606] hover:text-white transition-colors">
                     Web Development
@@ -245,7 +261,7 @@ const {  user, enrolledCourses, loading, error } = useDashboard()
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {enrolledCourses.slice(0, 3).map((course) => {
-                  const progress = user.progress.find((p) => p.courseId === course.id)
+                  const progress = userProgress.find((p) => p.courseId === course.id)
                   const thumbnailUrl = constructUrl(course.fileKey)
                   return (
                     <div
@@ -278,7 +294,7 @@ const {  user, enrolledCourses, loading, error } = useDashboard()
                         className="w-full mt-3 bg-[#fdb606] hover:bg-[#f39c12] text-sm"
                         asChild
                       >
-                        <Link href={`/${course.id}/chapter/1`}>
+                        <Link href={`/${course.id}/chapter`}>
                           <Play className="h-4 w-4 mr-2" />
                           Continue
                         </Link>

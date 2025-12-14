@@ -64,15 +64,15 @@ export default function Reviews({ course }: ReviewsProps) {
   }
 
   return (
-    <section id="reviews" className="py-8 sm:py-12">
+    <section id="reviews" className="py-8 sm:py-12 dark:bg-[#1d2026] transition-colors duration-300">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="max-w-4xl">
+          <div className="max-w-4k">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#0F1D2F]">Student Reviews</h2>
-              <div className="flex items-center space-x-2 text-sm text-[#6B7280]">
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#0F1D2F] dark:text-gray-100">Student Reviews</h2>
+              <div className="flex items-center space-x-2 text-sm text-[#6B7280] dark:text-gray-400">
                 <Star className="w-4 h-4 fill-yellow text-yellow" />
-                <span className="font-medium text-[#0F1D2F]">{course.rating || 4.5}</span>
+                <span className="font-medium text-[#0F1D2F] dark:text-gray-100">{course.rating || 4.5}</span>
                 <span>({course.students || 0} reviews)</span>
               </div>
             </div>
@@ -80,7 +80,7 @@ export default function Reviews({ course }: ReviewsProps) {
             {/* Reviews Grid */}
             <div className="grid gap-4 sm:gap-6 md:grid-cols-2 mb-6 sm:mb-8">
               {getCurrentReviews().map((review) => (
-                <div key={review.id} className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 shadow-sm">
+                <div key={review.id} className="bg-white dark:bg-[#2a2f3a] border border-gray-200 dark:border-[#404854] rounded-xl p-4 sm:p-6 shadow-sm transition-colors duration-300">
                   {/* Reviewer Info */}
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow rounded-full flex items-center justify-center flex-shrink-0">
@@ -92,8 +92,8 @@ export default function Reviews({ course }: ReviewsProps) {
                       </span>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="font-semibold text-[#0F1D2F] text-sm sm:text-base truncate">{review.name}</div>
-                      <div className="text-xs sm:text-sm text-[#6B7280] truncate">{review.role}</div>
+                      <div className="font-semibold text-[#0F1D2F] dark:text-gray-100 text-sm sm:text-base truncate">{review.name}</div>
+                      <div className="text-xs sm:text-sm text-[#6B7280] dark:text-gray-400 truncate">{review.role}</div>
                     </div>
                   </div>
 
@@ -108,7 +108,7 @@ export default function Reviews({ course }: ReviewsProps) {
                   </div>
 
                   {/* Review Text */}
-                  <p className="text-[#0F1D2F] leading-relaxed text-sm sm:text-base">{review.review}</p>
+                  <p className="text-[#6B7280] dark:text-gray-400 leading-relaxed text-sm sm:text-base">{review.review}</p>
                 </div>
               ))}
             </div>
@@ -117,10 +117,10 @@ export default function Reviews({ course }: ReviewsProps) {
             <div className="flex items-center justify-center space-x-4">
               <button
                 onClick={prevSlide}
-                className="p-2 rounded-full border border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-full border border-gray-300 dark:border-[#404854] hover:bg-gray-50 dark:hover:bg-[#2a2f3a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={currentSlide === 0}
               >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#6B7280]" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#6B7280] dark:text-gray-400" />
               </button>
 
               {/* Pagination Dots */}
@@ -138,10 +138,10 @@ export default function Reviews({ course }: ReviewsProps) {
 
               <button
                 onClick={nextSlide}
-                className="p-2 rounded-full border border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-full border border-gray-300 dark:border-[#404854] hover:bg-gray-50 dark:hover:bg-[#2a2f3a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={currentSlide === totalSlides - 1}
               >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#6B7280]" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#6B7280] dark:text-gray-400" />
               </button>
             </div>
           </div>

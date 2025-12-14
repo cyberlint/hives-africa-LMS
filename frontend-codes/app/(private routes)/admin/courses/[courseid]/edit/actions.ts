@@ -271,6 +271,53 @@ export async function createLesson(values: LessonSchemaType): Promise<ApiRespons
 }
 
 
+export async function updateLesson(values: LessonSchemaType, lessonId: string): Promise<ApiResponse> {
+    await requireAdmin();
+    try {
+        const result = lessonSchema.safeParse(values);
+        if (!result.success) {
+            return {
+                status: "error",
+                message: "Invalid lesson data",
+            };
+        }
+
+        await prisma.lesson.update({
+            where: {
+                id: lessonId,
+                moduleId: result.data.moduleId,
+            },
+            data: {
+                title: result.data.name,
+                description: result.data.description,
+                thumbnailKey: result.data.thumbnailKey,
+                videoKey: result.data.videoKey,
+                // @ts-ignore: String generic vs Enum match
+                type: result.data.type,
+                content: result.data.content,
+                duration: result.data.duration,
+                documentKey: result.data.documentKey,
+                quizConfig: result.data.quizConfig,
+            },
+        });
+
+        revalidatePath(`/admin/courses/${result.data.courseId}/edit`);
+        return {
+            status: "success",
+            message: "Lesson updated successfully",
+        }
+    }
+    catch (error) {
+        console.error(error);
+        return {
+            status: "error",
+            message: "Failed to update lesson",
+        }
+    }
+}
+
+
+
 // Server action to delete a lesson
 export async function deleteLesson(
     { courseId,

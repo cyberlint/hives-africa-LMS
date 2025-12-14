@@ -32,11 +32,12 @@ export function useLessonProgress(courseId: string) {
 
   const mutation = useMutation({
     mutationFn: (data: UpdateProgressData) => updateLessonProgress(courseId, data),
-    onSuccess: () => {
-      // Invalidate course data to refetch with updated progress
-      queryClient.invalidateQueries({ queryKey: ['course', courseId] });
-      // Also invalidate enrolled courses to update progress there
-      queryClient.invalidateQueries({ queryKey: ['enrolledCourses'] });
+    onSuccess: (data, variables) => {
+      // Only invalidate course data if completion status changed ensures we don't spam refetches on time updates
+      if (variables.completed) {
+        queryClient.invalidateQueries({ queryKey: ['course', courseId] });
+        queryClient.invalidateQueries({ queryKey: ['enrolledCourses'] });
+      }
     },
   });
 

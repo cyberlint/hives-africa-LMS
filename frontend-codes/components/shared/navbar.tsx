@@ -1,21 +1,28 @@
 "use client";
 
-import { ChevronDown, Menu, X, ShoppingCart } from "lucide-react";
+import { ChevronDown, Menu, X, ShoppingCart, Moon, Sun } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { authClient } from "@/lib/auth-client";
+import { useTheme } from "next-themes";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   const { items } = useCart();
   const { data: session } = authClient.useSession(); // Use Better Auth like admin
+  const { theme, setTheme } = useTheme();
   
   const cartItemsCount = items.reduce((total, item) => total + item.quantity, 0);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Handles closing mobile menu when outside the menu is clicked
   useEffect(() => {
@@ -37,7 +44,7 @@ const Navbar = () => {
   }, [isMobileMenuOpen]);
 
   return (
-    <nav className="w-full bg-white text-sm">
+    <nav className="w-full bg-white dark:bg-[#1d2026] text-sm transition-colors duration-300">
       <div className="mx-auto px-4 md:px-16 py-4 md:py-6 flex justify-between items-center gap-8 w-full">
         <div className="flex items-center gap-12 xl:gap-24 w-[70%]">
           <Link href="/">
@@ -50,41 +57,56 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop nav */}
-          <ul className="hidden lg:flex items-center gap-8 text-base text-[#151A28] font-medium">
+          <ul className="hidden lg:flex items-center gap-8 text-base text-[#151A28] dark:text-gray-300 font-medium">
             <li>
-              <Link href="/" className="hover:text-yellow transition">
+              <Link href="/" className="hover:text-yellow dark:hover:text-yellow transition">
                 Why Analytix
               </Link>
             </li>
 
             <li>
-              <Link href="/" className="hover:text-yellow transition">
+              <Link href="/" className="hover:text-yellow dark:hover:text-yellow transition">
                 Solutions
               </Link>
             </li>
 
             <li>
-              <Link href="/" className="hover:text-yellow transition">
+              <Link href="/" className="hover:text-yellow dark:hover:text-yellow transition">
                 Pricing
               </Link>
             </li>
 
-            <li className="flex items-center gap-1 cursor-pointer group hover:text-yellow transition">
+            <li className="flex items-center gap-1 cursor-pointer group hover:text-yellow dark:hover:text-yellow transition">
               <span>Resources</span>
-              <ChevronDown className="text-[#151A28] group-hover:text-yellow w-4 h-4" />
+              <ChevronDown className="text-[#151A28] dark:text-gray-300 group-hover:text-yellow w-4 h-4" />
             </li>
           </ul>
         </div>
 
         {/* Desktop auth links + cart + hamburger icon */}
         <div className="flex items-center gap-4 md:w-[30%] justify-end">
+          {/* Theme Toggle */}
+          {mounted && (
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="relative p-2 hover:bg-gray-100 dark:hover:bg-[#2a2f3a] rounded-full transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? (
+                <Sun size={24} className="text-yellow" />
+              ) : (
+                <Moon size={24} className="text-gray-700" />
+              )}
+            </button>
+          )}
+
           {/* Cart Icon */}
           <button
             onClick={() => router.push("/checkout")}
-            className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="relative p-2 hover:bg-gray-100 dark:hover:bg-[#2a2f3a] rounded-full transition-colors"
             aria-label="Shopping Cart"
           >
-            <ShoppingCart size={24} className="text-gray-700" />
+            <ShoppingCart size={24} className="text-gray-700 dark:text-gray-300" />
             {cartItemsCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-yellow text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                 {cartItemsCount > 99 ? '99+' : cartItemsCount}
@@ -98,7 +120,7 @@ const Navbar = () => {
               <li>
                 <button
                   onClick={() => router.push("/signin")}
-                  className="bg-[#3086EE1A] text-darkBlue-500 text-sm lg:text-base font-semibold px-6 py-3 rounded-full hover:bg-[#3086EE2A] transition-colors"
+                  className="bg-[#3086EE1A] dark:bg-[#3086EE2A] text-darkBlue-500 dark:text-[#76c1fb] text-sm lg:text-base font-semibold px-6 py-3 rounded-full hover:bg-[#3086EE2A] dark:hover:bg-[#3086EE3A] transition-colors"
                 >
                   Login
                 </button>
@@ -115,7 +137,7 @@ const Navbar = () => {
           )}
 
           <button
-            className="lg:hidden"
+            className="lg:hidden text-gray-700 dark:text-gray-300"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -126,7 +148,7 @@ const Navbar = () => {
       {/* Mobile menu */}
       <div
         ref={menuRef}
-        className={`fixed top-0 left-0 z-50 bg-darkBlue-500/95 backdrop-blur-lg transform transition-transform duration-300 ease-in-out h-screen overflow-hidden flex flex-col justify-start items-start gap-12 py-4 w-72 ${
+        className={`fixed top-0 left-0 z-50 bg-darkBlue-500/95 dark:bg-[#1d2026]/95 backdrop-blur-lg transform transition-transform duration-300 ease-in-out h-screen overflow-hidden flex flex-col justify-start items-start gap-12 py-4 w-72 ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -141,7 +163,7 @@ const Navbar = () => {
           </Link>
         </div>
 
-        <div className="px-4">
+        <div className="px-4 w-full">
           <ul className="flex flex-col gap-8 text-sm text-white">
             <li>
               <Link href="/" className="active:text-yellow transition">
@@ -165,6 +187,31 @@ const Navbar = () => {
               <span>Resources</span>
               <ChevronDown className="text-[#384957] group-hover:text-yellow w-4 h-4" />
             </li>
+
+            {/* Mobile theme toggle */}
+            {mounted && (
+              <li className="border-t border-white/20 pt-8">
+                <button
+                  onClick={() => {
+                    setTheme(theme === "dark" ? "light" : "dark");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 text-white hover:text-yellow transition"
+                >
+                  {theme === "dark" ? (
+                    <>
+                      <Sun size={20} className="text-yellow" />
+                      <span>Light Mode</span>
+                    </>
+                  ) : (
+                    <>
+                      <Moon size={20} />
+                      <span>Dark Mode</span>
+                    </>
+                  )}
+                </button>
+              </li>
+            )}
           </ul>
         </div>
       </div>

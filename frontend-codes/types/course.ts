@@ -59,6 +59,8 @@ export interface Lecture {
   position: number
   attachments?: Attachment[]
   currentTime?: number
+  documentKey?: string
+  quizConfig?: any
 }
 
 export interface CourseSection {
