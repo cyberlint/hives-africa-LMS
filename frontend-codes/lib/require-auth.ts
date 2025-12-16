@@ -1,3 +1,4 @@
+import "server-only";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
@@ -11,9 +12,9 @@ function isStudentRoute(pathname: string): boolean {
     return studentRoutes.some(route => pathname.startsWith(route));
 }
 
-export async function requireAuth(): Promise<{ user: { role: string; [key: string]: any } }>;
-export async function requireAuth(pathname: string): Promise<{ user: { role: string; [key: string]: any } }>;
-export async function requireAuth(pathname?: string): Promise<{ user: { role: string; [key: string]: any } }> {
+export async function requireAuth(): Promise<{ user: { role: string;[key: string]: any } }>;
+export async function requireAuth(pathname: string): Promise<{ user: { role: string;[key: string]: any } }>;
+export async function requireAuth(pathname?: string): Promise<{ user: { role: string;[key: string]: any } }> {
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -23,11 +24,11 @@ export async function requireAuth(pathname?: string): Promise<{ user: { role: st
     }
 
     const userRole = session.user.role;
-    
+
     if (!userRole) {
         return redirect("/signin");
     }
-
+    // console.log(pathname)
     if (pathname) {
         if (isAdminRoute(pathname) && userRole !== "admin") {
             return redirect("/signin");

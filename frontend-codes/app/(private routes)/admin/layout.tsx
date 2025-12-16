@@ -10,7 +10,7 @@ import { ReactNode } from "react"
 
 export default async function AdminLayout({children}: {
     children: ReactNode,}) {
-  await requireAuth();
+  await requireAuth("/admin");
   
   return (
     <SidebarProvider

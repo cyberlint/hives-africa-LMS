@@ -26,7 +26,7 @@ export const authRoutes: string[] = [
  * Array of admin routes
  * @type {string[]}
  */
-export const adminRoutes: string[] = ["/admin"];
+export const adminRoutes: string[] = ["/admin", "/admin/courses"];
 
 /**
  * Array of student routes (protected routes for users with 'user' role)
@@ -34,17 +34,17 @@ export const adminRoutes: string[] = ["/admin"];
  */
 export const studentRoutes: string[] = [
   "/dashboard",
-  "/achievements",
-  "/analytics",
-  "/cart",
-  "/courses",
-  "/help",
-  "/learning",
-  "/lecture",
-  "/purchases",
-  "/quiz",
-  "/settings",
-  "/wishlist",
+  "/dashboard/achievements",
+  "/dashboard/analytics",
+  "/dashboard/cart",
+  "/dashboard/courses",
+  "/dashboard/help",
+  "/dashboard/learning",
+  "/dashboard/lecture",
+  "/dashboard/purchases",
+  "/dashboard/quiz",
+  "/dashboard/settings",
+  "/dashboard/wishlist",
 ];
 
 /**
