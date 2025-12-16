@@ -410,16 +410,16 @@ export default function MyLearning() {
                 <p className="text-gray-600 mb-6 text-base">
                   You haven&apos;t enrolled in any courses yet. Explore our course catalog and find something that sparks your interest!
                 </p>
-                <Button 
-                  asChild 
-                  className="bg-[#fdb606] hover:bg-[#f39c12]"
-                  size="lg"
-                >
-                  <Link href="/courses">
-                    <BookOpen className="h-5 w-5 mr-2" />
-                    Browse All Courses
-                  </Link>
-                </Button>
+                  <Button 
+                    asChild 
+                    className="bg-[#fdb606] hover:bg-[#f39c12]"
+                    size="lg"
+                  >
+                    <Link href="/dashboard/courses">
+                      <BookOpen className="h-5 w-5 mr-2" />
+                      Browse All Courses
+                    </Link>
+                  </Button>
               </>
             ) : (
               // Filtered results are empty

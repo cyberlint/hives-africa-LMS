@@ -201,18 +201,18 @@ export default function ViewAll() {
     )
   }
 
-  const handleCourseAction = (action: string, courseId: string) => {
-    switch (action) {
-      case "continue":
-        router.push(`/${courseId}/chapter/1`)
-        break
-      case "enroll":
-      case "cart":
-        router.push(`/course/${courseId}`)
-        break
-      case "review":
-        router.push(`/${courseId}/chapter/1#reviews`)
-        break
+    const handleCourseAction = (action: string, courseId: string) => {
+      switch (action) {
+        case "continue":
+          router.push(`/dashboard/${courseId}/chapter/1`)
+          break
+        case "enroll":
+        case "cart":
+          router.push(`/course/${courseId}`)
+          break
+        case "review":
+          router.push(`/dashboard/${courseId}/chapter/1#reviews`)
+          break
       case "wishlist":
         console.log("wishlist", courseId)
         break

@@ -178,13 +178,13 @@ function DashboardOverview() {
             {hasNoCourses ? "Start Your Learning Journey" : "Continue Learning"}
           </CardTitle>
          
-          {!hasNoCourses && (
-            <Button variant="outline" size="sm"  className="hidden sm:flex"  asChild>
-              <Link href={"/learning"}>
-                View All
-              </Link>
-            </Button>
-          )}
+            {!hasNoCourses && (
+              <Button variant="outline" size="sm"  className="hidden sm:flex"  asChild>
+                <Link href={"/dashboard/learning"}>
+                  View All
+                </Link>
+              </Button>
+            )}
         </CardHeader>
         <CardContent>
           {hasNoCourses ? (
@@ -212,26 +212,26 @@ function DashboardOverview() {
                 You haven&apos;t enrolled in any courses yet. Start your learning journey by exploring our course catalog and find something that interests you!
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button 
-                  asChild 
-                  className="bg-[#fdb606] hover:bg-[#f39c12] text-white"
-                  size="lg"
-                >
-                  <Link href={"/courses"}>
-                    <BookOpen className="h-5 w-5 mr-2" />
-                    Browse Courses
-                  </Link>
-                </Button>
-                <Button 
-                  asChild 
-                  variant="outline"
-                  className="text-gray-900 dark:text-white border-gray-300 dark:border-[#2a3547] hover:bg-gray-100 dark:hover:bg-[#0a0f19]"
-                  size="lg"
-                >
-                  <Link href={"/learning"}>
-                    View All Courses
-                  </Link>
-                </Button>
+                  <Button 
+                    asChild 
+                    className="bg-[#fdb606] hover:bg-[#f39c12] text-white"
+                    size="lg"
+                  >
+                    <Link href={"/dashboard/courses"}>
+                      <BookOpen className="h-5 w-5 mr-2" />
+                      Browse Courses
+                    </Link>
+                  </Button>
+                  <Button 
+                    asChild 
+                    variant="outline"
+                    className="text-gray-900 dark:text-white border-gray-300 dark:border-[#2a3547] hover:bg-gray-100 dark:hover:bg-[#0a0f19]"
+                    size="lg"
+                  >
+                    <Link href={"/dashboard/learning"}>
+                      View All Courses
+                    </Link>
+                  </Button>
               </div>
               
               {/* Quick Stats for Empty State */}
@@ -290,28 +290,28 @@ function DashboardOverview() {
                         </div>
                         <Progress value={progress?.progress || 0} className="h-2" />
                       </div>
-                      <Button
-                        className="w-full mt-3 bg-[#fdb606] hover:bg-[#f39c12] text-sm"
-                        asChild
-                      >
-                        <Link href={`/${course.id}/chapter`}>
-                          <Play className="h-4 w-4 mr-2" />
-                          Continue
-                        </Link>
-                      </Button>
+                        <Button
+                          className="w-full mt-3 bg-[#fdb606] hover:bg-[#f39c12] text-sm"
+                          asChild
+                        >
+                          <Link href={`/dashboard/${course.id}/chapter`}>
+                            <Play className="h-4 w-4 mr-2" />
+                            Continue
+                          </Link>
+                        </Button>
                     </div>
                   )
                 })}
               </div>
 
-              {/* Mobile View All Button */}
-              <div className="sm:hidden mt-4">
-                <Button variant="outline" className="w-full"  asChild>
-                  <Link href={"/learning"}>
-                    View All Courses
-                  </Link>
-                </Button>
-              </div>
+                {/* Mobile View All Button */}
+                <div className="sm:hidden mt-4">
+                  <Button variant="outline" className="w-full"  asChild>
+                    <Link href={"/dashboard/learning"}>
+                      View All Courses
+                    </Link>
+                  </Button>
+                </div>
             </>
           )}
         </CardContent>
@@ -320,71 +320,71 @@ function DashboardOverview() {
       {/* Recent Achievements - Only show if user has courses */}
       {!hasNoCourses && (
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg sm:text-xl">Recent Achievements</CardTitle>
-            <Button variant="outline" size="sm"  className="hidden sm:flex" asChild>
-              <Link href={"/achievements"}>
-                View All
-              </Link>
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {completedCourses > 0 ? (
-              <div className="space-y-4">
-                <Link href={"/achievements"}>
-                  <div className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                    <div className="bg-[#fdb606] p-2 rounded-full">
-                      <Award className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-sm sm:text-base">First Course Completed</h4>
-                      <p className="text-xs sm:text-sm text-gray-600">
-                        Completed your first course - Keep up the great work!
-                      </p>
-                    </div>
-                    <Badge variant="secondary" className="text-xs">
-                      New
-                    </Badge>
-                  </div>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-lg sm:text-xl">Recent Achievements</CardTitle>
+              <Button variant="outline" size="sm"  className="hidden sm:flex" asChild>
+                <Link href={"/dashboard/achievements"}>
+                  View All
                 </Link>
-                {inProgressCourses > 0 && (
-                  <Link href={"/achievements"}>
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {completedCourses > 0 ? (
+                <div className="space-y-4">
+                  <Link href={"/dashboard/achievements"}>
                     <div className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                      <div className="bg-green-500 p-2 rounded-full">
-                        <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                      <div className="bg-[#fdb606] p-2 rounded-full">
+                        <Award className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-sm sm:text-base">Learning in Progress</h4>
+                        <h4 className="font-semibold text-sm sm:text-base">First Course Completed</h4>
                         <p className="text-xs sm:text-sm text-gray-600">
-                          You have {inProgressCourses} course{inProgressCourses > 1 ? 's' : ''} in progress
+                          Completed your first course - Keep up the great work!
                         </p>
                       </div>
+                      <Badge variant="secondary" className="text-xs">
+                        New
+                      </Badge>
                     </div>
                   </Link>
-                )}
-              </div>
-            ) : (
-              // Empty achievements state
-              <div className="text-center py-8">
-                <div className="mb-4">
-                  <Award className="h-12 w-12 text-gray-300 mx-auto" />
+                  {inProgressCourses > 0 && (
+                    <Link href={"/dashboard/achievements"}>
+                      <div className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                        <div className="bg-green-500 p-2 rounded-full">
+                          <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-sm sm:text-base">Learning in Progress</h4>
+                          <p className="text-xs sm:text-sm text-gray-600">
+                            You have {inProgressCourses} course{inProgressCourses > 1 ? 's' : ''} in progress
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  )}
                 </div>
-                <p className="text-gray-600 text-sm">
-                  Complete courses to unlock achievements!
-                </p>
-              </div>
-            )}
+              ) : (
+                // Empty achievements state
+                <div className="text-center py-8">
+                  <div className="mb-4">
+                    <Award className="h-12 w-12 text-gray-300 mx-auto" />
+                  </div>
+                  <p className="text-gray-600 text-sm">
+                    Complete courses to unlock achievements!
+                  </p>
+                </div>
+              )}
 
-            {/* Mobile View All Button */}
-            {completedCourses > 0 && (
-              <div className="sm:hidden mt-4">
-                <Button variant="outline" className="w-full"  asChild>
-                  <Link href={"/achievements"}>
-                    View All Achievements
-                  </Link>
-                </Button>
-              </div>
-            )}
+              {/* Mobile View All Button */}
+              {completedCourses > 0 && (
+                <div className="sm:hidden mt-4">
+                  <Button variant="outline" className="w-full"  asChild>
+                    <Link href={"/dashboard/achievements"}>
+                      View All Achievements
+                    </Link>
+                  </Button>
+                </div>
+              )}
           </CardContent>
         </Card>
       )}

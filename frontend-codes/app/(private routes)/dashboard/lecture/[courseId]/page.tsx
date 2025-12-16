@@ -115,7 +115,7 @@ export default function CoursePage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <Link href="/courses" className="inline-flex items-center text-gray-600 mb-6 hover:text-gray-900">
+        <Link href="/dashboard/courses" className="inline-flex items-center text-gray-600 mb-6 hover:text-gray-900">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Dashboard
         </Link>

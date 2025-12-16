@@ -278,10 +278,10 @@ const Wishlist = () => {
                       size="sm"
                       onClick={() => handleCourseClick(course)}
                       className="text-xs sm:text-sm"
-                      asChild
-                    >
-                      <Link href={`/learning/${course.id}`}>Preview</Link>
-                    </Button>
+                        asChild
+                      >
+                        <Link href={`/dashboard/learning/${course.id}`}>Preview</Link>
+                      </Button>
                   </div>
 
                   <div className="text-xs text-gray-500">

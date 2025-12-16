@@ -43,9 +43,9 @@ const ChapterLayoutContent = ({
         firstLectureId = courseData.lectures[0].id;
       }
 
-      if (firstLectureId) {
-        router.replace(`/${courseData.id}/chapter/${firstLectureId}`);
-      }
+        if (firstLectureId) {
+          router.replace(`/dashboard/${courseData.id}/chapter/${firstLectureId}`);
+        }
     }
   }, [courseData, loading, activeLectureId, router]);
 

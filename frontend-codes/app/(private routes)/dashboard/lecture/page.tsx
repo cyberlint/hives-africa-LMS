@@ -44,7 +44,7 @@ export default function Home() {
             </div>
 
             <div className="mt-6 flex justify-start">
-              <Link href="/courses" className="text-blue-600 font-medium flex items-center hover:underline">
+              <Link href="/dashboard/courses" className="text-blue-600 font-medium flex items-center hover:underline">
                 View All <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
             </div>
@@ -57,9 +57,9 @@ export default function Home() {
             <StatCard icon="projects" title="Projects Passed" count={0} />
             <StatCard icon="programs" title="Programs Completed" count={0} />
 
-            <HelpCard icon="lesson" title="Lesson Help" linkText="Visit Knowledge Q&A" href="/knowledge" />
-            <HelpCard icon="account" title="Account Help" linkText="Visit Help Center" href="/help" />
-            <HelpCard icon="community" title="Community" linkText="Visit Community" href="/community" />
+            <HelpCard icon="lesson" title="Lesson Help" linkText="Visit Knowledge Q&A" href="/dashboard/help" />
+            <HelpCard icon="account" title="Account Help" linkText="Visit Help Center" href="/dashboard/help" />
+            <HelpCard icon="community" title="Community" linkText="Visit Community" href="/dashboard/help" />
           </div>
         </div>
       </div>

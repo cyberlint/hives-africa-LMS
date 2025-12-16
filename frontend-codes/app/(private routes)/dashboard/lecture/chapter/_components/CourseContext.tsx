@@ -68,7 +68,7 @@ export const CourseProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   // Navigate to a specific lecture by updating the URL
   const handleLectureSelect = (lectureId: string) => {
-    router.push(`/lecture/chapter/${lectureId}?courseId=${courseId}`);
+    router.push(`/dashboard/lecture/chapter/${lectureId}?courseId=${courseId}`);
   };
 
   const handleMarkComplete = async (lectureId: string) => {

@@ -39,13 +39,13 @@ export default function Cart() {
     
     // MVP strategy: initialize payment using first non-free course id and coupon (backend must handle multi later)
     const firstBillable = items.find(i => !i.isFree);
-    if (!firstBillable) {
-      toast.success("All courses are free – enrolling...");
-      // Simulate enrollment and redirect to learning dashboard.
-      clearCart();
-      router.push("/learning");
-      return;
-    }
+      if (!firstBillable) {
+        toast.success("All courses are free – enrolling...");
+        // Simulate enrollment and redirect to learning dashboard.
+        clearCart();
+        router.push("/dashboard/learning");
+        return;
+      }
 
     setProcessing(true);
     
@@ -76,12 +76,12 @@ export default function Cart() {
     }
   }, [items, coupon, clearCart, router, hasItems, initializePaymentMutation]);
 
-  const emptyState = (
-    <div className="py-16 text-center">
-      <p className="text-sm text-gray-600 mb-6">Your cart is empty. Browse courses to get started.</p>
-      <Button onClick={() => router.push("/courses")} className="bg-[#fdb606] hover:bg-[#fdb606]/90">Browse Courses →</Button>
-    </div>
-  );
+    const emptyState = (
+      <div className="py-16 text-center">
+        <p className="text-sm text-gray-600 mb-6">Your cart is empty. Browse courses to get started.</p>
+        <Button onClick={() => router.push("/dashboard/courses")} className="bg-[#fdb606] hover:bg-[#fdb606]/90">Browse Courses →</Button>
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#1d2026]">
