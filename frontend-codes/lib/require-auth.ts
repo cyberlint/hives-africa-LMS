@@ -22,9 +22,13 @@ export async function requireAuth(pathname?: string): Promise<{ user: { role: st
         return redirect("/signin");
     }
 
-    if (pathname) {
-        const userRole = session.user.role;
+    const userRole = session.user.role;
+    
+    if (!userRole) {
+        return redirect("/signin");
+    }
 
+    if (pathname) {
         if (isAdminRoute(pathname) && userRole !== "admin") {
             return redirect("/signin");
         }
@@ -34,5 +38,5 @@ export async function requireAuth(pathname?: string): Promise<{ user: { role: st
         }
     }
 
-    return session;
+    return { ...session, user: { ...session.user, role: userRole } };
 }
