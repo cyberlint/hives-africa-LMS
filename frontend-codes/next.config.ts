@@ -12,7 +12,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  webpack(config) {
+  webpack(config, { isServer, nextRuntime }) {
+    if (nextRuntime === "edge" || nextRuntime === "nodejs") {
+      config.externals = [
+        ...(config.externals || []),
+        "better-auth/telemetry",
+      ];
+    }
     config.resolve.alias = {
       ...config.resolve.alias,
       "@": path.resolve(__dirname),

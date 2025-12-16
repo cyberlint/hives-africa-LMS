@@ -1,9 +1,8 @@
-import "server-only";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 
-export async function requireAdmin() {
+export async function requireAuth() {
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -12,7 +11,7 @@ export async function requireAdmin() {
         return redirect("/signin");
     }
     if (session.user.role !== "user") {
-        return redirect("/admin");
+        return redirect("/signin");
     }
 
     return session;

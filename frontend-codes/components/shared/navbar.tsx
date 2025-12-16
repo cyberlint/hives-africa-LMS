@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { authClient } from "@/lib/auth-client";
 import { useTheme } from "next-themes";
+import { ThemeToggle } from "../ui/theme-toggle";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -16,6 +17,7 @@ const Navbar = () => {
   const router = useRouter();
   const { items } = useCart();
   const { data: session } = authClient.useSession(); // Use Better Auth like admin
+   const user = session?.user;
   const { theme, setTheme } = useTheme();
   
   const cartItemsCount = items.reduce((total, item) => total + item.quantity, 0);
@@ -57,7 +59,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop nav */}
-          <ul className="hidden lg:flex items-center gap-8 text-base text-[#151A28] dark:text-gray-300 font-medium">
+          {/* <ul className="hidden lg:flex items-center gap-8 text-base text-[#151A28] dark:text-gray-300 font-medium">
             <li>
               <Link href="/" className="hover:text-yellow dark:hover:text-yellow transition">
                 Why Analytix
@@ -80,25 +82,13 @@ const Navbar = () => {
               <span>Resources</span>
               <ChevronDown className="text-[#151A28] dark:text-gray-300 group-hover:text-yellow w-4 h-4" />
             </li>
-          </ul>
+          </ul> */}
         </div>
 
         {/* Desktop auth links + cart + hamburger icon */}
         <div className="flex items-center gap-4 md:w-[30%] justify-end">
           {/* Theme Toggle */}
-          {mounted && (
-            <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="relative p-2 hover:bg-gray-100 dark:hover:bg-[#2a2f3a] rounded-full transition-colors"
-              aria-label="Toggle theme"
-            >
-              {theme === "dark" ? (
-                <Sun size={24} className="text-yellow" />
-              ) : (
-                <Moon size={24} className="text-gray-700" />
-              )}
-            </button>
-          )}
+           <ThemeToggle />
 
           {/* Cart Icon */}
           <button
@@ -115,7 +105,7 @@ const Navbar = () => {
           </button>
 
           {/* Only show login/signup if user is not authenticated */}
-          {!session && (
+          {!user && (
             <ul className="flex justify-end items-center gap-4">
               <li>
                 <button
@@ -189,29 +179,8 @@ const Navbar = () => {
             </li>
 
             {/* Mobile theme toggle */}
-            {mounted && (
-              <li className="border-t border-white/20 pt-8">
-                <button
-                  onClick={() => {
-                    setTheme(theme === "dark" ? "light" : "dark");
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="flex items-center gap-2 text-white hover:text-yellow transition"
-                >
-                  {theme === "dark" ? (
-                    <>
-                      <Sun size={20} className="text-yellow" />
-                      <span>Light Mode</span>
-                    </>
-                  ) : (
-                    <>
-                      <Moon size={20} />
-                      <span>Dark Mode</span>
-                    </>
-                  )}
-                </button>
-              </li>
-            )}
+     
+          <ThemeToggle />
           </ul>
         </div>
       </div>

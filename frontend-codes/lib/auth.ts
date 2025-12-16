@@ -18,7 +18,7 @@ export const auth = betterAuth({
             role: {
                 type: "string",
                 required: false,
-                defaultValue: "admin",
+                defaultValue: "user",
                 input: true, // Allow this field to be set during signup
             },
         },

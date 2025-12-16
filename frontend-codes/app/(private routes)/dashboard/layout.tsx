@@ -10,12 +10,13 @@ import { usePathname } from "next/navigation"
 
 import Header from "@/components/header"
 import Sidebar from "@/components/sidebar"
+import { requireAuth } from "@/lib/require-auth"
 
 interface ResponsiveLayoutProps {
   children: React.ReactNode
 }
 
-export default function ResponsiveLayout({ children,  }: ResponsiveLayoutProps) {
+export default async function ResponsiveLayout({ children,  }: ResponsiveLayoutProps) {
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -51,17 +52,17 @@ export default function ResponsiveLayout({ children,  }: ResponsiveLayoutProps) 
   // Define the routes that should have the sidebar and standard layout
   const sidebarRoutes = [
     '/dashboard',
-    '/courses',
-    '/settings',
-    '/achievements',
-    '/analytics',
-    '/cart',
-    '/help',
-    '/learning',
-    '/purchases',
-    '/wishlist'
+    '/dashboard/courses',
+    '/dashboard/settings',
+    '/dashboard/achievements',
+    '/dashboard/analytics',
+    '/dashboard/cart',
+    '/dashboard/help',
+    '/dashboard/learning',
+    '/dashboard/purchases',
+    '/dashboard/wishlist'
   ];
-
+     await requireAuth(); 
   // Check if current route is a sidebar route
   const isSidebarRoute = sidebarRoutes.some(route => pathname.startsWith(route)) || pathname === '/' || pathname === '/profile';
 
