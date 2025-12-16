@@ -1,3 +1,4 @@
+import { requireAuth } from "@/lib/require-auth";
 import { AppSidebar } from "@/components/lms/admin-sidebar/app-sidebar"
 import { SiteHeader } from "@/components/lms/admin-sidebar/site-header"
 import {
@@ -7,8 +8,10 @@ import {
 
 import { ReactNode } from "react"
 
-export default function AdminLayout({children}: {
+export default async function AdminLayout({children}: {
     children: ReactNode,}) {
+  await requireAuth();
+  
   return (
     <SidebarProvider
       style={

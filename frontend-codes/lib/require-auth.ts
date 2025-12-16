@@ -11,7 +11,9 @@ function isStudentRoute(pathname: string): boolean {
     return studentRoutes.some(route => pathname.startsWith(route));
 }
 
-export async function requireAuth(pathname?: string) {
+export async function requireAuth(): Promise<{ user: { role: string; [key: string]: any } }>;
+export async function requireAuth(pathname: string): Promise<{ user: { role: string; [key: string]: any } }>;
+export async function requireAuth(pathname?: string): Promise<{ user: { role: string; [key: string]: any } }> {
     const session = await auth.api.getSession({
         headers: await headers(),
     });
