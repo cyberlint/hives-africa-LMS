@@ -11,7 +11,7 @@ function isStudentRoute(pathname: string): boolean {
     return studentRoutes.some(route => pathname.startsWith(route));
 }
 
-export async function requireAuth(pathname: string) {
+export async function requireAuth(pathname?: string) {
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -20,14 +20,16 @@ export async function requireAuth(pathname: string) {
         return redirect("/signin");
     }
 
-    const userRole = session.user.role;
+    if (pathname) {
+        const userRole = session.user.role;
 
-    if (isAdminRoute(pathname) && userRole !== "admin") {
-        return redirect("/signin");
-    }
+        if (isAdminRoute(pathname) && userRole !== "admin") {
+            return redirect("/signin");
+        }
 
-    if (isStudentRoute(pathname) && userRole !== "user") {
-        return redirect("/signin");
+        if (isStudentRoute(pathname) && userRole !== "user") {
+            return redirect("/signin");
+        }
     }
 
     return session;
