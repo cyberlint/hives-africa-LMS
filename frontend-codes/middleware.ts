@@ -19,7 +19,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   runtime: "nodejs", // Required for auth.api calls
   matcher: [
-    "/dashboard/:path*",
-    "/admin/:path*",
+    // "/dashboard/:path*",
+    // "/admin/:path*",
   ],
 };

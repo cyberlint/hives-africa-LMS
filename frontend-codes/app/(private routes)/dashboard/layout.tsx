@@ -10,13 +10,13 @@ import { usePathname } from "next/navigation"
 
 import Header from "@/components/header"
 import Sidebar from "@/components/sidebar"
-import { requireAuth } from "@/lib/require-auth"
+
 
 interface ResponsiveLayoutProps {
   children: React.ReactNode
 }
 
-export default async function ResponsiveLayout({ children,  }: ResponsiveLayoutProps) {
+export default function ResponsiveLayout({ children,  }: ResponsiveLayoutProps) {
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -62,7 +62,7 @@ export default async function ResponsiveLayout({ children,  }: ResponsiveLayoutP
     '/dashboard/purchases',
     '/dashboard/wishlist'
   ];
-     await requireAuth(); 
+  
   // Check if current route is a sidebar route
   const isSidebarRoute = sidebarRoutes.some(route => pathname.startsWith(route)) || pathname === '/' || pathname === '/profile';
 
