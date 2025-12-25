@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -99,108 +99,7 @@ interface CertificateFormErrors {
   [key: string]: string
 }
 
-const achievements: Achievement[] = [
-  {
-    id: "first-course",
-    title: "First Steps",
-    description: "Complete your first course",
-    icon: BookOpen,
-    category: "milestone",
-    points: 100,
-    unlockedAt: "2024-01-15",
-    rarity: "common",
-    requirements: ["Complete 1 course"],
-    isUnlocked: true,
-  },
-  {
-    id: "week-streak",
-    title: "Week Warrior",
-    description: "Learn for 7 consecutive days",
-    icon: Zap,
-    category: "learning",
-    points: 150,
-    unlockedAt: "2024-01-20",
-    rarity: "common",
-    requirements: ["Learn for 7 consecutive days"],
-    isUnlocked: true,
-  },
-  {
-    id: "five-courses",
-    title: "Knowledge Seeker",
-    description: "Complete 5 courses",
-    icon: Trophy,
-    category: "milestone",
-    points: 300,
-    progress: 3,
-    maxProgress: 5,
-    rarity: "rare",
-    requirements: ["Complete 5 courses"],
-    isUnlocked: false,
-  },
-  {
-    id: "perfect-score",
-    title: "Perfectionist",
-    description: "Score 100% on 3 quizzes",
-    icon: Star,
-    category: "engagement",
-    points: 200,
-    progress: 1,
-    maxProgress: 3,
-    rarity: "rare",
-    requirements: ["Score 100% on 3 quizzes"],
-    isUnlocked: false,
-  },
-  {
-    id: "early-bird",
-    title: "Early Bird",
-    description: "Complete lessons before 8 AM for 5 days",
-    icon: Clock,
-    category: "learning",
-    points: 250,
-    progress: 2,
-    maxProgress: 5,
-    rarity: "epic",
-    requirements: ["Complete lessons before 8 AM for 5 days"],
-    isUnlocked: false,
-  },
-  {
-    id: "social-learner",
-    title: "Social Learner",
-    description: "Participate in 10 course discussions",
-    icon: Users,
-    category: "engagement",
-    points: 180,
-    progress: 4,
-    maxProgress: 10,
-    rarity: "rare",
-    requirements: ["Participate in 10 course discussions"],
-    isUnlocked: false,
-  },
-  {
-    id: "speed-learner",
-    title: "Speed Demon",
-    description: "Complete a course in under 24 hours",
-    icon: TrendingUp,
-    category: "special",
-    points: 500,
-    rarity: "legendary",
-    requirements: ["Complete a course in under 24 hours"],
-    isUnlocked: false,
-  },
-  {
-    id: "month-streak",
-    title: "Dedication Master",
-    description: "Learn for 30 consecutive days",
-    icon: Target,
-    category: "learning",
-    points: 1000,
-    progress: 12,
-    maxProgress: 30,
-    rarity: "legendary",
-    requirements: ["Learn for 30 consecutive days"],
-    isUnlocked: false,
-  },
-]
+
 
 const certificates: Certificate[] = [
   {
@@ -280,6 +179,46 @@ export default function Achievements() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [selectedAchievementForShare, setSelectedAchievementForShare] = useState<Achievement | null>(null)
   const [editItem, setEditItem] = useState<any>(null)
+
+  // Map string icon names to Lucide components
+  const iconMap: Record<string, any> = {
+    BookOpen,
+    Zap,
+    Trophy,
+    Star,
+    Clock,
+    Users,
+    TrendingUp,
+    Target,
+    Award
+  };
+
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [isLoadingAchievements, setIsLoadingAchievements] = useState(true);
+
+  useEffect(() => {
+    const fetchAchievements = async () => {
+      try {
+        const response = await fetch('/api/user/achievements');
+        if (response.ok) {
+          const data = await response.json();
+          // Map the icon string to the actual component
+          const mappedAchievements = data.achievements.map((ach: any) => ({
+            ...ach,
+            icon: iconMap[ach.icon] || Award // Fallback to Award icon
+          }));
+          setAchievements(mappedAchievements);
+        }
+      } catch (error) {
+        console.error("Failed to fetch achievements", error);
+        toast.error("Failed to load achievements");
+      } finally {
+        setIsLoadingAchievements(false);
+      }
+    };
+
+    fetchAchievements();
+  }, []);
 
   // Certificate validation functions
   const validateCertificateForm = (): boolean => {

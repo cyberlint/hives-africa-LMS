@@ -10,6 +10,7 @@ import type { Lecture, CourseData } from '@/types/course';
 import { constructUrl } from '@/lib/construct-url';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { RichTextRenderer } from '@/components/lms/RichTextRenderer';
 
 interface VideoPanelProps {
   lecture?: Lecture;
@@ -217,15 +218,15 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
 
   if (isCollapsed) {
     return (
-      <div className="fixed right-0 top-[80px] border-l h-[calc(100vh-80px)] z-20 lg:relative lg:top-0 lg:h-full bg-white">
+      <div className="fixed right-0 top-[80px] border-l border-gray-200 dark:border-gray-800 h-[calc(100vh-80px)] z-20 lg:relative lg:top-0 lg:h-full bg-white dark:bg-[#1d2026] transition-colors duration-300">
         <div className="h-full flex items-center">
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={onToggleCollapse}
-            className="rounded-l-lg rounded-r-none bg-white border border-gray-200 shadow-sm p-2 hover:bg-gray-50"
+            className="rounded-l-lg rounded-r-none bg-white dark:bg-[#1d2026] border border-gray-200 dark:border-gray-800 shadow-sm p-2 hover:bg-gray-50 dark:hover:bg-gray-800"
           >
-            <ChevronLeft className="w-5 h-5 text-gray-500" />
+            <ChevronLeft className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           </Button>
         </div>
       </div>
@@ -268,17 +269,17 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
   return (
     <div 
       className={cn(
-        "bg-white border-l border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out overflow-y-auto custom-scrollbar-on-hover",
+        "bg-white dark:bg-[#1d2026] border-l border-r border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 ease-in-out overflow-y-auto custom-scrollbar-on-hover",
         isMobile ? "w-full min-h-[50vh] max-h-screen" : "w-[480px] h-full max-h-screen"
       )}
     >
       {/* Video Header (Minimal) */}
-      <div className="flex-shrink-0 p-3 flex justify-between items-center bg-gray-50/50 border-b border-gray-100">
+      <div className="flex-shrink-0 p-3 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-800 transition-colors duration-300">
         <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Now Playing</span>
-            <h4 className="text-sm font-medium text-gray-900 line-clamp-1 max-w-[200px]">{lecture.title}</h4>
+            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Now Playing</span>
+            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-1 max-w-[200px]">{lecture.title}</h4>
         </div>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-900" onClick={onToggleCollapse}>
+        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-900 dark:hover:text-gray-100" onClick={onToggleCollapse}>
           <ChevronRight className="w-5 h-5" />
         </Button>
       </div>
@@ -327,15 +328,15 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
       </div>
 
       {/* Tabs Section */}
-      <div className="flex-shrink-0 flex flex-col bg-white">
+      <div className="flex-shrink-0 flex flex-col bg-white dark:bg-[#1d2026] transition-colors duration-300">
         <Tabs defaultValue="overview" className="flex flex-col w-full" value={activeTab} onValueChange={setActiveTab}>
-            <div className="border-b border-gray-100 px-4 flex-shrink-0">
+            <div className="border-b border-gray-100 dark:border-gray-800 px-4 flex-shrink-0 transition-colors duration-300">
                 <TabsList className="bg-transparent h-12 w-full justify-start gap-4 p-0">
                     {["Overview", "Author", "FAQ"].map((tab) => (
                         <TabsTrigger 
                             key={tab} 
                             value={tab.toLowerCase()}
-                            className="bg-transparent data-[state=active]:bg-[#fdb606]/10 data-[state=active]:text-[#fdb606] text-gray-500 rounded-lg px-3 py-1.5 h-auto text-xs font-medium transition-all"
+                            className="bg-transparent data-[state=active]:bg-[#fdb606]/10 data-[state=active]:text-[#fdb606] text-gray-500 dark:text-gray-400 rounded-lg px-3 py-1.5 h-auto text-xs font-medium transition-all"
                         >
                             {tab}
                         </TabsTrigger>
@@ -348,21 +349,21 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
                     <TabsContent value="overview" className="mt-0 space-y-8 animate-in fade-in-50 duration-300">
                         {/* Course Data Header inside Overview */}
                          <div className="space-y-4">
-                            <h2 className="text-xl font-bold text-gray-900">{courseData?.title || "Course Title"}</h2>
-                            <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500">
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{courseData?.title || "Course Title"}</h2>
+                            <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                                 <div className="flex items-center gap-1.5">
-                                    <Clock className="w-4 h-4 text-gray-400" />
+                                    <Clock className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                                     <span>{courseData?.duration ? `${courseData.duration}h duration` : "4h 30min"}</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
-                                    <BookOpen className="w-4 h-4 text-gray-400" />
+                                    <BookOpen className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                                     <span>{courseData?.totalLectures || 0} lessons</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
-                                    <Star className="w-4 h-4 text-yellow fill-yellow" />
+                                    <Star className="w-4 h-4 text-[#fdb606] fill-[#fdb606]" />
                                     <span>4.5 (126 reviews)</span>
                                 </div>
-                                <Badge variant="secondary" className="bg-yellow/10 text-yellow border-yellow/20 font-normal">
+                                <Badge variant="secondary" className="bg-[#fdb606]/10 text-[#fdb606] border-[#fdb606]/20 font-normal">
                                     {courseData?.level || "Beginner"}
                                 </Badge>
                             </div>
@@ -370,43 +371,53 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
 
                         {/* About Course */}
                         <div>
-                            <h3 className="text-base font-bold text-gray-900 mb-3">About Course</h3>
-                            <div className="text-sm text-gray-600 leading-relaxed space-y-4">
-                                <p>{courseData?.description ? courseData.description.replace(/<[^>]*>?/gm, '').slice(0, 300) + "..." : lecture.description || "Unlock the power of your potential with this comprehensive online course. Whether you're a novice or looking to enhance your skills, this course will guide you through robust features and workflows."}</p>
+                            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-3">About Course</h3>
+                            <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                {courseData?.description ? (
+                                    <RichTextRenderer 
+                                        content={courseData.description} 
+                                        className="prose prose-sm dark:prose-invert max-w-none line-clamp-4"
+                                    />
+                                ) : (
+                                    <RichTextRenderer 
+                                        content={lecture.description || "Unlock the power of your potential with this comprehensive online course. Whether you're a novice or looking to enhance your skills, this course will guide you through robust features and workflows."} 
+                                        className="prose prose-sm dark:prose-invert max-w-none"
+                                    />
+                                )}
                             </div>
                         </div>
                     </TabsContent>
 
                     <TabsContent value="author" className="mt-0 animate-in fade-in-50 duration-300">
                          <div className="flex items-center gap-4 mb-6">
-                            <Avatar className="w-16 h-16 border-2 border-white shadow-sm">
+                            <Avatar className="w-16 h-16 border-2 border-white dark:border-gray-800 shadow-sm">
                                 <AvatarImage src={`https://ui-avatars.com/api/?name=${courseData?.instructor || 'Instructor'}&background=random`} />
                                 <AvatarFallback>{courseData?.instructor?.charAt(0) || 'I'}</AvatarFallback>
                             </Avatar>
                             <div>
-                                <h3 className="text-lg font-bold text-gray-900">{courseData?.instructor || "Instructor Name"}</h3>
-                                <p className="text-sm text-gray-500">Senior Instructor at Hive LMS</p>
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{courseData?.instructor || "Instructor Name"}</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Senior Instructor at Hive LMS</p>
                             </div>
                          </div>
-                         <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 mb-6">
-                            <Quote className="w-8 h-8 text-yellow/40 mb-2" />
-                            <p className="text-sm text-gray-700 italic">"Teaching is not just about imparting knowledge, but about inspiring minds to seek it."</p>
+                         <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border border-gray-100 dark:border-gray-800 mb-6 transition-colors duration-300">
+                            <Quote className="w-8 h-8 text-[#fdb606]/40 mb-2" />
+                            <p className="text-sm text-gray-700 dark:text-gray-300 italic">&quot;Teaching is not just about imparting knowledge, but about inspiring minds to seek it.&quot;</p>
                          </div>
-                         <div className="text-sm text-gray-600 space-y-4">
+                         <div className="text-sm text-gray-600 dark:text-gray-400 space-y-4">
                              <p>Passionate educator and industry expert with over 10 years of experience in the field. Dedicated to helping students achieve their goals through practical, hands-on learning.</p>
                          </div>
                     </TabsContent>
 
                     <TabsContent value="faq" className="mt-0 animate-in fade-in-50 duration-300">
                          <div className="space-y-4">
-                            <h3 className="text-base font-bold text-gray-900 mb-2">Frequently Asked Questions</h3>
+                            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-2">Frequently Asked Questions</h3>
                             <Accordion type="single" collapsible className="w-full">
                                 {faqs.map((faq, index) => (
-                                    <AccordionItem key={index} value={`item-${index}`}>
-                                        <AccordionTrigger className="text-sm font-medium hover:text-[#fdb606] text-left">
+                                    <AccordionItem key={index} value={`item-${index}`} className="border-b border-gray-200 dark:border-gray-800">
+                                        <AccordionTrigger className="text-sm font-medium hover:text-[#fdb606] text-left text-gray-900 dark:text-gray-200">
                                             {faq.question}
                                         </AccordionTrigger>
-                                        <AccordionContent className="text-sm text-gray-600">
+                                        <AccordionContent className="text-sm text-gray-600 dark:text-gray-400">
                                             {faq.answer}
                                         </AccordionContent>
                                     </AccordionItem>

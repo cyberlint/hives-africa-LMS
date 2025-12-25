@@ -14,20 +14,22 @@ datasource db {
 }
 
 model User {
-  id             String           @id
-  name           String
-  email          String
-  emailVerified  Boolean          @default(false)
-  image          String?
-  bio            String?
-  website        String?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @default(now()) @updatedAt
-  sessions       Session[]
-  accounts       Account[]
-  courses        Course[]
-  enrollments    Enrollment[]
-  lessonProgress LessonProgress[]
+  id               String            @id
+  name             String
+  email            String
+  emailVerified    Boolean           @default(false)
+  image            String?
+  bio              String?
+  website          String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @default(now()) @updatedAt
+  sessions         Session[]
+  accounts         Account[]
+  courses          Course[]
+  enrollments      Enrollment[]
+  lessonProgress   LessonProgress[]
+  userAchievements UserAchievement[]
+  wishlist         Wishlist[]
 
   role       String?
   banned     Boolean?  @default(false)
@@ -93,6 +95,8 @@ model Course {
   description      String
   fileKey          String
   price            Float
+  originalPrice    Float?
+  registrationFee  Float?       @default(0)
   duration         Int // duration in hours
   level            CourseLevel  @default(Beginner)
   category         String
@@ -104,9 +108,10 @@ model Course {
   user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId           String
 
-  module      Module[]
-  enrollments Enrollment[]
-  payments    Payment[]
+  module        Module[]
+  enrollments   Enrollment[]
+  payments      Payment[]
+  wishlistItems Wishlist[]
 }
 
 enum CourseLevel {
@@ -264,4 +269,46 @@ model Payment {
 
   @@index([userId])
   @@index([courseId])
+}
+
+model Achievement {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  icon        String
+  category    String
+  points      Int
+  rarity      String
+  isSecret    Boolean  @default(false)
+  steps       String[] // Stored as array of strings
+  maxProgress Int      @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String      @id @default(uuid())
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  achievementId String
+  unlockedAt    DateTime?
+  progress      Int         @default(0)
+  isUnlocked    Boolean     @default(false)
+
+  @@unique([userId, achievementId])
+}
+
+model Wishlist {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, courseId])
 }

@@ -80,10 +80,32 @@ const ChapterLayoutContent = ({
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading course...</p>
+      <div className="min-h-screen  flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          {/* Using the consistent Loader from lucide-react with brand color */}
+          <div className="h-8 w-8 animate-spin text-[#fdb606]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-loader"
+            >
+              <line x1="12" x2="12" y1="2" y2="6" />
+              <line x1="12" x2="12" y1="18" y2="22" />
+              <line x1="4.93" x2="7.76" y1="4.93" y2="7.76" />
+              <line x1="16.24" x2="19.07" y1="16.24" y2="19.07" />
+              <line x1="2" x2="6" y1="12" y2="12" />
+              <line x1="18" x2="22" y1="12" y2="12" />
+              <line x1="4.93" x2="7.76" y1="19.07" y2="16.24" />
+              <line x1="16.24" x2="19.07" y1="4.93" y2="7.76" />
+            </svg>
+          </div>
         </div>
       </div>
     );
@@ -92,13 +114,13 @@ const ChapterLayoutContent = ({
   // Show error state
   if (error || !courseData) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center max-w-md">
-          <h2 className="text-2xl font-bold mb-2">Unable to load course</h2>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center max-w-md p-6">
+          <h2 className="text-2xl font-bold mb-2 text-foreground">Unable to load course</h2>
           <p className="text-muted-foreground mb-4">{error || 'Course not found'}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+            className="px-4 py-2 bg-[#fdb606] text-white rounded-md hover:bg-[#f39c12] transition-colors font-medium"
           >
             Try Again
           </button>
@@ -114,7 +136,7 @@ const ChapterLayoutContent = ({
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="">
         <ThreeColumnLayout
           courseData={courseData}

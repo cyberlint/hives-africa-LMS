@@ -6,11 +6,11 @@ import { CourseSection } from '@/types/course';
 
 interface CurriculumListProps {
   sections: CourseSection[];
-  activeLectureId: number;
-  expandedSections: number[];
-  completedLectures: number[];
-  onLectureSelect: (lectureId: number) => void;
-  onToggleSection: (sectionId: number) => void;
+  activeLectureId: string;
+  expandedSections: string[];
+  completedLectures: string[];
+  onLectureSelect: (lectureId: string) => void;
+  onToggleSection: (sectionId: string) => void;
 }
 
 export const CurriculumList: React.FC<CurriculumListProps> = ({

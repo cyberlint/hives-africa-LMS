@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     // 2. Calculate Amount (Handle coupons here if needed, strictly just course price for now)
     // TODO: Integrate Coupon validation logic if needed
-    let amount = course.price;
+    const amount = course.price;
     if (amount === 0) {
       // Free course logic should be handled separately or here
       return NextResponse.json({ error: 'Payment not required for free course' }, { status: 400 });

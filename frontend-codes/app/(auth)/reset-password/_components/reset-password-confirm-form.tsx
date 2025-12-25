@@ -66,32 +66,30 @@ export function ResetPasswordConfirmForm({ className, ...props }: React.Componen
     }
 
     setIsLoading(true)
+    // console.log("Attempting to reset password with token:", token);
+
     try {
-      const response = await fetch("/api/auth/reset-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          newPassword: data.password,
-          token,
-        }),
+      const { data: responseData, error } = await (authClient as any).resetPassword({
+        newPassword: data.password,
+        token,
       })
 
-      if (!response.ok) {
-        const error = await response.json()
+      if (error) {
+        console.error("Error resetting password:", error);
         toast.error("Password reset failed", {
           description: error.message || "Could not reset password",
         })
         return
       }
 
+      console.log("Password reset successful:", responseData);
       toast.success("Password reset successful!", {
         description: "You can now login with your new password",
       })
 
       router.push("/signin")
     } catch (error: any) {
+      console.error("Unexpected error in reset flow:", error);
       toast.error("Password reset failed", {
         description: error.message || "Something went wrong",
       })

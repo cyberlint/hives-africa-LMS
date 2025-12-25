@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -25,7 +25,9 @@ const Wishlist = () => {
   const [selectedCourses, setSelectedCourses] = useState<string[]>([])
   const [isShareWishlistModalOpen, setIsShareWishlistModalOpen] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
-  const { courses, enrolledCourses } = useDashboard()
+  const { enrolledCourses } = useDashboard()
+  const [wishlistCourses, setWishlistCourses] = useState<Course[]>([]) // Local state for wishlist
+  const courses = wishlistCourses; // Use local state instead of context
   const { addItem } = useCart()
   
   // Get enrolled course IDs for comparison
@@ -39,6 +41,33 @@ const Wishlist = () => {
     }
     setSelectedCourses((prev) => (prev.includes(courseId) ? prev.filter((id) => id !== courseId) : [...prev, courseId]))
   }
+
+  useEffect(() => {
+    const fetchWishlist = async () => {
+        try {
+            const response = await fetch("/api/user/wishlist");
+            if(response.ok) {
+                const data = await response.json();
+                // We need to update the dashboard context ideally, but for now let's use local state or assume context syncs
+                // However, the component relies on `courses` from useDashboard(). 
+                // We should probably filter `courses` from context based on wishlist state if we can't update context easily
+                // OR better, we just use the data from API to display. 
+                // But the component iterates `courses`. 
+                // Let's see if we can set the courses in a local state that overrides the context one if needed, 
+                // OR we just assume `courses` in context IS the wishlist? 
+                // The prompt says "wishlist is supposed to show items added to wishlist but it's showing all the course".
+                // This implies `courses` from `useDashboard` currently returns ALL courses.
+                
+                // Let's introduce a local state for wishlist courses and use that instead of `courses` from context
+               setWishlistCourses(data.courses);
+            }
+        } catch (error) {
+            console.error("Failed to fetch wishlist", error);
+            toast.error("Failed to load wishlist");
+        }
+    }
+    fetchWishlist();
+  }, []);
 
   const addToCart = (course: Course) => {
     // Check if user is already enrolled

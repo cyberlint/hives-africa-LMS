@@ -19,7 +19,8 @@ export function Uploader({onChange, value}: iAppProps) {
     const [progress, setProgress] = useState(0);
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState(false);
-    const [preview, setPreview] = useState<string | null>(value ? useConstructUrl(value) : null);
+    const initialUrl = useConstructUrl(value || "");
+    const [preview, setPreview] = useState<string | null>(value ? initialUrl : null);
 
     const cleanupPreview = () => {
         if (preview && preview.startsWith("blob:")) {

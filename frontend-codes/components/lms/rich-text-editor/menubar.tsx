@@ -28,14 +28,13 @@ interface iAppProps {
 }
 
 export function Menubar({ editor }: iAppProps) {
-  if (!editor) return null;
-
   // 1. Add a state hook to force re-renders
   // We don't care about the value, just the update function
   const [, setRefresh] = useState(0); 
 
   // 2. Add an effect to listen for editor state changes
   useEffect(() => {
+    if (!editor) return;
     // This function forces the Menubar component to re-render
     const handleUpdate = () => {
         // Increment the state to trigger a re-render
@@ -53,6 +52,8 @@ export function Menubar({ editor }: iAppProps) {
       editor.off('transaction', handleUpdate);
     };
   }, [editor]); // Re-run effect if editor instance changes (though it shouldn't here)
+
+  if (!editor) return null;
 
   return (
     <div className="border border-input border-t-0 border-x-0 rounded-t-lg 

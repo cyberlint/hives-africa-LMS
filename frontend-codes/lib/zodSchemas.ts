@@ -72,6 +72,16 @@ export const courseSchema = z.object({
         .coerce.number()
         .min(0, "Price must be zero or higher."),
 
+    originalPrice: z
+        .coerce.number()
+        .min(0, "Original price must be zero or higher.")
+        .optional(),
+
+    registrationFee: z
+        .coerce.number()
+        .min(0, "Registration fee must be zero or higher.")
+        .optional(),
+
     duration: z
         .coerce.number()
         .int("Duration must be a whole number (in hours).")

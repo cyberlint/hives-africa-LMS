@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { BookOpen, Clock, ChevronDown, ChevronUp, PlayCircle, FileText, HelpCircle, File } from "lucide-react"
 import { Course } from "@/types/course"
+import { RichTextRenderer } from "@/components/lms/RichTextRenderer"
 
 interface CourseCurriculumProps {
   course: Course
@@ -92,7 +93,7 @@ export default function CourseCurriculum({ course }: CourseCurriculumProps) {
                       </button>
 
                       {expandedItems.includes(section.id) && (
-                        <div className="px-3 sm:px-4 pb-3 sm:pb-4 bg-[#EFF4FB] dark:bg-[#1d2026] transition-colors duration-300">
+                        <div className="p-3 sm:p-4 pb-3 sm:pb-4 bg-[#EFF4FB] dark:bg-[#1d2026] transition-colors duration-300">
                           <div className="space-y-2">
                             {section.lectures.map((lecture, index) => (
                               <div 
@@ -104,7 +105,9 @@ export default function CourseCurriculum({ course }: CourseCurriculumProps) {
                                   <div className="flex-1">
                                     <p className="text-sm text-[#0F1D2F] dark:text-gray-300">{lecture.title}</p>
                                     {lecture.description && (
-                                      <p className="text-xs text-[#6B7280] mt-1">{lecture.description}</p>
+                                      <div className="text-xs text-[#6B7280] mt-1 line-clamp-1">
+                                         <RichTextRenderer content={lecture.description} className="prose prose-sm dark:prose-invert max-w-none line-clamp-1 text-[#6B7280]" />
+                                      </div>
                                     )}
                                   </div>
                                 </div>

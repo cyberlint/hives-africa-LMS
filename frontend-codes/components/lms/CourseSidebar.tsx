@@ -7,18 +7,19 @@ import { QATab } from '@/components/lms/QATab';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { CourseData, Lecture } from '@/types/course';
+import { RichTextRenderer } from './RichTextRenderer';
 
 interface CourseSidebarProps {
   courseData: CourseData;
-  activeLectureId: number;
+  activeLectureId: string;
   activeTab: string;
-  expandedSections: number[];
-  completedLectures: number[];
+  expandedSections: string[];
+  completedLectures: string[];
   isCollapsed: boolean;
   currentTime: number;
-  onLectureSelect: (lectureId: number) => void;
+  onLectureSelect: (lectureId: string) => void;
   onTabChange: (tab: string) => void;
-  onToggleSection: (sectionId: number) => void;
+  onToggleSection: (sectionId: string) => void;
   onToggleCollapse: () => void;
 }
 
@@ -105,9 +106,12 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
             <div className="space-y-6 text-sm">
               <div>
                 <h5 className="text-white font-medium mb-3">About This Course</h5>
-                <p className="leading-relaxed mb-4">
-                  {courseData.description || "This comprehensive web development course covers everything from HTML basics to advanced JavaScript concepts."}
-                </p>
+                <div className="leading-relaxed mb-4">
+                  <RichTextRenderer 
+                    content={courseData.description || "This comprehensive web development course covers everything from HTML basics to advanced JavaScript concepts."} 
+                    className="prose prose-sm dark:prose-invert max-w-none text-gray-400"
+                  />
+                </div>
               </div>
               
               <div>

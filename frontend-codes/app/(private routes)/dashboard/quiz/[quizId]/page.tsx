@@ -140,17 +140,17 @@ export default function QuizPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="min-h-screen  flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#fdb606]" />
       </div>
     );
   }
 
   if (!quizData) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900">Quiz not found</h2>
+          <h2 className="text-2xl font-bold text-foreground">Quiz not found</h2>
           <Button className="mt-4" onClick={() => router.back()}>Go Back</Button>
         </div>
       </div>
@@ -160,33 +160,33 @@ export default function QuizPage() {
   // Result View
   if (result) {
       return (
-          <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-              <Card className="w-full max-w-lg shadow-xl border-none">
+          <div className="min-h-screen flex items-center justify-center p-4">
+              <Card className="w-full max-w-lg shadow-xl border-border bg-card dark:bg-card/40">
                   <CardHeader className="text-center pb-2">
-                      <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                      <div className="mx-auto w-20 h-20 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-4">
                           {result.score >= 70 ? (
-                              <CheckCircle className="w-10 h-10 text-green-600" />
+                              <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-500" />
                           ) : (
-                              <AlertCircle className="w-10 h-10 text-yellow-600" />
+                              <AlertCircle className="w-10 h-10 text-yellow-600 dark:text-yellow-500" />
                           )}
                       </div>
-                      <CardTitle className="text-2xl font-bold">Quiz Completed!</CardTitle>
+                      <CardTitle className="text-2xl font-bold text-foreground">Quiz Completed!</CardTitle>
                       <p className="text-muted-foreground mt-2">You scored {result.score}%</p>
                   </CardHeader>
                   <CardContent className="space-y-6">
                       <div className="grid grid-cols-2 gap-4 text-center">
-                            <div className="p-4 bg-slate-50 rounded-lg">
+                            <div className="p-4 bg-muted/50 rounded-lg">
                                 <p className="text-sm text-muted-foreground">Correct Answers</p>
-                                <p className="text-2xl font-bold text-green-600">{result.correctCount}</p>
+                                <p className="text-2xl font-bold text-green-600 dark:text-green-500">{result.correctCount}</p>
                             </div>
-                            <div className="p-4 bg-slate-50 rounded-lg">
+                            <div className="p-4 bg-muted/50 rounded-lg">
                                 <p className="text-sm text-muted-foreground">Total Questions</p>
-                                <p className="text-2xl font-bold text-slate-900">{result.totalQuestions}</p>
+                                <p className="text-2xl font-bold text-foreground">{result.totalQuestions}</p>
                             </div>
                       </div>
                       
-                      <div className="bg-slate-50 p-4 rounded-lg">
-                            <h4 className="font-semibold mb-2">Message</h4>
+                      <div className="bg-muted/50 p-4 rounded-lg">
+                            <h4 className="font-semibold mb-2 text-foreground">Message</h4>
                             <p className="text-sm text-muted-foreground">
                                 {result.score >= 80 ? 'Excellent work! You have mastered this topic.' : 
                                  result.score >= 60 ? 'Good job! You have a solid understanding.' :
@@ -196,7 +196,7 @@ export default function QuizPage() {
                   </CardContent>
                   <CardFooter className="flex flex-col gap-3">
                       <Button onClick={handleRetake} className="w-full" variant="outline">Retake Quiz</Button>
-                      <Button onClick={() => router.back()} className="w-full">Back to Lesson</Button>
+                      <Button onClick={() => router.back()} className="w-full bg-[#fdb606] hover:bg-[#f39c12] text-white border-none">Back to Lesson</Button>
                   </CardFooter>
               </Card>
           </div>
@@ -206,34 +206,34 @@ export default function QuizPage() {
   // Intro View
   if (!started) {
       return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-            <Card className="w-full max-w-2xl shadow-lg border-none">
-                <div className="h-2 bg-gradient-to-r from-blue-500 to-purple-600 w-full rounded-t-xl" />
+        <div className="min-h-screen flex items-center justify-center p-4">
+            <Card className="w-full max-w-2xl shadow-lg border-border bg-card">
+                <div className="h-2 bg-gradient-to-r from-[#fdb606] to-[#f39c12] w-full rounded-t-xl" />
                 <CardHeader>
-                    <CardTitle className="text-3xl font-bold mb-2">{quizData.title}</CardTitle>
+                    <CardTitle className="text-3xl font-bold mb-2 text-foreground">{quizData.title}</CardTitle>
                     <p className="text-muted-foreground text-lg">{quizData.description}</p>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <div className="flex flax-wrap gap-6 text-sm font-medium text-slate-600">
-                        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border">
-                            <AlertCircle className="w-4 h-4 text-primary" />
+                    <div className="flex flex-wrap gap-6 text-sm font-medium text-muted-foreground">
+                        <div className="flex items-center gap-2 bg-muted/50 px-4 py-2 rounded-full shadow-sm border border-border">
+                            <AlertCircle className="w-4 h-4 text-[#fdb606]" />
                             {quizData.quizConfig.length} Questions
                         </div>
                         {timeLeft !== null && (
-                            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border">
-                                <Timer className="w-4 h-4 text-primary" />
+                            <div className="flex items-center gap-2 bg-muted/50 px-4 py-2 rounded-full shadow-sm border border-border">
+                                <Timer className="w-4 h-4 text-[#fdb606]" />
                                 {Math.ceil(timeLeft / 60)} Mins Duration
                             </div>
                         )}
-                        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border">
+                        <div className="flex items-center gap-2 bg-muted/50 px-4 py-2 rounded-full shadow-sm border border-border">
                             <CheckCircle className="w-4 h-4 text-green-600" />
                             Auto-grading
                         </div>
                     </div>
                     
-                    <div className="bg-blue-50/50 p-6 rounded-xl border border-blue-100">
-                        <h4 className="font-semibold text-blue-900 mb-2">Before you start:</h4>
-                        <ul className="list-disc list-inside space-y-2 text-blue-800/80 text-sm">
+                    <div className="bg-blue-50/50 dark:bg-blue-950/20 p-6 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                        <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Before you start:</h4>
+                        <ul className="list-disc list-inside space-y-2 text-blue-800/80 dark:text-blue-200/80 text-sm">
                             <li>You can retake this quiz multiple times.</li>
                             <li>Ensure you have a stable internet connection.</li>
                              {timeLeft !== null && <li>The quiz will automatically submit when the timer runs out.</li>}
@@ -241,8 +241,8 @@ export default function QuizPage() {
                     </div>
                 </CardContent>
                 <CardFooter className="flex justify-end gap-4 pt-6">
-                    <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>
-                    <Button size="lg" onClick={handleStart} className="gap-2 bg-primary hover:bg-primary/90 px-8">
+                    <Button variant="ghost" onClick={() => router.back()} className="text-foreground hover:bg-muted">Cancel</Button>
+                    <Button size="lg" onClick={handleStart} className="gap-2 bg-[#fdb606] hover:bg-[#f39c12] text-white px-8">
                         <Play className="w-4 h-4" /> Start Quiz
                     </Button>
                 </CardFooter>
@@ -257,27 +257,27 @@ export default function QuizPage() {
   const progress = ((currentQuestionIndex + 1) / quizData.quizConfig.length) * 100;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen flex flex-col">
         {/* Header */}
-        <header className="bg-white border-b px-6 py-4 sticky top-0 z-10 flex items-center justify-between shadow-sm">
-            <h1 className="font-bold text-lg max-w-[50%] truncate">{quizData.title}</h1>
+        <header className="bg-card border-b border-border px-6 py-4 sticky top-0 z-10 flex items-center justify-between shadow-sm">
+            <h1 className="font-bold text-lg max-w-[50%] truncate text-foreground">{quizData.title}</h1>
             <div className="flex items-center gap-6">
                 {timeLeft !== null && (
-                    <div className={`flex items-center gap-2 font-mono text-lg font-bold ${timeLeft < 60 ? 'text-red-600 animate-pulse' : 'text-slate-700'}`}>
+                    <div className={`flex items-center gap-2 font-mono text-lg font-bold ${timeLeft < 60 ? 'text-red-600 animate-pulse' : 'text-foreground'}`}>
                         <Timer className="w-5 h-5" />
                         {formatTime(timeLeft)}
                     </div>
                 )}
-                <Button variant="ghost" size="sm" className="hidden sm:flex" onClick={() => router.back()}>
+                <Button variant="ghost" size="sm" className="hidden sm:flex text-foreground hover:bg-muted" onClick={() => router.back()}>
                     Exit Quiz
                 </Button>
             </div>
         </header>
 
         {/* Progress Bar */}
-        <div className="w-full bg-slate-200 h-2">
+        <div className="w-full bg-secondary h-2">
             <div 
-                className="bg-primary h-full transition-all duration-300 ease-out"
+                className="bg-[#fdb606] h-full transition-all duration-300 ease-out"
                 style={{ width: `${progress}%` }}
             />
         </div>
@@ -288,7 +288,7 @@ export default function QuizPage() {
                 <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                     Question {currentQuestionIndex + 1} of {quizData.quizConfig.length}
                 </span>
-                <h2 className="text-2xl md:text-3xl font-bold mt-3 text-slate-900 leading-tight">
+                <h2 className="text-2xl md:text-3xl font-bold mt-3 text-foreground leading-tight">
                     {currentQuestion.question}
                 </h2>
             </div>
@@ -301,22 +301,22 @@ export default function QuizPage() {
                         className={`
                             group relative w-full p-5 text-left rounded-xl transition-all duration-200 border-2
                             ${answers[currentQuestion.id] === option.id 
-                                ? 'border-primary bg-primary/5 shadow-md' 
-                                : 'border-slate-200 bg-white hover:border-primary/50 hover:bg-slate-50'}
+                                ? 'border-[#fdb606] bg-[#fdb606]/5 shadow-md' 
+                                : 'border-border bg-card hover:border-[#fdb606]/50 hover:bg-muted/50'}
                         `}
                     >
                         <div className="flex items-center gap-4">
                             <div className={`
                                 w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors
                                 ${answers[currentQuestion.id] === option.id 
-                                    ? 'border-primary bg-primary' 
-                                    : 'border-slate-300 group-hover:border-primary/50'}
+                                    ? 'border-[#fdb606] bg-[#fdb606]' 
+                                    : 'border-muted-foreground/30 group-hover:border-[#fdb606]/50'}
                             `}>
                                 {answers[currentQuestion.id] === option.id && (
                                     <div className="w-2.5 h-2.5 rounded-full bg-white" />
                                 )}
                             </div>
-                            <span className={`text-lg ${answers[currentQuestion.id] === option.id ? 'font-medium text-primary' : 'text-slate-700'}`}>
+                            <span className={`text-lg ${answers[currentQuestion.id] === option.id ? 'font-medium text-[#fdb606]' : 'text-foreground'}`}>
                                 {option.text}
                             </span>
                         </div>
@@ -324,7 +324,7 @@ export default function QuizPage() {
                 ))}
             </div>
 
-            <div className="flex items-center justify-between pt-6 border-t mt-auto">
+            <div className="flex items-center justify-between pt-6 border-t border-border mt-auto">
                 <Button
                     variant="ghost"
                     onClick={() => setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))}
@@ -338,7 +338,7 @@ export default function QuizPage() {
                     size="lg"
                     onClick={handleNext}
                     disabled={isSubmitting}
-                    className="pl-8 pr-6"
+                    className="pl-8 pr-6 bg-[#fdb606] hover:bg-[#f39c12] text-white"
                 >
                     {isLastQuestion ? (
                         <>

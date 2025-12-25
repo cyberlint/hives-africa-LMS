@@ -135,7 +135,7 @@ export function QuizBuilder({ value = [], onChange }: QuizBuilderProps) {
 
       {questions.length === 0 && (
           <div className="text-center p-8 border rounded-md border-dashed text-muted-foreground">
-              No questions added yet. Click "Add Question" to start building your quiz.
+              No questions added yet. Click &quot;Add Question&quot; to start building your quiz.
           </div>
       )}
 

@@ -115,6 +115,8 @@ export async function GET(
       instructor: course.user.name,
       instructorId: course.user.id,
       price: course.price,
+      originalPrice: (course as any).originalPrice,
+      registrationFee: (course as any).registrationFee,
       duration: course.duration,
       level: course.level,
       category: course.category,

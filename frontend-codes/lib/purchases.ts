@@ -34,6 +34,7 @@ export interface ReceiptData {
   currency: string
   status: string
   category: string
+  receiptUrl?: string
 }
 
 /**
@@ -147,9 +148,19 @@ export function calculatePurchaseStats(purchases: Purchase[]) {
  */
 export async function downloadReceipt(paymentId: string, receiptUrl?: string): Promise<void> {
   try {
-    // If receiptUrl is provided directly, open it
+    // If receiptUrl is provided directly and is a full URL, open/download it
     if (receiptUrl && receiptUrl.startsWith('http')) {
-      window.open(receiptUrl, '_blank');
+      if (receiptUrl.toLowerCase().endsWith('.pdf')) {
+        const a = document.createElement("a");
+        a.href = receiptUrl;
+        a.download = `receipt-${paymentId}.pdf`;
+        a.target = "_blank";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        window.open(receiptUrl, '_blank');
+      }
       return;
     }
 
@@ -163,11 +174,22 @@ export async function downloadReceipt(paymentId: string, receiptUrl?: string): P
     const receipt = await response.json();
     const receiptData = receipt.data;
 
-    // Try to open Paystack receipt URL
+    // Try to open/download Paystack receipt URL
     if (receiptData && receiptData.receiptUrl && receiptData.receiptUrl.startsWith('http')) {
-      window.open(receiptData.receiptUrl, '_blank');
+      const url = receiptData.receiptUrl;
+      if (url.toLowerCase().endsWith('.pdf')) {
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `receipt-${receiptData.reference || paymentId}.pdf`;
+        a.target = "_blank";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        window.open(url, '_blank');
+      }
     } else {
-      // Fallback: download as text file
+      // Fallback: download as text file if no URL is available
       const receiptContent = generateReceiptContent(receiptData);
       const blob = new Blob([receiptContent], { type: "text/plain" });
       const url = window.URL.createObjectURL(blob);
@@ -212,8 +234,8 @@ export function generateReceiptContent(receipt: ReceiptData): string {
     `Original Price: ${receipt.currency} ${receipt.originalPrice.toFixed(2)}`,
     ...(receipt.discount > 0
       ? [
-          `Discount (${receipt.discount}%): -${receipt.currency} ${receipt.discountAmount.toFixed(2)}`,
-        ]
+        `Discount (${receipt.discount}%): -${receipt.currency} ${receipt.discountAmount.toFixed(2)}`,
+      ]
       : []),
     `Total Paid: ${receipt.currency} ${receipt.amount.toFixed(2)}`,
     "",

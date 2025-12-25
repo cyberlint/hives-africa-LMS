@@ -4,6 +4,7 @@ import { DocumentRenderer } from '@/components/lms/DocumentRenderer';
 import { ResourceRenderer } from '@/components/lms/ResourceRenderer';
 import { CheckCircle, FileText, HelpCircle, Book, PlayCircle } from 'lucide-react';
 import type { Lecture } from '@/types/course';
+import { RichTextRenderer } from '@/components/lms/RichTextRenderer';
 
 interface ContentViewerPanelProps {
   lecture?: Lecture;
@@ -22,10 +23,10 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
 }) => {
   if (!lecture) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center text-gray-500 p-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-[#1d2026] flex items-center justify-center transition-colors duration-300">
+        <div className="text-center text-gray-500 dark:text-gray-400 p-8">
           <FileText className="w-16 h-16 mx-auto mb-4 opacity-50" />
-          <h2 className="text-xl font-semibold mb-2 text-gray-900">No Content Selected</h2>
+          <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">No Content Selected</h2>
           <p className="text-sm">Select a chapter from the left to start learning</p>
         </div>
       </div>
@@ -66,32 +67,32 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
   // (video player is in the right panel)
   if (lecture.type === 'video') {
     return (
-      <div className="min-h-screen bg-white flex flex-col">
+      <div className="min-h-screen bg-white dark:bg-[#1d2026] flex flex-col transition-colors duration-300">
         {/* Header */}
-        <div className="flex-shrink-0 p-6 border-b border-gray-200 bg-white">
+        <div className="flex-shrink-0 p-6 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1d2026] transition-colors duration-300">
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 p-3 bg-yellow/10 rounded-lg text-yellow">
+            <div className="flex-shrink-0 p-3 bg-[#fdb606]/10 rounded-lg text-[#fdb606]">
               {getContentIcon()}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-medium text-yellow uppercase tracking-wide">
+                <span className="text-xs font-medium text-[#fdb606] uppercase tracking-wide">
                   {getContentTypeLabel()}
                 </span>
                 {isCompleted && (
-                  <span className="flex items-center gap-1 text-xs text-green-600">
+                  <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-500">
                     <CheckCircle className="w-3 h-3" />
                     Completed
                   </span>
                 )}
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2 leading-tight">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 leading-tight">
                 {lecture.title}
               </h1>
               {lecture.description && (
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  {lecture.description}
-                </p>
+                <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                  <RichTextRenderer content={lecture.description} className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-400" />
+                </div>
               )}
             </div>
           </div>
@@ -101,17 +102,17 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
         <div className="flex-1 overflow-y-auto custom-scrollbar">
           <div className="p-6 max-w-4xl">
             {/* Video Info Card */}
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">About This Lecture</h2>
-              <div className="space-y-4 text-sm text-gray-700">
+            <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-6 mb-6 transition-colors duration-300">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">About This Lecture</h2>
+              <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300">
                 <p>
                   Watch the video on the right to learn about {lecture.title.toLowerCase()}.
                   The video player includes controls for playback speed, quality settings, and captions.
                 </p>
                 {lecture.duration && (
-                  <div className="flex items-center gap-2 text-gray-600">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                     <span>Duration:</span>
-                    <span className="text-gray-900 font-medium">
+                    <span className="text-gray-900 dark:text-gray-200 font-medium">
                       {Math.floor(lecture.duration / 60)}:{(lecture.duration % 60).toString().padStart(2, '0')}
                     </span>
                   </div>
@@ -121,8 +122,8 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
 
             {/* Attachments */}
             {lecture.attachments && lecture.attachments.length > 0 && (
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Course Materials</h2>
+              <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-6 transition-colors duration-300">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Course Materials</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {lecture.attachments.map((attachment) => (
                     <a
@@ -130,18 +131,18 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
                       href={attachment.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-4 border border-gray-200 rounded-lg hover:border-yellow hover:bg-yellow/5 transition-all group"
+                      className="p-4 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-[#fdb606] dark:hover:border-[#fdb606] hover:bg-[#fdb606]/5 dark:hover:bg-[#fdb606]/10 transition-all group"
                     >
-                      <h4 className="font-medium text-gray-900 group-hover:text-yellow text-sm mb-1 transition-colors">
+                      <h4 className="font-medium text-gray-900 dark:text-gray-200 group-hover:text-[#fdb606] dark:group-hover:text-[#fdb606] text-sm mb-1 transition-colors">
                         {attachment.title}
                       </h4>
                       {attachment.description && (
-                        <p className="text-xs text-gray-600 mb-2">{attachment.description}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">{attachment.description}</p>
                       )}
                       <div className="flex justify-between items-center">
-                        <span className="text-xs text-yellow capitalize">{attachment.type}</span>
+                        <span className="text-xs text-[#fdb606] capitalize">{attachment.type}</span>
                         {attachment.fileSize && (
-                          <span className="text-xs text-gray-500">{attachment.fileSize}</span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">{attachment.fileSize}</span>
                         )}
                       </div>
                     </a>
@@ -157,15 +158,15 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
 
   // For other content types, render their specific components
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-white dark:bg-[#1d2026] flex flex-col transition-colors duration-300">
       {/* Header */}
-      <div className="flex-shrink-0 p-6 border-b border-gray-200 bg-white">
+      <div className="flex-shrink-0 p-6 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1d2026] transition-colors duration-300">
         <div className="flex items-start gap-4">
           <div className={`
             flex-shrink-0 p-3 rounded-lg
-            ${lecture.type === 'quiz' ? 'bg-purple-100 text-purple-600' : ''}
-            ${lecture.type === 'document' ? 'bg-green-100 text-green-600' : ''}
-            ${lecture.type === 'resource' ? 'bg-orange-100 text-orange-600' : ''}
+            ${lecture.type === 'quiz' ? 'bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : ''}
+            ${lecture.type === 'document' ? 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400' : ''}
+            ${lecture.type === 'resource' ? 'bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : ''}
           `}>
             {getContentIcon()}
           </div>
@@ -173,33 +174,33 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
             <div className="flex items-center gap-2 mb-2">
               <span className={`
                 text-xs font-medium uppercase tracking-wide
-                ${lecture.type === 'quiz' ? 'text-purple-600' : ''}
-                ${lecture.type === 'document' ? 'text-green-600' : ''}
-                ${lecture.type === 'resource' ? 'text-orange-600' : ''}
+                ${lecture.type === 'quiz' ? 'text-purple-600 dark:text-purple-400' : ''}
+                ${lecture.type === 'document' ? 'text-green-600 dark:text-green-400' : ''}
+                ${lecture.type === 'resource' ? 'text-orange-600 dark:text-orange-400' : ''}
               `}>
                 {getContentTypeLabel()}
               </span>
               {isCompleted && (
-                <span className="flex items-center gap-1 text-xs text-green-600">
+                <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-500">
                   <CheckCircle className="w-3 h-3" />
                   Completed
                 </span>
               )}
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2 leading-tight">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 leading-tight">
               {lecture.title}
             </h1>
             {lecture.description && (
-              <p className="text-sm text-gray-600 leading-relaxed">
-                {lecture.description}
-              </p>
+              <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <RichTextRenderer content={lecture.description} className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-400" />
+              </div>
             )}
           </div>
         </div>
       </div>
 
       {/* Content Renderer */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <div className="flex-1 overflow-y-auto custom-scrollbar bg-white dark:bg-[#1d2026]">
         {lecture.type === 'quiz' && (
           <QuizRenderer
             lecture={lecture}
@@ -230,7 +231,7 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
           width: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f9fafb;
+          background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
           background: #d1d5db;

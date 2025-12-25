@@ -292,7 +292,6 @@ export async function updateLesson(values: LessonSchemaType, lessonId: string): 
                 description: result.data.description,
                 thumbnailKey: result.data.thumbnailKey,
                 videoKey: result.data.videoKey,
-                // @ts-ignore: String generic vs Enum match
                 type: result.data.type,
                 content: result.data.content,
                 duration: result.data.duration,

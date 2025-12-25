@@ -47,7 +47,7 @@ export async function middleware(request: NextRequest) {
         }
         if (isStudentRoute && session.user.role !== "user") {
             return NextResponse.redirect(
-                new URL(DEFAULT_LOGIN_REDIRECT, nextUrl.origin)
+                new URL(DEFAULT_ADMIN_LOGIN_REDIRECT, nextUrl.origin)
             );
         }
     }

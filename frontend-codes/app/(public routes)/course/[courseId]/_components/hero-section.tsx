@@ -6,6 +6,7 @@ import { CheckoutButton } from "@/components/lms/checkout-button"
 import { constructUrl } from "@/lib/construct-url"
 
 import { Course } from "@/types/course"
+import { RichTextRenderer } from "@/components/lms/RichTextRenderer"
 
 interface HeroSectionProps {
   course: Course
@@ -56,9 +57,12 @@ export default function HeroSection({ course }: HeroSectionProps) {
 
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight">{course.title}</h1>
 
-                <p className="text-base lg:text-lg text-white/80 max-w-lg">
-                  {course.description}
-                </p>
+                <div className="text-base lg:text-lg text-white/80 max-w-lg">
+                  <RichTextRenderer 
+                    content={course.description} 
+                    className="prose prose-sm lg:prose-base dark:prose-invert max-w-none text-white/80 line-clamp-3"
+                  />
+                </div>
 
                 {/* Stats */}
                 <section className="flex flex-col gap-2">

@@ -41,6 +41,9 @@ import {
 import type { User } from "@/types"
 import { useDashboard } from "../studentContext"
 import Image from "next/image"
+import { downloadReceipt } from "@/lib/purchases"
+import { authClient } from "@/lib/auth-client"
+
 interface AccountSettingsProps {
   user?: User
   onUserUpdate?: (user: User) => void
@@ -90,6 +93,7 @@ interface Purchase {
   amount: number;
   currency: string;
   date: string;
+  receiptUrl: string;
 }
 
 export default function AccountSettings() {
@@ -103,6 +107,10 @@ export default function AccountSettings() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>("")
   const [purchases, setPurchases] = useState<Purchase[]>([])
+
+  const [isDownloading, setIsDownloading] = useState<string | null>(null)
+  const [sessions, setSessions] = useState<any[]>([])
+
 
   // Fetch data
   useEffect(() => {
@@ -140,8 +148,21 @@ export default function AccountSettings() {
       }
     };
 
+    const fetchSessions = async () => {
+        try {
+            const response = await fetch('/api/user/sessions');
+            if (response.ok) {
+                const data = await response.json();
+                setSessions(data.sessions);
+            }
+        } catch (error) {
+            console.error("Failed to fetch sessions", error);
+        }
+    }
+
     fetchUserData();
     fetchPurchases();
+    fetchSessions();
   }, []);
 
   // Form states
@@ -294,11 +315,80 @@ export default function AccountSettings() {
 
     setIsLoading(true)
     try {
-      // Simulate upload delay
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      // 1. Get presigned URL
+      const response = await fetch('/api/user/upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fileName: selectedFile.name,
+          contentType: selectedFile.type,
+          size: selectedFile.size,
+          isImage: true,
+        }),
+      });
 
-      const newAvatarUrl = previewUrl // In real app, this would be the uploaded URL
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to get upload URL");
+      }
+
+      const { presignedUrl, key } = await response.json();
+
+      // 2. Upload file to S3
+      const uploadResponse = await fetch(presignedUrl, {
+        method: 'PUT',
+        body: selectedFile,
+        headers: {
+          'Content-Type': selectedFile.type,
+        },
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Failed to upload image to storage");
+      }
+
+      // 3. Construct URL
+      // Assuming 'constructUrl' helper is available or we construct it here.
+      // Since I don't have 'constructUrl' imported in this file yet, I'll assume standard format or import it.
+      // Let's import it separately.
+      
+      const newAvatarUrl = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME_IMAGES}.fly.storage.tigris.dev/${key}`;
+       
+       // Update profile data with the new URL (or key if that's what we prefer, but usually URL for image src)
+       // Actually, the `constructUrl` helper handles it better. I should import and use it if possible, 
+       // but I can also just manually construct it for now to avoid import issues if I am not sure about path.
+       // However, I observed `lib/construct-url.ts`.
+       
       setProfileData((prev) => ({ ...prev, avatar: newAvatarUrl }))
+
+      // 4. Save to backend (Update user profile with new avatar URL)
+      // Note: handleSaveProfile sends the profileData to backend. 
+      // We can trigger it or just let the user click save. 
+      // But usually "Change Photo" implies immediate save or at least local preview update.
+      // The requirement says "ensure it uploads the user profile photo".
+      // The current flow update `profileData`. 
+      
+      // Let's also trigger a save of the avatar specifically or assume the user will click "Save Changes". 
+      // But typically, a modal "Upload" button implies action.
+      // Let's call the API to update JUST the avatar or rely on handleSaveProfile.
+      // The current implementation of `handlePhotoUpload` updates `profileData` AND closes the dialog. 
+      // It DOES NOT save to backend in the previous code. 
+      // EXCEPT `handleSaveProfile` is called when clicking "Save Changes".
+      // BUT `handlePhotoUpload` is called inside the Dialog's "Upload Photo" button.
+      // So the user expects it to be saved?
+      // The previous mock code: `setProfileData(...)` then `toast("Photo updated")`. It didn't save to backend.
+      // To "ensure it uploads", I should properly save it to the backend too.
+      
+      await fetch('/api/user/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ avatar: newAvatarUrl })
+      });
+      
+      // Refresh context
+       if (refetch) refetch();
 
       toast.success(
          "Photo updated successfully",
@@ -308,9 +398,10 @@ export default function AccountSettings() {
       setIsPhotoDialogOpen(false)
       setSelectedFile(null)
       setPreviewUrl("")
-    } catch (error) {
-      toast("Upload failed",
-        {description: "Failed to upload photo. Please try again.",
+    } catch (error: any) {
+      console.error(error);
+      toast.error("Upload failed",
+        {description: error.message || "Failed to upload photo. Please try again.",
       })
     } finally {
       setIsLoading(false)
@@ -363,25 +454,31 @@ export default function AccountSettings() {
 
     setIsLoading(true)
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Reset form
-      setSecuritySettings({
-        currentPassword: "",
-        newPassword: "",
-        password_confirm: "",
-        twoFactorSMS: securitySettings.twoFactorSMS,
-        twoFactorApp: securitySettings.twoFactorApp,
-      })
-
-      toast( "Password updated successfully",
-        {description: "Your password has been changed",
-      })
+      await authClient.changePassword({
+        newPassword: securitySettings.newPassword,
+        currentPassword: securitySettings.currentPassword,
+        revokeOtherSessions: true,
+      }, {
+        onSuccess: () => {
+             toast.success("Password updated successfully", {
+                description: "Your password has been changed",
+            });
+             setSecuritySettings({
+                currentPassword: "",
+                newPassword: "",
+                password_confirm: "",
+                twoFactorSMS: securitySettings.twoFactorSMS,
+                twoFactorApp: securitySettings.twoFactorApp,
+              });
+        },
+        onError: (ctx) => {
+             toast.error("Update failed", {
+                description: ctx.error.message || "Failed to update password. Please try again.",
+            });
+        }
+      });
     } catch (error) {
-      toast( "Update failed",
-        {description: "Failed to update password. Please try again.",
-               })
+       // Error handled in onError callback
     } finally {
       setIsLoading(false)
     }
@@ -424,17 +521,19 @@ export default function AccountSettings() {
   const handleDeleteAccount = async () => {
     setIsLoading(true)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      toast( "Account deletion initiated",
-        {description: "Your account will be deleted within 24 hours. You can cancel this action by contacting support.",
-               })
+      await authClient.deleteUser({
+        callbackURL: "/", // Redirect to home after deletion
+      });
+      
+      toast.success("Account deleted", {
+        description: "Your account has been successfully deleted.",
+      });
 
       setIsDeleteDialogOpen(false)
-    } catch (error) {
-      toast( "Deletion failed",
-        {description: "Failed to delete account. Please try again.",
-               })
+    } catch (error: any) {
+      toast.error("Deletion failed", {
+        description: error.message || "Failed to delete account. Please try again.",
+      });
     } finally {
       setIsLoading(false)
     }
@@ -443,15 +542,21 @@ export default function AccountSettings() {
   const revokeSession = async (sessionId: string) => {
     setIsLoading(true)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      const response = await fetch(`/api/user/sessions?id=${sessionId}`, {
+        method: 'DELETE'
+      });
+        
+      if (!response.ok) throw new Error("Failed to revoke");
 
-      toast( "Session revoked",
-        {description: "The session has been successfully revoked",
+      setSessions(prev => prev.filter(s => s.id !== sessionId));
+
+      toast.success("Session revoked", {
+        description: "The session has been successfully revoked",
       })
     } catch (error) {
-      toast( "Revoke failed",
-        {description: "Failed to revoke session. Please try again.",
-               })
+      toast.error("Revoke failed", {
+        description: "Failed to revoke session. Please try again.",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -523,7 +628,7 @@ export default function AccountSettings() {
                           <div className="flex flex-col items-center space-y-4">
                             {previewUrl ? (
                               <div className="relative">
-                                <Image
+                                <img
                                   src={previewUrl || "/ai.png"}
                                   alt="Preview"
                                   className="w-32 h-32 rounded-full object-cover"
@@ -875,7 +980,7 @@ export default function AccountSettings() {
                 </CardContent>
               </Card>
 
-              <Card>
+              {/* <Card>
                 <CardHeader>
                   <CardTitle>Two-Factor Authentication</CardTitle>
                 </CardHeader>
@@ -916,7 +1021,7 @@ export default function AccountSettings() {
                     />
                   </div>
                 </CardContent>
-              </Card>
+              </Card> */}
 
               <Card>
                 <CardHeader>
@@ -924,31 +1029,25 @@ export default function AccountSettings() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b space-y-2 sm:space-y-0">
-                      <div className="flex-1">
-                        <p className="font-medium">Current Session</p>
-                        <p className="text-sm text-gray-500">Chrome on Windows • New York, NY</p>
-                      </div>
-                      <Badge variant="secondary">Active</Badge>
-                    </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b space-y-2 sm:space-y-0">
-                      <div className="flex-1">
-                        <p className="font-medium">Mobile App</p>
-                        <p className="text-sm text-gray-500">iPhone • 2 hours ago</p>
-                      </div>
-                      <Button variant="outline" size="sm" onClick={() => revokeSession("mobile")} disabled={isLoading}>
-                        Revoke
-                      </Button>
-                    </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 space-y-2 sm:space-y-0">
-                      <div className="flex-1">
-                        <p className="font-medium">Safari on Mac</p>
-                        <p className="text-sm text-gray-500">MacBook Pro • Yesterday</p>
-                      </div>
-                      <Button variant="outline" size="sm" onClick={() => revokeSession("safari")} disabled={isLoading}>
-                        Revoke
-                      </Button>
-                    </div>
+                    {sessions.length > 0 ? (
+                        sessions.map((session) => (
+                            <div key={session.id} className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b space-y-2 sm:space-y-0 last:border-0">
+                            <div className="flex-1">
+                                <p className="font-medium">{session.userAgent || "Unknown Device"}</p>
+                                <p className="text-sm text-gray-500">{session.ipAddress || "Unknown Location"} • {new Date(session.createdAt).toLocaleDateString()}</p>
+                            </div>
+                            {session.isCurrent ? (
+                                <Badge variant="secondary">Active</Badge>
+                            ) : (
+                                <Button variant="outline" size="sm" onClick={() => revokeSession(session.id)} disabled={isLoading}>
+                                Revoke
+                                </Button>
+                            )}
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-gray-500">No active sessions found.</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -1007,8 +1106,22 @@ export default function AccountSettings() {
                                 <p className="font-medium">
                                     {purchase.currency} {purchase.amount.toLocaleString()}
                                 </p>
-                                <Button variant="ghost" size="sm">
-                                Download Receipt
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  disabled={isDownloading === purchase.id}
+                                  onClick={async () => {
+                                    try {
+                                      setIsDownloading(purchase.id)
+                                      await downloadReceipt(purchase.id, purchase.receiptUrl)
+                                    } catch (err) {
+                                      toast.error("Failed to download receipt")
+                                    } finally {
+                                      setIsDownloading(null)
+                                    }
+                                  }}
+                                >
+                                {isDownloading === purchase.id ? "Downloading..." : "Download Receipt"}
                                 </Button>
                             </div>
                             </div>

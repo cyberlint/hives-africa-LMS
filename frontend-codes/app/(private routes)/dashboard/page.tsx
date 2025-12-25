@@ -70,7 +70,7 @@ function DashboardOverview() {
             </svg>
           </div>
           <h2 className="text-2xl font-bold mb-2 text-gray-900">Something went wrong</h2>
-          <p className="text-gray-600 mb-6">We couldn't load your dashboard. Please try again.</p>
+          <p className="text-gray-600 mb-6">We couldn&apos;t load your dashboard. Please try again.</p>
           <Button onClick={() => window.location.reload()} className="bg-[#fdb606] hover:bg-[#f39c12]">
             Try Again
           </Button>

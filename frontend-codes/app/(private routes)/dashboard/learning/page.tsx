@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, Play, Clock, Star, Filter, X, BookOpen } from "lucide-react"
+import { Search, Play, Clock, Star, Filter, X, BookOpen, Loader } from "lucide-react"
 import { toast } from "sonner"
 import type { Course, CourseProgress } from "@/types"
 import { useDashboard } from "../studentContext"
@@ -35,9 +35,8 @@ export default function MyLearning() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#fdb606] mx-auto mb-4"></div>
-          {/* <p className="text-gray-600">Loading your courses...</p> */}
+        <div className="flex flex-col items-center gap-3">
+          <Loader className="h-8 w-8 animate-spin text-yellow" />
         </div>
       </div>
     )
@@ -64,7 +63,7 @@ export default function MyLearning() {
             </svg>
           </div>
           <h2 className="text-2xl font-bold mb-2 text-gray-900">Something went wrong</h2>
-          <p className="text-gray-600 mb-6">We couldn't load your courses. Please try again.</p>
+          <p className="text-gray-600 mb-6">We couldn&apos;t load your courses. Please try again.</p>
           <Button onClick={() => window.location.reload()} className="bg-[#fdb606] hover:bg-[#f39c12]">
             Try Again
           </Button>
@@ -309,13 +308,13 @@ export default function MyLearning() {
               
             >
               <CardContent className="p-0">
-                <div className="relative">
+                <div className="relative p-1">
                   <Image
                     src={thumbnailUrl}
                     alt={course.title}
                     width={300}
                     height={200}
-                    className="w-full h-32 sm:h-48 object-cover rounded-t-lg"
+                    className="w-full px-2 h-32 sm:h-48 object-cover rounded-lg"
                   />
                   <div className="absolute top-2 right-2">
                     {progressValue === 100 && <Badge className="bg-green-500 text-xs">Completed</Badge>}

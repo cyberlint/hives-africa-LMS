@@ -52,7 +52,6 @@ export async function POST(
             update: {
                 completed: true,
                 completedAt: new Date(),
-                // @ts-ignore: score added to schema but client might not be generated yet
                 score: roundedScore,
             },
             create: {
@@ -60,7 +59,6 @@ export async function POST(
                 lessonId: lessonId,
                 completed: true,
                 completedAt: new Date(),
-                // @ts-ignore
                 score: roundedScore,
             }
         });

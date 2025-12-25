@@ -1,5 +1,7 @@
 "use client"
 
+import { toast } from "sonner"
+
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -54,6 +56,7 @@ export default function PurchaseHistory() {
   const [selectedPurchase, setSelectedPurchase] = useState<Purchase | null>(null)
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isDownloading, setIsDownloading] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   // Fetch purchases from API
@@ -90,10 +93,18 @@ export default function PurchaseHistory() {
 
   const handleDownloadReceipt = async (paymentId: string, receiptUrl?: string) => {
     try {
+      setIsDownloading(paymentId)
       await downloadReceipt(paymentId, receiptUrl)
+      toast.success("Receipt opened", {
+        description: "Your receipt has been opened in a new tab."
+      })
     } catch (error) {
       console.error("Failed to download receipt:", error)
-      alert("Failed to download receipt. Please try again.")
+      toast.error("Failed to download receipt", {
+        description: "Please try again later or contact support."
+      })
+    } finally {
+      setIsDownloading(null)
     }
   }
 
@@ -383,10 +394,15 @@ export default function PurchaseHistory() {
                         <DialogFooter>
                           <Button 
                             className="bg-[#fdb606] hover:bg-[#f39c12]"
+                            disabled={isDownloading === selectedPurchase?.id}
                             onClick={() => selectedPurchase && handleDownloadReceipt(selectedPurchase.id, selectedPurchase.receiptUrl)}
                           >
-                            <Download className="h-4 w-4 mr-2" />
-                            Download PDF
+                            {isDownloading === selectedPurchase?.id ? (
+                              <Loader className="h-4 w-4 mr-2 animate-spin" />
+                            ) : (
+                              <Download className="h-4 w-4 mr-2" />
+                            )}
+                            {isDownloading === selectedPurchase?.id ? "Downloading..." : "Download PDF"}
                           </Button>
                         </DialogFooter>
                       </DialogContent>
@@ -395,10 +411,15 @@ export default function PurchaseHistory() {
                     <Button 
                       variant="outline" 
                       size="sm"
+                      disabled={isDownloading === purchase.id}
                       onClick={() => purchase && handleDownloadReceipt(purchase.id, purchase.receiptUrl)}
                     >
-                      <Download className="h-4 w-4 mr-2" />
-                      Download
+                      {isDownloading === purchase.id ? (
+                        <Loader className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Download className="h-4 w-4 mr-2" />
+                      )}
+                      {isDownloading === purchase.id ? "..." : "Download"}
                     </Button>
 
                     {purchase.status === "completed" && (

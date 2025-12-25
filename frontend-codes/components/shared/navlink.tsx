@@ -1,19 +1,38 @@
-import React, { ReactNode } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 
-interface NavlinkProps {
-    children: ReactNode
+"use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
+
+interface NavLinkProps extends Omit<ComponentPropsWithoutRef<typeof Link>, "className"> {
+  children: ReactNode;
+  activeClassName?: string;
+  className?: string; // allow string
 }
 
-const navlink = ({children}:NavlinkProps) => {
-    const pathname = usePathname()
-    
+const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(({
+  href,
+  children,
+  activeClassName,
+  className,
+  ...props
+}, ref) => {
+  const pathname = usePathname();
+  const isActive = pathname === href;
+
   return (
-    <Link href={""}
-    // {...children}
-    ></Link>
-  )
-}
+    <Link
+      ref={ref}
+      href={href}
+      className={cn(className, isActive && activeClassName)}
+      {...props}
+    >
+      {children}
+    </Link>
+  );
+});
 
-export default navlink
+NavLink.displayName = "NavLink";
+
+export default NavLink;

@@ -1,5 +1,5 @@
 /**
- *Array of routes which are available to all users
+ * Array of routes which are available to all users
  * @type {string[]}
  */
 export const publicRoutes: string[] = [
@@ -23,10 +23,23 @@ export const authRoutes: string[] = [
 ];
 
 /**
+ * Prefix for admin routes
+ */
+export const adminPrefix = "/admin";
+
+/**
  * Array of admin routes
  * @type {string[]}
  */
-export const adminRoutes: string[] = ["/admin", "/admin/courses"];
+export const adminRoutes: string[] = [
+  "/admin",
+  "/admin/courses"
+];
+
+/**
+ * Prefix for student routes
+ */
+export const studentPrefix = "/dashboard";
 
 /**
  * Array of student routes (protected routes for users with 'user' role)
@@ -75,6 +88,12 @@ export const adminApiRoutes: string[] = [
   "/api/user",
   "/api/webhooks",
 ];
+
+/**
+ * Default Login URL
+ * @type {string}
+ */
+export const LOGIN_URL: string = "/signin";
 
 /**
  * Default redirect url for students

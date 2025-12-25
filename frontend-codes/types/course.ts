@@ -11,6 +11,7 @@ export interface Course {
   level: 'Beginner' | 'Intermediate' | 'Advanced'
   price: number
   originalPrice?: number
+  registrationFee?: number
   rating?: number
   image: string
   description: string
@@ -78,6 +79,8 @@ export interface CourseData {
   instructor: string
   instructorId: string
   price: number
+  originalPrice?: number
+  registrationFee?: number
   duration: number
   level: 'Beginner' | 'Intermediate' | 'Advanced'
   category: string

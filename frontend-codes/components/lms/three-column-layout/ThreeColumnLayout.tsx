@@ -73,7 +73,7 @@ export const ThreeColumnLayout: React.FC<ThreeColumnLayoutProps> = ({
   const shouldShowVideo = showVideo && !isVideoCollapsed;
 
   return (
-    <div className={`flex ${getLayoutClasses()} min-h-screen w-full bg-white overflow-auto hide-scrollbar`}>
+    <div className={`flex ${getLayoutClasses()} min-h-screen w-full bg-white dark:bg-[#1d2026] overflow-auto hide-scrollbar transition-colors duration-300`}>
       {/* Left Column: Chapter Navigation */}
       {(shouldShowChapters || !isMobile) && (
         <ChapterNavigationPanel
