@@ -73,3 +73,18 @@ export const getRedirectPath = (userType?: 'student' | 'instructor' | 'admin'): 
       return '/dashboard'
   }
 }
+
+
+// Get file type util
+export function getFileType(key?: string): string | null {
+  if (!key) return null;
+
+  const ext = key.split('.').pop()?.toLowerCase();
+
+  if (ext === 'ipynb') return 'ipynb';
+  if (ext === 'pdf') return 'pdf';
+  if (ext === 'docx') return 'docx';
+  if (ext === 'pptx') return 'pptx';
+
+  return 'unknown';
+}

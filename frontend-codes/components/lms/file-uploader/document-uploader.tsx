@@ -142,14 +142,15 @@ export function DocumentUploader({ onChange, value }: iAppProps) {
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
-        // Accept PDF, Word, Powerpoint, Text
+        // Accept PDF, Word, Powerpoint, Text, Jupyter Notebooks
         accept: { 
             "application/pdf": [],
             "application/msword": [],
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [],
             "text/plain": [],
             "application/vnd.ms-powerpoint": [],
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation": []
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation": [],
+            ".ipynb, application/x-ipynb+json": []
         },
         maxFiles: 1,
         maxSize: 10 * 1024 * 1024, // 10MB
@@ -159,7 +160,7 @@ export function DocumentUploader({ onChange, value }: iAppProps) {
                  if (errors.some(e => e.code === 'file-too-large')) {
                     toast.error("File size limit exceeded (Max 10MB)");
                 } else {
-                     toast.error("Invalid file type. Upload PDF, Docx, PPT or Text.");
+                     toast.error("Invalid file type. Upload PDF, Docx, PPT, Ipynb or Text.");
                 }
             }
         },

@@ -164,6 +164,7 @@ model Lesson {
 enum LessonType {
   Video
   Document
+  Notebook
   Quiz
   Resource
 }
