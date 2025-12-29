@@ -66,9 +66,9 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
   // (video player is in the right panel)
   if (lecture.type === 'video') {
     return (
-      <div className="min-h-screen bg-white flex flex-col">
+      <div className="h-full bg-white flex flex-col">
         {/* Header */}
-        <div className="flex-shrink-0 p-6 border-b border-gray-200 bg-white">
+        <div className="flex-shrink-0 px-6 py-3 border-b border-gray-200 bg-white">
           <div className="flex items-start gap-4">
             <div className="flex-shrink-0 p-3 bg-yellow/10 rounded-lg text-yellow">
               {getContentIcon()}
@@ -157,9 +157,9 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
 
   // For other content types, render their specific components
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="h-full bg-white flex flex-col">
       {/* Header */}
-      <div className="flex-shrink-0 p-6 border-b border-gray-200 bg-white">
+      <div className="flex-shrink-0 px-6 py-3 border-b border-gray-200 bg-white">
         <div className="flex items-start gap-4">
           <div className={`
             flex-shrink-0 p-3 rounded-lg

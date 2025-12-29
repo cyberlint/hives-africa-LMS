@@ -33,8 +33,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${montserrat.className} bg-white dark:bg-[#1d2026] text-gray-900 dark:text-gray-100 transition-colors duration-300`}>
+    <html lang="en" suppressHydrationWarning style={{ height: '100%' }}>
+      <body className={`${montserrat.className} bg-white dark:bg-[#1d2026] text-gray-900 dark:text-gray-100 transition-colors duration-300`} style={{ height: '100%' }}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

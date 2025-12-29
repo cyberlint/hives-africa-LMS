@@ -4,6 +4,7 @@ import { Star, User, Users, Clock } from "lucide-react"
 import Image from "next/image"
 import { CheckoutButton } from "@/components/lms/checkout-button"
 import { constructUrl } from "@/lib/construct-url"
+import { RichTextRenderer } from "@/components/lms/RichTextRenderer"
 
 import { Course } from "@/types/course"
 
@@ -57,7 +58,7 @@ export default function HeroSection({ course }: HeroSectionProps) {
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight">{course.title}</h1>
 
                 <p className="text-base lg:text-lg text-white/80 max-w-lg">
-                  {course.description}
+                  <RichTextRenderer contentJsonString={course.description} className="prose dark:prose-invert" />
                 </p>
 
                 {/* Stats */}

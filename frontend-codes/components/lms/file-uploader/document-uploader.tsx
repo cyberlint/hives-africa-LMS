@@ -144,21 +144,21 @@ export function DocumentUploader({ onChange, value }: iAppProps) {
         onDrop,
         // Accept PDF, Word, Powerpoint, Text, Jupyter Notebooks
         accept: { 
-            "application/pdf": [],
-            "application/msword": [],
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [],
-            "text/plain": [],
-            "application/vnd.ms-powerpoint": [],
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation": [],
-            ".ipynb, application/x-ipynb+json": []
+        "application/pdf": [".pdf"],
+        "application/msword": [".doc"],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+        "text/plain": [".txt"],
+        "application/vnd.ms-powerpoint": [".ppt"],
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation": [".pptx"],
+        "application/x-ipynb+json": [".ipynb"]
         },
         maxFiles: 1,
-        maxSize: 10 * 1024 * 1024, // 10MB
+        maxSize: 15 * 1024 * 1024, // 15MB
         onDropRejected: (fileRejection) => {
              if (fileRejection.length > 0) {
                 const errors = fileRejection[0].errors;
                  if (errors.some(e => e.code === 'file-too-large')) {
-                    toast.error("File size limit exceeded (Max 10MB)");
+                    toast.error("File size limit exceeded (Max 15MB)");
                 } else {
                      toast.error("Invalid file type. Upload PDF, Docx, PPT, Ipynb or Text.");
                 }

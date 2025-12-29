@@ -44,9 +44,12 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
         <VideoPlayerSection
           lecture={lecture}
           onNext={onNext}
+          onPrevious={onPrevious}
           isCompleted={isCompleted}
           onVideoEnd={onVideoEnd}
           onTimeUpdate={onTimeUpdate}
+          allLectures={courseData.lectures || []}
+          currentIndex={courseData.lectures?.findIndex(l => l.id === lecture.id) ?? 0}
         />
       );
     
@@ -84,7 +87,7 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
         <div className="flex-1 bg-black flex items-center justify-center h-full">
           <div className="text-center text-gray-400">
             <h2 className="text-xl mb-2">Content type not supported</h2>
-            <p>This content type is not yet implemented</p>
+            <p>This content type is not yet supported</p>
           </div>
         </div>
       );

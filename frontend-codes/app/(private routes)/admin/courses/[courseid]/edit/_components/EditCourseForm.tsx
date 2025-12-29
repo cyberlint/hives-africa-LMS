@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { 
     courseCategories, 
     courseLevels, 
@@ -26,11 +26,9 @@ import { RichTextEditor } from "@/components/lms/rich-text-editor/editor";
 import { Uploader } from "@/components/lms/file-uploader/uploader";
 import { useTransition } from "react";
 import { tryCatch } from "@/hooks/try-catch";
-// import { CreateCourse } from "./actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import z from "zod";
-import { CreateCourse } from "../../../create/actions";
 import { editCourse } from "../actions";
 import { AdminCourseSingularType } from "@/app/data/admin/admin-get-course";
 

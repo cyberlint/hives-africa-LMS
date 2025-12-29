@@ -1,6 +1,7 @@
 import { CheckoutButton } from "@/components/lms/checkout-button"
 import { Course } from "@/types/course"
 import { constructUrl } from "@/lib/construct-url"
+import { RichTextRenderer } from "@/components/lms/RichTextRenderer"
 
 interface AboutCourseProps {
   course: Course
@@ -18,7 +19,7 @@ export default function AboutCourse({ course }: AboutCourseProps) {
 
               <div className="max-w-4xl">
                 <p className="text-[#0F1D2F] dark:text-gray-300 text-base sm:text-lg leading-relaxed mb-4 sm:mb-6">
-                  {course.description}
+                <RichTextRenderer contentJsonString={course.description} className="prose dark:prose-invert" />
                 </p>
 
                 {course.tags && course.tags.length > 0 && (

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { RichTextRenderer } from "@/components/lms/RichTextRenderer"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   Search,
@@ -283,7 +284,9 @@ export default function ViewAll() {
             </div>
           </div>
 
-          <p className="text-sm text-gray-600 line-clamp-2">{course.description}</p>
+          <p className="text-sm text-gray-600 line-clamp-2">
+            <RichTextRenderer contentJsonString={course.description} className="prose dark:prose-invert" />
+            </p>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
