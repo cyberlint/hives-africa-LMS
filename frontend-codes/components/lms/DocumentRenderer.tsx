@@ -5,6 +5,7 @@ import { CheckCircle, FileText, Download, ExternalLink } from 'lucide-react';
 import type { Lecture } from '@/types/course';
 import { constructUrl } from '@/lib/construct-url';
 import { RichTextRenderer } from './RichTextRenderer';
+import { DocumentContent } from './three-column-layout/DocumentContent';
 
 interface DocumentRendererProps {
   lecture: Lecture;
@@ -57,30 +58,33 @@ export const DocumentRenderer: React.FC<DocumentRendererProps> = ({
 
           {/* Primary Document Action */}
           {documentUrl ? (
-             <div className="bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl p-8 mb-10 max-w-2xl mx-auto">
-                <div className="flex flex-col items-center">
-                   <FileText className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" />
-                   <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Main Document</h3>
-                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Access the main learning material for this lecture</p>
-                   <div className="flex gap-3">
-                      <Button
-                        onClick={() => handleView(documentUrl)}
-                        className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
-                        variant="outline"
-                      >
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        Open in New Tab
-                      </Button>
-                      <Button
-                        onClick={() => handleDownload(documentUrl, lecture.title)}
-                        className="bg-[#fdb606] hover:bg-[#f39c12] text-black border-none"
-                      >
-                        <Download className="w-4 h-4 mr-2" />
-                        Download PDF
-                      </Button>
-                   </div>
-                </div>
-             </div>
+            //  <div className="bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl p-8 mb-10 max-w-2xl mx-auto">
+            //     <div className="flex flex-col items-center">
+            //        <FileText className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" />
+            //        <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Main Document</h3>
+            //        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Access the main learning material for this lecture</p>
+            //        <div className="flex gap-3">
+            //           <Button
+            //             onClick={() => handleView(documentUrl)}
+            //             className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+            //             variant="outline"
+            //           >
+            //             <ExternalLink className="w-4 h-4 mr-2" />
+            //             Open in New Tab
+            //           </Button>
+            //           <Button
+            //             onClick={() => handleDownload(documentUrl, lecture.title)}
+            //             className="bg-[#fdb606] hover:bg-[#f39c12] text-black border-none"
+            //           >
+            //             <Download className="w-4 h-4 mr-2" />
+            //             Download PDF
+            //           </Button>
+            //        </div>
+            //     </div>
+            //  </div>
+             <div className="bg-white border border-gray-200 rounded-xl p-4 mb-10">
+              <DocumentContent documentKey={lecture.documentKey} />
+              </div>
           ) : (
              !lecture.attachments?.length && (
                 <div className="text-center p-8 bg-gray-50 dark:bg-gray-900 rounded-xl border border-dashed border-gray-200 dark:border-gray-800 mb-8">

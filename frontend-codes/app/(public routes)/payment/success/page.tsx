@@ -133,7 +133,7 @@ function PaymentStatusContent() {
               {paymentDetails?.course_title && (
                 <div className="bg-white dark:bg-[#1d2026] border border-green-200 dark:border-[#404854] rounded-xl p-4 shadow-sm flex flex-col md:flex-row gap-4 items-center md:items-start text-left">
                   {paymentDetails.thumbnail ? (
-                    <div className="relative w-full md:w-32 h-32 md:h-24 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="relative w-full md:w-32 h-32 md:h-24 rounded-lg overflow-hidden shrink-0">
                        {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img 
                         src={constructUrl(paymentDetails.thumbnail)} 
@@ -213,7 +213,7 @@ function PaymentStatusContent() {
 
   // Failure State
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-[#FAFAFB] to-orange-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-red-50 via-[#FAFAFB] to-orange-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-lg border-red-200 shadow-xl">
         <CardHeader className="text-center pb-4">
           <div className="relative mb-4">

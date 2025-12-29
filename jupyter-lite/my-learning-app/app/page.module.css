@@ -1,0 +1,32 @@
+.gridContainer {
+  /* Use the full viewport height minus any potential header/footer */
+  height: 100vh; 
+  display: grid;
+  
+  /* The core of the 1:7:4 ratio */
+  /* fr stands for "fractional unit," dividing the available space */
+  grid-template-columns: 1fr 7fr 4fr;
+  
+  gap: 16px; /* Spacing between columns */
+  padding: 16px; /* Padding around the entire container */
+  box-sizing: border-box; /* Include padding in the height/width calculation */
+}
+
+/* Base styling for the columns (optional, for visual clarity) */
+.navColumn, .videoColumn {
+  padding: 10px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  overflow-y: auto; /* Allows scrolling if content is too long */
+}
+
+/* Navigation specific styling */
+.navColumn h2 {
+    margin-top: 0;
+}
+
+/* Video specific styling */
+.videoColumn {
+    display: flex;
+    flex-direction: column;
+}

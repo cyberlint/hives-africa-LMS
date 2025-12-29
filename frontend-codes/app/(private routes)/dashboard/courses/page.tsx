@@ -235,7 +235,7 @@ export default function ViewAll() {
   }
 
   const CourseCard = ({ course }: { course: Course }) => (
-    <Card className="group hover:shadow-lg transition-all duration-300 border-gray-200 hover:border-[#fdb606]/30">
+    <Card className="group hover:shadow-lg transition-all duration-300 border-gray-200 hover:border-yellow-500/30">
       <CardHeader className="p-0">
         <div className="relative overflow-hidden rounded-t-lg">
           <Image

@@ -13,12 +13,12 @@ const aj = arcjet
     .withRule(
         detectBot({
             mode: "LIVE",
-            allow: [],    //List of bots allowed to interact with your route handler. E.g OpenAI
+            allow: [],    // List of bots allowed to interact with your route handler. E.g OpenAI
         })
     )
     .withRule(
         fixedWindow({
-            mode: "LIVE",   //// Allows up to 10 file delete requests in a 1 minute window. Adjust as needed.
+            mode: "LIVE",   // Allows up to 10 file delete requests in a 1 minute window. Adjust as needed.
             window: "1m",
             max: 10,
         })
