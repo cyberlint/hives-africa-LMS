@@ -14,7 +14,12 @@ export async function adminGetCourse(id: string) {
             title: true,
             description: true,
             fileKey: true,
+            // @ts-ignore
             price: true,
+            // @ts-ignore
+            originalPrice: true,
+            // @ts-ignore
+            registrationFee: true,
             duration: true,
             level: true,
             status: true,
@@ -50,7 +55,7 @@ export async function adminGetCourse(id: string) {
         return notFound();
     }
 
-    return data;
+    return data as any;
 }
 
 export type AdminCourseSingularType = Awaited<ReturnType<typeof adminGetCourse>>;

@@ -7,7 +7,7 @@ import { MessageSquare, FileText, Brain, Download } from 'lucide-react';
 
 interface AITabProps {
   lectureTitle: string;
-  lectureId: number;
+  lectureId: string;
 }
 
 interface ChatMessage {

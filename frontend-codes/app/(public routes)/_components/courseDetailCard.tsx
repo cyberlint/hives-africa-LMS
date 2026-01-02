@@ -1,10 +1,16 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { CheckoutButton } from "@/components/lms/checkout-button";
 import { CourseListItem } from "@/services/courses";
+import { useEnrolledCourses } from "@/hooks/useEnrolledCourses";
 
 const CourseDetailCard = ({ course }: { course: CourseListItem }) => {
+  const { courses: enrolledCourses } = useEnrolledCourses();
+  const isEnrolled = enrolledCourses?.some(c => c.courseId === course.id);
+
   const discountPercentage = course.original_price && course.original_price > course.current_price
     ? Math.round(((course.original_price - course.current_price) / course.original_price) * 100)
     : 0;
@@ -138,10 +144,11 @@ const CourseDetailCard = ({ course }: { course: CourseListItem }) => {
           variant="primary"
           label="Add to Cart"
           autoNavigate={true}
+          isEnrolled={isEnrolled}
         />
 
         <Link
-          href={`/course/${course.slug || course.id}`}
+          href={`/course/${course.id}`}
           className="block text-center bg-[#fffce8] dark:bg-yellow/20 hover:bg-[#FFEEE8CC] dark:hover:bg-yellow/30 text-yellow dark:text-yellow text-xs font-semibold px-4 py-2 w-full transition-colors duration-300"
         >
           Course Detail

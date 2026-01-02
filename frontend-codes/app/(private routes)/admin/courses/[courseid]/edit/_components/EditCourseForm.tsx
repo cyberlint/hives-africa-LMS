@@ -52,6 +52,8 @@ export function EditCourseForm({ data }: iAppProps){
         status: data.status,
         slug: data.slug,
         shortdescription: data.shortdescription,
+        originalPrice: data.originalPrice,
+        registrationFee: data.registrationFee,
       },
     });
 
@@ -247,10 +249,46 @@ export function EditCourseForm({ data }: iAppProps){
                        name="price"
                        render={({field}) => (
                         <FormItem className="w-full">
-                            <FormLabel>Price ($)</FormLabel>
+                            <FormLabel>Current Price (₦)</FormLabel>
                             <FormControl>
                                 <Input 
-                                placeholder="Price" 
+                                placeholder="Current Price" 
+                                type="number" 
+                                {...field}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                       )}
+                       /> 
+
+                       <FormField 
+                       control={form.control}
+                       name="originalPrice"
+                       render={({field}) => (
+                        <FormItem className="w-full">
+                            <FormLabel>Original Price (₦)</FormLabel>
+                            <FormControl>
+                                <Input 
+                                placeholder="Original Price (for discount display)" 
+                                type="number" 
+                                {...field}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                       )}
+                       /> 
+
+                       <FormField 
+                       control={form.control}
+                       name="registrationFee"
+                       render={({field}) => (
+                        <FormItem className="w-full">
+                            <FormLabel>Registration Fee (₦)</FormLabel>
+                            <FormControl>
+                                <Input 
+                                placeholder="Registration portion of total price" 
                                 type="number" 
                                 {...field}
                                 />

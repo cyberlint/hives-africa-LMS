@@ -57,11 +57,11 @@ function PaymentStatusContent() {
   }, [reference]);
 
   const handleStartLearning = () => {
-    router.push('/learning');
+    router.push('/dashboard/learning');
   };
 
   const handleGoHome = () => {
-    router.push('/home');
+    router.push('/dashboard');
   };
 
   const handleRetry = () => {
@@ -226,7 +226,7 @@ function PaymentStatusContent() {
             Payment Failed
           </h1>
           <p className="text-sm text-[#6E7485]">
-            We couldn't process your payment
+            We couldn&apos;t process your payment
           </p>
         </CardHeader>
         <CardContent className="space-y-6">

@@ -61,17 +61,17 @@ export const ChapterNavigationPanel: React.FC<ChapterNavigationPanelProps> = ({
   if (isCollapsed) {
     return (
       <div className={cn(
-        "z-20 border-r border-gray-200 bg-white",
+        "z-20 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1d2026] transition-colors duration-300",
         isMobile ? 'fixed inset-y-0 left-0 hidden' : 'sticky top-0 h-screen w-12 flex flex-col items-center py-4'
       )}>
         <Button
           variant="ghost"
           size="sm"
           onClick={onToggleCollapse}
-          className="h-8 w-8 p-0 rounded-full hover:bg-gray-100"
+          className="h-8 w-8 p-0 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
           title="Show chapters"
         >
-          <ChevronRight className="w-5 h-5 text-gray-500" />
+          <ChevronRight className="w-5 h-5 text-gray-500 dark:text-gray-400" />
         </Button>
       </div>
     );
@@ -82,19 +82,19 @@ export const ChapterNavigationPanel: React.FC<ChapterNavigationPanelProps> = ({
   return (
     <div 
       className={cn(
-        "flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out",
+        "flex flex-col bg-white dark:bg-[#1d2026] border-r border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out",
         isMobile ? "fixed inset-0 z-50 w-full h-[100dvh]" : "sticky top-0 h-screen w-[320px]"
       )}
     >
       {/* Header (Fixed) */}
-      <div className="flex-shrink-0 p-4 border-b border-gray-200 bg-white">
+      <div className="flex-shrink-0 p-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1d2026] transition-colors duration-300">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-semibold text-gray-900">Course Content</h2>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Course Content</h2>
           <Button
             variant="ghost"
             size="sm"
             onClick={onToggleCollapse}
-            className="h-8 w-8 p-0 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full"
+            className="h-8 w-8 p-0 text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-800 rounded-full"
             title="Hide chapters"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -103,13 +103,13 @@ export const ChapterNavigationPanel: React.FC<ChapterNavigationPanelProps> = ({
 
         {/* Progress Bar */}
         <div className="space-y-2">
-          <div className="flex justify-between text-xs text-gray-600 font-medium">
+          <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 font-medium">
             <span>{Math.round(completionPercentage)}% completed</span>
             <span>{completedLectures.length}/{courseData.totalLectures || 0}</span>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+          <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1.5 overflow-hidden">
             <div
-              className="bg-yellow h-full transition-all duration-500 ease-out rounded-full"
+              className="bg-[#fdb606] h-full transition-all duration-500 ease-out rounded-full"
               style={{ width: `${completionPercentage}%` }}
             />
           </div>
@@ -117,7 +117,7 @@ export const ChapterNavigationPanel: React.FC<ChapterNavigationPanelProps> = ({
       </div>
 
       {/* Sections List (Scrollable) */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <div className="flex-1 overflow-y-auto custom-scrollbar bg-white dark:bg-[#1d2026]">
         <div className="p-3 space-y-3">
           {courseData.sections.map((section) => {
             const isExpanded = expandedSections.includes(section.id);
@@ -130,22 +130,22 @@ export const ChapterNavigationPanel: React.FC<ChapterNavigationPanelProps> = ({
                 {/* Section Header */}
                 <button
                   onClick={() => toggleSection(section.id)}
-                  className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors group select-none"
+                  className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group select-none"
                   aria-expanded={isExpanded}
                 >
                   <div className="flex items-center gap-2 flex-1 min-w-0">
                     <div className={cn(
-                      "transition-transform duration-200 text-gray-400 group-hover:text-gray-600",
+                      "transition-transform duration-200 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300",
                       isExpanded ? "rotate-0" : "-rotate-90"
                     )}>
                       <ChevronDown className="w-4 h-4" />
                     </div>
-                    <span className="text-sm font-semibold text-gray-900 truncate">
+                    <span className="text-sm font-semibold text-gray-900 dark:text-gray-200 truncate">
                       {section.title}
                     </span>
                   </div>
                   {sectionCompleted && (
-                    <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 ml-2" />
+                    <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400 flex-shrink-0 ml-2" />
                   )}
                 </button>
 
@@ -167,20 +167,20 @@ export const ChapterNavigationPanel: React.FC<ChapterNavigationPanelProps> = ({
                         className={cn(
                           "w-full flex items-start gap-3 p-2 pl-8 rounded-md text-left transition-all duration-200 group relative",
                           isActive 
-                            ? "bg-yellow/10 text-gray-900" 
-                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                            ? "bg-[#fdb606]/10 text-gray-900 dark:text-white" 
+                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
                         )}
                       >
                          {/* Active Indicator Bar */}
                          {isActive && (
-                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-2/3 bg-yellow rounded-r-full" />
+                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-2/3 bg-[#fdb606] rounded-r-full" />
                          )}
 
                         <div className={cn(
                           "flex-shrink-0 mt-0.5",
-                          isActive ? "text-yellow" : "text-gray-400 group-hover:text-gray-500"
+                          isActive ? "text-[#fdb606]" : "text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400"
                         )}>
-                          {isCompleted ? <CheckCircle className="w-4 h-4 text-green-500" /> : getLectureIcon(lecture)}
+                          {isCompleted ? <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400" /> : getLectureIcon(lecture)}
                         </div>
 
                         <div className="flex-1 min-w-0">
@@ -207,10 +207,10 @@ export const ChapterNavigationPanel: React.FC<ChapterNavigationPanelProps> = ({
       </div>
 
       {/* Footer Info (Fixed) */}
-      <div className="flex-shrink-0 p-4 border-t border-gray-200 bg-gray-50/50">
-        <div className="flex justify-between items-center text-xs text-gray-600">
+      <div className="flex-shrink-0 p-4 border-t border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 transition-colors duration-300">
+        <div className="flex justify-between items-center text-xs text-gray-600 dark:text-gray-400">
           <span>Total Duration</span>
-          <span className="font-semibold text-gray-900">
+          <span className="font-semibold text-gray-900 dark:text-gray-200">
             {Math.floor(
               courseData.sections.reduce(
                 (sum, section) =>
@@ -242,6 +242,9 @@ export const ChapterNavigationPanel: React.FC<ChapterNavigationPanelProps> = ({
         .custom-scrollbar:hover::-webkit-scrollbar-thumb {
           background: #d1d5db;
         }
+        /* Dark mode scrollbar support via media query if possible, or just generic dark classes if tailwind config allows. 
+           Since jsx global styling is tricky with dark mode class, we can leave generic gray or try to target dark mode selector if available globally.
+           For now gray is neutral enough. */
       `}</style>
     </div>
   );

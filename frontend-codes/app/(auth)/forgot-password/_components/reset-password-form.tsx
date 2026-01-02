@@ -35,34 +35,30 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentPropsW
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true)
+    console.log("Attempting to send reset password email for:", data.email);
     try {
-      // Send password reset email using Better Auth
-      const response = await fetch("/api/auth/forget-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const { data: responseData, error } = await (authClient as any).requestPasswordReset({
           email: data.email,
-          redirectTo: "/reset-password",
-        }),
-      })
+          redirectTo: `${window.location.origin}/reset-password`,
+      });
 
-      if (!response.ok) {
-        const error = await response.json()
+      if (error) {
+        console.error("Error sending reset password email:", error);
         toast.error("Failed to send reset email", {
           description: error.message || "Could not send password reset email",
         })
         return
       }
 
+      console.log("Reset password email sent successfully:", responseData);
       toast.success("Reset email sent!", {
         description: "Check your email for password reset instructions",
       })
 
       // Redirect to a confirmation page or back to login
-      router.push(`/signin?reset=sent&email=${encodeURIComponent(data.email)}`)
+      // router.push(`/signin?reset=sent&email=${encodeURIComponent(data.email)}`)
     } catch (error: any) {
+       console.error("Unexpected error in forgot password flow:", error);
       toast.error("Failed to send reset email", {
         description: error.message || "Something went wrong",
       })

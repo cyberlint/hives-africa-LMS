@@ -11,12 +11,12 @@ interface Note {
   title: string;
   content: string;
   timestamp: number;
-  lectureId: number;
+  lectureId: string;
   createdAt: Date;
 }
 
 interface NotesTabProps {
-  lectureId: number;
+  lectureId: string;
   lectureTitle: string;
   currentTime: number;
 }

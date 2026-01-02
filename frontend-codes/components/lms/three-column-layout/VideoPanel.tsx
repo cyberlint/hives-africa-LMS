@@ -10,6 +10,7 @@ import type { Lecture, CourseData } from '@/types/course';
 import { constructUrl } from '@/lib/construct-url';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { RichTextRenderer } from '@/components/lms/RichTextRenderer';
 import { TranscriptToggle } from '@/components/TranscriptToggle';
 
 // Define the transcript content
@@ -223,15 +224,15 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
 
   if (isCollapsed) {
     return (
-      <div className="fixed right-0 top-[80px] border-l h-[calc(100vh-80px)] z-20 lg:relative lg:top-0 lg:h-full bg-white">
+      <div className="fixed right-0 top-[80px] border-l border-gray-200 dark:border-gray-800 h-[calc(100vh-80px)] z-20 lg:relative lg:top-0 lg:h-full bg-white dark:bg-[#1d2026] transition-colors duration-300">
         <div className="h-full flex items-center">
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={onToggleCollapse}
-            className="rounded-l-lg rounded-r-none bg-white border border-gray-200 shadow-sm p-2 hover:bg-gray-50"
+            className="rounded-l-lg rounded-r-none bg-white dark:bg-[#1d2026] border border-gray-200 dark:border-gray-800 shadow-sm p-2 hover:bg-gray-50 dark:hover:bg-gray-800"
           >
-            <ChevronLeft className="w-5 h-5 text-gray-500" />
+            <ChevronLeft className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           </Button>
         </div>
       </div>
@@ -274,17 +275,17 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
   return (
     <div 
       className={cn(
-        "bg-white border-l border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out overflow-y-auto custom-scrollbar-on-hover",
+        "bg-white dark:bg-[#1d2026] border-l border-r border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 ease-in-out overflow-y-auto custom-scrollbar-on-hover",
         isMobile ? "w-full min-h-[50vh] max-h-screen" : "w-[480px] h-full max-h-screen"
       )}
     >
       {/* Video Header (Minimal) */}
-      <div className="flex-shrink-0 p-3 flex justify-between items-center bg-gray-50/50 border-b border-gray-100">
+      <div className="flex-shrink-0 p-3 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-800 transition-colors duration-300">
         <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Now Playing</span>
-            <h4 className="text-sm font-medium text-gray-900 line-clamp-1 max-w-[200px]">{lecture.title}</h4>
+            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Now Playing</span>
+            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-1 max-w-[200px]">{lecture.title}</h4>
         </div>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-900" onClick={onToggleCollapse}>
+        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-900 dark:hover:text-gray-100" onClick={onToggleCollapse}>
           <ChevronRight className="w-5 h-5" />
         </Button>
       </div>

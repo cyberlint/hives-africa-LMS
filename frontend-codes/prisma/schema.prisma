@@ -8,28 +8,30 @@ datasource db {
 }
 
 model User {
-  id              String            @id
-  name            String
-  email           String            @unique
-  emailVerified   Boolean           @default(false)
-  image           String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @default(now()) @updatedAt
-  role            String?
-  banned          Boolean?          @default(false)
-  banReason       String?
-  banExpires      DateTime?
-  bio             String?
-  website         String?
-  courses         Course[]
-  enrollments     Enrollment[]
-  lessonProgress  LessonProgress[]
-  payments        Payment[]
-  UserAchievement UserAchievement[]
-  Wishlist        Wishlist[]
-  accounts        Account[]
-  sessions        Session[]
+  id               String            @id
+  name             String
+  email            String
+  emailVerified    Boolean           @default(false)
+  image            String?
+  bio              String?
+  website          String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @default(now()) @updatedAt
+  sessions         Session[]
+  accounts         Account[]
+  courses          Course[]
+  enrollments      Enrollment[]
+  lessonProgress   LessonProgress[]
+  userAchievements UserAchievement[]
+  wishlist         Wishlist[]
 
+  role       String?
+  banned     Boolean?  @default(false)
+  banReason  String?
+  banExpires DateTime?
+  payments   Payment[]
+
+  @@unique([email])
   @@map("user")
 }
 
@@ -84,7 +86,9 @@ model Course {
   description      String
   fileKey          String
   price            Float
-  duration         Int
+  originalPrice    Float?
+  registrationFee  Float?       @default(0)
+  duration         Int // duration in hours
   level            CourseLevel  @default(Beginner)
   category         String
   shortdescription String
@@ -93,13 +97,25 @@ model Course {
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @default(now()) @updatedAt
   userId           String
-  originalPrice    Float?
-  registrationFee  Float?       @default(0)
   user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  enrollments      Enrollment[]
-  module           Module[]
-  payments         Payment[]
-  Wishlist         Wishlist[]
+
+  module        Module[]
+  enrollments   Enrollment[]
+  payments      Payment[]
+  wishlistItems Wishlist[]
+}
+
+enum CourseLevel {
+  Beginner
+  Intermediate
+  Advanced
+}
+
+enum CourseStatus {
+  Draft
+  InReview
+  Published
+  Archived
 }
 
 model Module {
@@ -131,6 +147,14 @@ model Lesson {
   attachments    Attachment[]
   Module         Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   lessonProgress LessonProgress[]
+}
+
+enum LessonType {
+  Video
+  Document
+  Notebook
+  Quiz
+  Resource
 }
 
 model Attachment {
@@ -167,6 +191,13 @@ model Enrollment {
   @@unique([userId, courseId])
   @@index([userId])
   @@index([courseId])
+}
+
+enum PaymentStatus {
+  Pending
+  Completed
+  Failed
+  Refunded
 }
 
 model LessonProgress {
@@ -208,69 +239,43 @@ model Payment {
 }
 
 model Achievement {
-  id              String            @id
-  title           String
-  description     String
-  icon            String
-  category        String
-  points          Int
-  rarity          String
-  isSecret        Boolean           @default(false)
-  steps           String[]
-  maxProgress     Int               @default(1)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime
-  UserAchievement UserAchievement[]
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  icon        String
+  category    String
+  points      Int
+  rarity      String
+  isSecret    Boolean  @default(false)
+  steps       String[] // Stored as array of strings
+  maxProgress Int      @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userAchievements UserAchievement[]
 }
 
 model UserAchievement {
-  id            String      @id
+  id            String      @id @default(uuid())
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
   achievementId String
   unlockedAt    DateTime?
   progress      Int         @default(0)
   isUnlocked    Boolean     @default(false)
-  Achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, achievementId])
 }
 
 model Wishlist {
-  id        String   @id
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId  String
   createdAt DateTime @default(now())
-  Course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
-}
-
-enum CourseLevel {
-  Beginner
-  Intermediate
-  Advanced
-}
-
-enum CourseStatus {
-  Draft
-  InReview
-  Published
-  Archived
-}
-
-enum LessonType {
-  Video
-  Document
-  Quiz
-  Resource
-  Notebook
-}
-
-enum PaymentStatus {
-  Pending
-  Completed
-  Failed
-  Refunded
 }

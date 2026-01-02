@@ -7,6 +7,7 @@ import { Star, Clock, Users, BookOpen, Award, X } from "lucide-react"
 import Image from "next/image"
 import type { Course } from "@/types/course"
 import { CheckoutButton } from "@/components/lms/checkout-button"
+import { RichTextRenderer } from "@/components/lms/RichTextRenderer"
 
 interface CourseModalProps {
   course: Course
@@ -51,7 +52,7 @@ export function CourseModal({ course, isOpen, onClose }: CourseModalProps) {
               <div>
                 <h3 className="font-semibold text-[#2c3e50] mb-2">Course Tags</h3>
                 <div className="flex flex-wrap gap-2">
-                  {course.tags.map((tag: string) => (
+                  {course.tags?.map((tag: string) => (
                     <Badge key={tag} variant="secondary" className="bg-[#f8f9fa] text-[#6c757d] hover:bg-[#e9ecef]">
                       {tag}
                     </Badge>
@@ -61,7 +62,9 @@ export function CourseModal({ course, isOpen, onClose }: CourseModalProps) {
 
               <div>
                 <h3 className="font-semibold text-[#2c3e50] mb-2">Description</h3>
-                <p className="text-[#6c757d] leading-relaxed">{course.description}</p>
+                <div className="text-[#6c757d] leading-relaxed">
+                  <RichTextRenderer content={course.description} className="prose prose-sm dark:prose-invert max-w-none" />
+                </div>
               </div>
             </div>
           </div>
@@ -75,9 +78,9 @@ export function CourseModal({ course, isOpen, onClose }: CourseModalProps) {
                     <span className="text-lg text-[#6c757d] line-through">{course.originalPrice}</span>
                   )}
                   <span
-                    className={`text-3xl font-bold ${course.price === "Free" ? "text-[#28a745]" : "text-[#2c3e50]"}`}
+                    className={`text-3xl font-bold ${course.price === 0 ? "text-[#28a745]" : "text-[#2c3e50]"}`}
                   >
-                    {course.price}
+                    {course.price === 0 ? "Free" : `₦${course.price.toLocaleString()}`}
                   </span>
                 </div>
               </div>
@@ -88,7 +91,7 @@ export function CourseModal({ course, isOpen, onClose }: CourseModalProps) {
                 title={course.title}
                 thumbnail={course.image}
                 instructor={course.instructor}
-                label={course.price === "Free" ? "Enroll Free" : "Add to Cart"}
+                label={course.price === 0 ? "Enroll Free" : "Add to Cart"}
                 autoNavigate={false}
                 className="w-full mb-4"
               />

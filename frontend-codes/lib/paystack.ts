@@ -30,6 +30,7 @@ export interface PaystackVerifyResponse {
     currency: string;
     metadata: any;
     paid_at: string;
+    receipt_url?: string;
     // Add other fields as needed
   };
 }

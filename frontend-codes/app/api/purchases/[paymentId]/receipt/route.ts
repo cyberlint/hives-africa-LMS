@@ -9,7 +9,7 @@ import { Paystack } from '@/lib/paystack';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { paymentId: string } }
+  { params }: { params: Promise<{ paymentId: string }> }
 ) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -22,7 +22,7 @@ export async function GET(
     }
 
     const userId = session.user.id;
-    const { paymentId } = params;
+    const { paymentId } = await params;
 
     // Fetch the payment with course details
     const payment = await prisma.payment.findUnique({
@@ -60,11 +60,11 @@ export async function GET(
     }
 
     // Try to fetch receipt URL from Paystack
-    let receiptUrl = '';
+    let receiptUrl = `https://paystack.com/receipt/${payment.reference}`;
     try {
       const paystackReceipt = await Paystack.verifyTransaction(payment.reference);
-      if (paystackReceipt.status && paystackReceipt.data) {
-        receiptUrl = `https://receipt.verifyonline.com/receipts/${payment.reference}`;
+      if (paystackReceipt.status && paystackReceipt.data && paystackReceipt.data.receipt_url) {
+        receiptUrl = paystackReceipt.data.receipt_url;
       }
     } catch (error) {
       console.error(`Failed to fetch Paystack receipt for ${payment.reference}:`, error);

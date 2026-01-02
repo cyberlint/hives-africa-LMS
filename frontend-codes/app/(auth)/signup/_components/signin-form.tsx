@@ -91,7 +91,7 @@ function SignupForm() {
     try {
       await authClient.signIn.social({
         provider: "github",
-        callbackURL: "/",
+        callbackURL: "/signin",
       })
     } catch (error: any) {
       toast.error("Sign up failed", {

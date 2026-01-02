@@ -40,7 +40,7 @@ function PaymentFailureContent() {
   };
 
   const handleGoHome = () => {
-    router.push('/home');
+    router.push('/dashboard');
   };
 
   const handleContactSupport = () => {
@@ -58,7 +58,7 @@ function PaymentFailureContent() {
             Payment Failed
           </h1>
           <p className="text-sm text-[#6E7485] dark:text-gray-400 mt-1">
-            We couldn't process your transaction
+            We couldn&apos;t process your transaction
           </p>
         </CardHeader>
         <CardContent className="space-y-6">

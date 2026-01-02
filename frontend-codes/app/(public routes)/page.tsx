@@ -1,13 +1,9 @@
-"use client";
-
 import Image from "next/image";
 import FeaturedCourses from "./_components/featuredCourses";
 import BestSellingCourses from "./_components/bestSellingCourses";
 import RecentlyAddedCourses from "./_components/recentlyAddedCourses";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import { CoursesService } from "@/services/courses";
-
+import { getBestSellingCourses, getFeaturedCourses, getRecentlyAddedCourses } from "./_components/HomeClients/fetchData";
 
 interface Category {
   name: string;
@@ -16,46 +12,13 @@ interface Category {
   numberOfCourses: string;
 }
 
-export interface Course {
-  id: string;
-  title: string;
-  image: string;
-  cost: string;
-  discountCost?: string;
-  discount?: string;
-  instructor?: {
-    name: string;
-    photo: string;
-  };
-  level?: string;
-  duration?: string;
-  category: {
-    name: string;
-    bgColor: string;
-    textColor: string;
-  };
-  rating: string;
-  numberOfReviews?: string;
-  numberOfEnrolees: string;
-  learningOutcomes?: string[];
-}
-
-const Home = () => {
-  // Fetch all course data at parent level
-  const { data: featuredCourses } = useQuery({
-    queryKey: ['featured-courses'],
-    queryFn: () => CoursesService.getFeaturedCourses(),
-  });
-
-  const { data: bestSellingCourses } = useQuery({
-    queryKey: ['best-selling-courses'],
-    queryFn: () => CoursesService.getBestSellingCourses(8),
-  });
-
-  const { data: recentlyAddedCourses } = useQuery({
-    queryKey: ['recently-added-courses'],
-    queryFn: () => CoursesService.getRecentlyAddedCourses(8),
-  });
+const Home = async () => {
+  // Parallel data fetching on the server
+  const [featuredCourses, bestSellingCourses, recentlyAddedCourses] = await Promise.all([
+    getFeaturedCourses(),
+    getBestSellingCourses(8),
+    getRecentlyAddedCourses(8),
+  ]);
 
   const categories: Category[] = [
     {
@@ -144,12 +107,12 @@ const Home = () => {
             tech skills through culturally relevant content tailored for your
             journey.
           </p>
-          <button 
-            onClick={() => window.location.href = '/auth?mode=signup'}
-            className="bg-yellow text-white text-xs md:text-sm font-medium px-6 py-3 cursor-pointer hover:bg-yellow/90 transition"
+          <Link
+            href="/auth?mode=signup"
+            className="bg-yellow text-white text-xs md:text-sm font-medium px-6 py-3 cursor-pointer hover:bg-yellow/90 transition inline-block rounded"
           >
             Get Started for Free
-          </button>
+          </Link>
         </div>
 
         <div className="flex items-center w-full lg:w-[55%]">

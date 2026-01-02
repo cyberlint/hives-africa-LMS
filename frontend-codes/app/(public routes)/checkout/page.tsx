@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { useInitializePayment } from "@/hooks/usePayments";
 import { constructUrl } from "@/lib/construct-url";
+import useCurrentUser from "@/hooks/useCurrentUser";
 
 export default function CartCheckoutPage() {
   const { items, removeItem, /* updateQuantity (deprecated single-item mode) */ subtotal, coupon, applyCoupon, removeCoupon, total, loadingCoupon, clearCart } = useCart();
@@ -32,7 +33,14 @@ export default function CartCheckoutPage() {
 
   const initializePaymentMutation = useInitializePayment();
 
+  const user = useCurrentUser();
+
   const handleStartPayment = useCallback(async () => {
+    if (!user?.id) {
+       toast.error("Please login to complete your purchase");
+       router.push("/signin");
+       return;
+    }
     if (!hasItems) return;
     
     // MVP strategy: initialize payment using first non-free course id and coupon (backend must handle multi later)
@@ -72,7 +80,7 @@ export default function CartCheckoutPage() {
     } finally {
       setProcessing(false);
     }
-  }, [items, coupon, clearCart, router, hasItems, initializePaymentMutation]);
+  }, [items, coupon, clearCart, user, router, hasItems, initializePaymentMutation]);
 
   const emptyState = (
     <div className="py-16 text-center">

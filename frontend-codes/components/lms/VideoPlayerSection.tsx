@@ -3,7 +3,8 @@ import { VideoPlayer } from '@/components/lms/VideoPlayer';
 import { VideoControls } from '@/components/lms/VideoControls';
 import { CheckCircle } from 'lucide-react';
 import type { Lecture } from '@/types/course';
-import { NavigationArrows } from '@/app/(private routes)/oldcourse/chapter/_components/NavigationArrows';
+import { NavigationArrows } from '@/components/lms/NavigationArrows';
+import { RichTextRenderer } from './RichTextRenderer';
 
 interface VideoPlayerSectionProps {
   lecture?: Lecture;
@@ -291,9 +292,12 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
                 {lecture.title}
               </h2>
               {lecture.description && (
-                <p className="text-gray-400 text-sm mb-3 leading-relaxed">
-                  {lecture.description}
-                </p>
+                <div className="text-gray-400 text-sm mb-3 leading-relaxed">
+                  <RichTextRenderer 
+                    content={lecture.description} 
+                    className="prose prose-sm dark:prose-invert max-w-none text-gray-400"
+                  />
+                </div>
               )}
               <div className="flex items-center gap-4 text-sm text-gray-400">
                 <span>Lecture {lecture.id}</span>

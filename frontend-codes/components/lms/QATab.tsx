@@ -12,7 +12,7 @@ interface Question {
   content: string;
   author: string;
   timestamp: number;
-  lectureId: number;
+  lectureId: string;
   createdAt: Date;
   answers: Answer[];
   likes: number;
@@ -27,7 +27,7 @@ interface Answer {
 }
 
 interface QATabProps {
-  lectureId: number;
+  lectureId: string;
   lectureTitle: string;
   currentTime: number;
 }
@@ -40,7 +40,7 @@ export const QATab: React.FC<QATabProps> = ({ lectureId, lectureTitle, currentTi
       content: "I'm having trouble centering a div element both horizontally and vertically. What's the best modern approach?",
       author: "student123",
       timestamp: 120,
-      lectureId: 5,
+      lectureId: "5",
       createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
       likes: 3,
       answers: [
@@ -59,7 +59,7 @@ export const QATab: React.FC<QATabProps> = ({ lectureId, lectureTitle, currentTi
       content: "What are the key principles I should follow when making my website responsive across different devices?",
       author: "webdev_newbie",
       timestamp: 350,
-      lectureId: 7,
+      lectureId: "7",
       createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
       likes: 7,
       answers: [

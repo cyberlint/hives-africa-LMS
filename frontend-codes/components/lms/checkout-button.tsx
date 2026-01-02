@@ -66,7 +66,7 @@ export function CheckoutButton({
       
       // If already enrolled, go to learning page
       if (isEnrolled) {
-        router.push(`/${idStr}/chapter/1`);
+        router.push(`/dashboard/learning`);
         return;
       }
 

@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
             currency: purchase.currency,
             date: purchase.createdAt,
             status: purchase.status,
-            receiptUrl: '#', // Placeholder for now
+            receiptUrl: `/api/purchases/${purchase.id}/receipt`,
         }));
 
         return NextResponse.json({ purchases: formattedPurchases });

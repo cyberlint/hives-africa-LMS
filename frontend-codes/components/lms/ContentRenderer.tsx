@@ -51,6 +51,7 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
           onVideoEnd={onVideoEnd}
           onTimeUpdate={onTimeUpdate}
           allLectures={courseData.lectures || []}
+          // currentIndex={(courseData.lectures || []).findIndex(l => l.id === lecture.id)}
           currentIndex={currentIndex || 0}
         />
       );

@@ -6,6 +6,7 @@ import { CheckoutButton } from "@/components/lms/checkout-button"
 import { useRouter } from "next/navigation"
 import { CourseListItem } from "@/hooks/useAllCourses"
 import { constructUrl } from "@/lib/construct-url"
+import { RichTextRenderer } from "@/components/lms/RichTextRenderer"
 
 
 interface CourseListProps {
@@ -52,7 +53,9 @@ export function CourseList({ courses, isMobile }: CourseListProps) {
                   {course.title}
                 </h3>
 
-                <p className="text-sm text-[#6c757d] dark:text-gray-400 mb-4 line-clamp-2">{course.description}</p>
+                <div className="text-sm text-[#6c757d] dark:text-gray-400 mb-4 line-clamp-2">
+                  <RichTextRenderer content={course.description} className="prose prose-sm dark:prose-invert max-w-none line-clamp-2" />
+                </div>
 
                 <div className="flex items-center gap-4 mb-4 text-xs text-[#6c757d] dark:text-gray-400 flex-wrap">
                   <div className="flex items-center gap-1">

@@ -22,7 +22,8 @@ export function VideoUploader({onChange, value, onDurationChange}: iAppProps) {
     const [progress, setProgress] = useState(0);
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState(false);
-    const [preview, setPreview] = useState<string | null>(value ? useConstructUrl(value) : null);
+    const initialUrl = useConstructUrl(value || "");
+    const [preview, setPreview] = useState<string | null>(value ? initialUrl : null);
 
     const cleanupPreview = () => {
         if (preview && preview.startsWith("blob:")) {
@@ -118,7 +119,6 @@ export function VideoUploader({onChange, value, onDurationChange}: iAppProps) {
             const video = document.createElement('video');
             video.preload = 'metadata';
             video.onloadedmetadata = function() {
-                // @ts-ignore
                 const duration = video.duration;
                 if (onDurationChange && !isNaN(duration)) {
                      onDurationChange(duration);

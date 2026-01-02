@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
+import { Paystack } from '@/lib/paystack';
 
 /**
  * GET /api/purchases/[paymentId]/download
- * Downloads a receipt as a PDF file for a specific purchase
+ * Downloads a receipt as a PDF file (fallback to text) for a specific purchase
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { paymentId: string } }
+  { params }: { params: Promise<{ paymentId: string }> }
 ) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -21,7 +22,7 @@ export async function GET(
     }
 
     const userId = session.user.id;
-    const { paymentId } = params;
+    const { paymentId } = await params;
 
     // Fetch the payment with course details
     const payment = await prisma.payment.findUnique({
@@ -56,6 +57,16 @@ export async function GET(
         { error: 'Unauthorized' },
         { status: 403 }
       );
+    }
+
+    // Try to get actual Paystack receipt URL first
+    try {
+      const paystackReceipt = await Paystack.verifyTransaction(payment.reference);
+      if (paystackReceipt.status && paystackReceipt.data && paystackReceipt.data.receipt_url) {
+        return NextResponse.redirect(paystackReceipt.data.receipt_url);
+      }
+    } catch (error) {
+      console.error("Failed to get Paystack redirect:", error);
     }
 
     // Generate receipt data
@@ -120,8 +131,8 @@ function generateReceiptContent(receipt: any): string {
     `Original Price: ${receipt.currency} ${receipt.originalPrice.toFixed(2)}`,
     ...(receipt.discount > 0
       ? [
-          `Discount (${receipt.discount}%): -${receipt.currency} ${receipt.discountAmount.toFixed(2)}`,
-        ]
+        `Discount (${receipt.discount}%): -${receipt.currency} ${receipt.discountAmount.toFixed(2)}`,
+      ]
       : []),
     `Total Paid: ${receipt.currency} ${receipt.amount.toFixed(2)}`,
     '',

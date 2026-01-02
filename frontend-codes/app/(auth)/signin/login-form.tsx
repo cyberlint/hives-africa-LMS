@@ -54,8 +54,12 @@ function LoginForm() {
       toast.success("Welcome back!", {
         description: "Successfully logged in",
       })
-      
-      router.push("/")
+
+      if ((session?.user as any)?.role === "admin") {
+        router.push("/admin")
+      } else {
+        router.push("/dashboard")
+      }
       router.refresh()
     } catch (error: any) {
       toast.error("Login Failed", {
@@ -70,7 +74,7 @@ function LoginForm() {
     try {
       await authClient.signIn.social({
         provider: "github",
-        callbackURL: "/",
+        callbackURL: "/signin",
       })
     } catch (error: any) {
       toast.error("Sign in failed", {
