@@ -5,7 +5,7 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await requireAuth(); // ✅ server-side auth
+  await requireAuth();
 
   return <>{children}</>;
 }

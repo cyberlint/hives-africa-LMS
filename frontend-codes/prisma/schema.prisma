@@ -109,6 +109,7 @@ model Course {
   enrollments   Enrollment[]
   payments      Payment[]
   wishlistItems Wishlist[]
+  reviews       CourseReview[]
 }
 
 enum CourseLevel {
@@ -122,6 +123,20 @@ enum CourseStatus {
   InReview
   Published
   Archived
+}
+
+model CourseReview {
+  id        String   @id @default(uuid())
+  rating    Int
+  comment   String?
+  userId    String
+  courseId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
 }
 
 model Module {

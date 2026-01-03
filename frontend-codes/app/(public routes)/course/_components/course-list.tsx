@@ -54,7 +54,7 @@ export function CourseList({ courses, isMobile }: CourseListProps) {
                 </h3>
 
                 <div className="text-sm text-[#6c757d] dark:text-gray-400 mb-4 line-clamp-2">
-                  <RichTextRenderer content={course.description} className="prose prose-sm dark:prose-invert max-w-none line-clamp-2" />
+                  <RichTextRenderer contentJsonString={course.description} className="prose prose-sm dark:prose-invert max-w-none line-clamp-2" />
                 </div>
 
                 <div className="flex items-center gap-4 mb-4 text-xs text-[#6c757d] dark:text-gray-400 flex-wrap">

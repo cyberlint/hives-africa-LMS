@@ -42,8 +42,6 @@ export const RichTextRenderer: React.FC<RichTextRendererProps> = ({ contentJsonS
 
   // The EditorContent component renders the parsed JSON content as HTML/React elements.
   return (
-    <p className={className}>
-      <EditorContent editor={editor} />
-    </p>
+      <EditorContent editor={editor} className={className}/>
   );
 };

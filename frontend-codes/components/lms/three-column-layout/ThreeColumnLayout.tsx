@@ -110,7 +110,6 @@ export const ThreeColumnLayout: React.FC<ThreeColumnLayoutProps> = ({
           onToggleCollapse={toggleVideo}
           isMobile={isMobile}
         />
-   
       )}
     </div>
   );

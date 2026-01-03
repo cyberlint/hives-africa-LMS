@@ -189,7 +189,7 @@ export const DashboardProvider = ({
         refetch
       }}
     >
-      {children}
+      {children} 
     </DashboardContext.Provider>
   )
 }

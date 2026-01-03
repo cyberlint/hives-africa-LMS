@@ -88,31 +88,6 @@ function DashboardOverview() {
   // Check if user has no enrolled courses - show empty state
   const hasNoCourses = enrolledCourses.length === 0
 
-
-//   const handleCourseClick = (course: Course) => {
-//     onCourseSelect(course)
-//   }
-
-//   const handleViewAllCourses = () => {
-//     if (onTabChange) {
-//       onTabChange("view-all")
-//     }
-//     toast({
-//       title: "Navigation",
-//       description: "Opening View All page...",
-//     })
-//   }
-
-//   const handleViewAchievements = () => {
-//     if (onTabChange) {
-//       onTabChange("achievements")
-//     }
-//     toast({
-//       title: "Navigation",
-//       description: "Opening Achievements page...",
-//     })
-//   }
-
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Welcome Section */}
