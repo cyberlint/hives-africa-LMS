@@ -45,7 +45,8 @@ export const DocumentRenderer: React.FC<DocumentRendererProps> = ({
             </div>
             <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-gray-100">{lecture.title}</h2>
             <div className="text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mx-auto">
-              <RichTextRenderer content={lecture.description || 'Document content for this lecture'} className="prose dark:prose-invert max-w-none" />
+              {/* <RichTextRenderer content={lecture.description || 'Document content for this lecture'} className="prose dark:prose-invert max-w-none" /> */}
+              <div className="prose dark:prose-invert max-w-none">{lecture.description}</div>
             </div>
           </div>
           
@@ -117,7 +118,7 @@ export const DocumentRenderer: React.FC<DocumentRendererProps> = ({
                             {attachment.title}
                           </h4>
                           <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">
-                            <RichTextRenderer content={attachment.description || "No description available"} className="prose prose-xs dark:prose-invert max-w-none" />
+                            <div className="prose prose-xs dark:prose-invert max-w-none">{attachment.description}</div>
                           </div>
                           
                           <div className="flex items-center justify-between">

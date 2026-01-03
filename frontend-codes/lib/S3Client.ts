@@ -1,4 +1,4 @@
-import "server-only";   // prevents accidentally calling serrver-only endpoints on client
+import "server-only";   // prevents accidentally calling server-only endpoints on client
 
 import { S3Client } from "@aws-sdk/client-s3"
 import { env } from "./env"

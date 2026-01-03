@@ -108,10 +108,10 @@ const Home = async () => {
             journey.
           </p>
           <Link
-            href="/auth?mode=signup"
+            href="/signup"
             className="bg-yellow text-white text-xs md:text-sm font-medium px-6 py-3 cursor-pointer hover:bg-yellow/90 transition inline-block rounded"
           >
-            Get Started for Free
+            Start Learning Now →
           </Link>
         </div>
 

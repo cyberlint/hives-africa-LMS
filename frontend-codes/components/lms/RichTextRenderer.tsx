@@ -13,11 +13,11 @@ export const RichTextRenderer: React.FC<RichTextRendererProps> = ({ contentJsonS
   let parsedContent: JSONContent | null = null;
   
   try {
-    // Attempt to parse the string into a JavaScript object
     parsedContent = JSON.parse(contentJsonString) as JSONContent;
   } catch (e) {
-    console.error("Error parsing Rich Text JSON:", e);
-    return <p className={`text-red-500 p-4 border border-red-300 rounded ${className}`}>Error rendering content: Invalid JSON format.</p>;
+    // Parsing failed, log and fallback to raw string
+    console.warn("Content is not valid JSON, rendering as plain text.", e);
+    return <p className={className}>{contentJsonString}</p>;
   }
 
   const editor = useEditor({

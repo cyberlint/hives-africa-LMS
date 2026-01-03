@@ -2,15 +2,10 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { VideoPlayer } from '@/components/lms/VideoPlayer';
 import { VideoControls } from '@/components/lms/VideoControls';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChevronRight, ChevronLeft, Check, Clock, Star, BookOpen, AlertCircle, Quote } from 'lucide-react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 import type { Lecture, CourseData } from '@/types/course';
 import { constructUrl } from '@/lib/construct-url';
 import { cn } from '@/lib/utils';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { RichTextRenderer } from '@/components/lms/RichTextRenderer';
 import { TranscriptToggle } from '@/components/TranscriptToggle';
 
 // Define the transcript content
