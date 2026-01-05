@@ -24,7 +24,8 @@ model User {
   lessonProgress   LessonProgress[]
   userAchievements UserAchievement[]
   wishlist         Wishlist[]
-
+  reviews         CourseReview[]
+  
   role       String? 
   banned     Boolean?  @default(false)
   banReason  String?

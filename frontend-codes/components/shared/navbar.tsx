@@ -47,7 +47,7 @@ const Navbar = () => {
 
   return (
     <nav className="w-full bg-white dark:bg-[#1d2026] text-sm transition-colors duration-300">
-      <div className="mx-auto px-4 md:px-16 py-4 md:py-6 flex justify-between items-center gap-8 w-full">
+      <div className="mx-auto px-4 md:px-16 py-3 md:py-4 flex justify-between items-center gap-8 w-full">
         <div className="flex items-center gap-12 xl:gap-24 w-[70%]">
           <Link href="/">
             <Image
@@ -189,4 +189,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
