@@ -1,4 +1,3 @@
-// domains/auth/types.ts
 export type AuthUser = {
   id: string;
   role: "user" | "admin";

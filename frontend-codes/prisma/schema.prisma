@@ -24,13 +24,14 @@ model User {
   lessonProgress   LessonProgress[]
   userAchievements UserAchievement[]
   wishlist         Wishlist[]
-  reviews         CourseReview[]
-  
-  role       String? 
-  banned     Boolean?  @default(false)
-  banReason  String?
-  banExpires DateTime?
-  payments   Payment[]
+
+  role         String?
+  banned       Boolean?       @default(false)
+  banReason    String?
+  banExpires   DateTime?
+  payments     Payment[]
+  CourseReview CourseReview[]
+  events       Event[]
 
   @@unique([email])
   @@map("user")
@@ -300,4 +301,53 @@ model Wishlist {
   createdAt DateTime @default(now())
 
   @@unique([userId, courseId])
+}
+
+
+model Event {
+  id                String   @id @default(uuid())
+  title             String
+  shortdescription  String
+  description       String
+  startdate         DateTime
+  enddate           DateTime
+  imageKey          String?
+  venue             EventVenue @default(NextHive)
+  url               String?
+  eventCategory     EventCategory @default(Tutorial)
+  isOnline          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum EventVenue {
+  NextHive
+  GoogleMeet
+  Zoom
+  MicrosoftTeams
+  Offline
+  Hybrid
+}
+
+enum EventCategory {
+  Hackathon
+  Webinar
+  BrainstormingSession
+  NetworkingEvent
+  PanelDiscussion
+  QandASession
+  Workshop
+  Meetup
+  Tutorial
+  Lecture
+  StudyGroup
+  Roundtable
+  DemoDay
+  OfficeHours
+  Competition
+  FiresideChat
+  CertificationCourse
+  Bootcamp
 }

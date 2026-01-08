@@ -90,15 +90,15 @@ function LoginForm() {
         <p className="text-balance text-sm text-muted-foreground">
           Enter your email below to login to your account
         </p>
-      </div>
+      </div> 
 
       <div className="grid gap-6">
-        <div className="grid gap-2">
+        <div className="grid gap-1">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             type="email"
-            placeholder="divine@hive.com"
+            placeholder="chidera@example.com"
             disabled={isLoading}
             className={cn(errors.email && "border-red-500")}
             {...register("email")}
@@ -108,7 +108,7 @@ function LoginForm() {
           )}
         </div>
 
-        <div className="grid gap-2">
+        <div className="grid gap-1">
           <div className="flex items-center">
             <Label htmlFor="password">Password</Label>
             <Link

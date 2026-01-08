@@ -57,32 +57,6 @@ const Navbar = () => {
               height={70}
             />
           </Link>
-
-          {/* Desktop nav */}
-          {/* <ul className="hidden lg:flex items-center gap-8 text-base text-[#151A28] dark:text-gray-300 font-medium">
-            <li>
-              <Link href="/" className="hover:text-yellow dark:hover:text-yellow transition">
-                Why Analytix
-              </Link>
-            </li>
-
-            <li>
-              <Link href="/" className="hover:text-yellow dark:hover:text-yellow transition">
-                Solutions
-              </Link>
-            </li>
-
-            <li>
-              <Link href="/" className="hover:text-yellow dark:hover:text-yellow transition">
-                Pricing
-              </Link>
-            </li>
-
-            <li className="flex items-center gap-1 cursor-pointer group hover:text-yellow dark:hover:text-yellow transition">
-              <span>Resources</span>
-              <ChevronDown className="text-[#151A28] dark:text-gray-300 group-hover:text-yellow w-4 h-4" />
-            </li>
-          </ul> */}
         </div>
 
         {/* Desktop auth links + cart + hamburger icon */}
@@ -105,27 +79,34 @@ const Navbar = () => {
           </button>
 
           {/* Only show login/signup if user is not authenticated */}
-          {!user && (
-            <ul className="flex justify-end items-center gap-4">
-              <li>
-                <button
-                  onClick={() => router.push("/signin")}
-                  className="bg-[#3086EE1A] dark:bg-[#3086EE2A] text-darkBlue-500 dark:text-[#76c1fb] text-sm lg:text-base font-semibold px-6 py-3 rounded-full hover:bg-[#3086EE2A] dark:hover:bg-[#3086EE3A] transition-colors"
-                >
-                  Login
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => router.push("/signup")}
-                  className="bg-yellow text-white text-sm lg:text-base font-semibold px-6 py-3 rounded-full hover:bg-yellow/80 transition-colors"
-                >
-                  Signup
-                </button>
-              </li>
-            </ul>
+          <ul className="flex justify-end items-center gap-4">
+          {user ? (
+            <li>
+              <button
+                onClick={async () => {
+                  try {
+                    await authClient.signOut();
+                    router.push("/");
+                  } catch (err) {
+                    console.error("Sign out failed", err);
+                  }
+                }}
+                className="bg-yellow text-white text-xs md:text-sm font-medium px-6 py-3 cursor-pointer hover:bg-yellow/90 transition inline-block rounded"
+              >
+                Sign Out
+              </button>
+            </li>
+          ) : (
+            <li>
+              <button
+                onClick={() => router.push("/signup")}
+                className="bg-yellow text-white text-xs md:text-sm font-medium px-6 py-3 cursor-pointer hover:bg-yellow/90 transition inline-block rounded"
+              >
+                Start Learning
+              </button>
+            </li>
           )}
-
+          </ul>           
           <button
             className="lg:hidden text-gray-700 dark:text-gray-300"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

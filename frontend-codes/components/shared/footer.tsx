@@ -72,7 +72,7 @@ const company: FooterLink[] = [
     href: "/",
   },
   {
-    title: "Why Hive?",
+    title: "Why NextHive?",
     href: "/",
   },
   {
@@ -80,11 +80,11 @@ const company: FooterLink[] = [
     href: "/",
   },
   {
-    title: "Jobs at the Hive",
+    title: "Jobs at NextHive",
     href: "/",
   },
   {
-    title: "Partner with Analytix Hive",
+    title: "Partner with NextHive",
     href: "/",
   },
   {
@@ -178,7 +178,7 @@ const Footer = () => {
 
           <section className="flex flex-col sm:flex-row justify-between items-start gap-8 w-full lg:w-3/4">
             <section className="flex flex-col gap-4">
-              <h1 className="text-lg xl:text-xl">Analytix Hive Schools</h1>
+              <h1 className="text-lg xl:text-xl">NextHive Schools</h1>
               <ul className="flex flex-col gap-2 text-white/50 dark:text-gray-400">
                 {footerLinks.map((link, index) => (
                   <li key={index}>
@@ -220,9 +220,8 @@ const Footer = () => {
 
         <section className="flex flex-col lg:flex-row gap-4 lg:gap-16 xl:gap-24 border-t border-white/10 pt-4 w-full">
           <p className="text-xs xl:text-sm text-white/50 dark:text-gray-400 w-full lg:w-1/4">
-            Copyright Analytix Hive 2025
+          Copyright NextHive {new Date().getFullYear()}. All rights reserved.
           </p>
-
           <ul className="flex flex-wrap gap-x-4 sm:gap-x-8 gap-y-2 text-white/70 dark:text-gray-400 w-full lg:w-3/4">
             {quickLinks.map((link, index) => (
               <li key={index} className="inline-flex">

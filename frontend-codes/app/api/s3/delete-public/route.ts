@@ -1,4 +1,6 @@
-import { requireAdmin } from "@/lib/require-admin";
+// This route handles deleting files from the s3 bucket by any authenticated user, not just admin.
+
+import { getCurrentUser } from '@/domains/auth/user';
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
 import { env } from "@/lib/env";
 import { S3 } from "@/lib/S3Client";
@@ -24,12 +26,21 @@ const aj = arcjet
 
 
 export async function DELETE(request: Request) {
-    const session = await requireAdmin()
+    const user = await getCurrentUser()
 
+    if (!user || !user.id) {
+        return NextResponse.json(
+            { error: "Unauthorized: You must be logged in to delete files." },
+            { status: 401 }
+        );
+    }
+
+    // 3. Use the AUTHENTICATED USER ID for the Arcjet Fingerprint
+    const userId = user.id;
     try {
 
         const decision = await aj.protect(request, {
-            fingerprint: session?.user.id as string,
+            fingerprint: userId as string,
         });
 
         if (decision.isDenied()) {
