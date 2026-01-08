@@ -16,13 +16,9 @@ import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 
 const signupSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  name: z.string().min(3, "Name must be at least 3 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
 })
 
 type SignupFormData = z.infer<typeof signupSchema>
@@ -30,7 +26,6 @@ type SignupFormData = z.infer<typeof signupSchema>
 function SignupForm() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   const {
@@ -110,13 +105,13 @@ function SignupForm() {
       </div>
 
       <div className="grid gap-6">
-        {/* Name Field */}
-        <div className="grid gap-2">
-          <Label htmlFor="name">Full Name</Label>
+        {/* First Name Field */}
+        <div className="grid gap-1">
+          <Label htmlFor="name">First Name</Label>
           <Input
             id="name"
             type="text"
-            placeholder="John Doe"
+            placeholder="Kojo"
             disabled={isLoading}
             className={cn(errors.name && "border-red-500")}
             {...register("name")}
@@ -127,12 +122,12 @@ function SignupForm() {
         </div>
 
         {/* Email Field */}
-        <div className="grid gap-2">
+        <div className="grid gap-1">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             type="email"
-            placeholder="divine@hive.com"
+            placeholder="chidera@example.com"
             disabled={isLoading}
             className={cn(errors.email && "border-red-500")}
             {...register("email")}
@@ -143,7 +138,7 @@ function SignupForm() {
         </div>
 
         {/* Password Field */}
-        <div className="grid gap-2">
+        <div className="grid gap-1">
           <Label htmlFor="password">Password</Label>
           <div className="relative">
             <Input
@@ -168,35 +163,6 @@ function SignupForm() {
           </div>
           {errors.password && (
             <p className="text-sm text-red-600">{errors.password.message}</p>
-          )}
-        </div>
-
-        {/* Confirm Password Field */}
-        <div className="grid gap-2">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
-          <div className="relative">
-            <Input
-              id="confirmPassword"
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm your password"
-              disabled={isLoading}
-              className={cn("pr-10", errors.confirmPassword && "border-red-500")}
-              {...register("confirmPassword")}
-            />
-            <button
-              type="button"
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              {showConfirmPassword ? (
-                <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
-              ) : (
-                <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
-              )}
-            </button>
-          </div>
-          {errors.confirmPassword && (
-            <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
           )}
         </div>
 

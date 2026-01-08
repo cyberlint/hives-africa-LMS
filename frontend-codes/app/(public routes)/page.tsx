@@ -22,116 +22,104 @@ const Home = async () => {
 
   const categories: Category[] = [
     {
-      name: "Label",
+      name: "Agentic AI",
       icon: "/assets/categories/label-category.png",
       color: "#EBEBFF",
       numberOfCourses: "63,476",
     },
     {
-      name: "Business",
+      name: "Large Language Models (LLMs)",
       icon: "/assets/categories/business-category.png",
       color: "#E1F7E3",
       numberOfCourses: "52,822",
     },
     {
-      name: "Finance & Accounting",
+      name: "Business Intelligence",
       icon: "/assets/categories/finance-category.png",
       color: "#FFF2E5",
       numberOfCourses: "33,841",
     },
     {
-      name: "IT & Software",
-      icon: "/assets/categories/software-category.png",
-      color: "#FFF0F0",
-      numberOfCourses: "22,649",
-    },
-    {
-      name: "Personal Development",
+      name: "Data Analytics",
       icon: "/assets/categories/personalDev-category.png",
       color: "#FFFFFF",
       numberOfCourses: "20,126",
     },
     {
-      name: "Office Productivity",
+      name: "Data Engineering",
       icon: "/assets/categories/officeProd-category.png",
       color: "#F5F7FA",
       numberOfCourses: "13,932",
     },
     {
-      name: "Marketing",
-      icon: "/assets/categories/marketing-category.png",
-      color: "#EBEBFF",
-      numberOfCourses: "12,068",
-    },
-    {
-      name: "Photography & Video",
+      name: "Python Programming",
       icon: "/assets/categories/photography-category.png",
       color: "#F5F7FA",
       numberOfCourses: "6,196",
-    },
-    {
-      name: "Lifestyle",
-      icon: "/assets/categories/lifestyle-category.png",
-      color: "#FFF2E5",
-      numberOfCourses: "2,736",
-    },
-    {
-      name: "Design",
-      icon: "/assets/categories/design-category.png",
-      color: "#FFEEE8",
-      numberOfCourses: "2,600",
-    },
-    {
-      name: "Health & Fitness",
-      icon: "/assets/categories/health-category.png",
-      color: "#E1F7E3",
-      numberOfCourses: "1,678",
-    },
-    {
-      name: "Music",
-      icon: "/assets/categories/music-category.png",
-      color: "#FFF2E5",
-      numberOfCourses: "959",
     },
   ];
 
   return (
     <main className="-mb-16">
-      <section className="flex flex-col lg:flex-row justify-between items-center gap-x-4 gap-y-12 bg-[linear-gradient(5.92deg,_#F9FAFB_6.98%,_#FEFEFF_95.46%)] dark:bg-[linear-gradient(5.92deg,_#1d2026_6.98%,_#2a2f3a_95.46%)] px-4 md:px-16 py-8 lg:py-4 lg:pr-0 lg:pl-16 xl:pl-36 w-full transition-colors duration-300">
-        <div className="text-center lg:text-start space-y-4 w-full lg:w-[45%]">
-          <h3 className="text-[38px] md:text-5xl text-[#303030] dark:text-gray-100 font-bold leading-12 md:leading-14">
-            Learn with experts anytime, anywhere.
-          </h3>
-          <p className="text-sm md:text-base text-[#303030] dark:text-gray-300 leading-6">
-            Join the next generation of African data leaders. Learn in-demand
-            tech skills through culturally relevant content tailored for your
-            journey.
-          </p>
-          <Link
-            href="/signup"
-            className="bg-yellow text-white text-xs md:text-sm font-medium px-6 py-3 cursor-pointer hover:bg-yellow/90 transition inline-block rounded"
-          >
-            Start Learning Now →
-          </Link>
-        </div>
-
-        <div className="flex items-center w-full lg:w-[55%]">
-          <Image
-            src={"/assets/home-hero-image.png"}
-            alt="Hero Image"
-            width={400}
-            height={400}
-            className="object-contain w-full"
-          />
+      
+        {/* HERO SECTION */}
+      <section 
+        className="relative flex justify-start items-start w-full min-h-[600px] md:min-h-[750px] overflow-hidden"
+      >
+        {/* Background Image (NextHive Hero.png) - Covers the entire section */}
+        <Image
+          src={"/assets/NextHive Hero.png"}
+          alt="Hero Background: Concentric circles and feature blocks"
+          fill
+          priority
+          className="object-cover absolute inset-0 z-0 transition-opacity duration-500"
+          quality={80}
+        />
+        
+        {/* Content Wrapper (Text and CTA) - Uses the same padding as Navbar/Topbar */}
+        <div className="relative z-10 w-full mx-auto px-4 md:px-16 pt-16 md:pt-20">
+          
+          {/* Text Content Container (Left side of the design) 
+              The max-w-3xl helps in positioning the text accurately over the background
+          */}
+          <div className="space-y-6 md:space-y-8 text-center lg:text-left pt-16 md:pt-20 max-w-3xl">
+            
+            {/* Title: Real-World AI Skills, Made Simple */}
+            <h1 className="text-[48px] md:text-[68px] text-[#0A0A2D] dark:text-white font-bold leading-none md:leading-[1.1]">
+              Real-World <span className="text-[#3273DC]">AI</span> Skills, <br className="hidden md:inline"/>Made Simple
+            </h1>
+            
+            {/* Subtitle */}
+            <p className="text-base md:text-lg text-[#323232] dark:text-gray-300 max-w-xl lg:max-w-2xl mx-auto lg:mx-0">
+              Beginner-friendly AI learning designed for Africans. Hands-on projects, peer support, and real-world application.
+            </p>
+            
+            {/* CTA Button */}
+            <div className="flex flex-col items-center lg:items-start space-y-3 pt-4">
+              <Link
+                href="/signup"
+                className="bg-yellow text-white text-base font-semibold px-12 py-4 cursor-pointer hover:bg-yellow/90 transition inline-block rounded-lg shadow-xl hover:shadow-2xl"
+              >
+                Start Learning Now
+              </Link>
+              <p className="text-xs text-[#7B7B7B] dark:text-gray-400 font-medium">
+                Backed by industry mentors
+              </p>
+            </div>
+          </div>
+          
         </div>
       </section>
 
-      <section className="space-y-12 px-4 md:px-16 xl:px-36 py-16 lg:py-20 xl:py-24 bg-white dark:bg-[#1d2026] transition-colors duration-300">
+      {/* END OF REVISED HERO SECTION */}
+
+      <section className="space-y-12 px-4 md:px-16 xl:px-36 py-16 lg:py-12 xl:py-16 bg-white dark:bg-[#1d2026] transition-colors duration-300">
         <h4 className="text-center text-[32px] md:text-4xl leading-10 text-darkBlue-300 dark:text-gray-100 font-semibold">
           Browse Top Category
         </h4>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        
+        {/* Categories Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
           {categories.map((category, index) => (
             <div
               key={index}
@@ -144,24 +132,24 @@ const Home = async () => {
                 background: category.color,
               }}
             >
-                <Link href={`/course?category=${encodeURIComponent(category.name)}`} className="w-full flex justify-between items-center gap-2">
-                  <div className="flex justify-center items-center w-[30%]">
-                    <Image
-                      src={category.icon}
-                      alt="Category Icon"
-                      width={60}
-                      height={60}
-                      className="object-cover"
-                    />
-                  </div>
+              <Link href={`/course?category=${encodeURIComponent(category.name)}`} className="w-full flex justify-between items-center gap-2">
+                <div className="flex justify-center items-center w-[30%]">
+                  <Image
+                    src={category.icon}
+                    alt="Category Icon"
+                    width={60}
+                    height={60}
+                    className="object-cover"
+                  />
+                </div>
 
-                  <div className="flex flex-col gap-2 w-[70%]">
-                    <p className="text-sm font-medium text-gray-900">{category.name}</p>
-                    <p className="text-xs text-[#6E7485]">
-                      {category.numberOfCourses} Courses
-                    </p>
-                  </div>
-                </Link>
+                <div className="flex flex-col gap-2 w-[70%]">
+                  <p className="text-sm font-medium text-gray-900">{category.name}</p>
+                  <p className="text-xs text-[#6E7485]">
+                    {category.numberOfCourses} Courses
+                  </p>
+                </div>
+              </Link>
             </div>
           ))}
         </div>
@@ -170,7 +158,7 @@ const Home = async () => {
           We have more category & subcategory.{" "}
           <span className="text-yellow cursor-pointer hover:underline">
             <Link href="/course">
-            Browse All →
+              Browse All →
             </Link>
           </span>
         </p>

@@ -11,9 +11,10 @@ import { useConstructUrl } from "@/hooks/use-construct-url";
 interface iAppProps {
     value?: string;
     onChange?: (value: string) => void;
+    apiEndpoint?: string;
 }
 
-export function Uploader({onChange, value}: iAppProps) {
+export function Uploader({onChange, value, apiEndpoint}: iAppProps) {
     const [file, setFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -21,6 +22,7 @@ export function Uploader({onChange, value}: iAppProps) {
     const [error, setError] = useState(false);
     const initialUrl = useConstructUrl(value || "");
     const [preview, setPreview] = useState<string | null>(value ? initialUrl : null);
+    const uploadApiUrl = apiEndpoint || "/api/s3/upload";       // use "/api/s3/upload-public" if admin is not required (but one must be authenticated) 
 
     const cleanupPreview = () => {
         if (preview && preview.startsWith("blob:")) {
@@ -44,7 +46,7 @@ export function Uploader({onChange, value}: iAppProps) {
 
         try {
             // 1. Get presigned URL
-            const presignedResponse = await fetch("/api/s3/upload", {
+            const presignedResponse = await fetch(uploadApiUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

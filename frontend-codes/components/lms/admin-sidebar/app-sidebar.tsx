@@ -2,6 +2,8 @@
 
 import * as React from "react"
 import {
+  IconBrandMeetup,
+  IconCalendarEvent,
   IconCamera,
   IconChartBar,
   IconDashboard,
@@ -49,9 +51,9 @@ const data = {
       icon: IconListDetails,
     },
     {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
+      title: "Events",
+      url: "/events",
+      icon: IconCalendarEvent,
     },
     {
       title: "Projects",

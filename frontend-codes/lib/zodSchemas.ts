@@ -51,6 +51,37 @@ export const courseCategories = [
     "Operations & Supply Chain Analytics",
 ] as const;
 
+export const EventVenueEnum = z.enum([
+  "NextHive",
+  "GoogleMeet",
+  "Zoom",
+  "MicrosoftTeams",
+  "Offline",
+  "Hybrid",
+], { errorMap: () => ({ message: "Invalid event venue selected" }) });
+
+export const EventCategoryEnum = z.enum([
+  "Hackathon",
+  "Webinar",
+  "BrainstormingSession",
+  "NetworkingEvent",
+  "PanelDiscussion",
+  "QandASession",
+  "Workshop",
+  "Meetup",
+  "Tutorial",
+  "Lecture",
+  "StudyGroup",
+  "Roundtable",
+  "DemoDay",
+  "OfficeHours",
+  "Competition",
+  "FiresideChat",
+  "CertificationCourse",
+  "Bootcamp",
+], { errorMap: () => ({ message: "Invalid event category selected" }) });
+
+
 // --- Course Schema ---
 
 export const courseSchema = z.object({
@@ -122,7 +153,7 @@ export const moduleSchema = z.object({
 export const lessonTypes = ["Video", "Document", "Quiz", "Resource"] as const;
 
 export const lessonSchema = z.object({
-    name: z.string().min(3, "Lesson name must be at least 3 characters."),
+    firstname: z.string().min(3, "First name must be at least 3 characters."),
     courseId: z.string().uuid({ message: "Invalid course id" }),
     moduleId: z.string().uuid({ message: "Invalid module id" }),
     description: z.string().optional(),
@@ -136,7 +167,62 @@ export const lessonSchema = z.object({
 });
 
 
+export const EventSchema = z.object({
+  id: z.string().uuid({ message: "Invalid event ID" }),
+  title: z
+    .string({ required_error: "Title is required" })
+    .min(3, { message: "Title must be at least 3 characters" })
+    .max(255, { message: "Title cannot exceed 255 characters" }),
+  shortdescription: z
+    .string({ required_error: "Short description is required" })
+    .min(10, { message: "Short description must be at least 10 characters" })
+    .max(500, { message: "Short description cannot exceed 500 characters" }),
+  description: z
+    .string({ required_error: "Description is required" })
+    .min(20, { message: "Description must be at least 20 characters" }),
+  startdate: z.coerce.date({ invalid_type_error: "Start date must be a valid date" }),
+  enddate: z.coerce.date({ invalid_type_error: "End date must be a valid date" }),
+  imageKey: z.string().nullable(),
+  venue: EventVenueEnum,
+  url: z.string().url({ message: "URL must be valid" }).nullable(),
+  eventCategory: EventCategoryEnum,
+  isOnline: z.boolean({ required_error: "Online status must be true or false" }),
+  createdAt: z.date({ required_error: "CreatedAt must be a valid date" }),
+  updatedAt: z.date({ required_error: "UpdatedAt must be a valid date" }),
+  userId: z.string({ required_error: "User ID is required" }),
+});
+
+
+// CREATE EVENT SCHEMA
+export const CreateEventSchema = EventSchema
+  .omit({ id: true, createdAt: true, updatedAt: true, userId: true }) // user doesn’t provide these
+  .superRefine((data, ctx) => {
+    if (data.enddate <= data.startdate) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["enddate"],
+        message: "End date must be after start date",
+      });
+    }
+  });
+
+// UPDATE EVENT SCHEMA
+export const UpdateEventSchema = EventSchema.partial() // everything optional
+  .superRefine((data, ctx) => {
+    if (data.startdate && data.enddate && data.enddate <= data.startdate) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["enddate"],
+        message: "End date must be after start date",
+      });
+    }
+  });
+
+
 // Infer the TypeScript type from the schema for easy use elsewhere
 export type CourseSchemaType = z.infer<typeof courseSchema>;
 export type ModuleSchemaType = z.infer<typeof moduleSchema>;
 export type LessonSchemaType = z.infer<typeof lessonSchema>;
+export type EventInput = z.infer<typeof CreateEventSchema>;
+export type EventUpdateInput = z.infer<typeof UpdateEventSchema>;
+export type EventOutput = z.infer<typeof EventSchema>;

@@ -1,17 +1,12 @@
-import { requireAuth } from "@/lib/require-auth";
-import { AppSidebar } from "@/components/lms/admin-sidebar/app-sidebar"
-import { SiteHeader } from "@/components/lms/admin-sidebar/site-header"
+import { AppSidebar } from "@/components/lms/admin-sidebar/app-sidebar";
+import { SiteHeader } from "@/components/lms/admin-sidebar/site-header";
 import {
   SidebarInset,
   SidebarProvider,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { ReactNode } from "react";
 
-import { ReactNode } from "react"
-
-export default async function AdminLayout({children}: {
-    children: ReactNode,}) {
-  await requireAuth("/admin");
-  
+export function AdminShell({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider
       style={
@@ -32,13 +27,12 @@ export default async function AdminLayout({children}: {
         <SiteHeader />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6
-            px-4 lg:px-6">
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
               {children}
             </div>
           </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }
