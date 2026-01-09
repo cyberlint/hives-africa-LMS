@@ -1,6 +1,6 @@
 {
   "jupyter-config-data": {
-    "appName": "JupyterLite",
+    "appName": "NextLab",
     "appUrl": "./lab",
     "appVersion": "0.7.1",
     "baseUrl": "./",

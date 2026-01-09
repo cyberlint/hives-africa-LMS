@@ -53,27 +53,27 @@ export function EditLessonSheet({ lesson, moduleId, courseId, trigger }: EditLes
   const [isOpen, setIsOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
-  const form = useForm<LessonSchemaType>({
-    resolver: zodResolver(lessonSchema) as any,
-    defaultValues: {
-      name: lesson.title,
-      description: lesson.description || undefined,
-      courseId: courseId,
-      moduleId: moduleId,
-      thumbnailKey: lesson.thumbnailKey || undefined,
-      videoKey: lesson.videoKey || undefined,
-      documentKey: lesson.documentKey || undefined,
-      type: lesson.type, 
-      content: lesson.content || undefined,
-      duration: lesson.duration || undefined,
-      quizConfig: lesson.quizConfig || undefined,
-    },
-  });
+const form = useForm<LessonSchemaType>({
+  resolver: zodResolver(lessonSchema),
+  defaultValues: {
+    title: lesson.title ?? "",
+    description: lesson.description ?? "",
+    courseId,
+    moduleId,
+    thumbnailKey: lesson.thumbnailKey ?? "",
+    videoKey: lesson.videoKey ?? "",
+    documentKey: lesson.documentKey ?? "",
+    type: lesson.type ?? "Video",
+    content: lesson.content ?? "",
+    duration: lesson.duration ?? 0,
+    quizConfig: lesson.quizConfig ?? undefined,
+  },
+});
 
     useEffect(() => {
         if(isOpen) {
             form.reset({
-                name: lesson.title,
+                title: lesson.title,
                 description: lesson.description || "",
                 courseId: courseId,
                 moduleId: moduleId,
@@ -139,7 +139,7 @@ export function EditLessonSheet({ lesson, moduleId, courseId, trigger }: EditLes
               <TabsContent value="settings" className="space-y-4 p-1">
                 <FormField
                   control={form.control}
-                  name="name"
+                  name="title"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Title</FormLabel>

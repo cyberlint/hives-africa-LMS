@@ -22,116 +22,111 @@ const Home = async () => {
 
   const categories: Category[] = [
     {
-      name: "Label",
+      name: "Agentic AI",
       icon: "/assets/categories/label-category.png",
       color: "#EBEBFF",
       numberOfCourses: "63,476",
     },
     {
-      name: "Business",
+      name: "Large Language Models (LLMs)",
       icon: "/assets/categories/business-category.png",
       color: "#E1F7E3",
       numberOfCourses: "52,822",
     },
     {
-      name: "Finance & Accounting",
+      name: "Business Intelligence",
       icon: "/assets/categories/finance-category.png",
       color: "#FFF2E5",
       numberOfCourses: "33,841",
     },
     {
-      name: "IT & Software",
-      icon: "/assets/categories/software-category.png",
-      color: "#FFF0F0",
-      numberOfCourses: "22,649",
-    },
-    {
-      name: "Personal Development",
+      name: "Data Analytics",
       icon: "/assets/categories/personalDev-category.png",
       color: "#FFFFFF",
       numberOfCourses: "20,126",
     },
     {
-      name: "Office Productivity",
+      name: "Data Engineering",
       icon: "/assets/categories/officeProd-category.png",
       color: "#F5F7FA",
       numberOfCourses: "13,932",
     },
     {
-      name: "Marketing",
-      icon: "/assets/categories/marketing-category.png",
-      color: "#EBEBFF",
-      numberOfCourses: "12,068",
-    },
-    {
-      name: "Photography & Video",
+      name: "Python Programming",
       icon: "/assets/categories/photography-category.png",
       color: "#F5F7FA",
       numberOfCourses: "6,196",
-    },
-    {
-      name: "Lifestyle",
-      icon: "/assets/categories/lifestyle-category.png",
-      color: "#FFF2E5",
-      numberOfCourses: "2,736",
-    },
-    {
-      name: "Design",
-      icon: "/assets/categories/design-category.png",
-      color: "#FFEEE8",
-      numberOfCourses: "2,600",
-    },
-    {
-      name: "Health & Fitness",
-      icon: "/assets/categories/health-category.png",
-      color: "#E1F7E3",
-      numberOfCourses: "1,678",
-    },
-    {
-      name: "Music",
-      icon: "/assets/categories/music-category.png",
-      color: "#FFF2E5",
-      numberOfCourses: "959",
     },
   ];
 
   return (
     <main className="-mb-16">
-      <section className="flex flex-col lg:flex-row justify-between items-center gap-x-4 gap-y-12 bg-[linear-gradient(5.92deg,_#F9FAFB_6.98%,_#FEFEFF_95.46%)] dark:bg-[linear-gradient(5.92deg,_#1d2026_6.98%,_#2a2f3a_95.46%)] px-4 md:px-16 py-8 lg:py-4 lg:pr-0 lg:pl-16 xl:pl-36 w-full transition-colors duration-300">
-        <div className="text-center lg:text-start space-y-4 w-full lg:w-[45%]">
-          <h3 className="text-[38px] md:text-5xl text-[#303030] dark:text-gray-100 font-bold leading-12 md:leading-14">
-            Learn with experts anytime, anywhere.
-          </h3>
-          <p className="text-sm md:text-base text-[#303030] dark:text-gray-300 leading-6">
-            Join the next generation of African data leaders. Learn in-demand
-            tech skills through culturally relevant content tailored for your
-            journey.
-          </p>
-          <Link
-            href="/auth?mode=signup"
-            className="bg-yellow text-white text-xs md:text-sm font-medium px-6 py-3 cursor-pointer hover:bg-yellow/90 transition inline-block rounded"
-          >
-            Get Started for Free
-          </Link>
-        </div>
+      
+        {/* HERO SECTION */}
+      <section 
+  className="relative w-full min-h-162.5 md:min-h-195 overflow-hidden pb-8 md:pb-0"
+>
+  
+  {/* Content Wrapper (Two Columns: Text on Left, Image on Right) */}
+  <div 
+    className="relative z-10 w-full mx-auto px-4 md:px-16 pt-16 md:pt-20 lg:flex lg:flex-row lg:items-start lg:justify-between h-full"
+  >
+    
+    {/* ===== LEFT COLUMN: Text Content Container ===== */}
+    <div className="lg:w-6/12 space-y-5 md:space-y-6 text-center lg:text-left pt-8 md:pt-0">
+      
+      {/* Title: Real-World AI Skills, Made Simple */}
+      <h1 className="text-[40px] md:text-[48px] text-[#0A0A2D] dark:text-white font-bold leading-tight md:leading-tight pt-10">
+        Real-World <span className="text-[#3273DC]">AI</span> Skills, <br className="hidden md:inline"/>Made Simple
+      </h1>
+      
+      {/* Subtitle */}
+      <p className="text-base md:text-lg text-[#323232] dark:text-gray-300 mx-auto lg:mx-0 max-w-xl">
+        Beginner-friendly AI learning designed for Africans. Hands-on projects, peer support, and real-world application.
+      </p>
+      
+      {/* CTA Button */}
+      <div className="flex flex-col items-center lg:items-start space-y-3 pt-4">
+        <Link
+          href="/signup"
+          className="bg-[#FCAE1A] text-white text-base font-semibold px-12 py-4 cursor-pointer hover:bg-[#FCAE1A]/90 transition inline-block rounded-lg shadow-xl hover:shadow-2xl"
+        >
+          Start Learning Now
+        </Link>
+        <p className="text-xs text-[#7B7B7B] dark:text-gray-400 font-medium">
+          Backed by industry mentors
+        </p>
+      </div>
+    </div>
+    
+    {/* ===== RIGHT COLUMN: Image Container ===== */}
+    <div className="lg:w-6/12 mt-5 lg:mt-0 flex justify-center items-start lg:justify-end"> 
+      
+      <div className="relative w-full h-[25rem] md:h-[31.25rem] lg:h-[37.5rem] animate-bounce-slow">
+        <Image
+          src={"/assets/NextHive Hero.png"} 
+          alt="Hero Illustration: Concentric circles and feature blocks"
+          layout="fill"
+          objectFit="contain"
+          priority
+          className="transition-opacity duration-500"
+          quality={90}
+        />
+      </div>
+    </div>
+    
+  </div>
+</section>
 
-        <div className="flex items-center w-full lg:w-[55%]">
-          <Image
-            src={"/assets/home-hero-image.png"}
-            alt="Hero Image"
-            width={400}
-            height={400}
-            className="object-contain w-full"
-          />
-        </div>
-      </section>
+      {/* END OF HERO SECTION */}
 
-      <section className="space-y-12 px-4 md:px-16 xl:px-36 py-16 lg:py-20 xl:py-24 bg-white dark:bg-[#1d2026] transition-colors duration-300">
+      <section className="space-y-12 px-4 md:px-16 xl:px-36 py-16 lg:py-12 xl:py-16 bg-white dark:bg-[#1d2026] transition-colors duration-300">
         <h4 className="text-center text-[32px] md:text-4xl leading-10 text-darkBlue-300 dark:text-gray-100 font-semibold">
           Browse Top Category
         </h4>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        
+        {/* Categories Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
           {categories.map((category, index) => (
             <div
               key={index}
@@ -144,24 +139,24 @@ const Home = async () => {
                 background: category.color,
               }}
             >
-                <Link href={`/course?category=${encodeURIComponent(category.name)}`} className="w-full flex justify-between items-center gap-2">
-                  <div className="flex justify-center items-center w-[30%]">
-                    <Image
-                      src={category.icon}
-                      alt="Category Icon"
-                      width={60}
-                      height={60}
-                      className="object-cover"
-                    />
-                  </div>
+              <Link href={`/course?category=${encodeURIComponent(category.name)}`} className="w-full flex justify-between items-center gap-2">
+                <div className="flex justify-center items-center w-[30%]">
+                  <Image
+                    src={category.icon}
+                    alt="Category Icon"
+                    width={60}
+                    height={60}
+                    className="object-cover"
+                  />
+                </div>
 
-                  <div className="flex flex-col gap-2 w-[70%]">
-                    <p className="text-sm font-medium text-gray-900">{category.name}</p>
-                    <p className="text-xs text-[#6E7485]">
-                      {category.numberOfCourses} Courses
-                    </p>
-                  </div>
-                </Link>
+                <div className="flex flex-col gap-2 w-[70%]">
+                  <p className="text-sm font-medium text-gray-900">{category.name}</p>
+                  <p className="text-xs text-[#6E7485]">
+                    {category.numberOfCourses} Courses
+                  </p>
+                </div>
+              </Link>
             </div>
           ))}
         </div>
@@ -170,7 +165,7 @@ const Home = async () => {
           We have more category & subcategory.{" "}
           <span className="text-yellow cursor-pointer hover:underline">
             <Link href="/course">
-            Browse All →
+              Browse All →
             </Link>
           </span>
         </p>
@@ -287,12 +282,11 @@ const Home = async () => {
       <section className="flex flex-col lg:flex-row justify-between items-center gap-8 bg-white dark:bg-[#1d2026] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-35 w-full transition-colors duration-300">
         <div className="space-y-4 w-full lg:w-[30%]">
           <p className="font-semibold text-2xl text-darkBlue-300 dark:text-gray-100">
-            Hive Africa, Trusted companies
+            Level up in Tech with NextHive!
           </p>
 
           <p className="text-xs text-[#6E7485] dark:text-gray-400 w-4/5">
-            Nullam egestas tellus at enim ornare tristique. Class aptent taciti
-            sociosqu ad litora torquent per conubia nostra.
+            NextHive is the leading pan-African, peer-driven tech school built for the AI era. If you've ever felt stuck or bored navigating a new tech field alone, NextHive is where you belong. Learn at your own pace while tapping into the energy of community, so you can build real skills faster.
           </p>
         </div>
 

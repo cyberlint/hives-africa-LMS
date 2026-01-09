@@ -91,7 +91,7 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
               </h1>
               {lecture.description && (
                 <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                  <RichTextRenderer content={lecture.description} className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-400" />
+                  <RichTextRenderer contentJsonString={lecture.description} className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-400" />
                 </div>
               )}
             </div>
@@ -192,7 +192,7 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
             </h1>
             {lecture.description && (
               <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                <RichTextRenderer content={lecture.description} className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-400" />
+                <RichTextRenderer contentJsonString={lecture.description} className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-400" />
               </div>
             )}
           </div>

@@ -1,6 +1,5 @@
 import type { CourseData, Lecture } from '@/types/course';
 
-// Enhanced course data with comprehensive content
 const allLectures: Lecture[] = [
   // Section 1: Introduction & Getting Started
   {

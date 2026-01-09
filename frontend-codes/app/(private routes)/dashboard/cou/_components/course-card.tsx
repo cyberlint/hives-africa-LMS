@@ -11,7 +11,7 @@ interface CourseCardProps {
   imageUrl: string
 }
 
-export function CourseCard({ title, category, duration, level, provider, badgeText, imageUrl }: CourseCardProps) {
+export function CourseCard({ title, category, duration, provider, badgeText, imageUrl }: CourseCardProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer group">
       <div className="relative">

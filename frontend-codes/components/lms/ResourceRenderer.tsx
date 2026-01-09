@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, CheckCircle, FileText, ExternalLink, Folder } from 'lucide-react';
+import { CheckCircle, FileText, ExternalLink, Folder } from 'lucide-react';
 import type { Lecture } from '@/types/course';
 import { RichTextRenderer } from './RichTextRenderer';
 

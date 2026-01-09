@@ -1,13 +1,10 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-// import { Header } from "@/components/header"
-// import { Navigation } from "@/components/navigation"
 import { Sidebar } from "./_components/sidebar"
 import { CourseGrid } from "./_components/course-grid"
 import { CourseList } from "./_components/course-list"
 import { Pagination } from "./_components/pagination"
-// import { Footer } from "@/components/footer"
 
 import { MobileFilters } from "./_components/mobile-filters"
 import { Grid3X3, List, Search, Loader } from "lucide-react"

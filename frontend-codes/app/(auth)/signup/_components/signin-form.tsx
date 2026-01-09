@@ -22,7 +22,7 @@ import {
 import { authClient } from "@/lib/auth-client"
 
 const signupSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  name: z.string().min(3, "Name must be at least 3 characters"),
   email: z.string().email("Invalid email address"),
   password: z
     .string()
@@ -41,7 +41,6 @@ type SignupFormData = z.infer<typeof signupSchema>
 function SignupForm() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<SignupFormData>({

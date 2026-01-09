@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
-import { tokenStorage, userStorage, getRedirectPath, isProtectedRoute } from '@/lib/utils'
+import { tokenStorage, userStorage, getRedirectPath } from '@/lib/utils'
 import { toast } from 'sonner'
 import { Loader } from 'lucide-react'
 

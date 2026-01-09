@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { Bell, Search, ShoppingCart, ChevronDown, Sun, Moon } from "lucide-react"
+import { Calendar, Search, ShoppingCart, ChevronDown, Sun, Moon, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useDashboard } from "@/app/(private routes)/dashboard/studentContext"
 import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
@@ -122,56 +121,16 @@ export default function Header() {
             </Link> */}
             {/* Notifications */}
 
+            {/* Events */}
+            <Link href="/events">
+            <Button variant="default" className="flex items-center space-x-2 text-sm font-medium">
+              <Users size={20} />
+              <span>Events</span>
+            </Button>
+          </Link>
+
                {/* Theme Toggle */}
             <ThemeToggle />
-{/* 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="relative hover:bg-gray-100 dark:hover:bg-[#0a0f19] transition-colors"
-                  aria-label="View notifications"
-                >
-                  <Bell className="h-5 w-5" />
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs">
-                    3
-                  </Badge>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80 bg-white dark:bg-[#1d2026] border-gray-200 dark:border-[#2a3547]">
-                <div className="p-4 border-b border-gray-200 dark:border-[#2a3547]">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">Notifications</h3>
-                </div>
-                <DropdownMenuItem
-                  className="p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#0a0f19] text-gray-900 dark:text-gray-300 transition-colors"
-                  onClick={() => handleNotificationClick("course-available")}
-                >
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">New course available</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Advanced React Patterns is now live</p>
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#0a0f19] text-gray-900 dark:text-gray-300 transition-colors"
-                  onClick={() => handleNotificationClick("course-completed")}
-                >
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">Course completed</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Congratulations on finishing UI/UX Design</p>
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#0a0f19] text-gray-900 dark:text-gray-300 transition-colors"
-                  onClick={() => handleNotificationClick("price-drop")}
-                >
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">Price drop alert</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Python for Data Science is now 50% off</p>
-                  </div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu> */}
 
             {/* Shopping Cart */}
             <Button

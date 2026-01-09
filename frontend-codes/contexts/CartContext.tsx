@@ -7,7 +7,7 @@ export interface CartCourseItem {
   id: string; // course id
   title: string;
   slug?: string;
-  thumbnail?: string;
+  fileKey?: string;
   unitPrice: number; // numeric price (kobo not assumed)
   quantity: number;
   isFree?: boolean;

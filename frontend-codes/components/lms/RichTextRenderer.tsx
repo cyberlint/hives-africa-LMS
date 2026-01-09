@@ -1,67 +1,58 @@
-"use client";
-
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
+import React, { useMemo } from 'react'; // useMemo is key here
+import { useEditor, EditorContent, JSONContent } from '@tiptap/react'; 
+import StarterKit from '@tiptap/starter-kit';
 import textAlign from "@tiptap/extension-text-align";
-import { useEffect, useState } from "react";
 
 interface RichTextRendererProps {
-  content: string; // JSON string or raw text
+  // Pass the raw JSON string from the database
+  contentJsonString: string; 
   className?: string;
 }
 
-export function RichTextRenderer({ content, className }: RichTextRendererProps) {
-  const [mounted, setMounted] = useState(false);
+export const RichTextRenderer: React.FC<RichTextRendererProps> = ({ contentJsonString, className }) => {
+    // 1. Parsing logic moved BEFORE the Hook call, but the early return is gone.
+    // 2. We use useMemo to only parse when the string changes.
+    const parsedContent: JSONContent | undefined = useMemo(() => {
+        try {
+            return JSON.parse(contentJsonString) as JSONContent;
+        } catch (e) {
+            console.warn("Content is not valid JSON.", e);
+            // On failure, return undefined, which we check later.
+            return undefined; 
+        }
+    }, [contentJsonString]);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      textAlign.configure({
-        types: ['heading', 'paragraph']
-      }),
-    ],
-    content: (() => {
-      if (!content) return "";
-      if (typeof content === 'object') return content;
-      try {
-        const parsed = JSON.parse(content);
-        return typeof parsed === 'object' ? parsed : content;
-      } catch {
-        return content;
-      }
-    })(),
-    editable: false,
-    immediatelyRender: false,
-    editorProps: {
-      attributes: {
-        class: className || "focus:outline-none prose prose-sm sm:prose lg:prose-lg dark:prose-invert max-w-none",
-      },
-    },
-  });
+    // 3. The Hook is called UNCONDITIONALLY at the top level.
+    const editor = useEditor({
+      editable: false, 
+      content: parsedContent, // Pass the parsed content
+      extensions: [
+        StarterKit.configure({
+          undoRedo: { depth: 100, newGroupDelay: 500 },
+        }),
+        textAlign.configure({
+          types: ['heading', 'paragraph']
+        }),
+      ],
+      immediatelyRender: false,
+      // If parsedContent is undefined, Tiptap will initialize with default empty content.
+    }, [parsedContent]); // Add parsedContent as a dependency for the editor to update if content changes.
 
-  // Re-sync content if it changes
-  useEffect(() => {
-    if (editor && content) {
-      if (typeof content === 'object') {
-          editor.commands.setContent(content);
-          return;
-      }
-      try {
-        const parsedContent = JSON.parse(content);
-        editor.commands.setContent(parsedContent);
-      } catch {
-        editor.commands.setContent(content);
-      }
+
+    // 4. Handle the fallback logic *after* all Hooks have been called.
+    if (!parsedContent) {
+        // Fallback rendering for invalid JSON
+        return <p className={className}>{contentJsonString}</p>;
     }
-  }, [editor, content]);
 
-  if (!mounted || !editor) {
-    return null;
-  }
 
-  return <EditorContent editor={editor} />;
-}
+    if (!editor) {
+      return <span className={`text-gray-500 ${className}`}>Loading content...</span>;
+    }
+
+    // The EditorContent component renders the parsed JSON content as HTML/React elements.
+    return (
+        <EditorContent editor={editor} className={className}/>
+    );
+};

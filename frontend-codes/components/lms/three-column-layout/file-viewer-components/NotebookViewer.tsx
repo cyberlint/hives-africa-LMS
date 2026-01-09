@@ -31,7 +31,7 @@ export default function NotebookViewer({ notebookUrl, theme = 'JupyterLab Dark' 
     >
       <iframe
         src={finalIframeUrl}
-        title={`Interactive JupyterLite Notebook: ${notebookUrl}`}
+        title={`Interactive Notebook: ${notebookUrl}`}
         style={{ width: '100%', height: '100%', border: 'none' }}
         />
     </div>

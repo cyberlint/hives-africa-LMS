@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Star } from "lucide-react";
 import { CourseListItem } from "@/services/courses";
 import { constructUrl } from "@/lib/construct-url";
+import Link from "next/link";
 
 interface BestSellingCoursesProps {
   courses: CourseListItem[];
@@ -12,59 +13,72 @@ interface BestSellingCoursesProps {
 const BestSellingCourses = ({ courses }: BestSellingCoursesProps) => {
   return (
     <>
-      <h4 className="text-center text-[32px] leading-10 text-darkBlue-300 dark:text-gray-100 font-semibold">
+      <h4 className="text-center text-[32px] leading-10 font-semibold text-darkBlue-300 dark:text-gray-100">
         Best Selling Courses
       </h4>
 
-      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.slice(0, 8).map((course) => (
-            <div key={course.id} className="w-full dark:border cursor-pointer hover:shadow-lg dark:hover:shadow-lg/50 transition-shadow">
-              <div className="w-full">
-                <Image
-                  src={course?.thumbnail ? constructUrl(course?.thumbnail) : "/assets/courses/course-img1.png"}
-                  alt={course.title}
-                  width={400}
-                  height={300}
-                  className="object-cover w-full h-48"
-                />
-              </div>
+          <article
+            key={course.id}
+            className="group flex flex-col overflow-hidden rounded-xl bg-white dark:bg-[#2a2f3a]
+              shadow-[0_8px_24px_rgba(0,0,0,0.04)]
+              transition-all duration-300
+              hover:-translate-y-0.5
+              hover:shadow-[0_16px_40px_rgba(0,0,0,0.06)]"
+          >
+            {/* Image */}
+            <div className="relative h-50 bg-muted/40">
+              <Image
+                src={
+                  course.thumbnail
+                    ? constructUrl(course.thumbnail)
+                    : "/assets/courses/course-img1.png"
+                }
+                alt={course.title}
+                fill
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+              />
 
-              <div className="bg-white dark:bg-[#2a2f3a] w-full transition-colors duration-300">
-                <div className="space-y-4 p-3">
-                  <div className="flex flex-wrap justify-between items-center gap-1">
-                    <p
-                      className="uppercase text-[8px] font-semibold p-1 bg-[#FFEEE8] dark:bg-orange/20 text-[#993D20] dark:text-orange"
-                    >
-                      {course.category?.name || "General"}
-                    </p>
+              {/* Category badge */}
+              <span className="absolute top-3 left-3 rounded-full bg-white/90 dark:bg-black/60 px-3 py-1 text-[10px] font-semibold backdrop-blur">
+                {course.category?.name || "General"}
+              </span>
 
-                    <p className="text-xs md:text-sm font-semibold text-orange dark:text-orange">
-                      ₦{course.current_price.toLocaleString()}
-                    </p>
-                  </div>
-
-                  <p className="text-[10px] sm:text-xs font-semibold text-darkBlue-300 dark:text-gray-100 line-clamp-2">
-                    {course.title}
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap justify-between items-center gap-y-1 border-t border-[#E9EAF0] dark:border-[#404854] text-[#4E5566] dark:text-gray-400 text-[10px] sm:text-xs p-3 w-full">
-                  <p className="flex items-center gap-1 font-semibold text-darkBlue-300 dark:text-gray-100">
-                    <span>
-                      <Star fill="#FD8E1F" strokeWidth={0} size={16} />
-                    </span>
-                    {course.average_rating.toFixed(1)}
-                  </p>
-
-                  <p className="font-semibold text-darkBlue-300 dark:text-gray-100">
-                    {course.total_enrollments.toLocaleString()}{" "}
-                    <span className="font-normal text-[#8C94A3] dark:text-gray-500">students</span>
-                  </p>
-                </div>
-              </div>
+              {/* Price badge */}
+              <span className="absolute top-3 right-3 rounded-full bg-white/90 dark:bg-black/60 px-3 py-1 text-xs font-semibold text-orange backdrop-blur">
+                ₦{course.current_price.toLocaleString()}
+              </span>
             </div>
-          ))
-        }
+
+            {/* Content */}
+            <div className="flex flex-1 flex-col gap-3 p-5">
+              <h3 className="text-sm font-semibold leading-snug text-darkBlue-300 dark:text-gray-100 transition-colors group-hover:text-orange line-clamp-2">
+                {course.title}
+              </h3>
+
+              {/* Meta */}
+              <div className="mt-auto flex items-center justify-between text-xs">
+                <span className="flex items-center gap-1 font-semibold text-darkBlue-300 dark:text-gray-100">
+                  <Star fill="#FD8E1F" strokeWidth={0} size={14} />
+                  {course.average_rating.toFixed(1)}
+                </span>
+
+                <span className="text-[#8C94A3] dark:text-gray-400">
+                  {course.total_enrollments.toLocaleString()} students
+                </span>
+              </div>
+
+              {/* CTA */}
+              <Link
+                href={`/courses/${course.id}`}
+                className="pt-3 text-sm font-semibold text-orange inline-flex items-center gap-1"
+              >
+                View course →
+              </Link>
+            </div>
+          </article>
+        ))}
       </div>
     </>
   );

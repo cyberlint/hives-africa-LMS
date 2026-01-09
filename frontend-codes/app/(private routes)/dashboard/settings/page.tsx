@@ -628,7 +628,7 @@ export default function AccountSettings() {
                           <div className="flex flex-col items-center space-y-4">
                             {previewUrl ? (
                               <div className="relative">
-                                <img
+                                <Image
                                   src={previewUrl || "/ai.png"}
                                   alt="Preview"
                                   className="w-32 h-32 rounded-full object-cover"

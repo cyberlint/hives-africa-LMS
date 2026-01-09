@@ -35,9 +35,9 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
               {completedLectures} of {course.totalLectures} lectures completed
             </div>
             <div className="text-xs text-gray-400 mt-1">
-              {Math.round(completionPercentage)}% complete
+            {completionPercentage.toFixed(1)}% complete
             </div>
-          </div>
+            </div>
           
           <div className="relative w-16 h-16">
             <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 64 64">

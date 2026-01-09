@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { RichTextRenderer } from "@/components/lms/RichTextRenderer"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   Search,
@@ -179,7 +180,7 @@ export default function ViewAll() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#fdb606] mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-[#fdb606]"></div>
           <p className="text-gray-600">Loading courses...</p>
         </div>
       </div>
@@ -235,7 +236,7 @@ export default function ViewAll() {
   }
 
   const CourseCard = ({ course }: { course: Course }) => (
-    <Card className="group hover:shadow-lg transition-all duration-300 border-gray-200 hover:border-yellow-500/30">
+    <Card className="group border-gray-200 transition-all duration-300 hover:border-yellow-500/30 hover:shadow-lg">
       <CardHeader className="p-0">
         <div className="relative overflow-hidden rounded-t-lg">
           <Image
@@ -243,7 +244,7 @@ export default function ViewAll() {
             alt={course.title}
             width={300}
             height={200}
-            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+            className="h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute top-2 right-2">
             <Badge variant="secondary" className="bg-white/90 text-gray-700">
@@ -260,7 +261,7 @@ export default function ViewAll() {
       <CardContent className="p-4">
         <div className="space-y-3">
           <div>
-            <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-[#fdb606] transition-colors">
+            <h3 className="line-clamp-2 font-semibold text-lg transition-colors group-hover:text-[#fdb606]">
               {course.title}
             </h3>
             <p className="text-sm text-gray-600">{course.instructor}</p>
@@ -283,7 +284,9 @@ export default function ViewAll() {
             </div>
           </div>
 
-          <p className="text-sm text-gray-600 line-clamp-2">{course.description}</p>
+          <p className="line-clamp-2 text-sm text-gray-600">
+            <RichTextRenderer contentJsonString={course.description} className="prose dark:prose-invert" />
+            </p>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -347,7 +350,7 @@ export default function ViewAll() {
   )
 
   const CourseListItem = ({ course }: { course: Course }) => (
-    <Card className="hover:shadow-md transition-shadow duration-200">
+    <Card className="transition-shadow duration-200 hover:shadow-md">
       <CardContent className="p-4">
         <div className="flex items-center space-x-4">
           <Image
@@ -355,12 +358,12 @@ export default function ViewAll() {
             alt={course.title}
             width={100}
             height={100}
-            className="w-24 h-16 object-cover rounded flex-shrink-0"
+            className="h-16 w-24 flex-shrink-0 rounded object-cover"
           />
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <h3 className="font-semibold text-lg truncate">{course.title}</h3>
+                <h3 className="truncate font-semibold text-lg">{course.title}</h3>
                 <p className="text-sm text-gray-600">{course.instructor}</p>
                 <div className="flex items-center space-x-4 mt-1 text-sm text-gray-500">
                   <div className="flex items-center">
@@ -430,7 +433,7 @@ export default function ViewAll() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
@@ -480,10 +483,10 @@ export default function ViewAll() {
       {/* Filters */}
       <Card className={cn("transition-all duration-300", showFilters || "hidden md:block")}>
         <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-6">
             <div className="lg:col-span-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                 <Input
                   placeholder="Search courses..."
                   value={searchQuery}
@@ -546,7 +549,7 @@ export default function ViewAll() {
 
         <TabsContent value={activeTab} className="mt-6">
           {/* Results */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <p className="text-sm text-gray-600">
               Showing {filteredAndSortedCourses.length} of {mockCourses.length} courses
             </p>
@@ -562,7 +565,7 @@ export default function ViewAll() {
           {/* Course Grid/List */}
           {filteredAndSortedCourses.length > 0 ? (
             <div
-              className={cn(viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4")}
+              className={cn(viewMode === "grid" ? "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3" : "space-y-4")}
             >
               {filteredAndSortedCourses.map((course) =>
                 viewMode === "grid" ? (
@@ -575,9 +578,9 @@ export default function ViewAll() {
           ) : (
             <Card>
               <CardContent className="p-8 text-center">
-                <Eye className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No courses found</h3>
-                <p className="text-gray-600 mb-4">Try adjusting your filters or search terms</p>
+                <Eye className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                <h3 className="mb-2 font-semibold text-lg text-gray-900">No courses found</h3>
+                <p className="mb-4 text-gray-600">Try adjusting your filters or search terms</p>
                 <Button onClick={clearFilters}>Clear all filters</Button>
               </CardContent>
             </Card>

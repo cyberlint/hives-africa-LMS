@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -31,30 +25,36 @@ model User {
   userAchievements UserAchievement[]
   wishlist         Wishlist[]
 
-  role       String?
-  banned     Boolean?  @default(false)
-  banReason  String?
-  banExpires DateTime?
-  payments   Payment[]
+  role         String?
+  banned       Boolean?       @default(false)
+  banReason    String?
+  banExpires   DateTime?
+  payments     Payment[]
+  CourseReview CourseReview[]
+  events       Event[]
 
   @@unique([email])
   @@map("user")
 }
 
+// enum UserType {
+//   learner
+//   instructor
+//   superadmin
+// }
+
 model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  id             String   @id
+  expiresAt      DateTime
+  token          String   @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  userId         String
   impersonatedBy String?
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@map("session")
 }
 
@@ -63,7 +63,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -73,6 +72,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("account")
 }
@@ -89,8 +89,7 @@ model Verification {
 }
 
 model Course {
-  id String @id @default(uuid())
-
+  id               String       @id @default(uuid())
   title            String
   description      String
   fileKey          String
@@ -102,16 +101,17 @@ model Course {
   category         String
   shortdescription String
   slug             String       @unique
-  status           CourseStatus @default(Draft) // draft, inreview, published, archived
+  status           CourseStatus @default(Draft)
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @default(now()) @updatedAt
-  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId           String
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   module        Module[]
   enrollments   Enrollment[]
   payments      Payment[]
   wishlistItems Wishlist[]
+  reviews       CourseReview[]
 }
 
 enum CourseLevel {
@@ -127,42 +127,48 @@ enum CourseStatus {
   Archived
 }
 
-model Module {
-  id String @id @default(uuid())
-
-  title    String
-  position Int
-
+model CourseReview {
+  id        String   @id @default(uuid())
+  rating    Int
+  comment   String?
+  userId    String
+  courseId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
-  Course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  courseId String
+  @@unique([userId, courseId])
+}
 
-  lessons Lesson[]
+model Module {
+  id        String   @id @default(uuid())
+  title     String
+  position  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  courseId  String
+  lessons   Lesson[]
+  Course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
 model Lesson {
-  id String @id @default(uuid())
-
-  title        String
-  description  String?
-  thumbnailKey String?
-  videoKey     String?
-  position     Int
-  type         LessonType @default(Video) // video, document, quiz, resource
-  content      String? // For content text
-  duration     Int? // Duration in seconds for videos
-  documentKey  String?
-  quizConfig   Json?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  Module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  moduleId String
-
+  id             String           @id @default(uuid())
+  title          String
+  description    String?
+  thumbnailKey   String?
+  videoKey       String?
+  position       Int
+  type           LessonType       @default(Video)
+  content        String?
+  duration       Int?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  moduleId       String
+  documentKey    String?
+  quizConfig     Json?
   attachments    Attachment[]
+  Module         Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   lessonProgress LessonProgress[]
 }
 
@@ -175,44 +181,35 @@ enum LessonType {
 }
 
 model Attachment {
-  id String @id @default(uuid())
-
+  id          String   @id @default(uuid())
   title       String
   description String?
-  type        String // document, quiz, video, etc
+  type        String
   url         String
   fileSize    String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  Lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  lessonId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lessonId    String
+  Lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 }
 
 model Enrollment {
-  id String @id @default(uuid())
-
-  enrolledAt  DateTime  @default(now())
-  completedAt DateTime?
-  progress    Float     @default(0) // Percentage 0-100
-
-  User     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   String
-  Course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  courseId String
-
-  // Payment tracking
+  id               String        @id @default(uuid())
+  enrolledAt       DateTime      @default(now())
+  completedAt      DateTime?
+  progress         Float         @default(0)
+  userId           String
+  courseId         String
   paymentReference String?
   paymentStatus    PaymentStatus @default(Pending)
   paymentAmount    Float?
   paidAt           DateTime?
-
-  payment   Payment? @relation(fields: [paymentId], references: [id])
-  paymentId String?  @unique
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  paymentId        String?       @unique
+  Course           Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  payment          Payment?      @relation(fields: [paymentId], references: [id])
+  User             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
   @@index([userId])
@@ -227,21 +224,17 @@ enum PaymentStatus {
 }
 
 model LessonProgress {
-  id String @id @default(uuid())
-
+  id          String    @id @default(uuid())
   completed   Boolean   @default(false)
   completedAt DateTime?
-  currentTime Int? // Current playback time in seconds for videos
-
-  User     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   String
-  Lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  lessonId String
-
-  score Float?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  currentTime Int?
+  userId      String
+  lessonId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  score       Float?
+  Lesson      Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
   @@index([userId])
@@ -249,24 +242,20 @@ model LessonProgress {
 }
 
 model Payment {
-  id String @id @default(uuid())
-
+  id            String        @id @default(uuid())
   reference     String        @unique
   amount        Float
   currency      String        @default("NGN")
   status        PaymentStatus @default(Pending)
   paymentMethod String?
   metadata      Json?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   String
-  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  courseId String
-
-  enrollment Enrollment?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  userId        String
+  courseId      String
+  enrollment    Enrollment?
+  course        Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([courseId])
@@ -312,4 +301,53 @@ model Wishlist {
   createdAt DateTime @default(now())
 
   @@unique([userId, courseId])
+}
+
+
+model Event {
+  id                String   @id @default(uuid())
+  title             String
+  shortdescription  String
+  description       String
+  startdate         DateTime
+  enddate           DateTime
+  imageKey          String?
+  venue             EventVenue @default(NextHive)
+  url               String?
+  eventCategory     EventCategory @default(Tutorial)
+  isOnline          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum EventVenue {
+  NextHive
+  GoogleMeet
+  Zoom
+  MicrosoftTeams
+  Offline
+  Hybrid
+}
+
+enum EventCategory {
+  Hackathon
+  Webinar
+  BrainstormingSession
+  NetworkingEvent
+  PanelDiscussion
+  QandASession
+  Workshop
+  Meetup
+  Tutorial
+  Lecture
+  StudyGroup
+  Roundtable
+  DemoDay
+  OfficeHours
+  Competition
+  FiresideChat
+  CertificationCourse
+  Bootcamp
 }

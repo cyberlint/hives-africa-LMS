@@ -8,7 +8,7 @@ import { S3 } from '@/lib/S3Client';
 import arcjet, { detectBot, fixedWindow } from '@/lib/arcjet';
 import { requireAdmin } from '@/lib/require-admin';
 
-export const fileUploadSchema = z.object({
+const fileUploadSchema = z.object({
     fileName: z.string().min(1, { message: "File name is required" }),
     contentType: z.string().min(1, { message: "Content type is required" }),
     size: z.number().min(1, { message: "Size is required" }),
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
 
         const { fileName, contentType, size } = validation.data
 
-        const uniqueKey = `${uuidv4()}-${fileName}}`
+        const uniqueKey = `${uuidv4()}-${fileName}`
 
         const command = new PutObjectCommand({
             Bucket: env.NEXT_PUBLIC_S3_BUCKET_NAME_IMAGES,
