@@ -41,6 +41,7 @@ type SignupFormData = z.infer<typeof signupSchema>
 function SignupForm() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<SignupFormData>({
