@@ -14,6 +14,9 @@ import { tryCatch } from "@/hooks/try-catch";
 import { createLesson } from "../actions";
 import { toast } from "sonner";
 
+// Use a constant for the form ID to ensure it's correct and unique
+const LESSON_FORM_ID = "lesson-creation-form";
+
 export function NewLessonModal({ courseId, moduleId }: {
     courseId: string;
     moduleId: string;
@@ -24,7 +27,7 @@ export function NewLessonModal({ courseId, moduleId }: {
   const form = useForm<z.infer<typeof lessonSchema>>({
     resolver: zodResolver(lessonSchema) as unknown as Resolver<z.infer<typeof lessonSchema>>,
     defaultValues: {
-      name: "",
+      title: "",
       courseId: courseId,
       moduleId: moduleId,
     },
@@ -32,6 +35,9 @@ export function NewLessonModal({ courseId, moduleId }: {
 
   
   async function onSubmit(values: LessonSchemaType) {
+    // Confirmation log
+    console.log("Form submission successfully handled via form attribute!", values); 
+    
     startTransition(async () => {
       const { data: result, error } = await tryCatch(createLesson(values));
 
@@ -50,9 +56,7 @@ export function NewLessonModal({ courseId, moduleId }: {
     });
   }
 
-  // stays outside after fix
   function handleOpenChange(open: boolean) {
-
     if (!open) {
       form.reset();
     }
@@ -69,16 +73,19 @@ export function NewLessonModal({ courseId, moduleId }: {
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Create New Lesson</DialogTitle>
-          <DialogDescription>What would you like to name your lesson?</DialogDescription>
-        </DialogHeader>
-
         <Form {...form}>
-          <form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
+          {/* 1. Assign a unique ID to the main form element */}
+          <form id={LESSON_FORM_ID} onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            
+            <DialogHeader>
+              <DialogTitle>Create New Lesson</DialogTitle>
+              <DialogDescription>What would you like to name your lesson?</DialogDescription>
+            </DialogHeader>
+
+            {/* Form Fields Section */}
             <FormField
               control={form.control}
-              name="name"
+              name="title"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
@@ -89,12 +96,20 @@ export function NewLessonModal({ courseId, moduleId }: {
                 </FormItem>
               )}
             />
+            {/* End Form Fields Section */}
 
             <DialogFooter>
-              <Button disabled={pending} type="submit">
+              <Button 
+                disabled={pending} 
+                type="submit" // Revert to type="submit"
+                // 2. CRITICAL FIX: Use the HTML 'form' attribute to target the form by ID.
+                // This works even if the button is rendered outside the form element via a portal.
+                form={LESSON_FORM_ID} 
+              >
                 {pending ? "Saving..." : "Save Change"}
               </Button>
             </DialogFooter>
+            
           </form>
         </Form>
       </DialogContent>

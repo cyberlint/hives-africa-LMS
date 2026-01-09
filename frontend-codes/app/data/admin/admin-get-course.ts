@@ -15,11 +15,8 @@ export async function adminGetCourse(id: string) {
             title: true,
             description: true,
             fileKey: true,
-            // @ts-ignore
             price: true,
-            // @ts-ignore
             originalPrice: true,
-            // @ts-ignore
             registrationFee: true,
             duration: true,
             level: true,

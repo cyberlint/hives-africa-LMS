@@ -516,10 +516,10 @@ export default function Achievements() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Points</CardTitle>
-            <Award className="h-4 w-4 text-[#fdb606]" />
+            <Award className="h-4 w-4 text-[rgb(253,182,6)]" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold text-[#fdb606]">{totalPoints}</div>
+            <div className="text-xl sm:text-2xl font-bold text-[rgb(253,182,6)]">{totalPoints}</div>
             <p className="text-xs text-muted-foreground">Achievement points earned</p>
           </CardContent>
         </Card>
@@ -600,12 +600,12 @@ export default function Achievements() {
                                   isLocked
                                     ? "bg-gray-100"
                                     : achievement.rarity === "legendary"
-                                      ? "bg-gradient-to-r from-yellow-400 to-yellow-600"
+                                      ? "bg-linear-to-r from-yellow-400 to-yellow-600"
                                       : achievement.rarity === "epic"
-                                        ? "bg-gradient-to-r from-purple-400 to-purple-600"
+                                        ? "bg-linear-to-r from-purple-400 to-purple-600"
                                         : achievement.rarity === "rare"
-                                          ? "bg-gradient-to-r from-blue-400 to-blue-600"
-                                          : "bg-[#fdb606]"
+                                          ? "bg-linear-to-r from-blue-400 to-blue-600"
+                                          : "bg-[rgb(253,182,6)]"
                                 }`}
                               >
                                 {isLocked ? (
@@ -638,7 +638,7 @@ export default function Achievements() {
 
                               <div className="flex items-center justify-between pt-2">
                                 <div className="flex items-center space-x-1">
-                                  <Award className="h-4 w-4 text-[#fdb606]" />
+                                  <Award className="h-4 w-4 text-[rgb(253,182,6)]" />
                                   <span className="text-sm font-medium">{achievement.points} pts</span>
                                 </div>
                                 {achievement.unlockedAt && (
@@ -689,8 +689,8 @@ export default function Achievements() {
                           <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                             <span className="font-medium">Points Reward</span>
                             <div className="flex items-center space-x-1">
-                              <Award className="h-5 w-5 text-[#fdb606]" />
-                              <span className="font-bold text-[#fdb606]">{achievement.points}</span>
+                              <Award className="h-5 w-5 text-[rgb(253,182,6)]" />
+                              <span className="font-bold text-[rgb(253,182,6)]">{achievement.points}</span>
                             </div>
                           </div>
 
@@ -782,7 +782,7 @@ export default function Achievements() {
                           </div>
                           <div className="text-right">
                             <div className="flex items-center space-x-1">
-                              <Award className="h-4 w-4 text-[#fdb606]" />
+                              <Award className="h-4 w-4 text-[rgb(253,182,6)]" />
                               <span className="font-medium">{achievement.points}</span>
                             </div>
                             <p className="text-xs text-gray-500">

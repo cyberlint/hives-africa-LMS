@@ -13,7 +13,7 @@ export default function LoginPage() {
                         <Image
             src="/assets/Analytix Hive Logo(transparent).png"
             alt="logo"
-            className="w-[100px]"
+            className="w-25"
             width={100}
             height={100}
           />
@@ -28,7 +28,7 @@ export default function LoginPage() {
         </div>
       </div>
       <div className="relative hidden bg-muted lg:block">
-        <img
+        <Image
           src="/placeholder.svg"
           alt="Image"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"

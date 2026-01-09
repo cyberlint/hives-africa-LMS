@@ -153,18 +153,19 @@ export const moduleSchema = z.object({
 export const lessonTypes = ["Video", "Document", "Quiz", "Resource"] as const;
 
 export const lessonSchema = z.object({
-    firstname: z.string().min(3, "First name must be at least 3 characters."),
-    courseId: z.string().uuid({ message: "Invalid course id" }),
-    moduleId: z.string().uuid({ message: "Invalid module id" }),
-    description: z.string().optional(),
-    thumbnailKey: z.string().optional(),
-    videoKey: z.string().optional(),
-    type: z.enum(lessonTypes).default("Video"),
-    content: z.string().optional(),
-    duration: z.coerce.number().optional(),
-    documentKey: z.string().optional(),
-    quizConfig: z.any().optional(),
+  title: z.string().min(3, "Lesson Title must be at least 3 characters."),
+  courseId: z.string().uuid({ message: "Invalid course id" }),
+  moduleId: z.string().uuid({ message: "Invalid module id" }),
+  description: z.string().optional(),
+  thumbnailKey: z.string().optional(),
+  videoKey: z.string().optional(),
+  type: z.enum(lessonTypes),
+  content: z.string().optional(),
+  duration: z.coerce.number().optional(),
+  documentKey: z.string().optional(),
+  quizConfig: z.any().optional(),
 });
+
 
 
 export const EventSchema = z.object({

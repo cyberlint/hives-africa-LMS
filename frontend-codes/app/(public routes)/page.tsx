@@ -64,54 +64,61 @@ const Home = async () => {
       
         {/* HERO SECTION */}
       <section 
-        className="relative flex justify-start items-start w-full min-h-[600px] md:min-h-[750px] overflow-hidden"
-      >
-        {/* Background Image (NextHive Hero.png) - Covers the entire section */}
+  className="relative w-full min-h-162.5 md:min-h-195 overflow-hidden pb-8 md:pb-0"
+>
+  
+  {/* Content Wrapper (Two Columns: Text on Left, Image on Right) */}
+  <div 
+    className="relative z-10 w-full mx-auto px-4 md:px-16 pt-16 md:pt-20 lg:flex lg:flex-row lg:items-start lg:justify-between h-full"
+  >
+    
+    {/* ===== LEFT COLUMN: Text Content Container ===== */}
+    <div className="lg:w-6/12 space-y-5 md:space-y-6 text-center lg:text-left pt-8 md:pt-0">
+      
+      {/* Title: Real-World AI Skills, Made Simple */}
+      <h1 className="text-[40px] md:text-[48px] text-[#0A0A2D] dark:text-white font-bold leading-tight md:leading-tight pt-10">
+        Real-World <span className="text-[#3273DC]">AI</span> Skills, <br className="hidden md:inline"/>Made Simple
+      </h1>
+      
+      {/* Subtitle */}
+      <p className="text-base md:text-lg text-[#323232] dark:text-gray-300 mx-auto lg:mx-0 max-w-xl">
+        Beginner-friendly AI learning designed for Africans. Hands-on projects, peer support, and real-world application.
+      </p>
+      
+      {/* CTA Button */}
+      <div className="flex flex-col items-center lg:items-start space-y-3 pt-4">
+        <Link
+          href="/signup"
+          className="bg-[#FCAE1A] text-white text-base font-semibold px-12 py-4 cursor-pointer hover:bg-[#FCAE1A]/90 transition inline-block rounded-lg shadow-xl hover:shadow-2xl"
+        >
+          Start Learning Now
+        </Link>
+        <p className="text-xs text-[#7B7B7B] dark:text-gray-400 font-medium">
+          Backed by industry mentors
+        </p>
+      </div>
+    </div>
+    
+    {/* ===== RIGHT COLUMN: Image Container ===== */}
+    <div className="lg:w-6/12 mt-5 lg:mt-0 flex justify-center items-start lg:justify-end"> 
+      
+      <div className="relative w-full h-[25rem] md:h-[31.25rem] lg:h-[37.5rem] animate-bounce-slow">
         <Image
-          src={"/assets/NextHive Hero.png"}
-          alt="Hero Background: Concentric circles and feature blocks"
-          fill
+          src={"/assets/NextHive Hero.png"} 
+          alt="Hero Illustration: Concentric circles and feature blocks"
+          layout="fill"
+          objectFit="contain"
           priority
-          className="object-cover absolute inset-0 z-0 transition-opacity duration-500"
-          quality={80}
+          className="transition-opacity duration-500"
+          quality={90}
         />
-        
-        {/* Content Wrapper (Text and CTA) - Uses the same padding as Navbar/Topbar */}
-        <div className="relative z-10 w-full mx-auto px-4 md:px-16 pt-16 md:pt-20">
-          
-          {/* Text Content Container (Left side of the design) 
-              The max-w-3xl helps in positioning the text accurately over the background
-          */}
-          <div className="space-y-6 md:space-y-8 text-center lg:text-left pt-16 md:pt-20 max-w-3xl">
-            
-            {/* Title: Real-World AI Skills, Made Simple */}
-            <h1 className="text-[48px] md:text-[68px] text-[#0A0A2D] dark:text-white font-bold leading-none md:leading-[1.1]">
-              Real-World <span className="text-[#3273DC]">AI</span> Skills, <br className="hidden md:inline"/>Made Simple
-            </h1>
-            
-            {/* Subtitle */}
-            <p className="text-base md:text-lg text-[#323232] dark:text-gray-300 max-w-xl lg:max-w-2xl mx-auto lg:mx-0">
-              Beginner-friendly AI learning designed for Africans. Hands-on projects, peer support, and real-world application.
-            </p>
-            
-            {/* CTA Button */}
-            <div className="flex flex-col items-center lg:items-start space-y-3 pt-4">
-              <Link
-                href="/signup"
-                className="bg-yellow text-white text-base font-semibold px-12 py-4 cursor-pointer hover:bg-yellow/90 transition inline-block rounded-lg shadow-xl hover:shadow-2xl"
-              >
-                Start Learning Now
-              </Link>
-              <p className="text-xs text-[#7B7B7B] dark:text-gray-400 font-medium">
-                Backed by industry mentors
-              </p>
-            </div>
-          </div>
-          
-        </div>
-      </section>
+      </div>
+    </div>
+    
+  </div>
+</section>
 
-      {/* END OF REVISED HERO SECTION */}
+      {/* END OF HERO SECTION */}
 
       <section className="space-y-12 px-4 md:px-16 xl:px-36 py-16 lg:py-12 xl:py-16 bg-white dark:bg-[#1d2026] transition-colors duration-300">
         <h4 className="text-center text-[32px] md:text-4xl leading-10 text-darkBlue-300 dark:text-gray-100 font-semibold">
@@ -275,12 +282,11 @@ const Home = async () => {
       <section className="flex flex-col lg:flex-row justify-between items-center gap-8 bg-white dark:bg-[#1d2026] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-35 w-full transition-colors duration-300">
         <div className="space-y-4 w-full lg:w-[30%]">
           <p className="font-semibold text-2xl text-darkBlue-300 dark:text-gray-100">
-            Hive Africa, Trusted companies
+            Level up in Tech with NextHive!
           </p>
 
           <p className="text-xs text-[#6E7485] dark:text-gray-400 w-4/5">
-            Nullam egestas tellus at enim ornare tristique. Class aptent taciti
-            sociosqu ad litora torquent per conubia nostra.
+            NextHive is the leading pan-African, peer-driven tech school built for the AI era. If you've ever felt stuck or bored navigating a new tech field alone, NextHive is where you belong. Learn at your own pace while tapping into the energy of community, so you can build real skills faster.
           </p>
         </div>
 
