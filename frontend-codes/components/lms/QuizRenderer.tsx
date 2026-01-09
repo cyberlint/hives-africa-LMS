@@ -18,7 +18,7 @@ export const QuizRenderer: React.FC<QuizRendererProps> = ({
 }) => {
   const handleStartQuiz = () => {
     // Open quiz in new tab/window or handle quiz logic here
-    window.open(`/quiz/${lecture.id}`, '_blank');
+    window.open(`/dashboard/quiz/${lecture.id}`, '_blank');
     // Mark as complete after starting quiz
     onMarkComplete();
   };

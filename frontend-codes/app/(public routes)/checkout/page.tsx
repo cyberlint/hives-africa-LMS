@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { useInitializePayment } from "@/hooks/usePayments";
 import { constructUrl } from "@/lib/construct-url";
-import useCurrentUser from "@/hooks/useCurrentUser";
+import { authClient } from "@/lib/auth-client";
 
 export default function CartCheckoutPage() {
   const { items, removeItem, /* updateQuantity (deprecated single-item mode) */ subtotal, coupon, applyCoupon, removeCoupon, total, loadingCoupon, clearCart } = useCart();
@@ -33,10 +33,13 @@ export default function CartCheckoutPage() {
 
   const initializePaymentMutation = useInitializePayment();
 
-  const user = useCurrentUser();
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
 
   const handleStartPayment = useCallback(async () => {
-    if (!user?.id) {
+    if (isPending) return;
+    
+    if (!user) {
        toast.error("Please login to complete your purchase");
        router.push("/signin");
        return;
@@ -80,7 +83,7 @@ export default function CartCheckoutPage() {
     } finally {
       setProcessing(false);
     }
-  }, [items, coupon, clearCart, user, router, hasItems, initializePaymentMutation]);
+  }, [items, coupon, clearCart, user, router, hasItems, initializePaymentMutation, isPending]);
 
   const emptyState = (
     <div className="py-16 text-center">

@@ -27,7 +27,7 @@ interface EnrollmentsResponse {
 // Fetch function
 async function fetchEnrolledCourses(): Promise<EnrolledCourse[]> {
   const response = await fetch('/api/enrollments');
-  
+
   if (!response.ok) {
     const errorData = await response.json();
     throw new Error(errorData.error || 'Failed to fetch enrolled courses');

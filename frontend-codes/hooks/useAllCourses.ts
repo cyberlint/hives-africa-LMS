@@ -46,7 +46,7 @@ async function fetchCourses(options: UseAllCoursesOptions): Promise<CourseListIt
   if (options.search) params.append('search', options.search);
 
   const response = await fetch(`/api/courses?${params.toString()}`);
-  
+
   if (!response.ok) {
     const errorData = await response.json();
     throw new Error(errorData.error || 'Failed to fetch courses');
