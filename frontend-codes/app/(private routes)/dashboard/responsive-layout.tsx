@@ -5,7 +5,7 @@ import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
-import { DashboardProvider } from "./studentContext"
+import { DashboardProvider } from "@/app/(private routes)/dashboard/studentContext"
 import { usePathname } from "next/navigation"
 
 import Header from "@/components/header"

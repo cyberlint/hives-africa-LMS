@@ -81,13 +81,31 @@ export default function FinalAgentCarousel() {
     return () => clearInterval(interval);
   }, [isPaused, next]);
 
-  // Desktop variants
+  // Desktop variants - Modern clean shadows
   const variantsDesktop = {
-    center: { x: "0%", scale: 1.1, opacity: 1, zIndex: 20, boxShadow: "0px 30px 60px rgba(255,100,50,0.3)" },
-    left: { x: "-55%", scale: 0.9, opacity: 0.8, zIndex: 10, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" },
-    right: { x: "55%", scale: 0.9, opacity: 0.8, zIndex: 10, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" },
-    "far-left": { x: "-90%", scale: 0.8, opacity: 0.2, zIndex: 5 },
-    "far-right": { x: "90%", scale: 0.8, opacity: 0.2, zIndex: 5 },
+    center: { 
+      x: "0%", 
+      scale: 1.05, 
+      opacity: 1, 
+      zIndex: 20, 
+      boxShadow: "0px 20px 40px rgba(0,0,0,0.08), 0px 0px 0px 1px rgba(0,0,0,0.03)" 
+    },
+    left: { 
+      x: "-55%", 
+      scale: 0.92, 
+      opacity: 0.7, 
+      zIndex: 10, 
+      boxShadow: "0px 10px 20px rgba(0,0,0,0.05)" 
+    },
+    right: { 
+      x: "55%", 
+      scale: 0.92, 
+      opacity: 0.7, 
+      zIndex: 10, 
+      boxShadow: "0px 10px 20px rgba(0,0,0,0.05)" 
+    },
+    "far-left": { x: "-90%", scale: 0.85, opacity: 0.3, zIndex: 5 },
+    "far-right": { x: "90%", scale: 0.85, opacity: 0.3, zIndex: 5 },
     hidden: { opacity: 0, scale: 0.7, zIndex: 0 },
   };
 
@@ -103,7 +121,7 @@ export default function FinalAgentCarousel() {
 
   return (
     <section
-      className="relative w-full min-h-[600px] flex flex-col justify-center items-center overflow-hidden py-24 bg-gradient-to-r from-pink-100/70 via-rose-100/70 to-orange-100/70"
+      className="relative w-full min-h-[600px] flex flex-col justify-center items-center overflow-hidden py-24 bg-gradient-to-b from-gray-50 to-white"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -121,7 +139,7 @@ export default function FinalAgentCarousel() {
               transition={{ duration: 0.5, type: "spring", stiffness: 120, damping: 18 }}
               className={cn(
                 "absolute w-[360px] h-[400px] rounded-2xl bg-white flex flex-col cursor-pointer p-6",
-                "hover:z-30"
+                "border border-gray-100 hover:z-30 hover:border-gray-200 transition-colors"
               )}
               onClick={() => setActiveIndex(index)}
             >
@@ -133,14 +151,16 @@ export default function FinalAgentCarousel() {
         {/* Desktop Arrows */}
         <button
           onClick={prev}
-          className="absolute left-6 md:left-24 z-30 bg-white/70 backdrop-blur-sm p-3 rounded-full shadow-lg hover:scale-110 hover:bg-white text-gray-800 transition-all"
+          aria-label="Previous slide"
+          className="absolute left-6 md:left-24 z-30 bg-white backdrop-blur-sm p-3 rounded-full shadow-md hover:shadow-lg hover:scale-110 border border-gray-100 text-gray-700 hover:text-gray-900 transition-all"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
 
         <button
           onClick={next}
-          className="absolute right-6 md:right-24 z-30 bg-white/70 backdrop-blur-sm p-3 rounded-full shadow-lg hover:scale-110 hover:bg-white text-gray-800 transition-all"
+          aria-label="Next slide"
+          className="absolute right-6 md:right-24 z-30 bg-white backdrop-blur-sm p-3 rounded-full shadow-md hover:shadow-lg hover:scale-110 border border-gray-100 text-gray-700 hover:text-gray-900 transition-all"
         >
           <ChevronRight className="w-6 h-6" />
         </button>
@@ -159,8 +179,8 @@ export default function FinalAgentCarousel() {
               <motion.div
                 key={item.id}
                 className={cn(
-                  "flex-shrink-0 w-[320px] h-[400px] rounded-2xl bg-white flex flex-col p-6 cursor-pointer",
-                  isCenter ? "scale-105 shadow-lg z-10" : "scale-95 opacity-80"
+                  "flex-shrink-0 w-[320px] h-[400px] rounded-2xl bg-white flex flex-col p-6 cursor-pointer border border-gray-100",
+                  isCenter ? "scale-105 shadow-lg z-10" : "scale-95 opacity-70"
                 )}
                 onClick={() => setActiveIndex(index)}
               >
@@ -175,10 +195,15 @@ export default function FinalAgentCarousel() {
       <div className="flex items-center gap-4 mt-8">
         <button
           onClick={() => setIsPaused(!isPaused)}
-          className="p-3 rounded-full bg-white/50 hover:bg-white transition-colors shadow-md"
+          aria-label={isPaused ? "Play carousel" : "Pause carousel"}
+          className="p-3 rounded-full bg-white hover:bg-gray-50 transition-all shadow-md hover:shadow-lg border border-gray-100"
           title={isPaused ? "Play Autoscroll" : "Pause Autoscroll"}
         >
-          {isPaused ? <Play className="w-5 h-5 fill-current text-gray-700" /> : <Pause className="w-5 h-5 fill-current text-gray-700" />}
+          {isPaused ? (
+            <Play className="w-5 h-5 text-gray-700" />
+          ) : (
+            <Pause className="w-5 h-5 text-gray-700" />
+          )}
         </button>
 
         <div className="flex gap-2">
@@ -186,9 +211,12 @@ export default function FinalAgentCarousel() {
             <button
               key={idx}
               onClick={() => setActiveIndex(idx)}
+              aria-label={`Go to slide ${idx + 1}`}
               className={cn(
                 "h-2 rounded-full transition-all duration-300",
-                idx === activeIndex ? "w-8 bg-orange-600" : "w-2 bg-gray-300 hover:bg-orange-300"
+                idx === activeIndex 
+                  ? "w-8 bg-blue-600" 
+                  : "w-2 bg-gray-300 hover:bg-blue-300"
               )}
             />
           ))}

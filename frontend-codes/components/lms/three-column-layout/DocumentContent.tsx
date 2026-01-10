@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import NotebookViewer from './file-viewer-components/NotebookViewer';
 import { useConstructUrl } from '@/hooks/use-construct-url';
 import { getFileType } from '@/lib/utils';
-import React from 'react';
 
 interface DocumentContentProps {
   documentKey?: string;
@@ -18,7 +17,8 @@ export const DocumentContent: React.FC<DocumentContentProps> = ({ documentKey })
     if (!documentKey || !documentUrl) return null;
 
     const fileType = getFileType(documentKey);
-  
+    console.log("this is the file type:" + fileType);
+    console.log("this is the document url:" + documentUrl);
     // // List of file types that are typically not viewed in-browser via <iframe>
     // const filesToDownload = ['zip', 'rar', 'exe', 'msi', 'dmg'];
 
@@ -55,11 +55,13 @@ export const DocumentContent: React.FC<DocumentContentProps> = ({ documentKey })
         : documentUrl; 
 
     return (
-      <iframe
-        src={viewerUrl}
-        title={`Viewing document: ${documentKey}`}
-        className="w-full h-full border-0" 
-        allow="fullscreen"
-      />
+      <div className="w-full h-[600px] lg:h-[800px] rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+        <iframe
+          src={viewerUrl}
+          title={`Viewing document: ${documentKey}`}
+          className="w-full h-full border-0" 
+          allow="fullscreen; clipboard-read; clipboard-write"
+        />
+      </div>
     );
 };

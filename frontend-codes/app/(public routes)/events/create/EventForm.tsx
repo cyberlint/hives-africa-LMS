@@ -58,14 +58,35 @@ const formatDateForInput = (dateOrString: Date | string | undefined): string | u
 };
 
 
+// Define a schema for the form validation that expects strings for dates
+const FormValidatorSchema = EventSchema.omit({ 
+    id: true, createdAt: true, updatedAt: true, userId: true,
+    startdate: true, enddate: true 
+}).extend({
+    startdate: z.string().refine((val) => !isNaN(Date.parse(val)), "Start date must be a valid date"),
+    enddate: z.string().refine((val) => !isNaN(Date.parse(val)), "End date must be a valid date"),
+}).superRefine((data, ctx) => {
+    if (data.startdate && data.enddate) {
+        const start = new Date(data.startdate);
+        const end = new Date(data.enddate);
+        if (end <= start) {
+            ctx.addIssue({
+                code: "custom",
+                path: ["enddate"],
+                message: "End date must be after start date",
+            });
+        }
+    }
+});
+
 export default function EventForm({ eventData, currentUser }: EventFormProps) {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
 
     // useForm uses the string-based schema
     const form = useForm<FormInputSchema>({
-        // The Zod resolver still validates against CreateEventSchema (which requires Date objects)
-        resolver: zodResolver(CreateEventSchema), 
+        // The Zod resolver uses the string-based schema
+        resolver: zodResolver(FormValidatorSchema), 
         defaultValues: {
             title: eventData?.title ?? "",
             shortdescription: eventData?.shortdescription ?? "",

@@ -9,7 +9,7 @@ import { BookOpen, Clock, Award, TrendingUp, Play, Loader } from "lucide-react"
 import type { Course, User } from "@/types"
 
 import { toast } from "sonner"
-import { useDashboard } from "./studentContext"
+import { useDashboard } from "@/app/(private routes)/dashboard/studentContext"
 import { useAuth, withAuth } from "@/contexts/AuthContext"
 import { UserTypeIndicator } from "@/components/shared/user-type-indicator"
 import Link from "next/link"

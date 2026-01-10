@@ -8,11 +8,11 @@ import type { CourseData } from '@/types/course';
 
 interface CourseLayoutProps {
   courseData: CourseData;
-  activeLectureId: number;
-  completedLectures: number[];
+  activeLectureId: string;
+  completedLectures: string[];
   currentTime: number;
-  onLectureSelect: (lectureId: number) => void;
-  onMarkComplete: (lectureId: number) => void;
+  onLectureSelect: (lectureId: string) => void;
+  onMarkComplete: (lectureId: string) => void;
   onTimeUpdate: (time: number) => void;
 }
 
@@ -27,16 +27,18 @@ export const CourseLayout: React.FC<CourseLayoutProps> = ({
 }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState('curriculum');
-  const [expandedSections, setExpandedSections] = useState<number[]>([1, 2, 3, 4, 5]);
+  const [expandedSections, setExpandedSections] = useState<string[]>(
+    courseData.sections.length > 0 ? courseData.sections.map(s => s.id) : []
+  );
 
   // Find active lecture
   const activeLecture = courseData.sections
     .flatMap(section => section.lectures)
-    .find(lecture => lecture.id === activeLectureId);
+    .find(lecture => String(lecture.id) === String(activeLectureId));
 
   // Get all lectures in order for navigation
   const allLectures = courseData.sections.flatMap(section => section.lectures);
-  const currentIndex = allLectures.findIndex(lecture => lecture.id === activeLectureId);
+  const currentIndex = allLectures.findIndex(lecture => String(lecture.id) === String(activeLectureId));
 
   const goToNextLecture = useCallback(() => {
     if (currentIndex < allLectures.length - 1) {
@@ -55,7 +57,7 @@ export const CourseLayout: React.FC<CourseLayoutProps> = ({
     }
   }, [currentIndex, allLectures, onLectureSelect]);
 
-  const toggleSectionExpanded = (sectionId: number) => {
+  const toggleSectionExpanded = (sectionId: string) => {
     setExpandedSections(prev =>
       prev.includes(sectionId)
         ? prev.filter(id => id !== sectionId)

@@ -4,6 +4,7 @@ import { Star } from "lucide-react";
 import Image from "next/image";
 import { CourseListItem } from "@/services/courses";
 import { constructUrl } from "@/lib/construct-url";
+import Link from "next/link";
 
 interface FeaturedCoursesProps {
   courses: CourseListItem[];
@@ -12,6 +13,7 @@ interface FeaturedCoursesProps {
 const FeaturedCourses = ({ courses }: FeaturedCoursesProps) => {
   return (
     <>
+  
       <div className="flex flex-wrap justify-between items-center gap-x-8 gap-y-2">
         <h4 className="text-3xl md:text-[32px] text-darkBlue-300 dark:text-gray-100 font-semibold w-full xl:w-1/2">
           Our Featured Courses
@@ -151,6 +153,7 @@ const FeaturedCourses = ({ courses }: FeaturedCoursesProps) => {
           </article>
         ))}
       </div>
+ 
     </>
   );
 };

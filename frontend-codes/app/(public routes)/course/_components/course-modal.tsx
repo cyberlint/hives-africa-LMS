@@ -63,7 +63,7 @@ export function CourseModal({ course, isOpen, onClose }: CourseModalProps) {
               <div>
                 <h3 className="font-semibold text-[#2c3e50] mb-2">Description</h3>
                 <div className="text-[#6c757d] leading-relaxed">
-                  <RichTextRenderer content={course.description} className="prose prose-sm dark:prose-invert max-w-none" />
+                  <RichTextRenderer contentJsonString={course.description} className="prose prose-sm dark:prose-invert max-w-none" />
                 </div>
               </div>
             </div>
@@ -140,19 +140,19 @@ export function CourseModal({ course, isOpen, onClose }: CourseModalProps) {
                 <h3 className="font-semibold text-[#2c3e50] mb-3">What you&apos;ll learn</h3>
                 <ul className="space-y-2 text-[#6c757d]">
                   <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-yellow rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-yellow rounded-full mt-2 shrink-0"></div>
                     <span>Master the fundamentals and advanced concepts</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-yellow rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-yellow rounded-full mt-2 shrink-0"></div>
                     <span>Build real-world projects and applications</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-yellow rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-yellow rounded-full mt-2 shrink-0"></div>
                     <span>Get hands-on experience with industry tools</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-yellow rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-yellow rounded-full mt-2 shrink-0"></div>
                     <span>Receive certificate upon completion</span>
                   </li>
                 </ul>

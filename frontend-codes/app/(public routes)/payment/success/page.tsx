@@ -54,7 +54,7 @@ function PaymentStatusContent() {
       setVerificationStatus('failed');
       setErrorMessage('No transaction reference found');
     }
-  }, [reference]);
+  }, [reference, verifyPaymentMutation]);
 
   const handleStartLearning = () => {
     router.push('/dashboard/learning');

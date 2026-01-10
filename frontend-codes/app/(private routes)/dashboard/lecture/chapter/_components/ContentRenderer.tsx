@@ -44,9 +44,12 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
         <VideoPlayerSection
           lecture={lecture}
           onNext={onNext}
+          onPrevious={onPrevious}
           isCompleted={isCompleted}
           onVideoEnd={onVideoEnd}
           onTimeUpdate={onTimeUpdate}
+          allLectures={courseData.lectures || []}
+          currentIndex={courseData.lectures?.findIndex(l => l.id === lecture.id) ?? 0}
         />
       );
     

@@ -48,7 +48,7 @@ import {
   X,
 } from "lucide-react"
 import type { User } from "@/types"
-import { useDashboard } from "../studentContext"
+import { useDashboard } from "@/app/(private routes)/dashboard/studentContext"
 import ShareAchievementModal from "@/components/modals/share-achievement-modal"
 import ExportDataModal from "@/components/modals/export-data-modal"
 // import EditModal from "@/components/modals/edit-modal"
@@ -143,6 +143,19 @@ const certificates: Certificate[] = [
   },
 ]
 
+// Map string icon names to Lucide components
+const iconMap: Record<string, any> = {
+  BookOpen,
+  Zap,
+  Trophy,
+  Star,
+  Clock,
+  Users,
+  TrendingUp,
+  Target,
+  Award
+};
+
 interface AchievementsProps {
   user: User
 }
@@ -180,18 +193,7 @@ export default function Achievements() {
   const [selectedAchievementForShare, setSelectedAchievementForShare] = useState<Achievement | null>(null)
   const [editItem, setEditItem] = useState<any>(null)
 
-  // Map string icon names to Lucide components
-  const iconMap: Record<string, any> = {
-    BookOpen,
-    Zap,
-    Trophy,
-    Star,
-    Clock,
-    Users,
-    TrendingUp,
-    Target,
-    Award
-  };
+
 
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [isLoadingAchievements, setIsLoadingAchievements] = useState(true);

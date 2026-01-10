@@ -60,7 +60,7 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
   return (
     <div className="h-full bg-[#2d2f31] border-l border-[#3e4143] flex flex-col w-[400px]">
       {/* Header - Fixed */}
-      <div className="flex items-center justify-between p-4 border-b border-[#3e4143] bg-[#2d2f31] flex-shrink-0">
+      <div className="flex items-center justify-between p-4 border-b border-[#3e4143] bg-[#2d2f31] shrink-0">
         <h3 className="text-lg font-semibold text-white">Course Content</h3>
         <Button
           variant="ghost"
@@ -84,7 +84,7 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
       </div>
 
       {/* Tabs - Fixed */}
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         <SidebarTabs activeTab={activeTab} onTabChange={onTabChange} />
       </div>
 
@@ -108,7 +108,7 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
                 <h5 className="text-white font-medium mb-3">About This Course</h5>
                 <div className="leading-relaxed mb-4">
                   <RichTextRenderer 
-                    content={courseData.description || "This comprehensive web development course covers everything from HTML basics to advanced JavaScript concepts."} 
+                    contentJsonString={courseData.description || "This comprehensive web development course covers everything from HTML basics to advanced JavaScript concepts."} 
                     className="prose prose-sm dark:prose-invert max-w-none text-gray-400"
                   />
                 </div>
@@ -144,11 +144,11 @@ export const CourseSidebar: React.FC<CourseSidebarProps> = ({
                 <h5 className="text-white font-medium mb-3">Course Statistics</h5>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-3 bg-[#3e4143] rounded-lg">
-                    <div className="text-xl font-bold text-[#fdb606]">{courseData.totalLectures || 0}</div>
+                    <div className="text-xl font-bold text-yellow">{courseData.totalLectures || 0}</div>
                     <div className="text-xs">Total Lectures</div>
                   </div>
                   <div className="text-center p-3 bg-[#3e4143] rounded-lg">
-                    <div className="text-xl font-bold text-[#fdb606]">
+                    <div className="text-xl font-bold text-yellow">
                       {Math.floor(courseData.sections.reduce((sum, section) => 
                         sum + section.lectures.reduce((lectureSum, lecture) => lectureSum + (lecture.duration || 0), 0), 0
                       ) / 3600)}h

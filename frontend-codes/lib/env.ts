@@ -13,6 +13,7 @@ export const env = createEnv({
     AWS_SECRET_ACCESS_KEY: z.string().optional(),
     AWS_REGION: z.string().optional(),
     AWS_ENDPOINT: z.string().optional(),
+    ARCJET_KEY: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY: z.string().optional(),
@@ -34,5 +35,6 @@ export const env = createEnv({
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
     AWS_REGION: process.env.AWS_REGION,
     AWS_ENDPOINT: process.env.AWS_ENDPOINT,
+    ARCJET_KEY: process.env.ARCJET_KEY,
   },
 });

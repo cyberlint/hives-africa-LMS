@@ -246,10 +246,11 @@ export async function createLesson(values: LessonSchemaType): Promise<ApiRespons
 
             await tx.lesson.create({
                 data: {
-                    title: result.data.name,
+                    title: result.data.title,
                     description: result.data.description,
                     thumbnailKey: result.data.thumbnailKey,
                     videoKey: result.data.videoKey,
+                    type: result.data.type,
                     moduleId: result.data.moduleId,
                     position: (maxPos?.position ?? 0) + 1,
                 },
@@ -288,7 +289,7 @@ export async function updateLesson(values: LessonSchemaType, lessonId: string): 
                 moduleId: result.data.moduleId,
             },
             data: {
-                title: result.data.name,
+                title: result.data.title,
                 description: result.data.description,
                 thumbnailKey: result.data.thumbnailKey,
                 videoKey: result.data.videoKey,

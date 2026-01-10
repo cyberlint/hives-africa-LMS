@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, FileText, ExternalLink } from 'lucide-react';
 import type { Lecture } from '@/types/course';
 import { constructUrl } from '@/lib/construct-url';
 import { RichTextRenderer } from './RichTextRenderer';
+import { cn, getFileType } from '@/lib/utils';
 import { DocumentContent } from './three-column-layout/DocumentContent';
 
 interface DocumentRendererProps {
@@ -19,21 +19,24 @@ export const DocumentRenderer: React.FC<DocumentRendererProps> = ({
   isCompleted
 }) => {
   const documentUrl = lecture.documentKey ? constructUrl(lecture.documentKey) : undefined;
-
+  const isNotebook = lecture.documentKey ? getFileType(lecture.documentKey) === 'ipynb' : false;
+  console.log("this is the construct url:" + (constructUrl(lecture.documentKey?? "no document key")));
 
 
   return (
-    <div className="flex-1 bg-white dark:bg-[#1d2026] flex flex-col h-full overflow-y-auto transition-colors duration-300">
-      <div className="flex-1 flex flex-col items-center p-8">
-        <div className="text-center max-w-4xl w-full">
+    <div className="flex-1 bg-white dark:bg-darkBlue-300 flex flex-col h-full overflow-y-auto transition-colors duration-300">
+      <div className="flex-1 flex flex-col items-center p-4 md:p-8">
+        <div className={cn(
+          "text-center w-full",
+          isNotebook ? "max-w-7xl" : "max-w-4xl"
+        )}>
           <div className="mb-8">
             {/* <div className="w-16 h-16 bg-[#fdb606]/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <FileText className="w-8 h-8 text-[#fdb606]" />
             </div> */}
             {/* <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-gray-100">{lecture.title}</h2> */}
             <div className="text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mx-auto">
-              {/* <RichTextRenderer content={lecture.description || 'Document content for this lecture'} className="prose dark:prose-invert max-w-none" /> */}
-              <div className="prose dark:prose-invert max-w-none">{lecture.description}</div>
+              <RichTextRenderer contentJsonString={lecture.description || ''} className="prose dark:prose-invert max-w-none" />
             </div>
           </div>
           
@@ -62,6 +65,19 @@ export const DocumentRenderer: React.FC<DocumentRendererProps> = ({
              )
           )}
 
+          {/* Mark as Complete Action */}
+          {!isCompleted && (
+            <div className="flex justify-center mb-12">
+              <Button
+                onClick={onMarkComplete}
+                className="bg-yellow hover:bg-yellow/90 text-darkBlue-300 font-bold px-10 py-6 h-auto text-lg rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:scale-95"
+              >
+                <CheckCircle className="mr-2" />
+                Mark as Complete
+              </Button>
+            </div>
+          )}
+
           {/* Attachments Section */}
           {lecture.attachments && lecture.attachments.length > 0 && (
             <div className="max-w-3xl mx-auto">
@@ -75,11 +91,11 @@ export const DocumentRenderer: React.FC<DocumentRendererProps> = ({
                 {lecture.attachments.map((attachment) => (
                   <div
                     key={attachment.id}
-                    className="p-4 bg-white dark:bg-[#1d2026] border border-gray-200 dark:border-gray-800 rounded-xl hover:border-[#fdb606]/50 dark:hover:border-[#fdb606]/50 hover:shadow-sm transition-all group text-left"
+                    className="p-4 bg-white dark:bg-darkBlue-300 border border-gray-200 dark:border-gray-800 rounded-xl hover:border-yellow/50 dark:hover:border-yellow/50 hover:shadow-sm transition-all group text-left"
                   >
                     <div className="flex items-start gap-3">
-                       <div className="p-2 bg-gray-50 dark:bg-gray-900 rounded-lg group-hover:bg-[#fdb606]/10 transition-colors">
-                          <FileText className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-[#fdb606] dark:group-hover:text-[#fdb606]" />
+                       <div className="p-2 bg-gray-50 dark:bg-gray-900 rounded-lg group-hover:bg-yellow/10 transition-colors">
+                          <FileText className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-yellow dark:group-hover:text-yellow" />
                        </div>
                        <div className="flex-1 min-w-0">
                           <h4 className="font-medium text-gray-900 dark:text-gray-100 truncate mb-1">
@@ -99,7 +115,7 @@ export const DocumentRenderer: React.FC<DocumentRendererProps> = ({
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-8 w-8 text-gray-400 hover:text-[#fdb606] hover:bg-[#fdb606]/10 dark:hover:bg-[#fdb606]/10"
+                                  className="h-8 w-8 text-gray-400 hover:text-yellow hover:bg-yellow/10 dark:hover:bg-yellow/10"
                                   onClick={() => window.open(attachment.url, '_blank')} // Assuming attachment.url is already complete or handled elsewhere
                                 >
                                   <ExternalLink className="w-4 h-4" />

@@ -12,6 +12,7 @@ export interface CartCourseItem {
   quantity: number;
   isFree?: boolean;
   instructor?: string;
+  thumbnail?: string;
 }
 
 interface CouponState {

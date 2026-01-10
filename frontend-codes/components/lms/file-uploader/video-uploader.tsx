@@ -25,25 +25,27 @@ export function VideoUploader({onChange, value, onDurationChange}: iAppProps) {
     const initialUrl = useConstructUrl(value || "");
     const [preview, setPreview] = useState<string | null>(value ? initialUrl : null);
 
-    const cleanupPreview = () => {
+    const cleanupPreview = useCallback(() => {
         if (preview && preview.startsWith("blob:")) {
             URL.revokeObjectURL(preview);
         }
-    };
+    }, [preview]);
 
-    const handleUploadError = () => {
+    const handleUploadError = useCallback(() => {
          cleanupPreview();
          setPreview(null);
          setFile(null);
          setError(true);
          setUploading(false);
          setProgress(0);
-    };
+    }, [cleanupPreview]);
 
-    async function uploadFile(file: File) {
+    const uploadFile = useCallback(async (file: File) => {
         setUploading(true);
         setProgress(0);
         setError(false);
+
+        const contentType = file.type || "application/octet-stream";
 
         try {
             // 1. Get presigned URL
@@ -52,7 +54,7 @@ export function VideoUploader({onChange, value, onDurationChange}: iAppProps) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     fileName: file.name,
-                    contentType: file.type,
+                    contentType: contentType,
                     size: file.size,
                     isImage: false, 
                 }),
@@ -93,7 +95,7 @@ export function VideoUploader({onChange, value, onDurationChange}: iAppProps) {
                 };
 
                 xhr.open("PUT", presignedUrl);
-                xhr.setRequestHeader("Content-Type", file.type);
+                xhr.setRequestHeader("Content-Type", contentType);
                 xhr.send(file);
             });
 
@@ -102,7 +104,7 @@ export function VideoUploader({onChange, value, onDurationChange}: iAppProps) {
             toast.error('Something went wrong during upload');
             handleUploadError();
         }
-    }
+    }, [handleUploadError, onChange]);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) {
@@ -131,7 +133,7 @@ export function VideoUploader({onChange, value, onDurationChange}: iAppProps) {
             
             uploadFile(selectedFile);
         }
-    }, [preview, onDurationChange]); 
+    }, [preview, onDurationChange, uploadFile]); 
 
     async function handleRemoveFile() {
         if (!value) {
@@ -144,10 +146,8 @@ export function VideoUploader({onChange, value, onDurationChange}: iAppProps) {
 
         try {
             setIsDeleting(true);
-            const response = await fetch('/api/s3/delete', {
+            const response = await fetch(`/api/s3/delete?key=${encodeURIComponent(value)}`, {
                 method: "DELETE",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ key: value }),
             });
 
             if(!response.ok) {

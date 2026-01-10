@@ -20,7 +20,7 @@ export {
 };
 
 export default arcjet({
-    key: env.ARCJET_KEY,
+    key: process.env.ARCJET_KEY || "",
 
     characteristics: ['fingerprint'],
 

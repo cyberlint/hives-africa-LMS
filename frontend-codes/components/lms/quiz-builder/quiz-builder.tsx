@@ -35,7 +35,7 @@ export function QuizBuilder({ value = [], onChange }: QuizBuilderProps) {
      if (value && JSON.stringify(value) !== JSON.stringify(questions)) {
          setQuestions(value);
      }
-  }, [value]);
+  }, [value, questions]);
 
   const updateQuestions = (newQuestions: QuizQuestion[]) => {
       setQuestions(newQuestions);

@@ -71,7 +71,7 @@ const BestSellingCourses = ({ courses }: BestSellingCoursesProps) => {
 
               {/* CTA */}
               <Link
-                href={`/courses/${course.id}`}
+                href={`/course/${course.id}`}
                 className="pt-3 text-sm font-semibold text-orange inline-flex items-center gap-1"
               >
                 View course →

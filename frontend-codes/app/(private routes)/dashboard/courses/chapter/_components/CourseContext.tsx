@@ -3,15 +3,15 @@ import { courseData } from "@/data/courseData";
 import type { CourseData, Lecture } from '@/types/course';
 
 interface CourseContextType {
-  activeLectureId: number;
-  completedLectures: number[];
+  activeLectureId: string;
+  completedLectures: string[];
   currentTime: number;
   courseData: CourseData;
-  setActiveLectureId: (id: number) => void;
-  setCompletedLectures: (lectures: number[]) => void;
+  setActiveLectureId: (id: string) => void;
+  setCompletedLectures: (lectures: string[]) => void;
   setCurrentTime: (time: number) => void;
-  handleLectureSelect: (lectureId: number) => void;
-  handleMarkComplete: (lectureId: number) => void;
+  handleLectureSelect: (lectureId: string) => void;
+  handleMarkComplete: (lectureId: string) => void;
   goToNextLecture: () => void;
   goToPreviousLecture: () => void;
   allLectures: Lecture[];
@@ -31,8 +31,8 @@ export const useCourse = () => {
 };
 
 export const CourseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [activeLectureId, setActiveLectureId] = useState(1);
-  const [completedLectures, setCompletedLectures] = useState<number[]>(
+  const [activeLectureId, setActiveLectureId] = useState("1");
+  const [completedLectures, setCompletedLectures] = useState<string[]>(
     courseData.sections.flatMap(section => 
       section.lectures.filter(lecture => lecture.completed).map(lecture => lecture.id)
     )
@@ -43,11 +43,11 @@ export const CourseProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const currentIndex = allLectures.findIndex(lecture => lecture.id === activeLectureId);
   const activeLecture = allLectures.find(lecture => lecture.id === activeLectureId);
 
-  const handleLectureSelect = (lectureId: number) => {
+  const handleLectureSelect = (lectureId: string) => {
     setActiveLectureId(lectureId);
   };
 
-  const handleMarkComplete = (lectureId: number) => {
+  const handleMarkComplete = (lectureId: string) => {
     if (!completedLectures.includes(lectureId)) {
       setCompletedLectures(prev => [...prev, lectureId]);
       courseData.completedLectures = completedLectures.length + 1;

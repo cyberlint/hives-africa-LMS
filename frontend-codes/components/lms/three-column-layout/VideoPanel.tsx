@@ -630,6 +630,8 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
        <VideoPlayer
           ref={videoRef}
           src={videoSrc || DEFAULT_VIDEO_URL}
+          onMouseEnter={() => setShowControls(true)}
+          onMouseLeave={() => setShowControls(false)}
         />
 
         <VideoControls

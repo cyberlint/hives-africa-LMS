@@ -24,7 +24,7 @@ export const QuizRenderer: React.FC<QuizRendererProps> = ({
   };
 
   return (
-    <div className="flex-1 bg-white dark:bg-[#1d2026] flex flex-col h-full overflow-y-auto transition-colors duration-300">
+    <div className="flex-1 bg-white dark:bg-darkBlue-300 flex flex-col h-full overflow-y-auto transition-colors duration-300">
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="text-center max-w-2xl w-full">
           <div className="mb-8">
@@ -34,7 +34,7 @@ export const QuizRenderer: React.FC<QuizRendererProps> = ({
             
             <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-gray-100">{lecture.title}</h2>
             <div className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-8">
-              <RichTextRenderer content={lecture.description || 'Test your knowledge with this quiz'} className="prose prose-lg dark:prose-invert max-w-none" />
+              <RichTextRenderer contentJsonString={lecture.description || 'Test your knowledge with this quiz'} className="prose prose-lg dark:prose-invert max-w-none" />
             </div>
           </div>
 

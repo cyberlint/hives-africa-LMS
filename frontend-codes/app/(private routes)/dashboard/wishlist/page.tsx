@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import type { Course } from "@/types"
 import ShareWishlistModal from "@/components/modals/share-wishlist-modal"
 import Image from "next/image"
-import { useDashboard } from "../studentContext"
+import { useDashboard } from "@/app/(private routes)/dashboard/studentContext"
 import { constructUrl } from "@/lib/construct-url"
 import { useCart } from "@/contexts/CartContext"
 import { toast } from "sonner"

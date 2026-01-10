@@ -10,15 +10,15 @@ import type { CourseData, Lecture } from '@/types/course';
 
 interface CourseSidebarProps {
   courseData: CourseData;
-  activeLectureId: number;
+  activeLectureId: string;
   activeTab: string;
-  expandedSections: number[];
-  completedLectures: number[];
+  expandedSections: string[];
+  completedLectures: string[];
   isCollapsed: boolean;
   currentTime: number;
-  onLectureSelect: (lectureId: number) => void;
+  onLectureSelect: (lectureId: string) => void;
   onTabChange: (tab: string) => void;
-  onToggleSection: (sectionId: number) => void;
+  onToggleSection: (sectionId: string) => void;
   onToggleCollapse: () => void;
 }
 

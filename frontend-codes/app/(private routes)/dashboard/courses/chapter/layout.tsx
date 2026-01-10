@@ -25,9 +25,9 @@ const ChapterLayoutContent = ({
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState('curriculum');
-  const [expandedSections, setExpandedSections] = useState<number[]>([1, 2, 3, 4, 5]);
+  const [expandedSections, setExpandedSections] = useState<string[]>(['1', '2', '3', '4', '5']);
 
-  const toggleSectionExpanded = (sectionId: number) => {
+  const toggleSectionExpanded = (sectionId: string) => {
     setExpandedSections(prev => 
       prev.includes(sectionId) 
         ? prev.filter(id => id !== sectionId)

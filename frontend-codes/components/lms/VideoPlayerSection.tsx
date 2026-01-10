@@ -284,7 +284,7 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
       </div>
 
       {/* Lecture Info Section - Scrollable */}
-      <div className="flex-shrink-0 bg-[#2d2f31] border-t border-[#3e4143] max-h-[40vh] overflow-y-auto">
+      <div className="shrink-0 bg-[#2d2f31] border-t border-[#3e4143] max-h-[40vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1 min-w-0">
@@ -294,7 +294,7 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
               {lecture.description && (
                 <div className="text-gray-400 text-sm mb-3 leading-relaxed">
                   <RichTextRenderer 
-                    content={lecture.description} 
+                    contentJsonString={lecture.description} 
                     className="prose prose-sm dark:prose-invert max-w-none text-gray-400"
                   />
                 </div>
@@ -326,14 +326,14 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
                     href={attachment.type === 'quiz' ? `/quiz/${lecture.id}/${attachment.id}` : `/attachment/${lecture.id}/${attachment.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3 border border-[#5e6163] rounded hover:border-[#fdb606] transition-colors group"
+                    className="p-3 border border-[#5e6163] rounded hover:border-yellow transition-colors group"
                   >
-                    <h4 className="font-medium text-white group-hover:text-[#fdb606] text-sm mb-1">
+                    <h4 className="font-medium text-white group-hover:text-yellow text-sm mb-1">
                       {attachment.title}
                     </h4>
                     <p className="text-xs text-gray-400 mb-1">{attachment.description}</p>
                     <div className="flex justify-between items-center">
-                      <span className="text-xs text-[#fdb606] capitalize">{attachment.type}</span>
+                      <span className="text-xs text-yellow capitalize">{attachment.type}</span>
                       {attachment.fileSize && (
                         <span className="text-xs text-gray-500">{attachment.fileSize}</span>
                       )}

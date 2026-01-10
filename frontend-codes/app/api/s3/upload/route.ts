@@ -10,7 +10,7 @@ import { requireAdmin } from '@/lib/require-admin';
 
 const fileUploadSchema = z.object({
     fileName: z.string().min(1, { message: "File name is required" }),
-    contentType: z.string().min(1, { message: "Content type is required" }),
+    contentType: z.string().optional().default("application/octet-stream"),
     size: z.number().min(1, { message: "Size is required" }),
     isImage: z.boolean(),
 });
@@ -48,13 +48,21 @@ export async function POST(request: Request) {
                     { status: 429 });
         }
 
-        const body = await request.json();
+        let body;
+        try {
+            body = await request.json();
+        } catch (e) {
+            return NextResponse.json(
+                { error: "Invalid JSON body" },
+                { status: 400 }
+            );
+        }
 
         const validation = fileUploadSchema.safeParse(body);
 
         if (!validation.success) {
             return NextResponse.json(
-                { error: "Invalid Request Body" },
+                { error: "Invalid Request Body", details: validation.error.format() },
                 { status: 400 }
             );
         }
@@ -80,7 +88,8 @@ export async function POST(request: Request) {
         };
 
         return NextResponse.json(response);
-    } catch {
+    } catch (error) {
+        console.error("S3 Upload Error:", error);
         return NextResponse.json(
             { error: "Failed to generate presigned URL" },
             { status: 500 }

@@ -25,7 +25,7 @@ export const ResourceRenderer: React.FC<ResourceRendererProps> = ({
   };
 
   return (
-    <div className="flex-1 bg-white dark:bg-[#1d2026] flex flex-col h-full overflow-y-auto transition-colors duration-300">
+    <div className="flex-1 bg-white dark:bg-darkBlue-300 flex flex-col h-full overflow-y-auto transition-colors duration-300">
       <div className="flex-1 flex flex-col items-center p-8">
         <div className="text-center max-w-2xl w-full">
           <div className="mb-8">
@@ -35,7 +35,7 @@ export const ResourceRenderer: React.FC<ResourceRendererProps> = ({
             
             <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-gray-100">{lecture.title}</h2>
             <div className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-8">
-              <RichTextRenderer content={lecture.description || ""} className="prose prose-lg dark:prose-invert max-w-none" />
+              <RichTextRenderer contentJsonString={lecture.description || ""} className="prose prose-lg dark:prose-invert max-w-none" />
             </div>
           </div>
           
@@ -57,7 +57,7 @@ export const ResourceRenderer: React.FC<ResourceRendererProps> = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={handleResourceAccess}
-                    className="flex items-center p-3 bg-white dark:bg-[#1d2026] border border-gray-200 dark:border-gray-800 rounded-lg hover:border-orange-300 dark:hover:border-orange-500/50 hover:shadow-sm transition-all group text-left"
+                    className="flex items-center p-3 bg-white dark:bg-darkBlue-300 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-orange-300 dark:hover:border-orange-500/50 hover:shadow-sm transition-all group text-left"
                   >
                      <div className="p-2 bg-orange-50 dark:bg-orange-900/10 rounded-md mr-3 group-hover:bg-orange-100 dark:group-hover:bg-orange-900/30 transition-colors">
                         <FileText className="w-5 h-5 text-orange-600 dark:text-orange-400" />
@@ -68,7 +68,7 @@ export const ResourceRenderer: React.FC<ResourceRendererProps> = ({
                         </h4>
                         {attachment.description && (
                             <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mt-0.5">
-                                <RichTextRenderer content={attachment.description} className="prose prose-xs dark:prose-invert max-w-none" />
+                                <RichTextRenderer contentJsonString={attachment.description || ""} className="prose prose-xs dark:prose-invert max-w-none" />
                             </div>
                         )}
                      </div>

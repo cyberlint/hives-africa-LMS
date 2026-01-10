@@ -106,7 +106,7 @@ export default function CourseCurriculum({ course }: CourseCurriculumProps) {
                                     <p className="text-sm text-[#0F1D2F] dark:text-gray-300">{lecture.title}</p>
                                     {lecture.description && (
                                       <div className="text-xs text-[#6B7280] mt-1 line-clamp-1">
-                                         <RichTextRenderer content={lecture.description} className="prose prose-sm dark:prose-invert max-w-none line-clamp-1 text-[#6B7280]" />
+                                         <RichTextRenderer contentJsonString={lecture.description} className="prose prose-sm dark:prose-invert max-w-none line-clamp-1 text-[#6B7280]" />
                                       </div>
                                     )}
                                   </div>

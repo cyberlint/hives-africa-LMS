@@ -13,6 +13,14 @@ import { Input } from "@/components/ui/input";
 import { tryCatch } from "@/hooks/try-catch";
 import { createLesson } from "../actions";
 import { toast } from "sonner";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { lessonTypes } from "@/lib/zodSchemas";
 
 // Use a constant for the form ID to ensure it's correct and unique
 const LESSON_FORM_ID = "lesson-creation-form";
@@ -30,8 +38,15 @@ export function NewLessonModal({ courseId, moduleId }: {
       title: "",
       courseId: courseId,
       moduleId: moduleId,
+      type: "Video",
     },
   });
+
+  // Watch for errors to debug if needed
+  const errors = form.formState.errors;
+  if (Object.keys(errors).length > 0) {
+    console.log("Form Validation Errors:", errors);
+  }
 
   
   async function onSubmit(values: LessonSchemaType) {
@@ -88,10 +103,35 @@ export function NewLessonModal({ courseId, moduleId }: {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Lesson Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Lesson Name" {...field} />
+                    <Input placeholder="Introduction to Data Science" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Lesson Type</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select lesson type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {lessonTypes.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -106,7 +146,7 @@ export function NewLessonModal({ courseId, moduleId }: {
                 // This works even if the button is rendered outside the form element via a portal.
                 form={LESSON_FORM_ID} 
               >
-                {pending ? "Saving..." : "Save Change"}
+                {pending ? "Saving..." : "Save Changes"}
               </Button>
             </DialogFooter>
             

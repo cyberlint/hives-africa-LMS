@@ -39,12 +39,23 @@ export async function DELETE(request: Request) {
                     { status: 429 });
         }
 
-        const body = await request.json();
-        const key = body.key;
+        // Try to get key from query params first
+        const { searchParams } = new URL(request.url);
+        let key = searchParams.get("key");
+
+        // If not in query params, try to get from body
+        if (!key) {
+            try {
+                const body = await request.json();
+                key = body.key;
+            } catch (e) {
+                // If body is empty or not JSON, we'll just fall back to the key check below
+            }
+        }
 
         if (!key) {
             return NextResponse.json(
-                { error: "Missing or invalid object key" },
+                { error: "Missing or invalid object key. Provide key in body or as a 'key' query parameter." },
                 { status: 400 }
             );
         }
@@ -61,9 +72,10 @@ export async function DELETE(request: Request) {
             { status: 200 }
         );
 
-    } catch {
+    } catch (error) {
+        console.error("S3 Delete Error:", error);
         return NextResponse.json(
-            { error: "Missing or invalid object key" },
+            { error: "Failed to delete file from S3" },
             { status: 500 }
         );
     }

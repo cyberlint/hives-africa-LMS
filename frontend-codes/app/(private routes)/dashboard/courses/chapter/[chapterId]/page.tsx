@@ -13,7 +13,9 @@ const ContentPage: React.FC = () => {
     handleMarkComplete,
     goToNextLecture,
     goToPreviousLecture,
-    setCurrentTime
+    setCurrentTime,
+    allLectures,
+    currentIndex
   } = useCourse();
 
   if (!activeLecture) {
@@ -44,6 +46,9 @@ const ContentPage: React.FC = () => {
         <VideoPlayerSection
           lecture={activeLecture}
           onNext={goToNextLecture}
+          onPrevious={goToPreviousLecture}
+          allLectures={allLectures}
+          currentIndex={currentIndex}
           isCompleted={isCompleted}
           onVideoEnd={handleVideoEnd}
           onTimeUpdate={setCurrentTime}

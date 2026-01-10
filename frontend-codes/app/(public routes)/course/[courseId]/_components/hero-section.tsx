@@ -33,7 +33,7 @@ export default function HeroSection({ course }: HeroSectionProps) {
       </div>
 
       {/* Hero Banner */}
-      <div className="relative min-h-[480px] sm:h-[380px] bg-gradient-to-r from-[#0F1D2F]/80 to-[#0F1D2F]/60">
+      <div className="relative min-h-[480px] sm:h-[380px] bg-linear-to-r from-[#0F1D2F]/80 to-[#0F1D2F]/60">
         <Image src={course.image ? constructUrl(course.image) : "/placeholder.svg"} alt="Course background" fill className="object-cover -z-10" />
 
         <div className="w-full px-4 sm:px-6 lg:px-8 h-full">
@@ -57,23 +57,23 @@ export default function HeroSection({ course }: HeroSectionProps) {
 
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight">{course.title}</h1>
 
-                <p className="text-base lg:text-lg text-white/80 max-w-lg">
+                <div className="text-base lg:text-lg text-white/80 max-w-lg">
                   <RichTextRenderer contentJsonString={course.description} className="prose dark:prose-invert" />
-                </p>
+                </div>
 
                 {/* Stats */}
                 <section className="flex flex-col gap-2">
                 <div className="flex flex-wrap gap-4 lg:gap-6 text-sm">
                   <div className="flex items-center space-x-2">
-                    <User className="w-4 h-4 flex-shrink-0" />
+                    <User className="w-4 h-4 shrink-0" />
                     <span className="truncate">{course.instructor}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Users className="w-4 h-4 flex-shrink-0" />
+                    <Users className="w-4 h-4 shrink-0" />
                     <span>{course.students || 0}+ Learners</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Clock className="w-4 h-4 flex-shrink-0" />
+                    <Clock className="w-4 h-4 shrink-0" />
                     <span>{course.duration}</span>
                   </div>
                 </div>

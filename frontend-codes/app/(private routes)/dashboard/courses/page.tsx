@@ -29,7 +29,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
 import Image from "next/image"
-import { useDashboard } from "../studentContext"
+import { useDashboard } from "@/app/(private routes)/dashboard/studentContext"
 import { constructUrl } from "@/lib/construct-url"
 
 interface Course {

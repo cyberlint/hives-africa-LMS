@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '@/components/ui/button';
 import { QuizRenderer } from '@/components/lms/QuizRenderer';
 import { DocumentRenderer } from '@/components/lms/DocumentRenderer';
 import { ResourceRenderer } from '@/components/lms/ResourceRenderer';
@@ -23,7 +24,7 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
 }) => {
   if (!lecture) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-[#1d2026] flex items-center justify-center transition-colors duration-300">
+      <div className="min-h-screen bg-gray-50 dark:bg-darkBlue-300 flex items-center justify-center transition-colors duration-300">
         <div className="text-center text-gray-500 dark:text-gray-400 p-8">
           <FileText className="w-16 h-16 mx-auto mb-4 opacity-50" />
           <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">No Content Selected</h2>
@@ -67,16 +68,16 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
   // (video player is in the right panel)
   if (lecture.type === 'video') {
     return (
-      <div className="min-h-screen bg-white dark:bg-[#1d2026] flex flex-col transition-colors duration-300">
+      <div className="min-h-screen bg-white dark:bg-darkBlue-300 flex flex-col transition-colors duration-300">
         {/* Header */}
-        <div className="flex-shrink-0 p-6 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1d2026] transition-colors duration-300">
+        <div className="shrink-0 p-6 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-darkBlue-300 transition-colors duration-300">
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 p-3 bg-[#fdb606]/10 rounded-lg text-[#fdb606]">
+            <div className="shrink-0 p-3 bg-yellow/10 rounded-lg text-yellow">
               {getContentIcon()}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-medium text-[#fdb606] uppercase tracking-wide">
+                <span className="text-xs font-medium text-yellow uppercase tracking-wide">
                   {getContentTypeLabel()}
                 </span>
                 {isCompleted && (
@@ -131,16 +132,16 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
                       href={attachment.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-4 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-[#fdb606] dark:hover:border-[#fdb606] hover:bg-[#fdb606]/5 dark:hover:bg-[#fdb606]/10 transition-all group"
+                      className="p-4 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-yellow dark:hover:border-yellow hover:bg-yellow/5 dark:hover:bg-yellow/10 transition-all group"
                     >
-                      <h4 className="font-medium text-gray-900 dark:text-gray-200 group-hover:text-[#fdb606] dark:group-hover:text-[#fdb606] text-sm mb-1 transition-colors">
+                      <h4 className="font-medium text-gray-900 dark:text-gray-200 group-hover:text-yellow dark:group-hover:text-yellow text-sm mb-1 transition-colors">
                         {attachment.title}
                       </h4>
                       {attachment.description && (
                         <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">{attachment.description}</p>
                       )}
                       <div className="flex justify-between items-center">
-                        <span className="text-xs text-[#fdb606] capitalize">{attachment.type}</span>
+                        <span className="text-xs text-yellow capitalize">{attachment.type}</span>
                         {attachment.fileSize && (
                           <span className="text-xs text-gray-500 dark:text-gray-400">{attachment.fileSize}</span>
                         )}
@@ -148,6 +149,19 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
                     </a>
                   ))}
                 </div>
+              </div>
+            )}
+ 
+            {/* Mark as Complete Action */}
+            {!isCompleted && (
+              <div className="flex justify-center mt-8 mb-6">
+                <Button
+                  onClick={onMarkComplete}
+                  className="bg-yellow hover:bg-yellow/90 text-darkBlue-300 font-bold p-4 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:scale-95"
+                >
+                  <CheckCircle className="w-6 h-6 mr-2" />
+                  Mark as Complete
+                </Button>
               </div>
             )}
           </div>
@@ -158,12 +172,12 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
 
   // For other content types, render their specific components
   return (
-    <div className="min-h-screen bg-white dark:bg-[#1d2026] flex flex-col transition-colors duration-300">
+    <div className="min-h-screen bg-white dark:bg-darkBlue-300 flex flex-col transition-colors duration-300">
       {/* Header */}
-      <div className="flex-shrink-0 p-6 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1d2026] transition-colors duration-300">
+      <div className="shrink-0 p-6 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-darkBlue-300 transition-colors duration-300">
         <div className="flex items-start gap-4">
           <div className={`
-            flex-shrink-0 p-3 rounded-lg
+            shrink-0 p-3 rounded-lg
             ${lecture.type === 'quiz' ? 'bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : ''}
             ${lecture.type === 'document' ? 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400' : ''}
             ${lecture.type === 'resource' ? 'bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : ''}
@@ -200,7 +214,7 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
       </div>
 
       {/* Content Renderer */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar bg-white dark:bg-[#1d2026]">
+      <div className="flex-1 overflow-y-auto custom-scrollbar bg-white dark:bg-darkBlue-300">
         {lecture.type === 'quiz' && (
           <QuizRenderer
             lecture={lecture}

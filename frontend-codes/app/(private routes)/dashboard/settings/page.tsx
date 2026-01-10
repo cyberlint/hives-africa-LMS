@@ -39,7 +39,7 @@ import {
   X,
 } from "lucide-react"
 import type { User } from "@/types"
-import { useDashboard } from "../studentContext"
+import { useDashboard } from "@/app/(private routes)/dashboard/studentContext"
 import Image from "next/image"
 import { downloadReceipt } from "@/lib/purchases"
 import { authClient } from "@/lib/auth-client"

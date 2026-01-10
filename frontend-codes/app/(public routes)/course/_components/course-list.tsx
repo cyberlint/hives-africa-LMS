@@ -30,7 +30,7 @@ export function CourseList({ courses, isMobile }: CourseListProps) {
           onClick={() => handleCourseClick(course.id)}
         >
           <div className={`flex ${isMobile ? "flex-col" : ""} h-full`}>
-            <div className={`relative ${isMobile ? "w-full h-48" : "w-44 h-44"} flex-shrink-0`}>
+            <div className={`relative ${isMobile ? "w-full h-48" : "w-44 h-44"} shrink-0`}>
               <Image
                 src={course.image ? constructUrl(course.image) : "/placeholder.svg"}
                 alt={course.title}

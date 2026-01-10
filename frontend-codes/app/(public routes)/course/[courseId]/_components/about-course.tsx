@@ -9,7 +9,7 @@ interface AboutCourseProps {
 
 export default function AboutCourse({ course }: AboutCourseProps) {
   return (
-    <section id="about" className="py-8 sm:py-12 dark:bg-[#1d2026] transition-colors duration-300">
+    <section id="about" className="py-8 sm:py-12 dark:bg-darkBlue-300 transition-colors duration-300">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
@@ -66,25 +66,25 @@ export default function AboutCourse({ course }: AboutCourseProps) {
                   <h3 className="font-semibold text-[#0F1D2F] dark:text-gray-100 mb-4">This Course Includes:</h3>
                   <ul className="space-y-3 text-sm">
                     <li className="flex items-center space-x-3">
-                      <div className="w-4 h-4 bg-yellow rounded-sm flex items-center justify-center flex-shrink-0">
+                      <div className="w-4 h-4 bg-yellow rounded-sm flex items-center justify-center shrink-0">
                         <span className="text-white text-xs">▶</span>
                       </div>
                       <span className="text-[#0F1D2F] dark:text-gray-300">{course.lessons || course.totalLectures || 0} lessons</span>
                     </li>
                     <li className="flex items-center space-x-3">
-                      <div className="w-4 h-4 bg-yellow rounded-sm flex items-center justify-center flex-shrink-0">
+                      <div className="w-4 h-4 bg-yellow rounded-sm flex items-center justify-center shrink-0">
                         <span className="text-white text-xs">⏱</span>
                       </div>
                       <span className="text-[#0F1D2F] dark:text-gray-300">Duration: {course.duration}</span>
                     </li>
                     <li className="flex items-center space-x-3">
-                      <div className="w-4 h-4 bg-yellow rounded-sm flex items-center justify-center flex-shrink-0">
+                      <div className="w-4 h-4 bg-yellow rounded-sm flex items-center justify-center shrink-0">
                         <span className="text-white text-xs">∞</span>
                       </div>
                       <span className="text-[#0F1D2F] dark:text-gray-300">Full lifetime access</span>
                     </li>
                     <li className="flex items-center space-x-3">
-                      <div className="w-4 h-4 bg-yellow rounded-sm flex items-center justify-center flex-shrink-0">
+                      <div className="w-4 h-4 bg-yellow rounded-sm flex items-center justify-center shrink-0">
                         <span className="text-white text-xs">🏆</span>
                       </div>
                       <span className="text-[#0F1D2F] dark:text-gray-300">Certificate of completion</span>

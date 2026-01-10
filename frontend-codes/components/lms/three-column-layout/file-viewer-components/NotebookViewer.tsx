@@ -14,26 +14,19 @@ export default function NotebookViewer({ notebookUrl, theme = 'JupyterLab Dark' 
   
   // URL-encode the external notebook URL.
   const encodedNotebookUrl = encodeURIComponent(notebookUrl);
-
+  
   // Construct the final iframe URL using the encoded external path.
   const finalIframeUrl = 
-    `${JUPYTERLITE_BASE_PATH}?path=${encodedNotebookUrl}&theme=${theme}`;
-    
+    `${JUPYTERLITE_BASE_PATH}?path=${notebookUrl}&theme=${theme}`;
+    console.log("this is the final iframe url:" + finalIframeUrl);
   return (
-    <div 
-      style={{ 
-        width: '100%', 
-        height: '100%',
-        borderRadius: '8px',
-        overflow: 'hidden',
-        border: '1px solid #333',
-      }}
-    >
+    <div className="w-full h-[600px] lg:h-[800px] rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1e1e1e]">
       <iframe
         src={finalIframeUrl}
         title={`Interactive Notebook: ${notebookUrl}`}
-        style={{ width: '100%', height: '100%', border: 'none' }}
-        />
+        className="w-full h-full border-none"
+        allow="fullscreen; clipboard-read; clipboard-write"
+      />
     </div>
   );
 }

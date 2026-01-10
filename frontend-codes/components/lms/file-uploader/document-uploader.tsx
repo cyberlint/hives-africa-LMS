@@ -32,17 +32,26 @@ export function DocumentUploader({ onChange, value }: iAppProps) {
         }
     }, [value, fileKey]);
 
-    const handleUploadError = () => {
+    const handleUploadError = useCallback(() => {
          setFile(null);
          setError(true);
          setUploading(false);
          setProgress(0);
-    };
+    }, []);
 
-    async function uploadFile(file: File) {
+    const uploadFile = useCallback(async (file: File) => {
         setUploading(true);
         setProgress(0);
         setError(false);
+
+        let contentType = file.type;
+        if (!contentType) {
+            if (file.name.endsWith(".ipynb")) {
+                contentType = "application/x-ipynb+json";
+            } else {
+                contentType = "application/octet-stream";
+            }
+        }
 
         try {
             const presignedResponse = await fetch("/api/s3/upload", {
@@ -50,7 +59,7 @@ export function DocumentUploader({ onChange, value }: iAppProps) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     fileName: file.name,
-                    contentType: file.type,
+                    contentType: contentType,
                     size: file.size,
                     isImage: false, // General file
                 }),
@@ -87,7 +96,7 @@ export function DocumentUploader({ onChange, value }: iAppProps) {
                 };
                 xhr.onerror = () => reject(new Error("Upload failed"));
                 xhr.open("PUT", presignedUrl);
-                xhr.setRequestHeader("Content-Type", file.type);
+                xhr.setRequestHeader("Content-Type", contentType);
                 xhr.send(file);
             });
 
@@ -96,7 +105,7 @@ export function DocumentUploader({ onChange, value }: iAppProps) {
             toast.error('Something went wrong during upload');
             handleUploadError();
         }
-    }
+    }, [handleUploadError, onChange]);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) {
@@ -105,7 +114,7 @@ export function DocumentUploader({ onChange, value }: iAppProps) {
             setError(false);
             uploadFile(selectedFile);
         }
-    }, []);
+    }, [uploadFile]);
 
     async function handleRemoveFile() {
         if (!value) {
@@ -115,10 +124,8 @@ export function DocumentUploader({ onChange, value }: iAppProps) {
 
         try {
             setIsDeleting(true);
-            const response = await fetch('/api/s3/delete', {
+            const response = await fetch(`/api/s3/delete?key=${encodeURIComponent(value)}`, {
                 method: "DELETE",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ key: value }),
             });
 
             if(!response.ok) {
