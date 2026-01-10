@@ -3,7 +3,6 @@
 import { requireAdmin } from "@/lib/require-admin";
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
 import { prisma } from "@/lib/db";
-import { Prisma } from "@prisma/client";
 import { ApiResponse } from "@/lib/types";
 import { courseSchema, CourseSchemaType, lessonSchema, LessonSchemaType, moduleSchema, ModuleSchemaType } from "@/lib/zodSchemas";
 import { request } from "@arcjet/next";
@@ -185,7 +184,7 @@ export async function createModule(values: ModuleSchemaType): Promise<ApiRespons
             };
         }
 
-        await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        await prisma.$transaction(async (tx) => {
             // FIX: Get max module position FROM MODULES, not lessons
             const maxPos = await tx.module.findFirst({
                 where: { courseId: result.data.courseId },
@@ -231,7 +230,7 @@ export async function createLesson(values: LessonSchemaType): Promise<ApiRespons
             };
         }
 
-        await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        await prisma.$transaction(async (tx) => {
             const maxPos = await tx.lesson.findFirst({
                 where: {
                     moduleId: result.data.moduleId,
