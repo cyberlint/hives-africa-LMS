@@ -142,7 +142,7 @@ const CourseDetailCard = ({ course }: { course: CourseListItem }) => {
           size="sm"
           className="w-full rounded-none"
           variant="primary"
-          label="Add to Cart"
+          label={isEnrolled ? "Enrolled" : "Add to Cart"}
           autoNavigate={true}
           isEnrolled={isEnrolled}
         />

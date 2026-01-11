@@ -1,266 +1,176 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Pause, Play, Users, Bot, TrendingUp } from "lucide-react";
+import { Star, Quote, CheckCircle2 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
 
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-
-type AgentCard = {
-  id: number;
-  title: string;
-  description: string;
-  icon: React.ElementType;
-  quote: string;
-  speaker: string;
-  avatarInitials: string;
-};
-
-const agentCards: AgentCard[] = [
+const testimonials = [
   {
-    id: 1,
-    title: "Prospecting Agent",
-    description: "Research, personalize, and execute sales outreach at scale — instantly. Boost your pipeline by 30%.",
-    icon: TrendingUp,
-    quote: "I'm here to help put your prospecting efforts on autopilot.",
-    speaker: "Prospecting Agent",
-    avatarInitials: "PA",
+    name: "Dr. Amara Okoro",
+    role: "Learning Coordinator",
+    company: "Lagos Academy",
+    industry: "Education",
+    avatar: "/avatars/amara.jpg",
+    rating: 5,
+    content: "The Hives Africa LMS has transformed how we deliver vocational training. The platform's ease of use is remarkable and the support team is world-class.",
   },
   {
-    id: 2,
-    title: "Data Agent",
-    description: "Get instant answers to custom questions about your customers and market data in seconds.",
-    icon: Bot,
-    quote: "Does this company sell HubSpot? I want this to be a yes or no answer.",
-    speaker: "Smart Property Creator",
-    avatarInitials: "SC",
+    name: "Kofi Mensah",
+    role: "Startup Founder",
+    company: "TechHub Accra",
+    industry: "Technology",
+    avatar: "/avatars/kofi.jpg",
+    rating: 5,
+    content: "Scaling our training programs across borders became possible only with this LMS. Highly recommend for any African business looking to grow fast.",
   },
   {
-    id: 3,
-    title: "Dolor Sit Amet Agent",
-    description: "Resolve 65% of your customer inquiries automatically, 24/7. Improve CSAT score instantly.",
-    icon: Users,
-    quote: "Hello! I'm HubBot, an AI customer service agent. How can I help you today?",
-    speaker: "HubBot",
-    avatarInitials: "HB",
+    name: "Sarah Mbeki",
+    role: "HR Director",
+    company: "Nairobi Logistics",
+    industry: "Logistics",
+    avatar: "/avatars/sarah.jpg",
+    rating: 4,
+    content: "Our employee onboarding time decreased by 50% after implementing this platform. The reporting features are top-notch and intuitive.",
   },
   {
-    id: 4,
-    title: "Lorem Ipsum Agent",
-    description: "Resolve 65% of your customer inquiries automatically, 24/7. Improve CSAT score instantly.",
-    icon: Users,
-    quote: "Hello! I'm HubBot, an AI customer service agent. How can I help you today?",
-    speaker: "HubBot",
-    avatarInitials: "HB",
+    name: "Jean-Pierre Bakari",
+    role: "Dean of Students",
+    company: "Kigali Institute",
+    industry: "Higher Ed",
+    avatar: "/avatars/jean.jpg",
+    rating: 5,
+    content: "Innovative, robust, and localized. Finally, an LMS that truly understands the African educational landscape and its unique challenges.",
+  },
+  {
+    name: "Fatima Yusuf",
+    role: "Training Manager",
+    company: "Abuja Finance",
+    industry: "Banking",
+    avatar: "/avatars/fatima.jpg",
+    rating: 5,
+    content: "The compliance training modules are so easy to set up. Our staff actually enjoys the learning process now, which is a huge win for us.",
   },
 ];
 
-export default function FinalAgentCarousel() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const totalCards = agentCards.length;
-
-  const updateIndex = useCallback(
-    (newIndex: number) => {
-      const wrappedIndex = (newIndex + totalCards) % totalCards;
-      setActiveIndex(wrappedIndex);
-    },
-    [totalCards]
-  );
-
-  const next = useCallback(() => updateIndex(activeIndex + 1), [activeIndex, updateIndex]);
-  const prev = useCallback(() => updateIndex(activeIndex - 1), [activeIndex, updateIndex]);
-
-  useEffect(() => {
-    if (isPaused) return;
-    const interval = setInterval(next, 4500);
-    return () => clearInterval(interval);
-  }, [isPaused, next]);
-
-  // Desktop variants - Modern clean shadows
-  const variantsDesktop = {
-    center: { 
-      x: "0%", 
-      scale: 1.05, 
-      opacity: 1, 
-      zIndex: 20, 
-      boxShadow: "0px 20px 40px rgba(0,0,0,0.08), 0px 0px 0px 1px rgba(0,0,0,0.03)" 
-    },
-    left: { 
-      x: "-55%", 
-      scale: 0.92, 
-      opacity: 0.7, 
-      zIndex: 10, 
-      boxShadow: "0px 10px 20px rgba(0,0,0,0.05)" 
-    },
-    right: { 
-      x: "55%", 
-      scale: 0.92, 
-      opacity: 0.7, 
-      zIndex: 10, 
-      boxShadow: "0px 10px 20px rgba(0,0,0,0.05)" 
-    },
-    "far-left": { x: "-90%", scale: 0.85, opacity: 0.3, zIndex: 5 },
-    "far-right": { x: "90%", scale: 0.85, opacity: 0.3, zIndex: 5 },
-    hidden: { opacity: 0, scale: 0.7, zIndex: 0 },
-  };
-
-  const getDesktopPosition = (index: number) => {
-    const diff = (index - activeIndex + totalCards) % totalCards;
-    if (diff === 0) return "center";
-    if (diff === 1 || diff === -2) return "right";
-    if (diff === totalCards - 1 || diff === -1) return "left";
-    if (diff === 2 || diff === -1) return "far-right";
-    if (diff === totalCards - 2 || diff === -2) return "far-left";
-    return "hidden";
-  };
-
+export default function TestimonialsCarousel() {
   return (
-    <section
-      className="relative w-full min-h-[600px] flex flex-col justify-center items-center overflow-hidden py-24 bg-gradient-to-b from-gray-50 to-white"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-    >
-      {/* Desktop Carousel */}
-      <div className="hidden md:flex relative w-full max-w-6xl h-[450px] justify-center items-center overflow-visible">
-        {agentCards.map((item, index) => {
-          const position = getDesktopPosition(index);
-          const isCenter = position === "center";
-          return (
-            <motion.div
-              key={item.id}
-              variants={variantsDesktop}
-              initial={false}
-              animate={position}
-              transition={{ duration: 0.5, type: "spring", stiffness: 120, damping: 18 }}
-              className={cn(
-                "absolute w-[360px] h-[400px] rounded-2xl bg-white flex flex-col cursor-pointer p-6",
-                "border border-gray-100 hover:z-30 hover:border-gray-200 transition-colors"
-              )}
-              onClick={() => setActiveIndex(index)}
-            >
-              <CardContent item={item} isCenter={isCenter} />
-            </motion.div>
-          );
-        })}
-
-        {/* Desktop Arrows */}
-        <button
-          onClick={prev}
-          aria-label="Previous slide"
-          className="absolute left-6 md:left-24 z-30 bg-white backdrop-blur-sm p-3 rounded-full shadow-md hover:shadow-lg hover:scale-110 border border-gray-100 text-gray-700 hover:text-gray-900 transition-all"
+    <section className="py-24 bg-white dark:bg-darkBlue-300 relative overflow-hidden transition-colors duration-300">
+      <div className="container mx-auto px-4 mb-20 text-center">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow/10 dark:bg-yellow/20 text-yellow text-xs font-semibold mb-6"
         >
-          <ChevronLeft className="w-6 h-6" />
-        </button>
-
-        <button
-          onClick={next}
-          aria-label="Next slide"
-          className="absolute right-6 md:right-24 z-30 bg-white backdrop-blur-sm p-3 rounded-full shadow-md hover:shadow-lg hover:scale-110 border border-gray-100 text-gray-700 hover:text-gray-900 transition-all"
-        >
-          <ChevronRight className="w-6 h-6" />
-        </button>
-      </div>
-
-      {/* Mobile Carousel */}
-      <div className="md:hidden relative w-full max-w-[95%] h-[450px] flex items-center overflow-hidden">
-        <motion.div
-          className="flex items-center gap-4 h-full"
-          animate={{ x: `calc(-${activeIndex * (320 + 16)}px)` }} // 320px width + 16px gap
-          transition={{ type: "spring", stiffness: 120, damping: 20 }}
-        >
-          {agentCards.map((item, index) => {
-            const isCenter = index === activeIndex;
-            return (
-              <motion.div
-                key={item.id}
-                className={cn(
-                  "flex-shrink-0 w-[320px] h-[400px] rounded-2xl bg-white flex flex-col p-6 cursor-pointer border border-gray-100",
-                  isCenter ? "scale-105 shadow-lg z-10" : "scale-95 opacity-70"
-                )}
-                onClick={() => setActiveIndex(index)}
-              >
-                <CardContent item={item} isCenter={isCenter} />
-              </motion.div>
-            );
-          })}
+          <CheckCircle2 className="w-3.5 h-3.5" />
+          <span>JOIN 10,000+ ORGANIZATIONS</span>
         </motion.div>
+        <motion.h2 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-darkBlue-300 dark:text-white"
+        >
+          What Our <span className="text-yellow">Community</span> Says
+        </motion.h2>
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-[#4A5568] dark:text-gray-300 text-xl max-w-2xl mx-auto leading-relaxed"
+        >
+          Discover why leading organizations across Africa trust Hives Africa to power their learning ecosystems.
+        </motion.p>
       </div>
 
-      {/* Play/Pause + Pagination */}
-      <div className="flex items-center gap-4 mt-8">
-        <button
-          onClick={() => setIsPaused(!isPaused)}
-          aria-label={isPaused ? "Play carousel" : "Pause carousel"}
-          className="p-3 rounded-full bg-white hover:bg-gray-50 transition-all shadow-md hover:shadow-lg border border-gray-100"
-          title={isPaused ? "Play Autoscroll" : "Pause Autoscroll"}
-        >
-          {isPaused ? (
-            <Play className="w-5 h-5 text-gray-700" />
-          ) : (
-            <Pause className="w-5 h-5 text-gray-700" />
-          )}
-        </button>
+      <div className="relative group">
+        {/* Carousel Container */}
+        <div className="flex animate-scroll space-x-6 hover:pause w-max items-stretch pb-8">
+          {[...testimonials, ...testimonials, ...testimonials].map((testimonial, index) => (
+            <Card
+              key={index}
+              className="flex-shrink-0 w-[400px] bg-white dark:bg-[#2a2f3a] border-border/60 dark:border-white/10 hover:border-yellow transition-all duration-300 flex flex-col shadow-sm hover:shadow-md"
+            >
+              <CardContent className="p-8 flex-1 flex flex-col relative">
+                {/* Header: Quote & Rating */}
+                <div className="flex justify-between items-start mb-6">
+                  <div className="text-primary/10 dark:text-white/10">
+                    <Quote className="w-8 h-8 fill-current" />
+                  </div>
+                  <div className="flex gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-4 h-4 ${
+                          i < testimonial.rating
+                            ? "text-yellow fill-current"
+                            : "text-muted-foreground/30 dark:text-white/10"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
 
-        <div className="flex gap-2">
-          {agentCards.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setActiveIndex(idx)}
-              aria-label={`Go to slide ${idx + 1}`}
-              className={cn(
-                "h-2 rounded-full transition-all duration-300",
-                idx === activeIndex 
-                  ? "w-8 bg-blue-600" 
-                  : "w-2 bg-gray-300 hover:bg-blue-300"
-              )}
-            />
+                {/* Content Area */}
+                <div className="flex-1 mb-8">
+                  <p className="text-darkBlue-300 dark:text-gray-200 leading-relaxed text-base font-medium">
+                    &quot;{testimonial.content}&quot;
+                  </p>
+                </div>
+
+                {/* Author Info */}
+                <div className="mt-auto pt-6 border-t border-border/40 dark:border-white/10">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-12 w-12 border border-border/60 dark:border-white/10 shadow-sm">
+                      <AvatarImage
+                        src={testimonial.avatar || "/placeholder.svg"}
+                        alt={testimonial.name}
+                        className="object-cover"
+                      />
+                      <AvatarFallback className="bg-primary/5 dark:bg-white/5 text-primary dark:text-white text-xs font-bold">
+                        {testimonial.name.split(" ").map(n => n[0]).join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <h4 className="font-bold text-darkBlue-300 dark:text-white text-sm leading-tight">
+                        {testimonial.name}
+                      </h4>
+                      <p className="text-xs text-[#6E7485] dark:text-gray-400 mt-1">
+                        {testimonial.role} @ {testimonial.company}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
+
+        {/* Subtle Fade Effects */}
+        <div className="absolute left-0 top-0 bottom-0 w-32 bg-linear-to-r from-white dark:from-darkBlue-300 to-transparent pointer-events-none z-20" />
+        <div className="absolute right-0 top-0 bottom-0 w-32 bg-linear-to-l from-white dark:from-darkBlue-300 to-transparent pointer-events-none z-20" />
+      </div>
+
+      {/* Trust Badge at bottom */}
+      <div className="container mx-auto px-4 mt-16 flex flex-col items-center">
+        <div className="flex -space-x-3 mb-4">
+          {[1,2,3,4,5].map(i => (
+            <div key={i} className="w-10 h-10 rounded-full border-2 border-white dark:border-darkBlue-300 bg-muted dark:bg-[#2a2f3a] flex items-center justify-center text-[10px] font-bold overflow-hidden shadow-sm">
+              <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="user" className="w-full h-full object-cover opacity-80" />
+            </div>
+          ))}
+          <div className="w-10 h-10 rounded-full border-2 border-white dark:border-darkBlue-300 bg-yellow text-white flex items-center justify-center text-[10px] font-bold shadow-sm">
+            +20
+          </div>
+        </div>
+        <p className="text-sm text-[#6E7485] dark:text-gray-400 font-medium">
+          Joined by <span className="text-darkBlue-300 dark:text-white font-bold">100+</span> individuals this month
+        </p>
       </div>
     </section>
-  );
-}
-
-function CardContent({ item, isCenter }: { item: AgentCard; isCenter: boolean }) {
-  return (
-    <>
-      <div
-        className={cn(
-          "relative h-[180px] w-full rounded-xl overflow-hidden mb-6 p-4 flex flex-col justify-center items-center",
-          item.title === "Prospecting Agent" && "bg-gradient-to-br from-pink-50 to-rose-100",
-          item.title === "Data Agent" && "bg-gradient-to-br from-orange-50 to-yellow-100",
-          item.title === "Customer Agent" && "bg-gradient-to-br from-rose-50 to-red-100"
-        )}
-      >
-        <div className="w-full bg-white rounded-lg p-3 shadow-md max-w-[95%] text-sm text-gray-700">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="w-6 h-6 rounded-full bg-orange-200 flex items-center justify-center text-xs font-bold text-orange-700">
-              {item.avatarInitials}
-            </div>
-            <span className="font-semibold text-xs text-gray-800">{item.speaker}</span>
-          </div>
-          <p className="italic leading-snug">{item.quote}</p>
-        </div>
-      </div>
-
-      <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
-      <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-grow">{item.description}</p>
-
-      <motion.button
-        animate={{ opacity: isCenter ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
-        className={cn(
-          "mt-auto text-sm font-semibold text-orange-600 hover:text-orange-800 transition-colors self-start",
-          !isCenter && "pointer-events-none"
-        )}
-      >
-        {isCenter ? "Learn More" : ""}
-      </motion.button>
-    </>
   );
 }

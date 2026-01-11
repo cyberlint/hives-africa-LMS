@@ -2,8 +2,10 @@ import Image from "next/image";
 import FeaturedCourses from "./_components/featuredCourses";
 import BestSellingCourses from "./_components/bestSellingCourses";
 import RecentlyAddedCourses from "./_components/recentlyAddedCourses";
+import TestimonialsCarousel from "@/components/shared/carousels";
 import Link from "next/link";
 import { getBestSellingCourses, getFeaturedCourses, getRecentlyAddedCourses } from "./_components/HomeClients/fetchData";
+import { MotionDiv, MotionSection, MotionH1, MotionP } from "@/components/framer-motion/motion-components";
 
 interface Category {
   name: string;
@@ -64,12 +66,6 @@ const Home = async () => {
       
         {/* HERO SECTION */}
       <section className="relative w-full  bg-white dark:bg-[#1a1d24]  overflow-hidden transition-colors duration-300">
-        {/* Decorative Background Elements */}
-        {/* <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 right-10 w-72 h-72 bg-yellow/5 dark:bg-yellow/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 left-10 w-96 h-96 bg-[#FCAE1A]/5 dark:bg-[#FCAE1A]/10 rounded-full blur-3xl"></div>
-        </div> */}
-
         {/* Content Container */}
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 md:pt-24 md:pb-28">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -78,29 +74,49 @@ const Home = async () => {
             <div className="space-y-8 text-center lg:text-left">
               
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 bg-yellow/10 dark:bg-yellow/15 px-4 py-2 rounded-full">
+              <MotionDiv 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 bg-yellow/10 dark:bg-yellow/15 px-4 py-2 rounded-full"
+              >
                 <span className="w-2 h-2 bg-yellow rounded-full animate-pulse"></span>
                 <span className="text-sm font-medium text-yellow dark:text-yellow">
                   #1 AI Learning Platform in Africa
                 </span>
-              </div>
+              </MotionDiv>
 
               {/* Main Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#0A0A2D] dark:text-white leading-tight">
+              <MotionH1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#0A0A2D] dark:text-white leading-tight"
+              >
                 Real-World{" "}
                 <span className="bg-gradient-to-r from-yellow to-yellow-500 bg-clip-text text-transparent">
                   AI Skills
                 </span>
                 , Made Simple
-              </h1>
+              </MotionH1>
               
               {/* Subtitle */}
-              <p className="text-lg md:text-xl text-[#4A5568] dark:text-gray-300 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+              <MotionP 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="text-lg md:text-xl text-[#4A5568] dark:text-gray-300 max-w-xl mx-auto lg:mx-0 leading-relaxed"
+              >
                 Beginner-friendly AI learning designed for Africans. Master in-demand skills with hands-on projects, peer support, and real-world application.
-              </p>
+              </MotionP>
 
               {/* Trust Indicators */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 pt-2">
+              <MotionDiv 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="flex flex-wrap items-center justify-center lg:justify-start gap-6 pt-2"
+              >
                 <div className="flex items-center gap-2">
                   <div className="flex -space-x-2">
                     {[1, 2, 3, 4].map((i) => (
@@ -138,10 +154,15 @@ const Home = async () => {
                     <p className="text-xs text-[#6E7485] dark:text-gray-400">Average Rating</p>
                   </div>
                 </div>
-              </div>
+              </MotionDiv>
               
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+              <MotionDiv 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4"
+              >
                 <Link
                   href="/signup"
                   className="group relative bg-gradient-to-r from-[#FCAE1A] to-[#FFC04D] text-white text-base font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 w-full sm:w-auto text-center"
@@ -152,38 +173,48 @@ const Home = async () => {
                 
                 <Link
                   href="/course"
-                  className="flex items-center justify-center gap-2 text-yellow dark:text-yellow text-base font-semibold px-8 py-4 rounded-lg border-2 border-yellow dark:border-yellow hover:bg-yellow/50 hover:text-white dark:hover:bg-yellow/50 transition-all duration-300 w-full sm:w-auto"
+                  className="flex items-center justify-center gap-2 text-yellow dark:text-yellow text-base font-semibold px-8 py-4 rounded-lg border-2 border-yellow dark:border-yellow hover:bg-yellow/60 hover:text-white dark:hover:bg-yellow/50 transition-all duration-300 w-full sm:w-auto"
                 >
                   Browse Courses
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </Link>
-              </div>
+              </MotionDiv>
 
               {/* Small Trust Text */}
-              <p className="text-sm text-[#6E7485] dark:text-gray-400 flex items-center justify-center lg:justify-start gap-2">
+              <MotionP 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+                className="text-sm text-[#6E7485] dark:text-gray-400 flex items-center justify-center lg:justify-start gap-2"
+              >
                 <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                Backed by industry mentors • Free trial available
-              </p>
+                Backed by industry mentors
+              </MotionP>
             </div>
             
             {/* ===== RIGHT COLUMN: Image Container ===== */}
-            <div className="relative lg:h-[600px] flex items-center justify-center">
+            <MotionDiv 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="relative lg:h-[600px] flex items-center justify-center"
+            >
               <div className="relative w-full h-[400px] md:h-[500px] lg:h-full">
                 <Image
                   src={"/assets/NextHive Hero.png"} 
                   alt="Hero Illustration: AI Learning Platform"
-                  layout="fill"
-                  objectFit="contain"
+                  fill
+                  style={{ objectFit: "contain" }}
                   priority
                   className="transition-transform duration-700 hover:scale-105"
                   quality={95}
                 />
               </div>
-            </div>
+            </MotionDiv>
             
           </div>
         </div>
@@ -191,7 +222,13 @@ const Home = async () => {
 
       {/* END OF HERO SECTION */}
 
-      <section className="space-y-12 px-4 md:px-16 xl:px-36 py-16 lg:py-12 xl:py-16 bg-white dark:bg-[#1d2026] transition-colors duration-300">
+      <MotionSection 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="space-y-12 px-4 md:px-16 xl:px-36 py-16 lg:py-12 xl:py-16 bg-white dark:bg-darkBlue-300 transition-colors duration-300"
+      >
         <h4 className="text-center text-[32px] md:text-4xl leading-10 text-darkBlue-300 dark:text-gray-100 font-semibold">
           Browse Top Category
         </h4>
@@ -199,8 +236,13 @@ const Home = async () => {
         {/* Categories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
           {categories.map((category, index) => (
-            <div
+            <MotionDiv
               key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
               className={`flex justify-between items-center gap-2 px-2 py-5 cursor-pointer w-full transition-all duration-300 ${
                 category.color === "#FFFFFF"
                   ? "shadow-[0px_11.12px_29.65px_0px_#1D20261A] dark:shadow-none"
@@ -228,7 +270,7 @@ const Home = async () => {
                   </p>
                 </div>
               </Link>
-            </div>
+            </MotionDiv>
           ))}
         </div>
 
@@ -240,21 +282,36 @@ const Home = async () => {
             </Link>
           </span>
         </p>
-      </section>
+      </MotionSection>
 
       {/* Only render Best Selling section if data exists */}
       {bestSellingCourses && bestSellingCourses.length > 0 && (
-        <section className="space-y-12 bg-[#F5F7FA] dark:bg-[#2a2f3a] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-68 transition-colors duration-300">
+        <MotionSection 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="space-y-12 bg-[#F5F7FA] dark:bg-[#2a2f3a] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-68 transition-colors duration-300"
+        >
           <BestSellingCourses courses={bestSellingCourses} />
-        </section>
+        </MotionSection>
       )}
 
-      <section className="space-y-12 bg-white dark:bg-[#1d2026] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-25 sm:pb-30 lg:pb-35 transition-colors duration-300">
+      <MotionSection 
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7 }}
+        className="space-y-12 bg-white dark:bg-darkBlue-300 px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-25 sm:pb-30 lg:pb-35 transition-colors duration-300"
+      >
         {/* Only render Featured section if data exists */}
         {featuredCourses && featuredCourses.length > 0 && (
-          <div className="bg-white dark:bg-[#2a2f3a] space-y-8 border border-[#E9EAF0] dark:border-[#404854] rounded-2xl px-6 py-16 md:p-16 -mt-64 transition-colors duration-300">
+          <MotionDiv 
+            whileHover={{ y: -5 }}
+            className="bg-white dark:bg-[#2a2f3a] space-y-8 border border-[#E9EAF0] dark:border-[#404854] rounded-2xl px-6 py-16 md:p-16 -mt-64 transition-colors duration-300"
+          >
             <FeaturedCourses courses={featuredCourses} />
-          </div>
+          </MotionDiv>
         )}
 
         {/* Only render Recently Added section if data exists */}
@@ -263,9 +320,15 @@ const Home = async () => {
             <RecentlyAddedCourses courses={recentlyAddedCourses} />
           </div>
         )}
-      </section>
+      </MotionSection>
 
-      <section className="flex flex-col xl:flex-row justify-between items-stretch gap-8 bg-[#F5F7FA] dark:bg-[#2a2f3a] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-20 w-full transition-colors duration-300">
+      <MotionSection 
+        initial={{ opacity: 0, x: -50 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="flex flex-col xl:flex-row justify-between items-stretch gap-8 bg-[#F5F7FA] dark:bg-[#2a2f3a] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-20 w-full transition-colors duration-300"
+      >
         <div
           className="flex-1 px-8 pt-10 w-full xl:w-1/2"
           style={{
@@ -301,7 +364,7 @@ const Home = async () => {
           </div>
         </div>
 
-        <div className="flex flex-col justify-center flex-1 space-y-6 bg-white dark:bg-[#1d2026] p-8 w-full xl:w-1/2 transition-colors duration-300">
+        <div className="flex flex-col justify-center flex-1 space-y-6 bg-white dark:bg-darkBlue-300 p-8 w-full xl:w-1/2 transition-colors duration-300">
           <p className="text-darkBlue-300 dark:text-gray-100 text-xl md:text-2xl font-semibold">
             Your teaching & earning steps
           </p>
@@ -348,9 +411,15 @@ const Home = async () => {
             ))}
           </div>
         </div>
-      </section>
+      </MotionSection>
 
-      <section className="flex flex-col lg:flex-row justify-between items-center gap-8 bg-white dark:bg-[#1d2026] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-35 w-full transition-colors duration-300">
+      <MotionSection 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="flex flex-col lg:flex-row justify-between items-center gap-8 bg-white dark:bg-darkBlue-300 px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-35 w-full transition-colors duration-300"
+      >
         <div className="space-y-4 w-full lg:w-[30%]">
           <p className="font-semibold text-2xl text-darkBlue-300 dark:text-gray-100">
             Level up in Tech with NextHive!
@@ -395,9 +464,14 @@ const Home = async () => {
               id: "8",
               image: "/assets/microsoft-logo.png",
             },
-          ].map((logo) => (
-            <div
+          ].map((logo, index) => (
+            <MotionDiv
               key={logo.id}
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.05 }}
+              whileHover={{ y: -5, transition: { duration: 0.2 } }}
               className="flex justify-center items-center bg-white dark:bg-[#2a2f3a] shadow-[0px_0px_28.48px_0px_#091A4412] dark:shadow-[0px_0px_28.48px_0px_#000000] px-4 transition-colors duration-300"
             >
               <Image
@@ -407,10 +481,12 @@ const Home = async () => {
                 height={100}
                 className="h-20 w-20"
               />
-            </div>
+            </MotionDiv>
           ))}
         </div>
-      </section>
+      </MotionSection>
+
+      <TestimonialsCarousel />
     </main>
   );
 };

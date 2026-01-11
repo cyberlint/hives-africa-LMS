@@ -56,6 +56,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    runtime: "nodejs", // ✅ This is correct - keep it as "nodejs"
+    //  runtime: "nodejs", // ✅ This is correct - keep it as "nodejs"
+    runtime: "bun",
     matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };

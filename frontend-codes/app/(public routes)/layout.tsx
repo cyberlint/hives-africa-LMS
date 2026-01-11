@@ -1,7 +1,7 @@
 import Footer from "@/components/shared/footer";
 import Navbar from "@/components/shared/navbar";
 import Topbar from "@/components/shared/topbar";
-import Testimonial from "@/components/shared/carousels";
+
 
 /**
  * Public routes layout: wraps only public marketing / browsing pages.
@@ -14,7 +14,7 @@ export default function PublicRoutesLayout({ children }: { children: React.React
       <Topbar />
       <Navbar />
       {children}
-      <Testimonial />
+
       <Footer />
       </main>
     </>

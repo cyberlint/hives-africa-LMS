@@ -122,7 +122,7 @@ export default function CartCheckoutPage() {
                     >
                       <div className="relative h-32 w-full sm:h-20 sm:w-32 overflow-hidden rounded bg-gray-100 dark:bg-[#404854] flex-shrink-0">
                         {item.thumbnail ? (
-                          <Image src={item.thumbnail} alt={item.title} fill className="object-cover" />
+                          <Image src={constructUrl(item.thumbnail)} alt={item.title} fill className="object-cover" />
                         ) : (
                           <div className="h-full w-full grid place-items-center text-[10px] text-gray-400">No image</div>
                         )}

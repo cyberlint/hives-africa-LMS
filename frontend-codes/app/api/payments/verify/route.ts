@@ -80,44 +80,30 @@ export async function POST(request: NextRequest) {
     });
 
     // 3. Create or Update Enrollment
-    // Check if enrollment already exists
-    const existingEnrollment = await prisma.enrollment.findUnique({
+    const enrollment = await prisma.enrollment.upsert({
       where: {
         userId_courseId: {
           userId,
           courseId,
         },
       },
+      update: {
+        paymentReference: reference,
+        paymentStatus: 'Completed',
+        paymentAmount: formatAmountFromPaystack(transactionData.amount),
+        paidAt: new Date(transactionData.paid_at),
+        paymentId: payment.id
+      },
+      create: {
+        userId,
+        courseId,
+        paymentReference: reference,
+        paymentStatus: 'Completed',
+        paymentAmount: formatAmountFromPaystack(transactionData.amount),
+        paidAt: new Date(transactionData.paid_at),
+        paymentId: payment.id
+      },
     });
-
-    if (!existingEnrollment) {
-      // Create new enrollment
-      await prisma.enrollment.create({
-        data: {
-          userId,
-          courseId,
-          paymentReference: reference,
-          paymentStatus: 'Completed',
-          paymentAmount: formatAmountFromPaystack(transactionData.amount),
-          paidAt: new Date(transactionData.paid_at),
-          paymentId: payment.id
-        },
-      });
-    } else {
-      // Update existing enrollment (e.g. if it was pending or user re-enrolling?)
-      if (existingEnrollment.paymentStatus !== 'Completed') {
-        await prisma.enrollment.update({
-          where: { id: existingEnrollment.id },
-          data: {
-            paymentReference: reference,
-            paymentStatus: 'Completed',
-            paymentAmount: formatAmountFromPaystack(transactionData.amount),
-            paidAt: new Date(transactionData.paid_at),
-            paymentId: payment.id
-          },
-        });
-      }
-    }
 
     // Fetch course details for response
     const course = await prisma.course.findUnique({
@@ -130,7 +116,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       status: 'success',
       message: 'Payment verified successfully',
-      enrollment_id: existingEnrollment?.id || 'new',
+      enrollment_id: enrollment.id,
       course_title: course?.title || transactionData.metadata?.course_title,
       course_id: courseId,
       instructor: course?.user.name,

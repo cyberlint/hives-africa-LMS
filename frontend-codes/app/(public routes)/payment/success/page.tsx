@@ -43,18 +43,20 @@ function PaymentStatusContent() {
   });
 
   useEffect(() => {
-    if (reference) {
+    // Only verify if we have a reference and we haven't already succeeded or failed
+    if (reference && verificationStatus === 'pending') {
       // Add a small delay to ensure Paystack has processed the transaction
       const timer = setTimeout(() => {
+        // Double check pending status before mutating to avoid race condition with re-renders
         verifyPaymentMutation.mutate(reference);
       }, 1000);
       
       return () => clearTimeout(timer);
-    } else {
+    } else if (!reference && verificationStatus === 'pending') {
       setVerificationStatus('failed');
       setErrorMessage('No transaction reference found');
     }
-  }, [reference, verifyPaymentMutation]);
+  }, [reference, verificationStatus, verifyPaymentMutation]);
 
   const handleStartLearning = () => {
     router.push('/dashboard/learning');
