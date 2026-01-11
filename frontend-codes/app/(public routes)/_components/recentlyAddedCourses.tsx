@@ -7,6 +7,7 @@ import { CourseListItem } from "@/services/courses";
 import CourseDetailCard from "./courseDetailCard";
 import Link from "next/link";
 import { constructUrl } from "@/lib/construct-url";
+import { motion } from "framer-motion";
 
 interface RecentlyAddedCoursesProps {
   courses: CourseListItem[];
@@ -41,7 +42,7 @@ const RecentlyAddedCourses = ({ courses }: RecentlyAddedCoursesProps) => {
       const spaceRight = window.innerWidth - rect.right;
       const spaceLeft = rect.left;
 
-      if (spaceRight < 350 && spaceLeft > spaceRight) {
+      if (spaceRight < 400 && spaceLeft > spaceRight) {
         setDetailCardDirection("left");
       } else {
         setDetailCardDirection("right");
@@ -59,9 +60,13 @@ const RecentlyAddedCourses = ({ courses }: RecentlyAddedCoursesProps) => {
 
       <div className="relative z-0 overflow-visible flex flex-col lg:flex-row justify-between gap-6 w-full">
         <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-6 lg:ml-16">
-          {courses.slice(0, 8).map((course) => (
-            <div
+          {courses.slice(0, 8).map((course, index) => (
+            <motion.div
               key={course.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
               className="relative"
               ref={(el) => {
                 courseRefs.current[course.id] = el;
@@ -81,25 +86,25 @@ const RecentlyAddedCourses = ({ courses }: RecentlyAddedCoursesProps) => {
             >
               {/* Course Card */}
               <div
-                className="group cursor-pointer w-full overflow-hidden rounded-xl
+                className="group cursor-pointer h-full w-full overflow-hidden rounded-xl
                 border border-[#E9EAF0] dark:border-[#404854]
                 bg-white dark:bg-[#2a2f3a]
                 shadow-[0_8px_24px_rgba(0,0,0,0.04)]
                 transition-all duration-300
-                hover:-translate-y-0.5
-                hover:shadow-[0_16px_40px_rgba(0,0,0,0.06)]"
+                hover:-translate-y-1"
               >
-                <Image
-                  src={
-                    course.thumbnail
-                      ? constructUrl(course.thumbnail)
-                      : "/assets/courses/course-img11.png"
-                  }
-                  alt={course.title}
-                  width={400}
-                  height={300}
-                  className="object-cover w-full h-48 transition-transform duration-300 group-hover:scale-105"
-                />
+                <div className="relative h-48 w-full overflow-hidden">
+                  <Image
+                    src={
+                      course.thumbnail
+                        ? constructUrl(course.thumbnail)
+                        : "/assets/courses/course-img11.png"
+                    }
+                    alt={course.title}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
 
                 {/* Text content */}
                 <div className="bg-white dark:bg-[#2a2f3a] w-full transition-colors duration-300">
@@ -191,7 +196,7 @@ const RecentlyAddedCourses = ({ courses }: RecentlyAddedCoursesProps) => {
                     </div>
                   );
                 })()}
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

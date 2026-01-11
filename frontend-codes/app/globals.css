@@ -11,6 +11,12 @@
   --color-white: #ffffff;
   --color-orange: #ff6636;
   --breakpoint-xs: 30rem;
+  --animate-scroll: scroll 40s linear infinite;
+
+  @keyframes scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
 }
 
 @theme inline {
@@ -146,6 +152,9 @@
 
 
 @layer utilities {
+  .pause {
+    animation-play-state: paused;
+  }
   .custom-scrollbar-on-hover {
     /* Reserves space for the scrollbar, preventing any content compression. */
     scrollbar-gutter: stable;

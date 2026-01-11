@@ -5,6 +5,7 @@ import { Star } from "lucide-react";
 import { CourseListItem } from "@/services/courses";
 import { constructUrl } from "@/lib/construct-url";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 interface BestSellingCoursesProps {
   courses: CourseListItem[];
@@ -19,13 +20,16 @@ const BestSellingCourses = ({ courses }: BestSellingCoursesProps) => {
 
       <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.slice(0, 8).map((course) => (
-          <article
+          <motion.article
             key={course.id}
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4 }}
+            whileHover={{ y: -8, boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)" }}
             className="group flex flex-col overflow-hidden rounded-xl bg-white dark:bg-[#2a2f3a]
               shadow-[0_8px_24px_rgba(0,0,0,0.04)]
-              transition-all duration-300
-              hover:-translate-y-0.5
-              hover:shadow-[0_16px_40px_rgba(0,0,0,0.06)]"
+              transition-all duration-300"
           >
             {/* Image */}
             <div className="relative h-50 bg-muted/40">
@@ -77,7 +81,7 @@ const BestSellingCourses = ({ courses }: BestSellingCoursesProps) => {
                 View course →
               </Link>
             </div>
-          </article>
+          </motion.article>
         ))}
       </div>
     </>
