@@ -1,5 +1,3 @@
-// app/admin/events/EventForm.tsx
-
 "use client";
 
 import { useTransition } from "react";
@@ -30,7 +28,7 @@ import { createEvent, updateEvent } from "@/app/(public routes)/events/events-ac
 interface AuthUser {
     id: string;
     role: 'user' | 'admin';
-    // Add other fields from your AuthUser type if necessary
+    // Add other fields from AuthUser type if necessary
 }
 
 // FIX: Define the schema for data *received from the form inputs* (dates are strings for datetime-local)
@@ -93,7 +91,7 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
             description: eventData?.description ?? "",
             imageKey: eventData?.imageKey || "", 
             
-            // FIX: Access enum values correctly using .enum
+            // Access enum values correctly using .enum
             venue: eventData?.venue ?? EventVenueEnum.enum.NextHive, 
             url: eventData?.url || "",
             eventCategory: eventData?.eventCategory ?? EventCategoryEnum.enum.Tutorial, 
@@ -129,7 +127,7 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
 
                 toast.success(eventData ? "Event updated successfully" : "Event created successfully");
                 form.reset();
-                router.push("/admin/events");
+                router.push("/events");
 
             } catch (err) {
                 console.error(err);
@@ -147,7 +145,7 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
         <>
             <div className="flex items-center gap-4">
                 <Link
-                    href="/admin/events"
+                    href="/events"
                     className={buttonVariants({ variant: "outline", size: "icon" })}
                 >
                     <ArrowLeft className="size-4" />
