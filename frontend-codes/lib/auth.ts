@@ -11,6 +11,12 @@ import { ResetPasswordEmail } from "@/components/emails/ResetPasswordEmail";
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, { provider: "postgresql" }),
+    trustedOrigins: [process.env.NEXT_PUBLIC_API_BASE_URL || "", "http://localhost:3000", 
+        "https://www.hives.africa", "https://hives.africa", 
+        
+        // This allows Vercel preview/deployment URLs to work
+        "/\.vercel\.app$/"
+    ],
     emailAndPassword: {
         enabled: true,
         requireEmailVerification: true,
