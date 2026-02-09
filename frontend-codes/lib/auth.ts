@@ -10,12 +10,14 @@ import { VerificationEmail } from "@/components/emails/VerificationEmail";
 import { ResetPasswordEmail } from "@/components/emails/ResetPasswordEmail";
 
 export const auth = betterAuth({
+    baseURL: process.env.BETTER_AUTH_URL,
     database: prismaAdapter(prisma, { provider: "postgresql" }),
-    trustedOrigins: [process.env.NEXT_PUBLIC_API_BASE_URL || "", "http://localhost:3000", 
-        "https://www.hives.africa", "https://hives.africa", 
-        
-        // This allows Vercel preview/deployment URLs to work
-        "/\.vercel\.app$/"
+    trustedOrigins: [
+        process.env.NEXT_PUBLIC_API_BASE_URL || "",
+        "http://localhost:3000",
+        "https://www.hives.africa",
+        "https://hives.africa",
+        "/\.vercel\.app$/",
     ],
     emailAndPassword: {
         enabled: true,

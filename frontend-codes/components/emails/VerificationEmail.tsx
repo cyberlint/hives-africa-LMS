@@ -1,6 +1,7 @@
 import {
   Body, Container, Head, Heading, Html, Preview, Section, Text, Hr,
 } from "@react-email/components";
+import Link from "next/link";
 import * as React from "react";
 
 export const VerificationEmail = ({ otp }: { otp: string }) => (
@@ -19,7 +20,7 @@ export const VerificationEmail = ({ otp }: { otp: string }) => (
         </Section>
         <Text style={paragraph}>This code will expire in 10 minutes.</Text>
         <Hr style={hr} />
-        <Text style={footer}>Hives Africa, Lagos, Nigeria</Text>
+        <Text style={footer}>NextHive. <span><Link href="https://www.hives.africa">www.hives.africa</Link></span></Text>
       </Container>
     </Body>
   </Html>
