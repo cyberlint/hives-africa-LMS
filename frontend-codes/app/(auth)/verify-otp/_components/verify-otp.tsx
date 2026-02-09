@@ -24,7 +24,7 @@ export default function VerifyOtpPage() {
                   <path d="m2 12 10 5 10-5" />
                 </svg>
               </div>
-              Acme Inc
+              NextHive
             </a>
             <div className="mx-auto w-full max-w-md">
               <div className="rounded-xl border bg-card text-card-foreground shadow">

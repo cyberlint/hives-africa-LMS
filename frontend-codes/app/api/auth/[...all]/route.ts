@@ -1,103 +1,85 @@
 import { auth } from "@/lib/auth";
-import ip from "@arcjet/ip";
-import {
-    type ArcjetDecision,
-    type BotOptions,
-    type EmailOptions,
-    type ProtectSignupOptions,
-    type SlidingWindowRateLimitOptions,
-} from "@arcjet/next";
-import { toNextJsHandler } from "better-auth/next-js";
 import { NextRequest } from "next/server";
+import arcjet, { 
+    detectBot, 
+    protectSignup, 
+    slidingWindow, 
+    shield 
+} from "@/lib/arcjet";
+import ip from "@arcjet/ip";
 
-// 🧩 Import the instructor’s configured Arcjet instance and helpers
-import arcjet, {
-    detectBot,
-    protectSignup,
-    shield,
-    slidingWindow,
-} from "@/lib/arcjet"; // 👈 FIX: use your instructor’s file path
-
-const emailOptions = {
-    mode: "LIVE",
-    block: ["DISPOSABLE", "INVALID", "NO_MX_RECORDS"],
-} satisfies EmailOptions;
-
-const botOptions = {
-    mode: "LIVE",
-    allow: [],
-} satisfies BotOptions;
-
-const rateLimitOptions = {
-    mode: "LIVE",
-    interval: "2m",
-    max: 5,
-} satisfies SlidingWindowRateLimitOptions<[]>;
-
-const signupOptions = {
-    email: emailOptions,
-    bots: botOptions,
-    rateLimit: rateLimitOptions,
-} satisfies ProtectSignupOptions<[]>;
-
-async function protect(req: NextRequest): Promise<ArcjetDecision> {
-    const session = await auth.api.getSession({ headers: req.headers });
-
-    let userId: string;
-    if (session?.user?.id) {
-        userId = session.user.id;
-    } else {
-        userId = ip(req) || "127.0.0.1";
-    }
-
-    if (req.nextUrl.pathname.startsWith("/api/auth/sign-up")) {
-        const body = await req.clone().json();
-
-        if (typeof body.email === "string") {
-            return arcjet
-                .withRule(protectSignup(signupOptions))
-                .protect(req, { email: body.email, fingerprint: userId });
-        } else {
-            return arcjet
-                .withRule(detectBot(botOptions))
-                .withRule(slidingWindow(rateLimitOptions))
-                .protect(req, { fingerprint: userId });
-        }
-    } else {
-        return arcjet.withRule(detectBot(botOptions)).protect(req, { fingerprint: userId });
-    }
-}
-
-const authHandlers = toNextJsHandler(auth.handler);
-export const { GET } = authHandlers;
+export const GET = (req: NextRequest) => auth.handler(req);
 
 export const POST = async (req: NextRequest) => {
-    const decision = await protect(req);
-
-    // console.log("Arcjet Decision:", decision);
-
-    if (decision.isDenied()) {
-        if (decision.reason.isRateLimit()) {
-            return new Response(null, { status: 429 });
-        } else if (decision.reason.isEmail()) {
-            let message: string;
-
-            if (decision.reason.emailTypes.includes("INVALID")) {
-                message = "Email address format is invalid. Is there a typo?";
-            } else if (decision.reason.emailTypes.includes("DISPOSABLE")) {
-                message = "We do not allow disposable email addresses.";
-            } else if (decision.reason.emailTypes.includes("NO_MX_RECORDS")) {
-                message =
-                    "Your email domain does not have an MX record. Is there a typo?";
-            } else {
-                message = "Invalid email.";
-            }
-
-            return Response.json({ message }, { status: 400 });
-        } else {
-            return new Response(null, { status: 403 });
+    const clonedReq = req.clone();
+    const userIp = ip(req) || "127.0.0.1";
+    const pathname = req.nextUrl.pathname;
+    
+    let body: any = {};
+    if (pathname.includes("/sign-up")) {
+        try {
+            body = await clonedReq.json();
+        } catch (e) {
+            console.error("Arcjet body parse error:", e);
         }
     }
 
-    return authHandlers.POST(req);
+    // --- ARCJET RULE ENGINE ---
+    
+    let decision;
+
+    if (pathname.includes("/sign-up")) {
+        // 1. Strict Protection for Signups
+        decision = await arcjet
+            .withRule(
+                protectSignup({
+                    email: {
+                        mode: "LIVE",
+                        deny: ["DISPOSABLE", "INVALID", "NO_MX_RECORDS"],
+                    },
+                    bots: { mode: "LIVE", allow: [] }, 
+                    rateLimit: { mode: "LIVE", interval: "2m", max: 5 },
+                })
+            )
+            .protect(req, { 
+                email: body?.email ?? "", 
+                fingerprint: userIp 
+            });
+    } else {
+        // 2. Standard Protection for all other Auth routes (Sign-in, Session, etc.)
+        decision = await arcjet
+            .withRule(shield({ mode: "LIVE" })) // Basic WAF protection
+            .withRule(detectBot({ mode: "LIVE", allow: [] })) // Block login bots
+            .withRule(slidingWindow({ mode: "LIVE", interval: "1m", max: 10 })) // General rate limit
+            .protect(req, { fingerprint: userIp });
+    }
+
+    // --- DENIAL LOGIC ---
+
+    if (decision.isDenied()) {
+        console.warn(`[SECURITY] Request denied on ${pathname}. Reason:`, decision.reason);
+
+        if (decision.reason.isRateLimit()) {
+            return new Response("Too many attempts. Please wait a moment.", { status: 429 });
+        }
+
+        if (decision.reason.isEmail()) {
+            let message = "Invalid email address.";
+            if (decision.reason.emailTypes.includes("DISPOSABLE")) {
+                message = "Disposable emails are not permitted.";
+            } else if (decision.reason.emailTypes.includes("NO_MX_RECORDS")) {
+                message = "This email domain does not seem to exist.";
+            }
+            return Response.json({ message }, { status: 400 });
+        }
+
+        if (decision.reason.isBot()) {
+            return new Response("Automated access denied.", { status: 403 });
+        }
+
+        return new Response("Access Forbidden", { status: 403 });
+    }
+
+    // --- SUCCESS: HANDOFF ---
+    return auth.handler(req);
 };

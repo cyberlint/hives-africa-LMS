@@ -58,10 +58,13 @@ function SignupForm() {
   const onSubmit = async (data: SignupFormData) => {
     setIsLoading(true)
     try {
+      // 1. Trigger the signup. 
+      // Better Auth will automatically call your 'sendVerificationOTP' plugin logic.
       const { data: signUpData, error: signUpError } = await authClient.signUp.email({
         email: data.email,
         password: data.password,
         name: data.name,
+        callbackURL: "/verify-otp", // Optional: where to go after verification
       })
 
       if (signUpError) {
@@ -71,22 +74,13 @@ function SignupForm() {
         return
       }
 
-      const { error: otpError } = await authClient.emailOtp.sendVerificationOtp({
-        email: data.email,
-        type: "email-verification",
+      // 2. Success! Redirect to the OTP input page
+      toast.success("Account created!", {
+        description: "Please check your email for the verification code",
       })
-
-      if (otpError) {
-        toast.error("Verification email failed", {
-          description: "Account created but could not send verification email",
-        })
-      } else {
-        toast.success("Account created!", {
-          description: "Please check your email for verification code",
-        })
-      }
-
+      
       router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`)
+      
     } catch (error: any) {
       toast.error("Sign up failed", {
         description: error.message || "Something went wrong",

@@ -1,31 +1,25 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "*.fly.storage.tigris.dev",
-        port: "",
+        hostname: "nexthive-lms.fly.storage.tigris.dev",
         pathname: "/**",
       },
     ],
   },
-  webpack(config, { isServer, nextRuntime }) {
-    if (nextRuntime === "edge" || nextRuntime === "nodejs") {
-      config.externals = [
-        ...(config.externals || []),
-        "better-auth/telemetry",
-      ];
-    }
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      "@": path.resolve(__dirname),
-    };
-    return config;
+
+  serverExternalPackages: ["prettier"],
+
+  experimental: {
   },
-  turbopack: {},
+
+  env: {
+    NEXT_PUBLIC_API_BASE_URL:
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000",
+  },
 };
 
 export default nextConfig;

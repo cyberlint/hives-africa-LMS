@@ -20,7 +20,7 @@ export default function LoginPage() {
             height={100}
           />
             </div>
-            Analytix Hive.
+            NextHive
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">

@@ -63,7 +63,6 @@ const Home = async () => {
 
   return (
     <main className="-mb-16">
-      
         {/* HERO SECTION */}
       <section className="relative w-full  bg-white dark:bg-[#1a1d24]  overflow-hidden transition-colors duration-300">
         {/* Content Container */}
@@ -91,7 +90,7 @@ const Home = async () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#0A0A2D] dark:text-white leading-tight"
+                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#0A0A2D] dark:text-white leading-tight"
               >
                 Real-World{" "}
                 <span className="bg-gradient-to-r from-yellow to-yellow-500 bg-clip-text text-transparent">
