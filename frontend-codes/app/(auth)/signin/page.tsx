@@ -13,7 +13,7 @@ export default function LoginPage() {
                         <Image
             src="/assets/Analytix Hive Logo(transparent).png"
             alt="logo"
-            className="w-[100px]"
+            className="w-25"
             width={100}
             height={100}
           />

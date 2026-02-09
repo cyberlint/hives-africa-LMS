@@ -17,8 +17,8 @@ export const ResetPasswordEmail = ({ url }: { url: string }) => (
           </Button>
         </Section>
         <Text style={paragraph}>
-          If you didn't request this, you can safely ignore this email.
-        </Text>
+            {"If you didn't request this, you can safely ignore this email and nothing bad will happen."}
+            </Text>
         <Text style={paragraph}>
           Alternatively, copy and paste this link: <br />
           <span style={link}>{url}</span>
@@ -28,7 +28,7 @@ export const ResetPasswordEmail = ({ url }: { url: string }) => (
   </Html>
 );
 
-const main = { backgroundColor: "#ffffff", fontFamily: 'system-ui, -apple-system, sans-serif' };
+const main = { backgroundColor: "#ffffff", fontFamily: "system-ui, -apple-system, sans-serif" };
 const container = { margin: "0 auto", padding: "20px 0 48px" };
 const logo = { color: "#FDB606", fontSize: "28px", fontWeight: "bold" };
 const paragraph = { fontSize: "16px", lineHeight: "26px" };

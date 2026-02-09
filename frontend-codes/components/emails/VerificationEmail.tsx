@@ -25,7 +25,7 @@ export const VerificationEmail = ({ otp }: { otp: string }) => (
   </Html>
 );
 
-const main = { backgroundColor: "#ffffff", fontFamily: 'system-ui, -apple-system, sans-serif' };
+const main = { backgroundColor: "#ffffff", fontFamily: "system-ui, -apple-system, sans-serif" };
 const container = { margin: "0 auto", padding: "20px 0 48px" };
 const logo = { color: "#FDB606", fontSize: "28px", fontWeight: "bold" };
 const paragraph = { fontSize: "16px", lineHeight: "26px" };

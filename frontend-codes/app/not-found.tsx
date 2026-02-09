@@ -14,7 +14,7 @@ export default function NotFound() {
       <Topbar />
       <Navbar />
       
-      <div className="flex-grow flex flex-col items-center justify-center px-4 py-12">
+      <div className="grow flex flex-col items-center justify-center px-4 py-12">
         <div className="max-w-3xl w-full text-center space-y-8">
           {/* Illustration Container */}
           <MotionDiv
@@ -49,7 +49,7 @@ export default function NotFound() {
               transition={{ delay: 0.3, duration: 0.5 }}
               className="text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto"
             >
-              It seems you've wandered into uncharted territory. Don't worry, even the best explorers get lost sometimes. Let's get you back on track!
+              {"It seems you've wandered into uncharted territory. Don't worry, even the best explorers get lost sometimes. Let's get you back on track!"}
             </MotionP>
           </div>
 
