@@ -19,7 +19,7 @@ const FacebookPixel = () => {
     <div>
       <Script
         id="fb-pixel"
-        src="/scripts/pixel.js"
+        src="/scripts/pixel.ts"
         strategy="afterInteractive"
         onLoad={() => setLoaded(true)}
         data-pixel-id={pixel.FB_PIXEL_ID}
