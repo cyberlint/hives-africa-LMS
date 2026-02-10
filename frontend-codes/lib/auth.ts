@@ -21,7 +21,6 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
         requireEmailVerification: true,
-        maskEmail: false,
         async sendResetPassword({ user, url }) {
             const html = await render(React.createElement(ResetPasswordEmail, { url }));
             

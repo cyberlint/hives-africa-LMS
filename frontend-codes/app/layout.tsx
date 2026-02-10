@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/contexts/CartContext";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import FacebookPixel from "@/components/marketing-and-analytics/FacebookPixel";
 // Site-wide chrome (Topbar, Navbar, Footer) moved into `(public routes)/layout.tsx` to avoid rendering inside private student dashboard.
 
 const montserrat = Montserrat({
@@ -34,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning style={{ height: '100%' }}>
-      <body className={`${montserrat.className} bg-white dark:bg-[#1d2026] text-gray-900 dark:text-gray-100 transition-colors duration-300`} style={{ height: '100%' }}>
+      <body className={`${montserrat.className} bg-white dark:bg-darkBlue-300 text-gray-900 dark:text-gray-100 transition-colors duration-300`} style={{ height: '100%' }}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -55,6 +56,7 @@ export default function RootLayout({
                   }}
                 />
                 {children}
+                <FacebookPixel />
               </CartProvider>
             </AuthProvider>
           </QueryProvider>
