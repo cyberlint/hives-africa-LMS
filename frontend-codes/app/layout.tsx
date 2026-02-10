@@ -8,7 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/contexts/CartContext";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import FacebookPixel from "@/components/marketing-and-analytics/FacebookPixel";
+import FacebookPixel from "@/components/metadata/FacebookPixel";
 // Site-wide chrome (Topbar, Navbar, Footer) moved into `(public routes)/layout.tsx` to avoid rendering inside private student dashboard.
 
 const montserrat = Montserrat({
