@@ -17,11 +17,11 @@ export const auth = betterAuth({
         "http://localhost:3000",
         "https://www.hives.africa",
         "https://hives.africa",
-        "/\.vercel\.app$/",
     ],
     emailAndPassword: {
         enabled: true,
         requireEmailVerification: true,
+        maskEmail: false,
         async sendResetPassword({ user, url }) {
             const html = await render(React.createElement(ResetPasswordEmail, { url }));
             
