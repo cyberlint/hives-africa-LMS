@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  transpilePackages: ["better-auth"],
+  experimental: {
+    serverMinification: false,
+  },
   images: {
     remotePatterns: [
       {
@@ -12,9 +16,6 @@ const nextConfig: NextConfig = {
   },
 
   serverExternalPackages: ["prettier"],
-
-  experimental: {
-  },
 
   env: {
     NEXT_PUBLIC_API_BASE_URL:
