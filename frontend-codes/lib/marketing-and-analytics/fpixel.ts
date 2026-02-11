@@ -1,16 +1,20 @@
 declare global {
   interface Window {
-    fbq: (event: string, name: string, options?: Record<string, any>) => void;
+    fbq?: (...args: any[]) => void;
   }
 }
 
-export const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
+export const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID as string;
 
 export const pageview = () => {
-  window.fbq("track", "PageView");
+  if (typeof window !== "undefined" && window.fbq) {
+    window.fbq("track", "PageView");
+  }
 };
 
-// https://developers.facebook.com/docs/facebook-pixel/advanced/
-export const event = (name: string, options = {}) => {
-  window.fbq("track", name, options);
+// Custom events
+export const event = (name: string, options: Record<string, any> = {}) => {
+  if (typeof window !== "undefined" && window.fbq) {
+    window.fbq("track", name, options);
+  }
 };
