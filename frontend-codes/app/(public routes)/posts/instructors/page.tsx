@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   Accordion,
@@ -51,11 +50,11 @@ export default function RFP2026Page() {
             school; we are building a pan-African engine for the data and AI
             revolution. Our mission is to bridge the technology skill gap by
             empowering a generation of professionals with an
-            "authentically African" approach to innovation.
+            {"authentically African"} approach to innovation.
           </p>
 
           <p className="mt-4 text-muted-foreground leading-relaxed">
-            We are moving away from traditional instruction to{" "}
+            We are moving away from traditional instruction to {" "}
             <strong>Active Building</strong>. We invite visionary experts,
             practitioners, and organizations to bid for the opportunity to
             develop high-impact programs designed for Doers.
