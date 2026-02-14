@@ -28,9 +28,9 @@ export default function Footer() {
 
         {/* Links Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          {/* Analytix Hive Schools */}
+          {/* NextHive Schools */}
           <div>
-            <h3 className="font-semibold mb-4">Analytix Hive Schools</h3>
+            <h3 className="font-semibold mb-4">NextHive Schools</h3>
             <ul className="space-y-2 text-white/80">
               <li>
                 <a href="#" className="hover:text-white">
@@ -123,7 +123,7 @@ export default function Footer() {
               </li>
               <li>
                 <a href="#" className="hover:text-white">
-                  Partner with Analytix Hive
+                  Partner with NextHive
                 </a>
               </li>
               <li>
@@ -180,7 +180,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="border-t border-white/20 pt-8">
           <div className="flex flex-col lg:flex-row justify-between items-center text-white/60 text-sm">
-            <p>Copyright Analytix Hive 2024</p>
+            <p>Copyright NextHive 2026</p>
             <div className="flex space-x-6 mt-4 lg:mt-0">
               <a href="#" className="hover:text-white">
                 Privacy Policy

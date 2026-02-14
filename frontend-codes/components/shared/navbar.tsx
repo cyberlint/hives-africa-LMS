@@ -17,7 +17,7 @@ const Navbar = () => {
   const router = useRouter();
   const { items } = useCart();
   const { data: session } = authClient.useSession(); // Use Better Auth like admin
-   const user = session?.user;
+  const user = session?.user;
   const { theme, setTheme } = useTheme();
   
   const cartItemsCount = items.reduce((total, item) => total + item.quantity, 0);
@@ -51,8 +51,8 @@ const Navbar = () => {
         <div className="flex items-center gap-12 xl:gap-24 w-[70%]">
           <Link href="/">
             <Image
-              src={"/assets/Analytix Hive Logo 3.png"}
-              alt="Analytix Logo"
+              src={"/assets/NextHive Logo.png"}
+              alt="NextHive Logo"
               width={70}
               height={70}
             />
@@ -126,8 +126,8 @@ const Navbar = () => {
         <div className="flex justify-between items-center px-4 w-full">
           <Link href="/">
             <Image
-              src={"/assets/Analytix Hive Logo 3.png"}
-              alt="Analytix Logo"
+              src={"/assets/NextHive Logo.png"}
+              alt="NextHive Logo"
               width={70}
               height={70}
             />
@@ -138,7 +138,7 @@ const Navbar = () => {
           <ul className="flex flex-col gap-8 text-sm text-white">
             <li>
               <Link href="/" className="active:text-yellow transition">
-                Why Analytix
+                Why NextHive
               </Link>
             </li>
 

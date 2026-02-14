@@ -13,7 +13,7 @@ export default function LoginPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-md  text-primary-foreground">
                   {/* <GalleryVerticalEnd className="size-4" /> */}
                         <Image
-            src="/assets/Analytix Hive Logo(transparent).png"
+            src="/assets/NextHive Logo.png"
             alt="logo"
             className="w-25"
             width={100}

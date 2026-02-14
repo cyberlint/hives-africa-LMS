@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   title: "NextHive | Courses ",
   description: "The Pan-African AI School",
   icons: {
-    icon: "/assets/Analytix Hive Logo 3.png",
+    icon: "/favicon.png",
     // shortcut: "/favicon.ico",
     // apple: "/apple-touch-icon.png",
   },

@@ -12,7 +12,7 @@ import { FaYoutube } from "react-icons/fa";
 const ThankYou = () => {
   const [popUp, setPopUp] = useState(false);
   const shareText = encodeURIComponent(
-    "I just registered for free weekly tech sessions with Analytix Hive! Join me: "
+    "I just registered for free weekly tech sessions with NextHive! Join me: "
   );
   const shareUrl = encodeURIComponent(window.location.href);
 
@@ -30,7 +30,7 @@ const ThankYou = () => {
           popUp ? "blur-md" : ""
         }`}
       >
-        <Image src="/assets/Analytix Hive Logo(transparent).png" alt="logo" className="m-auto w-[200px]" />
+        <Image src="/assets/NextHive Logo.png" alt="logo" className="m-auto w-[200px]" />
 
         <div className="flex justify-around items-center">
           <Image src="/assets/undraw_super-thank-you_flq2.png" alt="thank you" className="w-[30%]" />

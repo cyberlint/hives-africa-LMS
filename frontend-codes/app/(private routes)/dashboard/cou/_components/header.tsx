@@ -5,7 +5,7 @@ export function Header() {
     <header className="bg-[#1a365d] text-white py-3 px-6">
       <div className="container mx-auto flex justify-between items-center text-xs">
         <div className="flex space-x-6">
-          <Link href="#" className="hover:text-gray-200 transition-colors duration-200">
+          <Link href="/posts/instructors" className="hover:text-gray-200 transition-colors duration-200">
             Become a partner
           </Link>
           <Link href="#" className="hover:text-gray-200 transition-colors duration-200">

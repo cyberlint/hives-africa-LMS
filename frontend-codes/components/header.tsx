@@ -72,8 +72,8 @@ export default function Header() {
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center space-x-2">
             <Image
-              src="/assets/Analytix Hive Logo(transparent).png"
-              alt="Analytix Hive Logo"
+              src="/assets/NextHive Logo.png"
+              alt="NextHive Logo"
               width={40}
               height={40}
               className="h-10 w-auto"

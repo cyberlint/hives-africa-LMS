@@ -16,7 +16,7 @@ export default function Topbar() {
       </Link>
 
         <div className="flex items-center gap-1 cursor-pointer group hover:text-yellow dark:hover:text-yellow transition">
-          <span>Become a partner</span>
+          <span><Link href={"/posts/instructors"}>Become a partner</Link></span>
           <ChevronDown className="text-[#384957] group-hover:text-yellow w-4 h-4" />
         </div>
 

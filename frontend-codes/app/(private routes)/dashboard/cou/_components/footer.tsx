@@ -2,7 +2,7 @@ import Link from "next/link"
 
 const footerSections = [
   {
-    title: "Analytix Hive Schools",
+    title: "NextHive Schools",
     links: [
       "School of Artificial Intelligence",
       "School of Data Science",
@@ -18,7 +18,7 @@ const footerSections = [
   },
   {
     title: "Company",
-    links: ["About us", "Why Hive?", "Blog", "Jobs at the Hive", "Partner with Analytix Hive", "Resources"],
+    links: ["About us", "Why Hive?", "Blog", "Jobs at the Hive", "Partner with NextHive", "Resources"],
   },
 ]
 

@@ -85,7 +85,7 @@ const company: FooterLink[] = [
   },
   {
     title: "Partner with NextHive",
-    href: "/",
+    href: "/posts/instructors",
   },
   {
     title: "Resources",
@@ -152,8 +152,8 @@ const Footer = () => {
         <main className="flex flex-col lg:flex-row justify-start items-start gap-12 sm:gap-16 xl:gap-24">
           <section className="flex flex-col gap-4 w-full lg:w-1/4">
             <Image
-              src={"/assets/Analytix Hive Logo 3.png"}
-              alt="Analytix Logo"
+              src={"/assets/NextHive Logo.png"}
+              alt="NextHive Logo"
               width={80}
               height={80}
             />

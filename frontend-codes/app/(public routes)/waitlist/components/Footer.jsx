@@ -1,4 +1,4 @@
-import logo from "../../../../public/assets/Analytix Hive Logo.jpg";
+import logo from "../../../../public/assets/NextHive Logo.png";
 import { FaFacebook } from "react-icons/fa";
 import { FaSquareInstagram } from "react-icons/fa6";
 import { FaLinkedin } from "react-icons/fa";
@@ -13,7 +13,7 @@ const Footer = ({contactRef}) => {
     >
       <div className=" flex flex-col  items-center">
         <i >
-          <Image src="/assets/Analytix Hive Logo.jpg" alt="logo" className="w-[80px] rounded-xl " width={100} height={100} />
+          <Image src="/assets/NextHive Logo.png" alt="logo" className="w-[80px] rounded-xl " width={100} height={100} />
         </i>
         <p className="text-[#061c2d] text-sm my-3">
           The Pan-African Tech School

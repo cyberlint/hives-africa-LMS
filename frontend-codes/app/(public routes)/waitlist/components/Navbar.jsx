@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import logo from '../../../../public/assets/Analytix Hive Logo(transparent).png'
+import logo from '../../../../public/assets/NextHive Logo.png'
 import Image from 'next/image';
 const Navbar = ({scrollToSection, waitlistRef, classesRef, contactRef}) => {
   const [boxIsOpen, setBoxIsOpen] = useState(false)
@@ -10,7 +10,7 @@ const Navbar = ({scrollToSection, waitlistRef, classesRef, contactRef}) => {
       <header className="flex justify-between items-center w-full py-4">
         <i className="mx-2">
           <Image
-            src="/assets/Analytix Hive Logo(transparent).png"
+            src="/assets/NextHive Logo.png"
             alt="logo"
             className="w-[100px]"
             width={100}

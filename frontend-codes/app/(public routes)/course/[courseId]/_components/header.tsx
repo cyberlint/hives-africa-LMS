@@ -36,7 +36,7 @@ export default function Header() {
 
           {/* Right side */}
           <div className="hidden lg:flex items-center space-x-6">
-            <a href="#" className="text-[#0F1D2F] hover:underline">
+            <a href="/posts/instructors" className="text-[#0F1D2F] hover:underline">
               Become a Partner
             </a>
 

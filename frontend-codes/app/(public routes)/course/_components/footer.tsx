@@ -11,7 +11,7 @@ export function Footer() {
               <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                 <div className="w-4 h-4 bg-[#1a2332] rounded-sm"></div>
               </div>
-              <span className="text-xl font-bold">analytix hive</span>
+              <span className="text-xl font-bold">NextHive</span>
             </div>
             <p className="text-[#8e9aaf] mb-6">Transforming Learning in Africa</p>
             <div className="flex space-x-4">
@@ -23,7 +23,7 @@ export function Footer() {
 
           {/* Column 2 */}
           <div>
-            <h4 className="font-bold mb-4">Analytix Hive Schools</h4>
+            <h4 className="font-bold mb-4">NextHive Schools</h4>
             <ul className="space-y-2 text-[#8e9aaf]">
               <li>School of Artificial Intelligence</li>
               <li>School of Data Science</li>
@@ -55,7 +55,7 @@ export function Footer() {
               <li>Why Hive?</li>
               <li>Blog</li>
               <li>Jobs at the Hive</li>
-              <li>Partner with Analytix Hive</li>
+              <li>Partner with NextHive</li>
               <li>Resources</li>
             </ul>
           </div>
