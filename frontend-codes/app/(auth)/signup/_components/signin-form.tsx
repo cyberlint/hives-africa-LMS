@@ -78,9 +78,9 @@ function SignupForm() {
       toast.success("Account created!", {
         description: "Please check your email for the verification code",
       })
-      
+
       router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`)
-      
+
     } catch (error: any) {
       toast.error("Sign up failed", {
         description: error.message || "Something went wrong",
@@ -91,6 +91,19 @@ function SignupForm() {
   }
 
   const handleGoogleSignIn = async () => {
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/",
+      })
+    } catch (error: any) {
+      toast.error("Sign in failed", {
+        description: error.message || "Could not sign in with Google",
+      })
+    }
+  }
+
+  const handleGithubSignIn = async () => {
     try {
       await authClient.signIn.social({
         provider: "github",
@@ -125,6 +138,7 @@ function SignupForm() {
                     type="text"
                     placeholder="Divine Doe"
                     disabled={isLoading}
+                    className="h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-[#FDB606] focus-visible:border-[#FDB606] transition-all duration-200"
                     {...field}
                   />
                 </FormControl>
@@ -142,8 +156,9 @@ function SignupForm() {
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="divine@hive.com"
+                    placeholder="kofi@gmail.com"
                     disabled={isLoading}
+                    className="h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-[#FDB606] focus-visible:border-[#FDB606] transition-all duration-200"
                     {...field}
                   />
                 </FormControl>
@@ -163,7 +178,7 @@ function SignupForm() {
                     <Input
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
-                      className="pr-10"
+                      className="h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-[#FDB606] focus-visible:border-[#FDB606] transition-all duration-200"
                       disabled={isLoading}
                       {...field}
                     />
@@ -215,7 +230,7 @@ function SignupForm() {
                     <Input
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="Confirm your password"
-                      className="pr-10"
+                      className="h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-[#FDB606] focus-visible:border-[#FDB606] transition-all duration-200"
                       disabled={isLoading}
                       {...field}
                     />
@@ -251,22 +266,65 @@ function SignupForm() {
               Or continue with
             </span>
           </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+            {/* Google */}
+            <button
+              type="button"
+              disabled={isLoading}
+              onClick={handleGoogleSignIn}
+              className="group relative w-full h-11 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md
+               hover:bg-white/10 transition-all duration-200
+               flex items-center justify-center gap-3"
+            >
+              <svg
+                className="w-5 h-5"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  fill="#EA4335"
+                  d="M24 9.5c3.54 0 6.73 1.22 9.24 3.61l6.9-6.9C35.91 2.36 30.4 0 24 0 14.64 0 6.48 5.4 2.44 13.28l8.05 6.25C12.5 13.12 17.76 9.5 24 9.5z"
+                />
+                <path
+                  fill="#4285F4"
+                  d="M46.1 24.5c0-1.63-.15-3.2-.42-4.7H24v9h12.4c-.54 2.9-2.17 5.36-4.63 7.03l7.16 5.57C43.9 36.9 46.1 31.2 46.1 24.5z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M10.49 28.53A14.5 14.5 0 019.5 24c0-1.58.27-3.1.75-4.53l-8.05-6.25A23.98 23.98 0 000 24c0 3.88.93 7.53 2.56 10.78l7.93-6.25z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M24 48c6.48 0 11.91-2.13 15.88-5.8l-7.16-5.57c-2 1.34-4.56 2.13-8.72 2.13-6.24 0-11.5-3.62-13.51-8.78l-7.93 6.25C6.48 42.6 14.64 48 24 48z"
+                />
+              </svg>
 
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            disabled={isLoading}
-            onClick={handleGoogleSignIn}
-          >
-            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-              <path
+              <span className="text-sm font-medium tracking-tight">
+                Google
+              </span>
+            </button>
+
+            {/* GitHub */}
+            <button
+              type="button"
+              disabled={isLoading}
+              onClick={handleGithubSignIn}
+              className="group relative w-full h-11 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md
+               hover:bg-white/10 transition-all duration-200
+               flex items-center justify-center gap-3"
+            >
+              <svg
+                className="w-5 h-5 text-white"
+                viewBox="0 0 24 24"
                 fill="currentColor"
-                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
-              />
-            </svg>
-            Continue with GitHub
-          </Button>
+              >
+                <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.85 10.91.57.1.78-.25.78-.55v-2.02c-3.19.69-3.86-1.54-3.86-1.54-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.74 2.68 1.24 3.34.95.1-.74.4-1.24.73-1.53-2.55-.29-5.23-1.27-5.23-5.67 0-1.25.45-2.27 1.17-3.07-.12-.29-.51-1.47.11-3.06 0 0 .96-.31 3.15 1.17a10.93 10.93 0 015.74 0c2.19-1.48 3.15-1.17 3.15-1.17.62 1.59.23 2.77.11 3.06.73.8 1.17 1.82 1.17 3.07 0 4.41-2.69 5.37-5.25 5.65.41.35.77 1.04.77 2.1v3.11c0 .3.2.66.79.55A11.51 11.51 0 0023.5 12C23.5 5.65 18.35.5 12 .5z" />
+              </svg>
+
+              <span className="text-sm font-medium tracking-tight">
+                GitHub
+              </span>
+            </button>
+          </div>
         </div>
 
         <div className="text-center text-sm">

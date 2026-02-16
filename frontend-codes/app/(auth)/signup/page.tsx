@@ -1,5 +1,3 @@
-import { GalleryVerticalEnd } from "lucide-react"
-
 import SignupForm from "./_components/signin-form"
 import Link from "next/link"
 import Image from "next/image"
@@ -11,8 +9,7 @@ export default function LoginPage() {
      <div className="flex justify-center gap-2 md:justify-start">
           <Link href="/" className="flex items-center gap-2 font-medium">
             <div className="flex h-10 w-10 items-center justify-center rounded-md  text-primary-foreground">
-                  {/* <GalleryVerticalEnd className="size-4" /> */}
-                        <Image
+            <Image
             src="/assets/NextHive Logo.png"
             alt="logo"
             className="w-25"

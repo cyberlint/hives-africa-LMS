@@ -86,9 +86,12 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentPropsW
           <Input
             id="email"
             type="email"
-            placeholder="divine@hive.com"
+            placeholder="kofi@gmail.com"
             disabled={isLoading}
-            className={cn(errors.email && "border-red-500")}
+            className={cn(
+              "h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-[#FDB606] focus-visible:border-[#FDB606] transition-all duration-200",
+              errors.email && "border-red-500 focus-visible:ring-red-500 focus-visible:border-red-500"
+            )}
             {...register("email")}
           />
           {errors.email && (

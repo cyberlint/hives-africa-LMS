@@ -1,13 +1,9 @@
-import { render } from "@react-email/render";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./db";
 import { emailOTP, admin } from "better-auth/plugins";
 import { resend } from "./resend";
-import React from "react";
-
-import { VerificationEmail } from "@/components/emails/VerificationEmail";
-import { ResetPasswordEmail } from "@/components/emails/ResetPasswordEmail";
+import { VerificationEmail, ResetPasswordEmail } from "lib/email-templates/authentication-emails";
 
 export const auth = betterAuth({
     baseURL: process.env.BETTER_AUTH_URL,
@@ -22,13 +18,11 @@ export const auth = betterAuth({
         enabled: true,
         requireEmailVerification: true,
         async sendResetPassword({ user, url }) {
-            const html = await render(React.createElement(ResetPasswordEmail, { url }));
-            
             await resend.emails.send({
                 from: "NextHive <auth@notifications.hives.africa>",
                 to: [user.email],
                 subject: "Reset your password",
-                html,
+                html: ResetPasswordEmail(url),
             });
         },
     },
@@ -36,14 +30,17 @@ export const auth = betterAuth({
         emailOTP({
             sendVerificationOnSignUp: true,
             async sendVerificationOTP({ email, otp }) {
-                const html = await render(React.createElement(VerificationEmail, { otp }));
-
-                await resend.emails.send({
-                    from: "NextHive <auth@notifications.hives.africa>",
-                    to: [email],
-                    subject: "Verify your email",
-                    html,
-                });
+                try {
+                    await resend.emails.send({
+                        from: "NextHive <auth@notifications.hives.africa>",
+                        to: [email],
+                        subject: "Verify your email",
+                        html: VerificationEmail(otp),
+                    });
+                    console.log(`OTP sent to ${email}`);
+                } catch (err) {
+                    console.error("Email Plugin Error:", err);
+                }
             },
         }),
         admin(),

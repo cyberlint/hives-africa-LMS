@@ -2,7 +2,7 @@
 import { LoginFormData, SignupFormData } from '@/lib/validations'
 import { User } from '@/contexts/AuthContext'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'
 
 // Response types
 interface AuthResponse {
@@ -27,7 +27,7 @@ export const signupUser = async (data: SignupFormData): Promise<SignupResponse> 
         email: data.email,
         password: data.password,
         password_confirm: data.password_confirm,
-        user_type: data.user_type || 'student',
+        user_type: data.user_type || 'user',
       }),
     })
 

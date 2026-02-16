@@ -129,7 +129,9 @@ export function ResetPasswordConfirmForm({ className, ...props }: React.Componen
               type={showPassword ? "text" : "password"}
               placeholder="Enter your new password"
               disabled={isLoading}
-              className={cn("pr-10", errors.password && "border-red-500")}
+              className={cn("h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-[#FDB606] focus-visible:border-[#FDB606] transition-all duration-200", 
+                errors.password && "h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-[#FDB606] focus-visible:border-[#FDB606] transition-all duration-200"
+                )}
               {...register("password")}
             />
             <button
@@ -158,7 +160,10 @@ export function ResetPasswordConfirmForm({ className, ...props }: React.Componen
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm your new password"
               disabled={isLoading}
-              className={cn("pr-10", errors.confirmPassword && "border-red-500")}
+              className={
+                cn("h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-[#FDB606] focus-visible:border-[#FDB606] transition-all duration-200", 
+                errors.confirmPassword && "h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-[#FDB606] focus-visible:border-[#FDB606] transition-all duration-200"
+                )}
               {...register("confirmPassword")}
             />
             <button
