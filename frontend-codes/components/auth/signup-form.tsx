@@ -33,7 +33,7 @@ export function SignupForm({ onSubmit, onLoginClick, onGoogleSignIn, isLoading =
       email: "",
       password: "",
       password_confirm: "",
-      user_type: "student",
+      user_type: "user",
     },
   })
 
@@ -42,7 +42,7 @@ export function SignupForm({ onSubmit, onLoginClick, onGoogleSignIn, isLoading =
       // Add default user_type if not provided
       const signupData = {
         ...data,
-        user_type: data.user_type || 'student'
+        user_type: data.user_type || 'user',
       }
       
       signupMutation.mutate(signupData, {
