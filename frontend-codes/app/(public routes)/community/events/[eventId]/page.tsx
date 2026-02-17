@@ -5,13 +5,12 @@ import { constructUrl } from "@/lib/construct-url";
 import { EventFooterCTA } from "../_components/EventDetailFooter";
 import { CalendarDays, MapPin, Tag, Wifi } from "lucide-react";
 
-interface Props {
+export default async function EventDetailsPage({
+  params,
+}: {
   params: { eventId: string };
-}
-
-export default async function EventDetailsPage({ params }: Props) {
+}) {
   const event = await getEventById(params.eventId);
-
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
