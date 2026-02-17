@@ -25,10 +25,6 @@ export const EventFooterCTA: React.FC<EventFooterCTAProps> = ({ eventId, eventTi
         <button className="px-4 py-2 border border-border text-muted-foreground rounded-lg hover:bg-gray-100 transition">
           Share Event
         </button>
-
-        <button className="px-4 py-2 border border-border text-muted-foreground rounded-lg hover:bg-gray-100 transition">
-          Add to Calendar
-        </button>
       </div>
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>

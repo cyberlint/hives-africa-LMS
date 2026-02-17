@@ -59,7 +59,7 @@ export default async function EventsPage() {
 
               {user && (
                 <Button asChild variant="outline" size="lg">
-                  <Link href="/events/create">
+                  <Link href="/community/events/create">
                     <PlusCircle className="mr-2 h-5 w-5" />
                     Host Event
                   </Link>
