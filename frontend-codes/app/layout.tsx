@@ -18,29 +18,66 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "NextHive | Courses",
-  description: "The Pan-African AI School",
+  title: "NextHive | Pan-African AI School",
+  description: "Empowering Africa's Future with AI Education",
+
+  // Favicon / Icons
   icons: {
     icon: "/favicon.png",
+    shortcut: "/favicon-32x32.png", // optional
+    apple: "/apple-touch-icon.png",  // optional
   },
+
+  // Open Graph (Facebook, LinkedIn, etc.)
   openGraph: {
-    title: 'NextHive | Pan-African AI School',
-    description: 'Empowering Africa\'s Future with AI Education',
-    url: 'https://hives.africa',
-    siteName: 'NextHive',
-    locale: 'en_US',
-    type: 'website',
+    title: "NextHive | Pan-African AI School",
+    description: "Empowering Africa's Future with AI Education",
+    url: "https://www.hives.africa/",
+    siteName: "NextHive",
+    type: "website",
     images: [
       {
-        url: 'https://hives.africa/api/og', // your OG image route
+        url: "https://nexthive-lms.t3.storage.dev/Brand%20Identity/NextHive%20Logo%20-%20Orange%20BG.png", // your actual logo
         width: 1200,
         height: 630,
-        alt: 'NextHive Logo',
-        type: 'image/png',
+        alt: "NextHive Logo",
+        type: "image/png",
+      },
+      // Optional: if you have a dynamic OG route
+      {
+        url: "https://www.hives.africa/api/og",
+        width: 1200,
+        height: 630,
+        alt: "NextHive Dynamic OG Image",
+        type: "image/png",
       },
     ],
   },
+
+  // Twitter Card
+  twitter: {
+    card: "summary_large_image",
+    title: "NextHive | Pan-African AI School",
+    description: "Empowering Africa's Future with AI Education",
+    images: [
+      "https://nexthive-lms.t3.storage.dev/Brand%20Identity/NextHive%20Logo%20-%20Orange%20BG.png",
+    ],
+    site: "@YourTwitterHandle", // replace with your Twitter handle if you have one
+  },
+
+  // Optional SEO helpers
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+
+  themeColor: "#FDB606", // your orange brand color
 };
+
 // Create a client
 
 export default function RootLayout({
