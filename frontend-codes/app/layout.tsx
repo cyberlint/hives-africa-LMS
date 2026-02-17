@@ -18,12 +18,10 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "NextHive | Courses ",
+  title: "NextHive | Courses",
   description: "The Pan-African AI School",
   icons: {
     icon: "/favicon.png",
-    // shortcut: "/favicon.ico",
-    // apple: "/apple-touch-icon.png",
   },
   openGraph: {
     title: 'NextHive | Pan-African AI School',
@@ -32,6 +30,15 @@ export const metadata: Metadata = {
     siteName: 'NextHive',
     locale: 'en_US',
     type: 'website',
+    images: [
+      {
+        url: 'https://hives.africa/api/og', // your OG image route
+        width: 1200,
+        height: 630,
+        alt: 'NextHive Logo',
+        type: 'image/png',
+      },
+    ],
   },
 };
 // Create a client

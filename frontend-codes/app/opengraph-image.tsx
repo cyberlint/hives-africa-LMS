@@ -4,6 +4,9 @@ export const alt = 'NextHive - Connect with the Swarm';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
+// ✅ Add this to ensure Next.js uses the Edge runtime for OG images
+export const runtime = 'edge';
+
 export default function Image() {
   return new ImageResponse(
     (
@@ -43,7 +46,9 @@ export default function Image() {
         }}>
           <img
             src="https://nexthive-lms.t3.storage.dev/Brand%20Identity/NextHive%20Logo%20-%20Orange%20BG.png"
-            width="180" height="180" alt="NextHive Logo"
+            width="180"
+            height="180"
+            alt="NextHive Logo"
           />
         </div>
 
