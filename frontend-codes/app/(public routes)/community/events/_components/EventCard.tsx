@@ -68,7 +68,7 @@ export function EventCard({ data }: EventCardProps) {
 
         <div className="mt-auto pt-3">
           <Link
-            href={`/events/${data.id}`}
+            href={`/community/events/${data.id}`}
             className="inline-flex items-center gap-2 text-sm font-semibold text-[color:var(--color-orange)]"
           >
             View details →

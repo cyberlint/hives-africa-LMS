@@ -52,6 +52,24 @@ export async function deleteEvent(eventId: string) {
 export async function getEventById(eventId: string) {
   const event = await prisma.event.findUnique({
     where: { id: eventId },
+    select: {
+      id: true,
+      title: true,
+      shortdescription: true,
+      description: true,
+      startdate: true,
+      enddate: true,
+      venue: true,
+      isOnline: true,
+      eventCategory: true,
+      imageKey: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
   });
 
   if (!event) throw new Error("Event not found");

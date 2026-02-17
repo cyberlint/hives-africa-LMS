@@ -22,7 +22,7 @@ import Link from "next/link";
 
 // Your shared schema and actions
 import { EventSchema, CreateEventSchema, EventVenueEnum, EventCategoryEnum } from "@/lib/zodSchemas";
-import { createEvent, updateEvent } from "@/app/(public routes)/events/events-actions";
+import { createEvent, updateEvent } from "@/app/(public routes)/community/events/events-actions";
 
 // Define the expected user type passed from the Server Component
 interface AuthUser {
@@ -127,7 +127,7 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
 
                 toast.success(eventData ? "Event updated successfully" : "Event created successfully");
                 form.reset();
-                router.push("/events");
+                router.push("/community/events");
 
             } catch (err) {
                 console.error(err);
@@ -145,7 +145,7 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
         <>
             <div className="flex items-center gap-4">
                 <Link
-                    href="/events"
+                    href="/community/events"
                     className={buttonVariants({ variant: "outline", size: "icon" })}
                 >
                     <ArrowLeft className="size-4" />

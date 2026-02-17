@@ -1,7 +1,6 @@
 // /events/page.tsx (Server Component - NO "use client" directive!)
 
 import { requireAuth } from "domains/auth/require-auth"; // Assuming your requireAuth path
-import { redirect } from "next/navigation";
 import EventForm from "./EventForm"; // Assuming EventForm.tsx is in the same directory
 
 // You can fetch eventData here if you need to edit an event. 

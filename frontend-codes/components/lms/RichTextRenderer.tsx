@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useMemo } from 'react'; // useMemo is key here
 import { useEditor, EditorContent, JSONContent } from '@tiptap/react'; 
 import StarterKit from '@tiptap/starter-kit';

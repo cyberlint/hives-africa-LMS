@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { Calendar, Search, ShoppingCart, ChevronDown, Sun, Moon, Users } from "lucide-react"
+import { Search, ChevronDown, Users, ShoppingCart, Badge } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -15,7 +15,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useDashboard } from "@/app/(private routes)/dashboard/studentContext"
-import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
@@ -24,7 +23,6 @@ import Image from "next/image"
 import { useTheme } from "next-themes"
 import { ThemeToggle } from "./ui/theme-toggle"
 import NavLink from "@/components/shared/navlink"
-
 
 
 export default function Header() {
@@ -43,8 +41,8 @@ export default function Header() {
     }, []); 
   // Use session data or fallback
   const user = session?.user || {
-    name: "Guest User",
-    email: "guest@example.com",
+    name: "Learner",
+    email: "learner@example.com",
     image: "/ai.png",
   }
 
@@ -109,44 +107,16 @@ export default function Header() {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-2 sm:space-x-4">
-            {/* <Link href="/signin">
-              <Button variant="ghost" className="text-sm font-medium">
-                Sign In
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="bg-[#FDB606] hover:bg-[#fd9a06] text-white text-sm font-medium">
-                Sign Up
-              </Button>
-            </Link> */}
-            {/* Notifications */}
-
             {/* Events */}
-            <Link href="/events">
-            <Button variant="default" className="flex items-center space-x-2 text-sm font-medium">
+            <Link href="/community">
+            <Button variant="outline" className="flex items-center space-x-2 text-sm font-medium">
               <Users size={20} />
-              <span>Events</span>
+              <span>Community</span>
             </Button>
           </Link>
 
                {/* Theme Toggle */}
             <ThemeToggle />
-
-            {/* Shopping Cart */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative hover:bg-gray-100 dark:hover:bg-[#0a0f19] transition-colors"
-              onClick={handleCartNavigate}
-              aria-label="View shopping cart"
-            >
-              <ShoppingCart className="h-5 w-5" />
-              {cartItems.length > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-[#fdb606] text-white text-xs">
-                  {cartItems.length}
-                </Badge>
-              )}
-            </Button>
 
             {/* User Profile with Navigation */}
             <DropdownMenu>
@@ -209,6 +179,23 @@ export default function Header() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                       </svg>
                       Wishlist
+                    </NavLink>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild>
+                    <NavLink 
+                      href="/dashboard/cart" 
+                      className="cursor-pointer flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-[#0a0f19] text-gray-900 dark:text-gray-300 w-full relative"
+                      activeClassName="bg-[#fdb606]/10 text-[#fdb606]"
+                      onClick={handleCartNavigate}
+                    >
+                      <ShoppingCart className="h-5 w-5" />
+                      Pending Purchases
+                      {cartItems.length > 0 && (
+                        <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-[#fdb606] text-white text-xs">
+                          {cartItems.length}
+                        </Badge>
+                      )}
                     </NavLink>
                   </DropdownMenuItem>
 

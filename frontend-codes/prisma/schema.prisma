@@ -38,12 +38,6 @@ model User {
   @@map("user")
 }
 
-// enum UserType {
-//   learner
-//   instructor
-//   superadmin
-// }
-
 model Session {
   id             String   @id
   expiresAt      DateTime

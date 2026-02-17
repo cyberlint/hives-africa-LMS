@@ -18,7 +18,7 @@ import Image from "next/image";
 
 import { getCurrentUser } from "@/domains/auth/user";
 import { getEvents } from "./get-events";
-import { EventCard } from "@/app/(public routes)/events/_components/EventCard";
+import { EventCard } from "./_components/EventCard";
 import { EventCategoryEnum } from "@/lib/zodSchemas";
 
 /* ------------------------------ PAGE -------------------------------- */

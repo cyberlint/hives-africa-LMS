@@ -42,7 +42,7 @@ const sidebarItems = [
   },
   {
     id: "cart",
-    label: "Shopping Cart",
+    label: "Pending Purchases",
     icon: ShoppingCart,
   },
   {

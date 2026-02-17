@@ -1,9 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import Footer from "@/components/shared/footer";
 import { CourseHeader } from "@/components/lms/CourseHeader";
 import { CourseSidebar } from '@/components/lms/CourseSidebar';
-import { NavigationArrows } from '@/components/lms/NavigationArrows';
 import { useCourse, CourseProvider } from './_components/CourseContext';
 
 const ChapterLayoutContent = ({

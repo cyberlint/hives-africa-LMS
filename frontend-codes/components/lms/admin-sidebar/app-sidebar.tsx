@@ -3,6 +3,7 @@
 import * as React from "react"
 import {
   IconBrandMeetup,
+  IconBuildingCommunity,
   IconCalendarEvent,
   IconCamera,
   IconChartBar,
@@ -36,7 +37,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
-import Image from "next/image"
 
 const data = {
   navMain: [
@@ -56,16 +56,11 @@ const data = {
       icon: IconCalendarEvent,
     },
     {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      title: "Students",
-      url: "#",
+      title: "Community",
+      url: "/community",
       icon: IconUsers,
     },
-  ],
+],
   navClouds: [
     {
       title: "Capture",
@@ -158,7 +153,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
               <Link href="/">
                 {/* <Image src={Logo} alt="NextHive Logo" className="size-5"/> */}

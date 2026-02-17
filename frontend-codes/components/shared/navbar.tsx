@@ -68,7 +68,7 @@ const Navbar = () => {
           <button
             onClick={() => router.push("/checkout")}
             className="relative p-2 hover:bg-gray-100 dark:hover:bg-[#2a2f3a] rounded-full transition-colors"
-            aria-label="Shopping Cart"
+            aria-label="Pending Purchases"
           >
             <ShoppingCart size={24} className="text-gray-700 dark:text-gray-300" />
             {cartItemsCount > 0 && (

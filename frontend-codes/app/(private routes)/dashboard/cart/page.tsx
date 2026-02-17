@@ -88,7 +88,7 @@ export default function Cart() {
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="mb-8 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white">Shopping Cart</h1>
+            <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white">Pending Purchases</h1>
             <p className="text-sm text-gray-600 dark:text-gray-400">Review your cart and complete payment</p>
           </div>
           {hasItems && (
