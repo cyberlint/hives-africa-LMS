@@ -25,6 +25,14 @@ export const metadata: Metadata = {
     // shortcut: "/favicon.ico",
     // apple: "/apple-touch-icon.png",
   },
+  openGraph: {
+    title: 'NextHive | Pan-African AI School',
+    description: 'Empowering Africa\'s Future with AI Education',
+    url: 'https://hives.africa',
+    siteName: 'NextHive',
+    locale: 'en_US',
+    type: 'website',
+  },
 };
 // Create a client
 
