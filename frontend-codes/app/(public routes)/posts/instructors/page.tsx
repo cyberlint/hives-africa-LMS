@@ -23,7 +23,7 @@ export default function RFP2026Page() {
             </h1>
 
             <p className="mt-6 text-lg text-white/80">
-              Call for Partners and Architects of Africa's Data & AI Future.
+              {"Call for Partners and Architects of Africa's Data & AI Future."}
             </p>
 
             <div className="mt-10">
@@ -50,7 +50,7 @@ export default function RFP2026Page() {
             school; we are building a pan-African engine for the data and AI
             revolution. Our mission is to bridge the technology skill gap by
             empowering a generation of professionals with an
-            {" 'authentically African'"} approach to innovation.
+            {" authentically African"} approach to innovation.
           </p>
 
           <p className="mt-4 text-muted-foreground leading-relaxed">
@@ -236,7 +236,7 @@ export default function RFP2026Page() {
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-1">
                 <AccordionTrigger className="text-left text-lg font-medium">
-                  What's the timeline for proposal submission and review?
+                  {"What's the timeline for proposal submission and review?"}
                 </AccordionTrigger>
                 <AccordionContent>
                   The deadline for submitting proposals is March 10th, 2026. Afterwards, the review process will take approximately 1-2 weeks, with shortlisted candidates notified by March 24th, 2026. 
@@ -255,7 +255,7 @@ export default function RFP2026Page() {
                   Can an individual or organisation bid for multiple proposals?
                 </AccordionTrigger>
                 <AccordionContent>
-                  Yes. Individuals can bid for up to two proposals. Organisations can bid for up to four proposals. Such proposals will be evaluated independently based on their own merits, bidder's experience, and alignment with our program goals.
+                  Yes. Individuals can bid for up to two proposals. Organisations can bid for up to four proposals. Such proposals will be evaluated independently based on their own merits, {" bidder's"} experience, and alignment with our program goals.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-4">
@@ -284,10 +284,10 @@ export default function RFP2026Page() {
               </AccordionItem>
               <AccordionItem value="item-7">
                 <AccordionTrigger className="text-left text-lg font-medium">
-                  What does "Exclusive License" mean?
+                  {"What does 'Exclusive License' mean?"}
                 </AccordionTrigger>
                 <AccordionContent>
-                  To maintain the prestige of our program, NextHive requires an exclusive license. This means that while you own the IP, the course materials delivered to us cannot be hosted or distributed on other platforms during the term of our agreement. This exclusivity allows us to invest in marketing and support for your course, ensuring it reaches the widest possible audience without competition from other platforms. Specific terms regarding the duration of exclusivity and any exceptions will be outlined in the development contract available to shortlisted partners.
+                  {"To maintain the prestige of our program, NextHive requires an exclusive license. This means that while you own the IP, the course materials delivered to us cannot be hosted or distributed on other platforms during the term of our agreement. This exclusivity allows us to invest in marketing and support for your course, ensuring it reaches the widest possible audience without competition from other platforms. Specific terms regarding the duration of exclusivity and any exceptions will be outlined in the development contract available to shortlisted partners."}
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-8">
@@ -295,7 +295,7 @@ export default function RFP2026Page() {
                   Can NextHive create derivative works from my content?
                 </AccordionTrigger>
                 <AccordionContent>
-                  NextHive may use AI tools to generate derivative formats, such as transcriptions or summaries, to enhance the learner experience. However, these derivative works remain subject to the Creator's original IP rights and the overarching agreement.
+                  {"NextHive may use AI tools to generate derivative formats, such as transcriptions or summaries, to enhance the learner experience. However, these derivative works remain subject to the Creator's original IP rights and the overarching agreement."}
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-9">
