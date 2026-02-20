@@ -227,7 +227,7 @@ export const courseData: CourseData = {
   duration: 40,
   level: "Beginner",
   category: "Web Development",
-  image: "/placeholder.svg?height=400&width=600",
+  image: "/placeholder.jpg?height=400&width=600",
   slug: "complete-web-developer-zero-to-mastery",
   status: "Published",
   totalLectures: 28,

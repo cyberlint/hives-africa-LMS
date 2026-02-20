@@ -127,7 +127,7 @@ export default function Header() {
                   aria-label="User menu"
                 >
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.image || "/placeholder.svg"} alt={user.name} />
+                    <AvatarImage src={user.image || "/placeholder.jpg"} alt={user.name} />
                     <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <span className="hidden sm:block font-medium text-gray-900 dark:text-white">{user.name}</span>

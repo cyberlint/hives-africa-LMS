@@ -4,7 +4,7 @@ export const user: User = {
   id: "1",
   name: "John Doe",
   email: "john.doe@example.com",
-  avatar: "/placeholder.svg?height=40&width=40",
+  avatar: "/placeholder.jpg?height=40&width=40",
   enrolledCourses: ["1", "2", "3"],
   wishlist: ["4", "5"],
   progress: [
@@ -26,8 +26,8 @@ export const courses: Course[] = [
     title: "Complete React Developer Course",
     description:
       "Learn React from scratch with hands-on projects and real-world applications. Master components, hooks, state management, and modern React patterns.",
-    instructor: { name: "Sarah Johnson", avatar: "/placeholder.svg?height=32&width=32" },
-    thumbnail: "/placeholder.svg?height=200&width=300",
+    instructor: { name: "Sarah Johnson", avatar: "/placeholder.jpg?height=32&width=32" },
+    thumbnail: "/placeholder.jpg?height=200&width=300",
     duration: 2400,
     lectures: [
       { id: "1", title: "Introduction to React", duration: 300, completed: true },
@@ -45,8 +45,8 @@ export const courses: Course[] = [
     title: "JavaScript Fundamentals",
     description:
       "Master JavaScript basics and advanced concepts including ES6+, async programming, and modern JavaScript development practices.",
-    instructor: { name: "Mike Chen", avatar: "/placeholder.svg?height=32&width=32" },
-    thumbnail: "/placeholder.svg?height=200&width=300",
+    instructor: { name: "Mike Chen", avatar: "/placeholder.jpg?height=32&width=32" },
+    thumbnail: "/placeholder.jpg?height=200&width=300",
     duration: 1800,
     lectures: [
       { id: "1", title: "Variables and Data Types", duration: 240, completed: true },
@@ -63,8 +63,8 @@ export const courses: Course[] = [
     title: "UI/UX Design Masterclass",
     description:
       "Complete guide to user interface and experience design. Learn design principles, user research, prototyping, and design systems.",
-    instructor: { name: "Emma Wilson", avatar: "/placeholder.svg?height=32&width=32" },
-    thumbnail: "/placeholder.svg?height=200&width=300",
+    instructor: { name: "Emma Wilson", avatar: "/placeholder.jpg?height=32&width=32" },
+    thumbnail: "/placeholder.jpg?height=200&width=300",
     duration: 3000,
     lectures: [
       { id: "1", title: "Design Principles", duration: 400, completed: true },
@@ -82,8 +82,8 @@ export const courses: Course[] = [
     title: "Python for Data Science",
     description:
       "Learn Python programming for data analysis and machine learning. Cover pandas, numpy, matplotlib, and scikit-learn.",
-    instructor: { name: "David Kumar", avatar: "/placeholder.svg?height=32&width=32" },
-    thumbnail: "/placeholder.svg?height=200&width=300",
+    instructor: { name: "David Kumar", avatar: "/placeholder.jpg?height=32&width=32" },
+    thumbnail: "/placeholder.jpg?height=200&width=300",
     duration: 2700,
     lectures: [],
     rating: 4.7,
@@ -97,8 +97,8 @@ export const courses: Course[] = [
     title: "Digital Marketing Strategy",
     description:
       "Complete digital marketing course for beginners. Learn SEO, social media marketing, content marketing, and analytics.",
-    instructor: { name: "Lisa Rodriguez", avatar: "/placeholder.svg?height=32&width=32" },
-    thumbnail: "/placeholder.svg?height=200&width=300",
+    instructor: { name: "Lisa Rodriguez", avatar: "/placeholder.jpg?height=32&width=32" },
+    thumbnail: "/placeholder.jpg?height=200&width=300",
     duration: 2100,
     lectures: [],
     rating: 4.5,
@@ -112,8 +112,8 @@ export const courses: Course[] = [
     title: "Machine Learning Fundamentals",
     description:
       "Introduction to machine learning concepts, algorithms, and practical applications using Python and popular ML libraries.",
-    instructor: { name: "Alex Thompson", avatar: "/placeholder.svg?height=32&width=32" },
-    thumbnail: "/placeholder.svg?height=200&width=300",
+    instructor: { name: "Alex Thompson", avatar: "/placeholder.jpg?height=32&width=32" },
+    thumbnail: "/placeholder.jpg?height=200&width=300",
     duration: 3200,
     lectures: [],
     rating: 4.8,
@@ -127,8 +127,8 @@ export const courses: Course[] = [
     title: "Mobile App Development with Flutter",
     description:
       "Build cross-platform mobile applications using Flutter and Dart. Learn widgets, state management, and app deployment.",
-    instructor: { name: "Jennifer Lee", avatar: "/placeholder.svg?height=32&width=32" },
-    thumbnail: "/placeholder.svg?height=200&width=300",
+    instructor: { name: "Jennifer Lee", avatar: "/placeholder.jpg?height=32&width=32" },
+    thumbnail: "/placeholder.jpg?height=200&width=300",
     duration: 2800,
     lectures: [],
     rating: 4.6,
@@ -142,8 +142,8 @@ export const courses: Course[] = [
     title: "Cloud Computing with AWS",
     description:
       "Master Amazon Web Services cloud platform. Learn EC2, S3, Lambda, and other essential AWS services for modern applications.",
-    instructor: { name: "Robert Kim", avatar: "/placeholder.svg?height=32&width=32" },
-    thumbnail: "/placeholder.svg?height=200&width=300",
+    instructor: { name: "Robert Kim", avatar: "/placeholder.jpg?height=32&width=32" },
+    thumbnail: "/placeholder.jpg?height=200&width=300",
     duration: 2600,
     lectures: [],
     rating: 4.7,

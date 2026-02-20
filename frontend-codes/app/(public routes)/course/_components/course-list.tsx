@@ -32,7 +32,7 @@ export function CourseList({ courses, isMobile }: CourseListProps) {
           <div className={`flex ${isMobile ? "flex-col" : ""} h-full`}>
             <div className={`relative ${isMobile ? "w-full h-48" : "w-44 h-44"} shrink-0`}>
               <Image
-                src={course.image ? constructUrl(course.image) : "/placeholder.svg"}
+                src={course.image ? constructUrl(course.image) : "/placeholder.jpg"}
                 alt={course.title}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-200"

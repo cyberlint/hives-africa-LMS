@@ -34,7 +34,7 @@ export default function HeroSection({ course }: HeroSectionProps) {
 
       {/* Hero Banner */}
       <div className="relative min-h-[480px] sm:h-[380px] bg-linear-to-r from-[#0F1D2F]/80 to-[#0F1D2F]/60">
-        <Image src={course.image ? constructUrl(course.image) : "/placeholder.svg"} alt="Course background" fill className="object-cover -z-10" />
+        <Image src={course.image ? constructUrl(course.image) : "/placeholder.jpg"} alt="Course background" fill className="object-cover -z-10" />
 
         <div className="w-full px-4 sm:px-6 lg:px-8 h-full">
           <div className="max-w-7xl mx-auto h-full">

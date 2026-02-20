@@ -16,7 +16,7 @@ export function CourseCard({ title, category, duration, provider, badgeText, ima
     <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer group">
       <div className="relative">
         <Image
-          src={imageUrl || "/placeholder.svg"}
+          src={imageUrl || "/placeholder.jpg"}
           alt={title}
           width={320}
           height={180}
@@ -34,7 +34,7 @@ export function CourseCard({ title, category, duration, provider, badgeText, ima
         </h3>
         <div className="flex items-center text-xs">
           <Image
-            src="/placeholder.svg?height=20&width=20"
+            src="/placeholder.jpg?height=20&width=20"
             alt="Provider logo"
             width={16}
             height={16}

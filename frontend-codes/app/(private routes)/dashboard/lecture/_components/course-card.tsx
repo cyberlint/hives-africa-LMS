@@ -19,7 +19,7 @@ export function CourseCard({ course }: CourseProps) {
     <div className="bg-white rounded-lg overflow-hidden border border-gray-100">
       <Link href={`/dashboard/courses/${course.id}`} className="block">
         <div className="relative h-40 w-full">
-          <Image src={course.image || "/placeholder.svg"} alt={course.title} fill className="object-cover" />
+          <Image src={course.image || "/placeholder.jpg"} alt={course.title} fill className="object-cover" />
           <div className="absolute top-2 right-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

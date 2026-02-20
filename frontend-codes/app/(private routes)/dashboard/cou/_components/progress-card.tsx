@@ -15,7 +15,7 @@ export function ProgressCard({ title, duration, progress, imageUrl }: ProgressCa
     <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 flex flex-col sm:flex-row transition-all duration-300 hover:shadow-md group">
       <div className="sm:w-32 sm:h-24 mb-4 sm:mb-0 flex-shrink-0">
         <Image
-          src={imageUrl || "/placeholder.svg"}
+          src={imageUrl || "/placeholder.jpg"}
           alt={title}
           width={128}
           height={96}

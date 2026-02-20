@@ -33,7 +33,7 @@ export function CourseModal({ course, isOpen, onClose }: CourseModalProps) {
           <div>
             <div className="relative mb-4">
               <Image
-                src={course.image || "/placeholder.svg"}
+                src={course.image || "/placeholder.jpg"}
                 alt={course.title}
                 width={500}
                 height={300}

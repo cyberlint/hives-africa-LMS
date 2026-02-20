@@ -37,7 +37,7 @@ export function CourseGrid({ courses, isMobile, isTablet }: CourseGridProps) {
         >
           <div className="relative">
             <Image
-              src={course.image ? constructUrl(course.image) : "/placeholder.svg"}
+              src={course.image ? constructUrl(course.image) : "/placeholder.jpg"}
               alt={course.title}
               width={360}
               height={200}

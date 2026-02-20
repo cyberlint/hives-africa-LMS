@@ -13,7 +13,7 @@ export const courses: Course[] = [
     level: "Beginner",
     price: 0,
     rating: 4.5,
-    image: "/placeholder.svg?height=200&width=360",
+    image: "/placeholder.jpg?height=200&width=360",
     description:
       "Learn the fundamentals of AI and Python programming. This comprehensive course covers machine learning basics, data analysis, and practical AI applications.",
     shortDescription: "Learn AI and Python programming fundamentals",
@@ -36,7 +36,7 @@ export const courses: Course[] = [
     price: 2999999.0,
     originalPrice: 0,
     rating: 4.2,
-    image: "/placeholder.svg?height=200&width=360",
+    image: "/placeholder.jpg?height=200&width=360",
     description:
       "Build a complete Learning Management System using LearnPress. Learn WordPress development, course creation, and student management systems.",
     shortDescription: "Build a complete LMS with LearnPress",
@@ -59,7 +59,7 @@ export const courses: Course[] = [
     price: 5999.0,
     originalPrice: 0,
     rating: 4.8,
-    image: "/placeholder.svg?height=200&width=360",
+    image: "/placeholder.jpg?height=200&width=360",
     description:
       "Master the art of prompt engineering for AI systems. Learn to create effective prompts for ChatGPT, GPT-4, and other language models.",
     shortDescription: "Master prompt engineering for AI systems",
@@ -81,7 +81,7 @@ export const courses: Course[] = [
     level: "Advanced",
     price: 15999.0,
     rating: 4.7,
-    image: "/placeholder.svg?height=200&width=360",
+    image: "/placeholder.jpg?height=200&width=360",
     description:
       "Advanced data science methodologies including deep learning, statistical modeling, and big data processing techniques.",
     shortDescription: "Advanced data science and deep learning",
@@ -103,7 +103,7 @@ export const courses: Course[] = [
     level: "Intermediate",
     price: 0,
     rating: 4.6,
-    image: "/placeholder.svg?height=200&width=360",
+    image: "/placeholder.jpg?height=200&width=360",
     description:
       "Build cross-platform mobile applications using React Native. Learn navigation, state management, and app deployment.",
     shortDescription: "Build mobile apps with React Native",
@@ -126,7 +126,7 @@ export const courses: Course[] = [
     price: 5999.0,
     originalPrice: 0,
     rating: 4.3,
-    image: "/placeholder.svg?height=200&width=360",
+    image: "/placeholder.jpg?height=200&width=360",
     description:
       "Comprehensive digital marketing course covering SEO, social media marketing, Google Ads, and e-commerce strategies.",
     shortDescription: "Master digital marketing and e-commerce",
@@ -148,7 +148,7 @@ export const courses: Course[] = [
     level: "Beginner",
     price: 8999.0,
     rating: 4.4,
-    image: "/placeholder.svg?height=200&width=360",
+    image: "/placeholder.jpg?height=200&width=360",
     description:
       "Learn essential cybersecurity concepts, threat detection, network security, and ethical hacking basics.",
     shortDescription: "Learn cybersecurity fundamentals",
@@ -170,7 +170,7 @@ export const courses: Course[] = [
     level: "Intermediate",
     price: 0,
     rating: 4.9,
-    image: "/placeholder.svg?height=200&width=360",
+    image: "/placeholder.jpg?height=200&width=360",
     description: "Master Amazon Web Services including EC2, S3, Lambda, and cloud architecture best practices.",
     shortDescription: "Master AWS cloud computing",
     slug: "cloud-computing-aws",

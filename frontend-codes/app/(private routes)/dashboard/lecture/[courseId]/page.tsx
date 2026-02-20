@@ -109,7 +109,7 @@ export default function CoursePage({ params }: PageProps) {
   // Mock data for related courses
   const relatedCoursesData = course.relatedCourses.map((id) => {
     const relatedCourse = courses.find((c) => c.id === id)
-    return relatedCourse || { id, title: `Course: ${id}`, image: "/placeholder.svg?height=200&width=300" }
+    return relatedCourse || { id, title: `Course: ${id}`, image: "/placeholder.jpg?height=200&width=300" }
   })
 
   return (
@@ -124,7 +124,7 @@ export default function CoursePage({ params }: PageProps) {
           <div className="w-full lg:w-2/3">
             <div className="bg-white rounded-lg overflow-hidden shadow-sm">
               <div className="relative h-64 w-full">
-                <Image src={course.image || "/placeholder.svg"} alt={course.title} fill className="object-cover" />
+                <Image src={course.image || "/placeholder.jpg"} alt={course.title} fill className="object-cover" />
                 <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                   <button
                     className="bg-blue-600 text-white rounded-full p-4 hover:bg-blue-700 transition transform hover:scale-105"

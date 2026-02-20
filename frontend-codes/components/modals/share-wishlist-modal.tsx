@@ -190,7 +190,7 @@ export default function ShareWishlistModal({ isOpen, onClose, courses }: ShareWi
               {courses.slice(0, 3).map((course) => (
                 <div key={course.id} className="flex items-center space-x-3 bg-white/50 rounded-lg p-2">
                   <Image
-                    src={course.thumbnail || "/placeholder.svg"}
+                    src={course.thumbnail || "/placeholder.jpg"}
                     alt={course.title}
                     className="w-12 h-8 object-cover rounded"
                   />
@@ -198,7 +198,7 @@ export default function ShareWishlistModal({ isOpen, onClose, courses }: ShareWi
                     <p className="font-medium text-sm truncate">{course.title}</p>
                     <div className="flex items-center space-x-2 text-xs text-gray-500">
                       <Avatar className="h-4 w-4">
-                        <AvatarImage src={course.instructor.avatar || "/placeholder.svg"} />
+                        <AvatarImage src={course.instructor.avatar || "/placeholder.jpg"} />
                         <AvatarFallback>{course.instructor.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <span>{course.instructor.name}</span>
@@ -374,7 +374,7 @@ export default function ShareWishlistModal({ isOpen, onClose, courses }: ShareWi
               {qrCodeUrl && (
                 <div className="text-center space-y-4">
                   <div className="inline-block p-4 bg-white border-2 border-gray-200 rounded-lg">
-                    <Image src={qrCodeUrl || "/placeholder.svg"} alt="QR Code" className="w-48 h-48" />
+                    <Image src={qrCodeUrl || "/placeholder.jpg"} alt="QR Code" className="w-48 h-48" />
                   </div>
                   <p className="text-sm text-gray-600">Scan this QR code to view the wishlist on mobile devices</p>
                   <Button onClick={() => copyToClipboard(shareLink)} variant="outline">

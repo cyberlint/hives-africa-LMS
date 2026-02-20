@@ -13,7 +13,7 @@ const recentCourses = [
     level: "Starter",
     provider: "Hive Africa/Stanford",
     badgeText: "Tag",
-    imageUrl: "/placeholder.svg?height=180&width=320",
+    imageUrl: "/placeholder.jpg?height=180&width=320",
   },
   {
     id: "2",
@@ -23,7 +23,7 @@ const recentCourses = [
     level: "Starter",
     provider: "Hive Africa/Stanford",
     badgeText: "Course",
-    imageUrl: "/placeholder.svg?height=180&width=320",
+    imageUrl: "/placeholder.jpg?height=180&width=320",
   },
   {
     id: "3",
@@ -33,7 +33,7 @@ const recentCourses = [
     level: "Starter",
     provider: "Hive Africa/Stanford",
     badgeText: "Course",
-    imageUrl: "/placeholder.svg?height=180&width=320",
+    imageUrl: "/placeholder.jpg?height=180&width=320",
   },
   {
     id: "4",
@@ -43,7 +43,7 @@ const recentCourses = [
     level: "Starter",
     provider: "Hive Africa/Stanford",
     badgeText: "Course",
-    imageUrl: "/placeholder.svg?height=180&width=320",
+    imageUrl: "/placeholder.jpg?height=180&width=320",
   },
 ]
 
@@ -56,7 +56,7 @@ const popularCertificates = [
     level: "Starter",
     provider: "Hive Africa/Stanford",
     badgeText: "Cert",
-    imageUrl: "/placeholder.svg?height=180&width=320",
+    imageUrl: "/placeholder.jpg?height=180&width=320",
   },
   {
     id: "2",
@@ -66,7 +66,7 @@ const popularCertificates = [
     level: "Starter",
     provider: "Hive Africa/Stanford",
     badgeText: "Cert",
-    imageUrl: "/placeholder.svg?height=180&width=320",
+    imageUrl: "/placeholder.jpg?height=180&width=320",
   },
   {
     id: "3",
@@ -76,7 +76,7 @@ const popularCertificates = [
     level: "Starter",
     provider: "Hive Africa/Stanford",
     badgeText: "Cert",
-    imageUrl: "/placeholder.svg?height=180&width=320",
+    imageUrl: "/placeholder.jpg?height=180&width=320",
   },
   {
     id: "4",
@@ -86,7 +86,7 @@ const popularCertificates = [
     level: "Starter",
     provider: "Hive Africa/Stanford",
     badgeText: "Cert",
-    imageUrl: "/placeholder.svg?height=180&width=320",
+    imageUrl: "/placeholder.jpg?height=180&width=320",
   },
 ]
 
