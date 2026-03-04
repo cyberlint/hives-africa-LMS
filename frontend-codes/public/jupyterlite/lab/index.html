@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>NextLab</title>
+    <title>JupyterLite</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="Description" content="Your Realtime Notebook Editor for Hands-on Learning." />
+    <meta name="Description" content="WASM powered Jupyter running in the browser." />
     <link rel="manifest" href="../manifest.webmanifest" />
     <link
       id="jupyter-lite-main"
@@ -111,15 +111,56 @@
         100% { opacity: 0; }
       }
     </style>
-  </head>
+  
+  <style>
+    /* 1. Swap the Jupyter Logo for the NextHive Logo securely */
+    #jp-MainLogo > svg { 
+        display: none !important; 
+    }
+    #jp-MainLogo {
+        background-image: url("../NextHive%20Logo.png") !important;
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
+        background-position: left center !important;
+        
+        /* Fixed dimensions so it doesn't break the flexbox menu layout */
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        display: block !important;
+    }
+    
+    /* 2. Hide the file name tab entirely */
+    #jp-main-dock-panel > .lm-TabBar { 
+        display: none !important; 
+    }
+  </style>
+
+  <script>
+    /* 3. Auto-close the left sidebar on initial load */
+    window.addEventListener("load", function() {
+      const observer = new MutationObserver((mutations, obs) => {
+        const activeSidebarTab = document.querySelector('.lm-TabBar-tab.lm-mod-current[data-id="filebrowser"]');
+        if (activeSidebarTab) {
+          activeSidebarTab.click();
+          obs.disconnect(); 
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      setTimeout(() => observer.disconnect(), 5000);
+    });
+  </script>
+</head>
+
   <body class="jp-ThemedContainer" data-notebook="lab">
     <div id="jupyterlite-loading-indicator" class="hidden">
       <div class="jupyterlite-loading-indicator-spinner"></div>
-      <div class="jupyterlite-loading-indicator-text">Loading NextLab...</div>
+      <div class="jupyterlite-loading-indicator-text">Loading JupyterLite...</div>
     </div>
     <noscript>
       <div style="text-align: center; padding: 20px;">
-          Please enable Javascript in your browser.
+          JupyterLite requires JavaScript to be enabled in your browser.
       </div>
     </noscript>
   </body>

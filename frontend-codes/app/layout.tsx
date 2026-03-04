@@ -57,12 +57,12 @@ export const metadata: Metadata = {
   // Twitter Card
   twitter: {
     card: "summary_large_image",
-    title: "NextHive | Pan-African AI School",
+    title: "NextHive | The Pan-African AI School",
     description: "Empowering Africa's Future with AI Education",
     images: [
       "https://nexthive-lms.t3.storage.dev/Brand%20Identity/NextHive%20Logo%20-%20Orange%20BG.png",
     ],
-    site: "@YourTwitterHandle", // replace with your Twitter handle if you have one
+    site: "@Analytix_Hive", // replace with your Twitter handle if you have one
   },
 
   // Optional SEO helpers
@@ -74,8 +74,11 @@ export const metadata: Metadata = {
       follow: true,
     },
   },
+};
 
-  themeColor: "#FDB606", // your orange brand color
+// Viewport settings for mobile responsiveness and theme color for mobile browsers
+export const viewport = {
+  themeColor: "#FDB606",
 };
 
 // Create a client

@@ -16,9 +16,7 @@ export default function NotebookViewer({ notebookUrl, theme = 'JupyterLab Dark' 
   const encodedNotebookUrl = encodeURIComponent(notebookUrl);
   
   // Construct the final iframe URL using the encoded external path.
-  const finalIframeUrl = 
-    `${JUPYTERLITE_BASE_PATH}?path=${notebookUrl}&theme=${theme}`;
-    console.log("this is the final iframe url:" + finalIframeUrl);
+const finalIframeUrl = `${JUPYTERLITE_BASE_PATH}?fromURL=${encodedNotebookUrl}&theme=${theme}`;
   return (
     <div className="w-full h-[600px] lg:h-[800px] rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1e1e1e]">
       <iframe

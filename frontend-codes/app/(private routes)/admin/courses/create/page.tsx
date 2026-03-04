@@ -156,7 +156,7 @@ const form = useForm<z.infer<typeof courseSchema>>({
                             <FormLabel>Short Description</FormLabel>
                             <FormControl>
                                 <Textarea placeholder="Short Description" {...field} 
-                                className="min-h-[120px]"/>
+                                className="min-h-30"/>
                             </FormControl>
                             <FormMessage />
                         </FormItem>

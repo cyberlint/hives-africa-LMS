@@ -70,7 +70,7 @@ export const DocumentRenderer: React.FC<DocumentRendererProps> = ({
             <div className="flex justify-center mb-12">
               <Button
                 onClick={onMarkComplete}
-                className="bg-yellow hover:bg-yellow/90 text-darkBlue-300 font-bold px-10 py-6 h-auto text-lg rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:scale-95"
+                className="bg-yellow text-darkBlue-300 font-semibold px-8 py-4 text-base rounded-2xl shadow-sm transition-transform duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow/40"
               >
                 <CheckCircle className="mr-2" />
                 Mark as Complete
