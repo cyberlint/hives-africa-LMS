@@ -1,10 +1,17 @@
 import { ReactNode } from "react";
 import { requireAuth } from "@/domains/auth/require-auth";
-import { AdminShell } from "@/components/shells/AdminShell";
-import LearnerShell from "@/components/shells/LearnerShell";
+import { prisma } from "@/lib/db";
+import OnboardingFlow from "@/components/onboarding-flow";
 
 export default async function PrivateRoutesLayout({ children }: { children: ReactNode }) {
-  await requireAuth(); // returns AuthUser or redirects
+  const user = await requireAuth(); 
+  const dbUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { hasCompletedOnboarding: true },
+  });
 
+  if (!dbUser?.hasCompletedOnboarding) {
+    return <OnboardingFlow />;
+  }
   return <>{children}</>;
 }

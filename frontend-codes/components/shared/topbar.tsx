@@ -1,117 +1,106 @@
 "use client";
 
-import { ChevronDown, CalendarDays, Users, MessageCircle } from "lucide-react";
+import { ChevronDown, CalendarDays, Users } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-import { Button } from "../ui/button";
+import { useState, useEffect, useRef } from "react";
+import { Button } from "../ui/button"; // Adjust path if needed
 
 export default function Topbar() {
-  const [open, setOpen] = useState(false);
+  const [isCommunityOpen, setIsCommunityOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsCommunityOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
-    <div className="w-full bg-darkBlue-500 dark:bg-[#0f1419] text-white text-xs sm:text-sm transition-colors duration-300">
-      <div className="mx-auto px-4 md:px-16 py-2 flex flex-wrap items-center justify-center md:justify-end gap-x-6 gap-y-2">
+    <div className="w-full bg-[#061c2d] text-white/80 text-xs sm:text-sm border-b border-white/5 relative z-50">
+      <div className="mx-auto max-w-7xl px-4 md:px-8 py-2.5 flex flex-wrap items-center justify-center sm:justify-end gap-x-6 gap-y-3">
 
-        {/* ================= Community ================= */}
-        <div className="relative group inline-block">
-
+        {/* ================= Community Dropdown ================= */}
+        <div 
+          ref={dropdownRef}
+          className="relative group inline-block"
+          onMouseEnter={() => setIsCommunityOpen(true)}
+          onMouseLeave={() => setIsCommunityOpen(false)}
+        >
           {/* Trigger */}
-          <div
-            onClick={() => setOpen(!open)}
-            className="flex items-center gap-1 cursor-pointer select-none"
+          <button
+            onClick={() => setIsCommunityOpen(!isCommunityOpen)}
+            className="flex items-center gap-1.5 cursor-pointer select-none hover:text-white transition-colors py-1"
+            aria-expanded={isCommunityOpen}
           >
-            <span className="font-medium text-white group-hover:text-yellow transition-colors">
-              Community
-            </span>
-
+            <span className="font-medium">Community</span>
             <ChevronDown
-              className={`
-                w-4 h-4 text-white transition-transform duration-300
-                ${open ? "rotate-180" : ""}
-                group-hover:rotate-180
-              `}
+              className={`w-3.5 h-3.5 text-white/60 transition-transform duration-300 ${isCommunityOpen ? "rotate-180" : ""}`}
             />
-          </div>
+          </button>
 
-          {/* Dropdown */}
+          {/* Dropdown Menu */}
           <div
             className={`
-              absolute left-0 top-full mt-3 w-60 z-50
-              rounded-2xl
-              border border-neutral-200 dark:border-neutral-800
-              bg-white dark:bg-neutral-950
-              shadow-2xl
-              transition-all duration-200
-              ${open 
-                ? "opacity-100 visible translate-y-0" 
-                : "opacity-0 invisible translate-y-2"}
-              md:group-hover:opacity-100
-              md:group-hover:visible
-              md:group-hover:translate-y-0
+              absolute left-0 sm:left-auto sm:right-0 top-full mt-1 w-56 z-50
+              rounded-xl border border-border/50
+              bg-background text-foreground shadow-xl
+              transition-all duration-200 origin-top
+              ${isCommunityOpen ? "opacity-100 scale-100 visible" : "opacity-0 scale-95 invisible"}
             `}
           >
-            <div className="p-2 space-y-1">
-
-              {/* Events */}
-              <Link href="/community/events">
-                <Button
-                  variant="ghost"
-                  className="
-                    w-full justify-start text-sm font-medium 
-                    text-foreground
-                    hover:bg-neutral-100 dark:hover:bg-neutral-900
-                    rounded-lg
-                  "
-                >
-                  <CalendarDays size={18} className="mr-3 text-yellow-500" />
+            <div className="p-1.5 space-y-1">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-sm font-medium hover:bg-muted rounded-lg"
+                asChild
+              >
+                <Link href="/community/events" onClick={() => setIsCommunityOpen(false)}>
+                  <CalendarDays size={16} className="mr-3 text-orange" />
                   Events
-                </Button>
-              </Link>
+                </Link>
+              </Button>
 
-              {/* Village Square */}
-              <Link href="/community/village-square">
-                <Button
-                  variant="ghost"
-                  className="
-                    w-full justify-start text-sm font-medium 
-                    text-foreground
-                    hover:bg-neutral-100 dark:hover:bg-neutral-900
-                    rounded-lg
-                  "
-                >
-                  <Users size={18} className="mr-3 text-blue-500" />
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-sm font-medium hover:bg-muted rounded-lg"
+                asChild
+              >
+                <Link href="/community/village-square" onClick={() => setIsCommunityOpen(false)}>
+                  <Users size={16} className="mr-3 text-blue-500" />
                   Village Square
-                </Button>
-              </Link>
-
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
 
         {/* ================= Partner ================= */}
-        <div className="flex items-center gap-1 cursor-pointer group transition">
-          <Link
-            href="/posts/instructors"
-            className="hover:text-yellow transition-colors"
-          >
-            Become a partner
-          </Link>
-          <ChevronDown className="w-4 h-4 text-[#384957] group-hover:text-yellow transition-colors" />
-        </div>
+        <Link
+          href="/posts/instructors"
+          className="flex items-center gap-1.5 hover:text-white transition-colors py-1 font-medium"
+        >
+          Become a partner
+          <ChevronDown className="w-3.5 h-3.5 text-white/60" />
+        </Link>
 
         {/* ================= Contact ================= */}
         <Link
           href="/home"
-          className="hover:text-yellow transition-colors"
+          className="hover:text-white transition-colors py-1 font-medium"
         >
           Contact Us
         </Link>
 
         {/* ================= Language ================= */}
-        <div className="flex items-center gap-1 cursor-pointer group transition">
-          <span className="hover:text-yellow transition-colors">EN</span>
-          <ChevronDown className="w-4 h-4 text-[#384957] group-hover:text-yellow transition-colors" />
-        </div>
+        <button className="flex items-center gap-1.5 hover:text-white transition-colors py-1 font-medium">
+          <span>EN</span>
+          <ChevronDown className="w-3.5 h-3.5 text-white/60" />
+        </button>
 
       </div>
     </div>
