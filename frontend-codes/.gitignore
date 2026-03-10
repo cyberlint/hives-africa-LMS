@@ -20,6 +20,9 @@
 # production
 /build
 
+# BUT do not ignore the JupyterLite build assets
+!public/jupyterlite/build/
+
 # misc
 .DS_Store
 *.pem
