@@ -16,6 +16,14 @@ model User {
   image            String?
   bio              String?
   website          String?
+  // ---  Onboarding Fields ---
+  hasCompletedOnboarding Boolean   @default(false)
+  primaryLanguage        String    @default("English")   
+  localLanguage          String?   
+  jobTitle               String?   
+  careerInterests        String[]  @default([])
+  learningIntent         String?
+
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @default(now()) @updatedAt
   sessions         Session[]
