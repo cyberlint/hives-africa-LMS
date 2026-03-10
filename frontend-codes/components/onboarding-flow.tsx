@@ -79,7 +79,7 @@ export default function OnboardingFlow() {
               Welcome to <span className="text-orange">NextHive</span>
             </h1>
             <p className="text-muted-foreground mb-10 px-4">
-              Let's customize your experience. Which languages are you most comfortable learning in?
+              {"Let's customize your experience. Which languages are you most comfortable learning in?"}
             </p>
 
             {/* Primary Language Toggle */}
