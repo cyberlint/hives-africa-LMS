@@ -37,8 +37,11 @@ import {
   Video,
   Download,
   ExternalLink,
+  Loader
 } from "lucide-react"
+import { cn } from "@/lib/utils"
 
+// ... (Keep your existing interfaces and `faqs` array here)
 interface FAQ {
   id: string
   question: string
@@ -64,80 +67,70 @@ const faqs: FAQ[] = [
   {
     id: "1",
     question: "How do I enroll in a course?",
-    answer:
-      "To enroll in a course, browse our course catalog, click on the course you're interested in, and click the 'Enroll Now' button. You'll be guided through the payment process if it's a paid course, or you can start learning immediately if it's free.",
+    answer: "To enroll in a course, browse our course catalog, click on the course you're interested in, and click the 'Enroll Now' button. You'll be guided through the payment process if it's a paid course, or you can start learning immediately if it's free.",
     category: "courses",
     tags: ["enrollment", "courses", "getting started"],
   },
   {
     id: "2",
     question: "Can I download course videos for offline viewing?",
-    answer:
-      "Yes! Premium subscribers can download course videos for offline viewing. Look for the download icon next to each video lesson. Downloaded content is available for 30 days and will be automatically renewed when you're online.",
+    answer: "Yes! Premium subscribers can download course videos for offline viewing. Look for the download icon next to each video lesson. Downloaded content is available for 30 days and will be automatically renewed when you're online.",
     category: "courses",
     tags: ["download", "offline", "videos", "premium"],
   },
   {
     id: "3",
     question: "How do I get a refund for a course?",
-    answer:
-      "We offer a 30-day money-back guarantee for all paid courses. To request a refund, go to your Purchase History, find the course, and click 'Request Refund'. Refunds are processed within 5-7 business days.",
+    answer: "We offer a 30-day money-back guarantee for all paid courses. To request a refund, go to your Purchase History, find the course, and click 'Request Refund'. Refunds are processed within 5-7 business days.",
     category: "billing",
     tags: ["refund", "money-back", "billing"],
   },
   {
     id: "4",
     question: "What payment methods do you accept?",
-    answer:
-      "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers. You can manage your payment methods in the Billing section of your account settings.",
+    answer: "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers. You can manage your payment methods in the Billing section of your account settings.",
     category: "billing",
     tags: ["payment", "credit card", "paypal", "billing"],
   },
   {
     id: "5",
     question: "How do I reset my password?",
-    answer:
-      "Click on 'Forgot Password' on the login page, enter your email address, and we'll send you a password reset link. You can also change your password anytime in your Account Settings under the Security tab.",
+    answer: "Click on 'Forgot Password' on the login page, enter your email address, and we'll send you a password reset link. You can also change your password anytime in your Account Settings under the Security tab.",
     category: "account",
     tags: ["password", "reset", "security", "login"],
   },
   {
     id: "6",
     question: "Can I share my account with others?",
-    answer:
-      "Each account is for individual use only. Sharing accounts violates our Terms of Service. However, we offer team and enterprise plans for organizations that need multiple user access.",
+    answer: "Each account is for individual use only. Sharing accounts violates our Terms of Service. However, we offer team and enterprise plans for organizations that need multiple user access.",
     category: "account",
     tags: ["sharing", "team", "enterprise", "terms"],
   },
   {
     id: "7",
     question: "How do I track my learning progress?",
-    answer:
-      "Your learning progress is automatically tracked and displayed on your dashboard. You can view detailed analytics in the Progress section, including time spent, completion rates, and achievements earned.",
+    answer: "Your learning progress is automatically tracked and displayed on your dashboard. You can view detailed analytics in the Progress section, including time spent, completion rates, and achievements earned.",
     category: "learning",
     tags: ["progress", "analytics", "tracking", "dashboard"],
   },
   {
     id: "8",
     question: "What browsers are supported?",
-    answer:
-      "Our platform works best on the latest versions of Chrome, Firefox, Safari, and Edge. For the best experience, we recommend keeping your browser updated and enabling JavaScript.",
+    answer: "Our platform works best on the latest versions of Chrome, Firefox, Safari, and Edge. For the best experience, we recommend keeping your browser updated and enabling JavaScript.",
     category: "technical",
     tags: ["browser", "compatibility", "technical", "requirements"],
   },
   {
     id: "9",
     question: "How do I contact an instructor?",
-    answer:
-      "You can contact instructors through the course discussion forums or by using the 'Message Instructor' feature available in each course. Instructors typically respond within 24-48 hours.",
+    answer: "You can contact instructors through the course discussion forums or by using the 'Message Instructor' feature available in each course. Instructors typically respond within 24-48 hours.",
     category: "learning",
     tags: ["instructor", "contact", "discussion", "support"],
   },
   {
     id: "10",
     question: "Can I get a certificate for completed courses?",
-    answer:
-      "Yes! You'll receive a certificate of completion for each course you finish. Certificates are available in your account dashboard and can be downloaded as PDF files or shared on LinkedIn.",
+    answer: "Yes! You'll receive a certificate of completion for each course you finish. Certificates are available in your account dashboard and can be downloaded as PDF files or shared on LinkedIn.",
     category: "certificates",
     tags: ["certificate", "completion", "pdf", "linkedin"],
   },
@@ -168,7 +161,6 @@ export default function HelpSupport() {
     priority: "medium",
   })
 
-  // Filter FAQs based on search and category
   const filteredFAQs = faqs.filter((faq) => {
     const matchesSearch =
       faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -180,7 +172,6 @@ export default function HelpSupport() {
     return matchesSearch && matchesCategory
   })
 
-  // Validation functions
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(email)
@@ -188,68 +179,31 @@ export default function HelpSupport() {
 
   const validateContactForm = (): boolean => {
     const newErrors: FormErrors = {}
-
-    if (!contactForm.name.trim()) {
-      newErrors.name = "Name is required"
-    }
-
-    if (!contactForm.email.trim()) {
-      newErrors.email = "Email is required"
-    } else if (!validateEmail(contactForm.email)) {
-      newErrors.email = "Please enter a valid email address"
-    }
-
-    if (!contactForm.subject.trim()) {
-      newErrors.subject = "Subject is required"
-    }
-
-    if (!contactForm.category) {
-      newErrors.category = "Please select a category"
-    }
-
-    if (!contactForm.message.trim()) {
-      newErrors.message = "Message is required"
-    } else if (contactForm.message.length < 10) {
-      newErrors.message = "Message must be at least 10 characters long"
-    }
-
+    if (!contactForm.name.trim()) newErrors.name = "Name is required"
+    if (!contactForm.email.trim()) newErrors.email = "Email is required"
+    else if (!validateEmail(contactForm.email)) newErrors.email = "Valid email is required"
+    if (!contactForm.subject.trim()) newErrors.subject = "Subject is required"
+    if (!contactForm.category) newErrors.category = "Please select a category"
+    if (!contactForm.message.trim()) newErrors.message = "Message is required"
+    else if (contactForm.message.length < 10) newErrors.message = "Message must be at least 10 characters"
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
   const handleContactSubmit = async () => {
     if (!validateContactForm()) {
-      toast( "Validation Error",
-        {description: "Please fix the errors below",
-    
-      })
+      toast.error("Validation Error", { description: "Please fix the highlighted fields." })
       return
     }
 
     setIsLoading(true)
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      toast( "Message sent successfully!",
-        {description: "We'll get back to you within 24 hours.",
-      })
-
-      // Reset form
-      setContactForm({
-        name: "",
-        email: "",
-        subject: "",
-        category: "",
-        message: "",
-        priority: "medium",
-      })
+      await new Promise((resolve) => setTimeout(resolve, 2000)) // Simulate API
+      toast.success("Message sent successfully!", { description: "We'll get back to you within 24 hours." })
+      setContactForm({ name: "", email: "", subject: "", category: "", message: "", priority: "medium" })
       setIsContactModalOpen(false)
     } catch (error) {
-      toast( "Failed to send message",
-        {description: "Please try again later or contact us directly.",
-       
-      })
+      toast.error("Failed to send message", { description: "Please try again later." })
     } finally {
       setIsLoading(false)
     }
@@ -261,137 +215,158 @@ export default function HelpSupport() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-[1440px] mx-auto pb-12">
+      
       {/* Header */}
-      <div className="text-center space-y-4">
-        <h1 className="text-2xl sm:text-3xl font-bold">Help & Support</h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Find answers to common questions or get in touch with our support team
+      <div className="text-center space-y-3 py-6">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">How can we help you?</h1>
+        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          Search our knowledge base or get in touch with our support team.
         </p>
       </div>
 
-      {/* Search Bar */}
-      <Card>
-        <CardContent className="p-4 sm:p-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <Input
-              type="text"
-              placeholder="Search for help articles, FAQs, or topics..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-4 py-3 text-base"
-            />
-          </div>
-        </CardContent>
-      </Card>
+      {/* Main Search Bar */}
+      <div className="max-w-3xl mx-auto">
+        <div className="relative group">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 transition-colors group-focus-within:text-orange" />
+          <Input
+            type="text"
+            placeholder="Search for articles, billing, certificates..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-12 pr-4 py-6 text-base rounded-2xl bg-card border-border shadow-sm focus:border-orange focus:ring-orange/20"
+          />
+        </div>
+      </div>
 
-      {/* Quick Actions */}
+      {/* Quick Action Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
           <DialogTrigger asChild>
-            <Card className="cursor-pointer hover:shadow-md transition-shadow">
-              <CardContent className="p-4 text-center">
-                <MessageCircle className="h-8 w-8 text-[#fdb606] mx-auto mb-2" />
-                <h3 className="font-semibold">Contact Support</h3>
-                <p className="text-sm text-gray-600">Get help from our team</p>
+            <Card className="cursor-pointer group hover:border-orange/50 hover:shadow-md transition-all border-border bg-card">
+              <CardContent className="p-6 text-center">
+                <div className="bg-orange/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <MessageCircle className="h-6 w-6 text-orange" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-1">Contact Support</h3>
+                <p className="text-sm text-muted-foreground">Open a ticket</p>
               </CardContent>
             </Card>
           </DialogTrigger>
         </Dialog>
 
-        <Card className="cursor-pointer hover:shadow-md transition-shadow">
-          <CardContent className="p-4 text-center">
-            <Video className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-            <h3 className="font-semibold">Video Tutorials</h3>
-            <p className="text-sm text-gray-600">Watch how-to guides</p>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer hover:shadow-md transition-shadow">
-          <CardContent className="p-4 text-center">
-            <Download className="h-8 w-8 text-green-500 mx-auto mb-2" />
-            <h3 className="font-semibold">User Guide</h3>
-            <p className="text-sm text-gray-600">Download PDF guide</p>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer hover:shadow-md transition-shadow">
-          <CardContent className="p-4 text-center">
-            <ExternalLink className="h-8 w-8 text-purple-500 mx-auto mb-2" />
-            <h3 className="font-semibold">Community</h3>
-            <p className="text-sm text-gray-600">Join our forum</p>
-          </CardContent>
-        </Card>
+        {[
+          { icon: Video, color: "text-blue-500", bg: "bg-blue-500/10", title: "Video Tutorials", desc: "Watch how-to guides" },
+          { icon: Download, color: "text-green-500", bg: "bg-green-500/10", title: "User Guide", desc: "Download PDF manual" },
+          { icon: ExternalLink, color: "text-purple-500", bg: "bg-purple-500/10", title: "Community Forum", desc: "Ask the community" },
+        ].map((card, i) => (
+          <Card key={i} className="cursor-pointer group hover:border-foreground/30 hover:shadow-md transition-all border-border bg-card">
+            <CardContent className="p-6 text-center">
+              <div className={cn(card.bg, "w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform")}>
+                <card.icon className={cn(card.color, "h-6 w-6")} />
+              </div>
+              <h3 className="font-semibold text-foreground mb-1">{card.title}</h3>
+              <p className="text-sm text-muted-foreground">{card.desc}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Category Filter */}
-        <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="text-lg">Categories</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <nav className="space-y-1">
-              {categories.map((category) => {
-                const Icon = category.icon
-                const count =
-                  category.id === "all" ? faqs.length : faqs.filter((faq) => faq.category === category.id).length
-
-                return (
-                  <button
-                    key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className={`w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors ${
-                      selectedCategory === category.id
-                        ? "bg-[#fdb606]/10 text-[#fdb606] border-r-2 border-[#fdb606]"
-                        : ""
-                    }`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <Icon className="h-5 w-5 flex-shrink-0" />
-                      <span className="truncate">{category.label}</span>
-                    </div>
-                    <Badge variant="secondary" className="text-xs">
-                      {count}
-                    </Badge>
-                  </button>
-                )
-              })}
-            </nav>
-          </CardContent>
-        </Card>
-
-        {/* FAQs */}
-        <div className="lg:col-span-3 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Frequently Asked Questions</span>
-                <Badge variant="outline">
-                  {filteredFAQs.length} {filteredFAQs.length === 1 ? "result" : "results"}
-                </Badge>
-              </CardTitle>
+      {/* Main Content Area */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+        
+        {/* Categories Sidebar */}
+        <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
+          <Card className="border-border bg-card overflow-hidden">
+            <CardHeader className="bg-muted/30 pb-4 border-b border-border/50">
+              <CardTitle className="text-lg">Topics</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-2">
+              <nav className="space-y-1">
+                {categories.map((category) => {
+                  const Icon = category.icon
+                  const count = category.id === "all" ? faqs.length : faqs.filter((faq) => faq.category === category.id).length
+                  const isActive = selectedCategory === category.id
+
+                  return (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedCategory(category.id)}
+                      className={cn(
+                        "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left transition-colors",
+                        isActive ? "bg-orange/10 text-orange font-medium" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      )}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <Icon className="h-4 w-4 flex-shrink-0" />
+                        <span className="truncate text-sm">{category.label}</span>
+                      </div>
+                      <Badge variant="secondary" className={cn("text-[10px]", isActive ? "bg-orange text-white" : "bg-background border-border text-muted-foreground")}>
+                        {count}
+                      </Badge>
+                    </button>
+                  )
+                })}
+              </nav>
+            </CardContent>
+          </Card>
+
+          {/* Contact Info Widget */}
+          <Card className="border-border bg-card">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-base">Direct Contact</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-start gap-3">
+                <Mail className="w-4 h-4 text-muted-foreground mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-foreground">hello@hives.africa</p>
+                  <p className="text-xs text-muted-foreground">Response in 24 hrs</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Phone className="w-4 h-4 text-muted-foreground mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-foreground">+234 9016 0379 91</p>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Clock className="w-3 h-3" /> Mon-Fri, 9AM-6PM
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* FAQs List */}
+        <div className="lg:col-span-3">
+          <Card className="border-border bg-card">
+            <CardHeader className="border-b border-border/50 bg-muted/30">
+              <div className="flex items-center justify-between">
+                <CardTitle>Frequently Asked Questions</CardTitle>
+                <Badge variant="outline" className="bg-background border-border text-muted-foreground font-normal">
+                  {filteredFAQs.length} {filteredFAQs.length === 1 ? "Result" : "Results"}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
               {filteredFAQs.length > 0 ? (
                 <Accordion type="single" collapsible className="w-full">
                   {filteredFAQs.map((faq) => {
                     const Icon = getCategoryIcon(faq.category)
                     return (
-                      <AccordionItem key={faq.id} value={faq.id}>
-                        <AccordionTrigger className="text-left hover:no-underline">
-                          <div className="flex items-start space-x-3 flex-1">
-                            <Icon className="h-5 w-5 text-[#fdb606] mt-0.5 flex-shrink-0" />
-                            <span className="font-medium">{faq.question}</span>
+                      <AccordionItem key={faq.id} value={faq.id} className="border-border px-6">
+                        <AccordionTrigger className="text-left hover:no-underline py-5 group">
+                          <div className="flex items-start space-x-4 flex-1">
+                            <Icon className="h-5 w-5 text-muted-foreground group-hover:text-orange transition-colors mt-0.5 shrink-0" />
+                            <span className="font-medium text-foreground text-base leading-snug">{faq.question}</span>
                           </div>
                         </AccordionTrigger>
-                        <AccordionContent className="pl-8">
-                          <div className="space-y-3">
-                            <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
-                            <div className="flex flex-wrap gap-2">
+                        <AccordionContent className="pl-9 pr-4 pb-6">
+                          <div className="space-y-4">
+                            <p className="text-muted-foreground leading-relaxed text-[15px]">{faq.answer}</p>
+                            <div className="flex flex-wrap gap-2 pt-2">
                               {faq.tags.map((tag) => (
-                                <Badge key={tag} variant="outline" className="text-xs">
+                                <Badge key={tag} variant="secondary" className="text-xs bg-muted text-muted-foreground font-normal">
                                   {tag}
                                 </Badge>
                               ))}
@@ -403,63 +378,15 @@ export default function HelpSupport() {
                   })}
                 </Accordion>
               ) : (
-                <div className="text-center py-12">
-                  <HelpCircle className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No results found</h3>
-                  <p className="text-gray-600 mb-4">Try adjusting your search terms or browse different categories</p>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setSearchQuery("")
-                      setSelectedCategory("all")
-                    }}
-                  >
-                    Clear Filters
+                <div className="text-center py-16 px-4">
+                  <HelpCircle className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">No answers found</h3>
+                  <p className="text-muted-foreground mb-6 max-w-sm mx-auto">We couldn't find any FAQs matching your search criteria.</p>
+                  <Button variant="outline" onClick={() => { setSearchQuery(""); setSelectedCategory("all") }} className="rounded-full">
+                    Clear Search
                   </Button>
                 </div>
               )}
-            </CardContent>
-          </Card>
-
-          {/* Contact Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Contact Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center">
-                  <div className="bg-[#fdb606]/10 p-3 rounded-full w-fit mx-auto mb-3">
-                    <MessageCircle className="h-6 w-6 text-[#fdb606]" />
-                  </div>
-                  <h4 className="font-semibold mb-2">Live Chat</h4>
-                  <p className="text-sm text-gray-600 mb-3">Get instant help from our support team</p>
-                  <Button size="sm" className="bg-[#fdb606] hover:bg-[#f39c12]">
-                    Start Chat
-                  </Button>
-                </div>
-
-                <div className="text-center">
-                  <div className="bg-blue-100 p-3 rounded-full w-fit mx-auto mb-3">
-                    <Mail className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <h4 className="font-semibold mb-2">Email Support</h4>
-                  <p className="text-sm text-gray-600 mb-3">support@learnhub.com</p>
-                  <p className="text-xs text-gray-500">Response within 24 hours</p>
-                </div>
-
-                <div className="text-center">
-                  <div className="bg-green-100 p-3 rounded-full w-fit mx-auto mb-3">
-                    <Phone className="h-6 w-6 text-green-600" />
-                  </div>
-                  <h4 className="font-semibold mb-2">Phone Support</h4>
-                  <p className="text-sm text-gray-600 mb-3">+1 (555) 123-4567</p>
-                  <div className="flex items-center justify-center text-xs text-gray-500">
-                    <Clock className="h-3 w-3 mr-1" />
-                    Mon-Fri 9AM-6PM EST
-                  </div>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>
@@ -467,147 +394,105 @@ export default function HelpSupport() {
 
       {/* Contact Modal */}
       <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Contact Support</DialogTitle>
-            <DialogDescription>Send us a message and we&apos;ll get back to you as soon as possible.</DialogDescription>
+        <DialogContent className="max-w-xl bg-card border-border rounded-2xl">
+          <DialogHeader className="mb-4">
+            <DialogTitle className="text-xl">Contact Support</DialogTitle>
+            <DialogDescription>Submit a ticket and our team will get back to you shortly.</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="name">Name *</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="name" className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">Name</Label>
                 <Input
                   id="name"
                   value={contactForm.name}
-                  onChange={(e) => setContactForm((prev) => ({ ...prev, name: e.target.value }))}
-                  className={errors.name ? "border-red-500" : ""}
+                  onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                  className={cn("bg-background border-border rounded-lg", errors.name && "border-destructive focus-visible:ring-destructive/20")}
                 />
-                {errors.name && (
-                  <p className="text-sm text-red-500 mt-1 flex items-center">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {errors.name}
-                  </p>
-                )}
+                {errors.name && <p className="text-xs text-destructive flex items-center"><AlertCircle className="h-3 w-3 mr-1" />{errors.name}</p>}
               </div>
 
-              <div>
-                <Label htmlFor="email">Email *</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   value={contactForm.email}
-                  onChange={(e) => setContactForm((prev) => ({ ...prev, email: e.target.value }))}
-                  className={errors.email ? "border-red-500" : ""}
+                  onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                  className={cn("bg-background border-border rounded-lg", errors.email && "border-destructive focus-visible:ring-destructive/20")}
                 />
-                {errors.email && (
-                  <p className="text-sm text-red-500 mt-1 flex items-center">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {errors.email}
-                  </p>
-                )}
+                {errors.email && <p className="text-xs text-destructive flex items-center"><AlertCircle className="h-3 w-3 mr-1" />{errors.email}</p>}
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="subject">Subject *</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="subject" className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">Subject</Label>
               <Input
                 id="subject"
                 value={contactForm.subject}
-                onChange={(e) => setContactForm((prev) => ({ ...prev, subject: e.target.value }))}
-                className={errors.subject ? "border-red-500" : ""}
+                onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
+                className={cn("bg-background border-border rounded-lg", errors.subject && "border-destructive focus-visible:ring-destructive/20")}
               />
-              {errors.subject && (
-                <p className="text-sm text-red-500 mt-1 flex items-center">
-                  <AlertCircle className="h-4 w-4 mr-1" />
-                  {errors.subject}
-                </p>
-              )}
+              {errors.subject && <p className="text-xs text-destructive flex items-center"><AlertCircle className="h-3 w-3 mr-1" />{errors.subject}</p>}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="category">Category *</Label>
-                <Select
-                  value={contactForm.category}
-                  onValueChange={(value) => setContactForm((prev) => ({ ...prev, category: value }))}
-                >
-                  <SelectTrigger className={errors.category ? "border-red-500" : ""}>
-                    <SelectValue placeholder="Select category" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="category" className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">Category</Label>
+                <Select value={contactForm.category} onValueChange={(value) => setContactForm({ ...contactForm, category: value })}>
+                  <SelectTrigger className={cn("bg-background border-border rounded-lg", errors.category && "border-destructive focus-visible:ring-destructive/20")}>
+                    <SelectValue placeholder="Select topic" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="border-border">
                     <SelectItem value="courses">Courses & Learning</SelectItem>
                     <SelectItem value="billing">Billing & Payments</SelectItem>
                     <SelectItem value="account">Account & Settings</SelectItem>
                     <SelectItem value="technical">Technical Support</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
-                {errors.category && (
-                  <p className="text-sm text-red-500 mt-1 flex items-center">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {errors.category}
-                  </p>
-                )}
+                {errors.category && <p className="text-xs text-destructive flex items-center"><AlertCircle className="h-3 w-3 mr-1" />{errors.category}</p>}
               </div>
 
-              <div>
-                <Label htmlFor="priority">Priority</Label>
-                <Select
-                  value={contactForm.priority}
-                  onValueChange={(value) => setContactForm((prev) => ({ ...prev, priority: value }))}
-                >
-                  <SelectTrigger>
+              <div className="space-y-1.5">
+                <Label htmlFor="priority" className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">Priority</Label>
+                <Select value={contactForm.priority} onValueChange={(value) => setContactForm({ ...contactForm, priority: value })}>
+                  <SelectTrigger className="bg-background border-border rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="border-border">
                     <SelectItem value="low">Low</SelectItem>
                     <SelectItem value="medium">Medium</SelectItem>
                     <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="message">Message *</Label>
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center">
+                <Label htmlFor="message" className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">Message</Label>
+                <span className="text-[10px] text-muted-foreground">{contactForm.message.length}/1000</span>
+              </div>
               <Textarea
                 id="message"
-                placeholder="Describe your issue or question in detail..."
-                className={`h-32 ${errors.message ? "border-red-500" : ""}`}
+                placeholder="How can we help you today?"
+                className={cn("h-32 bg-background border-border rounded-lg resize-none", errors.message && "border-destructive focus-visible:ring-destructive/20")}
                 value={contactForm.message}
-                onChange={(e) => setContactForm((prev) => ({ ...prev, message: e.target.value }))}
+                onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
                 maxLength={1000}
               />
-              <div className="flex justify-between items-center mt-1">
-                {errors.message && (
-                  <p className="text-sm text-red-500 flex items-center">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {errors.message}
-                  </p>
-                )}
-                <p className="text-sm text-gray-500 ml-auto">{contactForm.message.length}/1000</p>
-              </div>
+              {errors.message && <p className="text-xs text-destructive flex items-center"><AlertCircle className="h-3 w-3 mr-1" />{errors.message}</p>}
             </div>
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsContactModalOpen(false)}>
+          <DialogFooter className="mt-6 sm:justify-end gap-2">
+            <Button variant="outline" onClick={() => setIsContactModalOpen(false)} className="rounded-full w-full sm:w-auto">
               Cancel
             </Button>
-            <Button onClick={handleContactSubmit} disabled={isLoading} className="bg-[#fdb606] hover:bg-[#f39c12]">
-              {isLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <Send className="h-4 w-4 mr-2" />
-                  Send Message
-                </>
-              )}
+            <Button onClick={handleContactSubmit} disabled={isLoading} className="rounded-full bg-orange hover:bg-orange/90 text-white w-full sm:w-auto">
+              {isLoading ? <Loader className="animate-spin h-4 w-4 mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+              {isLoading ? "Sending..." : "Submit Ticket"}
             </Button>
           </DialogFooter>
         </DialogContent>

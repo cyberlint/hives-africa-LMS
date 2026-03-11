@@ -145,7 +145,7 @@ export default function OnboardingFlow() {
                     </span>
                   </h1>
                   <p className="text-lg text-muted-foreground max-w-md mx-auto leading-relaxed">
-                    At NextHive, we don't just watch tutorials. We build real-world solutions. Let's set up your personalized workspace.
+                    {"At NextHive, we don't just watch tutorials. We build real-world solutions. Let's set up your personalized workspace."}
                   </p>
                 </motion.div>
 
@@ -156,7 +156,7 @@ export default function OnboardingFlow() {
                     onClick={handleNext}
                     className="w-full sm:w-auto bg-orange text-white px-12 py-4 rounded-full font-bold text-lg shadow-xl shadow-orange/20 hover:shadow-orange/30 transition-shadow"
                   >
-                    Let's go
+                    {"Let's go!"}
                   </motion.button>
                 </motion.div>
               </motion.div>
@@ -167,7 +167,7 @@ export default function OnboardingFlow() {
               <motion.div key="language" variants={springVariant} initial="hidden" animate="visible" exit="exit" className="w-full space-y-8 mt-4">
                 <div className="space-y-2">
                   <h2 className="text-3xl md:text-4xl font-extrabold text-darkBlue-500 tracking-tight">
-                    What's your language?
+                    {"What's your language?"}
                   </h2>
                   <p className="text-muted-foreground text-lg">
                     Select the language you are most comfortable learning in.
@@ -224,7 +224,7 @@ export default function OnboardingFlow() {
                     Tell us about you.
                   </h2>
                   <p className="text-muted-foreground text-lg">
-                    We'll match you with the right practical projects based on your background.
+                    {"We'll match you with the right practical projects based on your background."}
                   </p>
                 </div>
 
@@ -275,7 +275,7 @@ export default function OnboardingFlow() {
               <motion.div key="intent" variants={springVariant} initial="hidden" animate="visible" exit="exit" className="w-full space-y-8 mt-4">
                 <div className="space-y-2">
                   <h2 className="text-3xl md:text-4xl font-extrabold text-darkBlue-500 tracking-tight">
-                    What's your goal?
+                    {"What's your goal?"}
                   </h2>
                   <p className="text-muted-foreground text-lg">
                     Select your primary objective to finalize your curriculum.
