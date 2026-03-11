@@ -8,6 +8,20 @@ import { useResponsiveColumns } from './hooks/useResponsiveColumns';
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { CourseData, Lecture } from '@/types/course';
+
+interface ThreeColumnLayoutProps {
+  courseData: CourseData;
+  activeLecture?: Lecture;
+  activeLectureId: string;
+  completedLectures: string[];
+  onLectureSelect: (lectureId: string) => void;
+  onMarkComplete: (lectureId: string) => void;
+  onTimeUpdate?: (time: number) => void;
+  onVideoEnd?: () => void;
+  onNext?: () => void;
+  onPrevious?: () => void;
+}
 
 export const ThreeColumnLayout: React.FC<ThreeColumnLayoutProps> = ({
   courseData, activeLecture, activeLectureId, completedLectures, onLectureSelect, onMarkComplete, onTimeUpdate, onVideoEnd, onNext, onPrevious,
