@@ -381,7 +381,7 @@ export default function HelpSupport() {
                 <div className="text-center py-16 px-4">
                   <HelpCircle className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-foreground mb-2">No answers found</h3>
-                  <p className="text-muted-foreground mb-6 max-w-sm mx-auto">We couldn't find any FAQs matching your search criteria.</p>
+                  <p className="text-muted-foreground mb-6 max-w-sm mx-auto">{"We couldn't find any FAQs matching your search criteria."}</p>
                   <Button variant="outline" onClick={() => { setSearchQuery(""); setSelectedCategory("all") }} className="rounded-full">
                     Clear Search
                   </Button>
