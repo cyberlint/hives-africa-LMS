@@ -615,7 +615,8 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
            <VideoPlayer
              ref={videoRef}
              src={videoSrc || DEFAULT_VIDEO_URL}
-             className="w-full h-full object-contain"
+            onMouseEnter={() => setShowControls(true)}
+            onMouseLeave={() => setShowControls(false)}
            />
         </div>
 
