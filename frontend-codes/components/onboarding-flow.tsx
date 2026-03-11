@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { completeOnboardingAction } from "../app/api/onboarding/actions"; // Adjust path
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, Variants, AnimatePresence } from "framer-motion";
 
 const LOCAL_LANGUAGES = [
-  "None", "Amharic", "Arabic", "Hausa", "Igbo", "Oromo", 
-  "Shona", "Swahili", "Yoruba", "Zulu", "Other"
+  "Amharic", "Arabic", "Hausa", "Igbo", "Oromo", 
+  "Shona", "Swahili", "Yoruba", "Zulu", "None", "Other"
 ];
 
 const CAREER_INTERESTS = [
@@ -22,7 +22,7 @@ const LEARNING_INTENTS = [
 ];
 
 // Spring animations for a playful, native-app feel
-const springVariant = {
+const springVariant: Variants = {
   hidden: { opacity: 0, y: 40, scale: 0.95 },
   visible: { 
     opacity: 1, 
