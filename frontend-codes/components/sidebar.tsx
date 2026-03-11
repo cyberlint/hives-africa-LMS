@@ -118,7 +118,7 @@ export default function Sidebar({ activeTab, onTabChange, className }: SidebarPr
                 aria-current={isActive ? "page" : undefined}
              asChild >
               <Link href={`/${item.id}`}>
-                <Icon className="mr-3 h-4 w-4 flex-shrink-0" />
+                <Icon className="mr-3 h-4 w-4 shrink-0" />
                 <span className="text-left">{item.label}</span>
                 </Link>
               </Button>

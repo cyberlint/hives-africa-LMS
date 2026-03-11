@@ -1,6 +1,5 @@
-
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 // Declared in a d.ts shim for CSS modules; Next.js allows global CSS here.
 import "./globals.css";
 import { QueryProvider } from "./providers/QueryProvider";
@@ -11,14 +10,15 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 import FacebookPixel from "@/components/metadata/FacebookPixel";
 // Site-wide chrome (Topbar, Navbar, Footer) moved into `(public routes)/layout.tsx` to avoid rendering inside private student dashboard.
 
-const montserrat = Montserrat({
-  subsets: ["latin"],
+const jakarta = Plus_Jakarta_Sans({ 
+  subsets: ["latin"], 
+  variable: "--font-sans" ,
   display: "swap",
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  weight: ["200", "300", "400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
-  title: "NextHive | Pan-African AI School",
+  title: "NextHive | The Pan-African AI School",
   description: "Empowering Africa's Future with AI Education",
 
   // Favicon / Icons
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 
   // Open Graph (Facebook, LinkedIn, etc.)
   openGraph: {
-    title: "NextHive | Pan-African AI School",
+    title: "NextHive | The Pan-African AI School",
     description: "Empowering Africa's Future with AI Education",
     url: "https://www.hives.africa/",
     siteName: "NextHive",
@@ -90,7 +90,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning style={{ height: '100%' }}>
-      <body className={`${montserrat.className} bg-white dark:bg-darkBlue-300 text-gray-900 dark:text-gray-100 transition-colors duration-300`} style={{ height: '100%' }}>
+      <body className={`${jakarta.className} bg-white dark:bg-darkBlue-300 text-gray-900 dark:text-gray-100 transition-colors duration-300`} style={{ height: '100%' }}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

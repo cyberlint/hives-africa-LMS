@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { authClient } from "@/lib/auth-client";
-import { useTheme } from "next-themes";
 import { ThemeToggle } from "../ui/theme-toggle";
 
 const Navbar = () => {
@@ -18,8 +17,6 @@ const Navbar = () => {
   const { items } = useCart();
   const { data: session } = authClient.useSession(); // Use Better Auth like admin
   const user = session?.user;
-  const { theme, setTheme } = useTheme();
-  
   const cartItemsCount = items.reduce((total, item) => total + item.quantity, 0);
 
   useEffect(() => {
@@ -78,22 +75,21 @@ const Navbar = () => {
             )}
           </button>
 
-          {/* Only show login/signup if user is not authenticated */}
+          {/* If logged in, redirect to dashboard, else, redirect to login page */}
           <ul className="flex justify-end items-center gap-4">
           {user ? (
             <li>
               <button
                 onClick={async () => {
                   try {
-                    await authClient.signOut();
-                    router.push("/");
+                    router.push("/dashboard");
                   } catch (err) {
-                    console.error("Sign out failed", err);
+                    console.error("Unable to redirect to dashboard", err);
                   }
                 }}
                 className="bg-yellow text-white text-xs md:text-sm font-medium px-6 py-3 cursor-pointer hover:bg-yellow/90 transition inline-block rounded"
               >
-                Sign Out
+                Go to Dashboard
               </button>
             </li>
           ) : (

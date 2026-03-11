@@ -252,20 +252,12 @@
 // };
 
 
+"use client";
 import React, { useState } from "react";
-import {
-  ChevronDown,
-  ChevronRight,
-  ChevronLeft,
-  CheckCircle,
-  PlayCircle,
-  FileText,
-  HelpCircle,
-  Book,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ChevronDown, CheckCircle, PlayCircle, FileText, HelpCircle, Book, X, ChevronLeft, ChevronRight } from "lucide-react";
 import type { CourseData, Lecture } from "@/types/course";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface ChapterNavigationPanelProps {
   courseData: CourseData;
@@ -292,246 +284,121 @@ export const ChapterNavigationPanel: React.FC<ChapterNavigationPanelProps> = ({
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections((prev) =>
-      prev.includes(sectionId)
-        ? prev.filter((id) => id !== sectionId)
-        : [...prev, sectionId]
+      prev.includes(sectionId) ? prev.filter((id) => id !== sectionId) : [...prev, sectionId]
     );
   };
 
   const getLectureIcon = (lecture: Lecture) => {
     const cls = "w-4 h-4";
-    switch (lecture.type) {
-      case "video":
-        return <PlayCircle className={cls} />;
-      case "quiz":
-        return <HelpCircle className={cls} />;
-      case "document":
-        return <FileText className={cls} />;
-      case "resource":
-        return <Book className={cls} />;
-      default:
-        return <FileText className={cls} />;
-    }
+    if (lecture.type === "video") return <PlayCircle className={cls} />;
+    if (lecture.type === "quiz") return <HelpCircle className={cls} />;
+    if (lecture.type === "document") return <FileText className={cls} />;
+    if (lecture.type === "resource") return <Book className={cls} />;
+    return <FileText className={cls} />;
   };
 
-  const formatDuration = (seconds?: number) => {
-    if (!seconds) return "";
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s.toString().padStart(2, "0")}`;
-  };
+  const completionPercentage = (completedLectures.length / (courseData.totalLectures || 1)) * 100;
 
-  /* -------------------- Collapsed State -------------------- */
-  if (isCollapsed) {
-    return (
-      <div
+  return (
+    <>
+      {/* MOBILE OVERLAY */}
+      {isMobile && !isCollapsed && (
+        <div 
+          className="fixed inset-0 bg-black/40 z-[140] backdrop-blur-sm transition-opacity duration-300"
+          onClick={onToggleCollapse}
+        />
+      )}
+
+      <aside
         className={cn(
-          "z-20 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1d2026]",
-          isMobile
-            ? "fixed inset-y-0 left-0 hidden"
-            : "sticky top-0 h-screen w-12 flex flex-col items-center py-4"
+          "flex flex-col flex-shrink-0 border-r border-border bg-white dark:bg-[#1d2026] transition-all duration-300 ease-in-out",
+          // Desktop: sticky and width-toggled
+          !isMobile && (isCollapsed ? "w-0 opacity-0 overflow-hidden border-none" : "sticky top-0 h-screen w-[300px]"),
+          // Mobile: slide-in drawer
+          isMobile && "fixed inset-y-0 left-0 z-[150] w-[280px] shadow-2xl transform transition-transform",
+          isMobile && (isCollapsed ? "-translate-x-full" : "translate-x-0")
         )}
       >
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onToggleCollapse}
-          className="h-8 w-8 p-0 rounded-full"
-          title="Show chapters"
-        >
-          <ChevronRight className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-        </Button>
-      </div>
-    );
-  }
-
-  const completionPercentage =
-    (completedLectures.length / (courseData.totalLectures || 1)) * 100;
-
-  /* -------------------- Expanded State -------------------- */
-  return (
-    <aside
-      className={cn(
-        "flex flex-col flex-shrink-0 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1d2026] transition-all",
-        isMobile
-          ? "fixed inset-0 z-50 w-full h-[100dvh]"
-          : "sticky top-0 h-screen w-[260px] sm:w-[280px] lg:w-[300px]"
-      )}
-    >
-      {/* Header */}
-      <header className="flex-shrink-0 p-4 border-b border-gray-200 dark:border-gray-800">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Course Content
-          </h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggleCollapse}
-            className="h-8 w-8 p-0 rounded-full"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-        </div>
-
-        {/* Progress */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400">
-            <span>{Math.round(completionPercentage)}% completed</span>
-            <span>
-              {completedLectures.length}/{courseData.totalLectures || 0}
-            </span>
+        <header className="flex-shrink-0 p-6 border-b border-border">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-foreground">Course Content</h2>
+            
+            {/* Standardized Chevron Close Button */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={onToggleCollapse} 
+              className="h-8 w-8 rounded-full hover:bg-muted"
+            >
+              <ChevronLeft className="h-5 w-5 text-muted-foreground" />
+            </Button>
           </div>
-          <div className="h-1.5 w-full rounded-full bg-gray-100 dark:bg-gray-800">
-            <div
-              className="h-full rounded-full bg-[#fdb606] transition-all"
-              style={{ width: `${completionPercentage}%` }}
-            />
+          
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>{Math.round(completionPercentage)}% completed</span>
+              <span>{completedLectures.length}/{courseData.totalLectures || 0}</span>
+            </div>
+            <div className="h-1.5 w-full rounded-full bg-muted">
+              <div 
+                className="h-full rounded-full bg-[#fdb606] transition-all" 
+                style={{ width: `${completionPercentage}%` }} 
+              />
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Sections */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
-        <div className="p-3 space-y-3">
-          {courseData.sections.map((section) => {
-            const isExpanded = expandedSections.includes(section.id);
-            const sectionCompleted = section.lectures.every((l) =>
-              completedLectures.includes(l.id)
-            );
-
-            return (
-              <div key={section.id} className="space-y-1">
-                {/* Section Header */}
-                <button
-                  onClick={() => toggleSection(section.id)}
-                  className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <ChevronDown
-                      className={cn(
-                        "w-4 h-4 transition-transform text-gray-400",
-                        !isExpanded && "-rotate-90"
-                      )}
-                    />
-                    <span className="text-sm font-semibold truncate text-gray-900 dark:text-gray-200">
-                      {section.title}
-                    </span>
-                  </div>
-                  {sectionCompleted && (
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                  )}
-                </button>
-
-                {/* Lectures */}
-                <div
-                  className={cn(
-                    "space-y-1 overflow-hidden transition-all",
-                    isExpanded ? "max-h-[5000px]" : "max-h-0"
-                  )}
-                >
-                  {section.lectures.map((lecture) => {
-                    const isActive = lecture.id === activeLectureId;
-                    const isCompleted = completedLectures.includes(lecture.id);
-
-                    return (
-                      <button
-                        key={lecture.id}
-                        onClick={() => onLectureSelect(lecture.id)}
-                        className={cn(
-                          "relative w-full flex items-start gap-3 p-2 pl-8 rounded-md text-left",
-                          isActive
-                            ? "bg-[#fdb606]/10 text-gray-900 dark:text-white"
-                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                        )}
-                      >
-                        {isActive && (
-                          <span className="absolute left-0 top-1/2 -translate-y-1/2 h-2/3 w-1 bg-[#fdb606] rounded-r" />
-                        )}
-
-                        <span
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
+          <div className="p-3 space-y-3">
+            {courseData.sections.map((section) => {
+              const isExpanded = expandedSections.includes(section.id);
+              return (
+                <div key={section.id} className="space-y-1">
+                  <button 
+                    onClick={() => toggleSection(section.id)} 
+                    className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <ChevronDown className={cn("w-4 h-4 transition-transform text-muted-foreground", !isExpanded && "-rotate-90")} />
+                      <span className="text-sm font-semibold truncate text-foreground">{section.title}</span>
+                    </div>
+                  </button>
+                  <div className={cn("space-y-1 overflow-hidden transition-all", isExpanded ? "max-h-[5000px]" : "max-h-0")}>
+                    {section.lectures.map((lecture) => {
+                      const isActive = lecture.id === activeLectureId;
+                      return (
+                        <button 
+                          key={lecture.id} 
+                          onClick={() => {
+                            onLectureSelect(lecture.id);
+                            if (isMobile) onToggleCollapse();
+                          }} 
                           className={cn(
-                            "mt-0.5",
-                            isActive
-                              ? "text-[#fdb606]"
-                              : "text-gray-400 dark:text-gray-500"
+                            "relative w-full flex items-start gap-3 p-2 pl-8 rounded-md text-left transition-colors", 
+                            isActive ? "bg-[#fdb606]/10 text-foreground" : "text-muted-foreground hover:bg-muted/50"
                           )}
                         >
-                          {isCompleted ? (
-                            <CheckCircle className="w-4 h-4 text-green-500" />
-                          ) : (
-                            getLectureIcon(lecture)
-                          )}
-                        </span>
-
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm line-clamp-2">
-                            {lecture.title}
-                          </p>
-                          {lecture.duration && (
-                            <span className="block text-xs text-muted-foreground">
-                              {formatDuration(lecture.duration)}
-                            </span>
-                          )}
-                        </div>
-                      </button>
-                    );
-                  })}
+                          {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-2/3 w-1 bg-[#fdb606] rounded-r" />}
+                          <span className={cn("mt-0.5", isActive ? "text-[#fdb606]" : "text-muted-foreground")}>
+                            {completedLectures.includes(lecture.id) ? <CheckCircle className="w-4 h-4 text-green-500" /> : getLectureIcon(lecture)}
+                          </span>
+                          <p className="text-sm line-clamp-2">{lecture.title}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </aside>
 
-      {/* Footer */}
-      <footer className="flex-shrink-0 p-4 border-t border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
-        <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400">
-          <span>Total Duration</span>
-          <span className="font-semibold text-gray-900 dark:text-gray-200">
-            {Math.floor(
-              courseData.sections.reduce(
-                (sum, s) =>
-                  sum +
-                  s.lectures.reduce(
-                    (ls, l) => ls + (l.duration || 0),
-                    0
-                  ),
-                0
-              ) / 3600
-            )}
-            h{" "}
-            {Math.floor(
-              (courseData.sections.reduce(
-                (sum, s) =>
-                  sum +
-                  s.lectures.reduce(
-                    (ls, l) => ls + (l.duration || 0),
-                    0
-                  ),
-                0
-              ) %
-                3600) /
-                60
-            )}
-            m
-          </span>
-        </div>
-      </footer>
-
-      {/* Scrollbar */}
       <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 5px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #e5e7eb;
-          border-radius: 9999px;
-        }
-        .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-          background: #d1d5db;
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #374151; }
       `}</style>
-    </aside>
+    </>
   );
 };

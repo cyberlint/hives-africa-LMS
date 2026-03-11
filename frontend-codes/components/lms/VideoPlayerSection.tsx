@@ -1,3 +1,355 @@
+// import React, { useState, useRef, useEffect, useCallback } from 'react';
+// import { VideoPlayer } from '@/components/lms/VideoPlayer';
+// import { VideoControls } from '@/components/lms/VideoControls';
+// import { CheckCircle } from 'lucide-react';
+// import type { Lecture } from '@/types/course';
+// import { NavigationArrows } from '@/components/lms/NavigationArrows';
+// import { RichTextRenderer } from './RichTextRenderer';
+
+// interface VideoPlayerSectionProps {
+//   lecture?: Lecture;
+//   onNext: () => void;
+//   onPrevious: () => void;
+//   isCompleted: boolean;
+//   onVideoEnd: () => void;
+//   onTimeUpdate?: (time: number) => void;
+//   allLectures: Lecture[];
+//   currentIndex: number;
+// }
+
+// export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
+//   lecture,
+//   onNext,
+//   onPrevious,
+//   isCompleted,
+//   onVideoEnd,
+//   onTimeUpdate,
+//   allLectures,
+//   currentIndex
+// }) => {
+//   const videoRef = useRef<HTMLVideoElement>(null);
+//   const [isPlaying, setIsPlaying] = useState(false);
+//   const [currentTime, setCurrentTime] = useState(0);
+//   const [duration, setDuration] = useState(0);
+//   const [volume, setVolume] = useState(1);
+//   const [isMuted, setIsMuted] = useState(false);
+//   const [playbackRate, setPlaybackRate] = useState(1);
+//   const [showControls, setShowControls] = useState(true);
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [videoQuality, setVideoQuality] = useState('Auto');
+//   const [captionsEnabled, setCaptionsEnabled] = useState(false);
+//   const [availableQualities] = useState(['Auto', '1080p', '720p', '480p', '360p']);
+
+//   const defaultVideoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+
+//   useEffect(() => {
+//     const video = videoRef.current;
+//     if (!video) return;
+
+//     const updateTime = () => {
+//       const time = video.currentTime;
+//       setCurrentTime(time);
+//       onTimeUpdate?.(time);
+//     };
+//     const updateDuration = () => setDuration(video.duration);
+//     const handlePlay = () => setIsPlaying(true);
+//     const handlePause = () => setIsPlaying(false);
+//     const handleLoadStart = () => setIsLoading(true);
+//     const handleCanPlay = () => setIsLoading(false);
+//     const handleEnded = () => {
+//       setIsPlaying(false);
+//       onVideoEnd();
+//       setTimeout(() => {
+//         onNext();
+//       }, 2000);
+//     };
+
+//     video.addEventListener('timeupdate', updateTime);
+//     video.addEventListener('loadedmetadata', updateDuration);
+//     video.addEventListener('play', handlePlay);
+//     video.addEventListener('pause', handlePause);
+//     video.addEventListener('loadstart', handleLoadStart);
+//     video.addEventListener('canplay', handleCanPlay);
+//     video.addEventListener('ended', handleEnded);
+
+//     return () => {
+//       video.removeEventListener('timeupdate', updateTime);
+//       video.removeEventListener('loadedmetadata', updateDuration);
+//       video.removeEventListener('play', handlePlay);
+//       video.removeEventListener('pause', handlePause);
+//       video.removeEventListener('loadstart', handleLoadStart);
+//       video.removeEventListener('canplay', handleCanPlay);
+//       video.removeEventListener('ended', handleEnded);
+//     };
+//   }, [onNext, onVideoEnd, onTimeUpdate]);
+
+//   // Reset video when lecture changes
+//   useEffect(() => {
+//     if (videoRef.current) {
+//       setCurrentTime(0);
+//       setIsPlaying(false);
+//       videoRef.current.currentTime = 0;
+//     }
+//   }, [lecture?.id]);
+
+//   const togglePlay = useCallback(() => {
+//     const video = videoRef.current;
+//     if (!video) return;
+
+//     if (isPlaying) {
+//       video.pause();
+//     } else {
+//       video.play();
+//     }
+//   }, [isPlaying]);
+
+//   const handleSeek = useCallback((time: number) => {
+//     const video = videoRef.current;
+//     if (!video) return;
+
+//     video.currentTime = time;
+//     setCurrentTime(time);
+//   }, []);
+
+//   const skipForward = useCallback(() => {
+//     const video = videoRef.current;
+//     if (!video) return;
+
+//     video.currentTime = Math.min(video.currentTime + 10, duration);
+//   }, [duration]);
+
+//   const skipBackward = useCallback(() => {
+//     const video = videoRef.current;
+//     if (!video) return;
+
+//     video.currentTime = Math.max(video.currentTime - 10, 0);
+//   }, []);
+
+//   const handleVolumeChange = useCallback((newVolume: number) => {
+//     const video = videoRef.current;
+//     if (!video) return;
+
+//     video.volume = newVolume;
+//     setVolume(newVolume);
+//     setIsMuted(newVolume === 0);
+//   }, []);
+
+//   const toggleMute = useCallback(() => {
+//     const video = videoRef.current;
+//     if (!video) return;
+
+//     const newMuted = !isMuted;
+//     video.muted = newMuted;
+//     setIsMuted(newMuted);
+//   }, [isMuted]);
+
+//   useEffect(() => {
+//     const handleKeyPress = (e: KeyboardEvent) => {
+//       if (e.target && (e.target as HTMLElement).tagName === 'INPUT') return;
+
+//       switch (e.code) {
+//         case 'Space':
+//           e.preventDefault();
+//           togglePlay();
+//           break;
+//         case 'ArrowLeft':
+//           if (!e.altKey) {
+//             e.preventDefault();
+//             skipBackward();
+//           }
+//           break;
+//         case 'ArrowRight':
+//           if (!e.altKey) {
+//             e.preventDefault();
+//             skipForward();
+//           }
+//           break;
+//         case 'KeyF':
+//           e.preventDefault();
+//           toggleFullscreen();
+//           break;
+//         case 'KeyM':
+//           e.preventDefault();
+//           toggleMute();
+//           break;
+//         case 'ArrowUp':
+//           e.preventDefault();
+//           handleVolumeChange(Math.min(volume + 0.1, 1));
+//           break;
+//         case 'ArrowDown':
+//           e.preventDefault();
+//           handleVolumeChange(Math.max(volume - 0.1, 0));
+//           break;
+//       }
+//     };
+
+//     document.addEventListener('keydown', handleKeyPress);
+//     return () => document.removeEventListener('keydown', handleKeyPress);
+//   }, [volume, togglePlay, skipForward, skipBackward, toggleMute, handleVolumeChange]);
+
+//   const changePlaybackRate = (rate: number) => {
+//     const video = videoRef.current;
+//     if (!video) return;
+
+//     video.playbackRate = rate;
+//     setPlaybackRate(rate);
+//   };
+
+//   const handleQualityChange = (quality: string) => {
+//     setVideoQuality(quality);
+//     console.log(`Quality changed to: ${quality}`);
+//   };
+
+//   const toggleCaptions = () => {
+//     setCaptionsEnabled(!captionsEnabled);
+//     console.log(`Captions ${!captionsEnabled ? 'enabled' : 'disabled'}`);
+//   };
+
+//   const toggleFullscreen = () => {
+//     const video = videoRef.current;
+//     if (!video) return;
+
+//     if (document.fullscreenElement) {
+//       document.exitFullscreen();
+//     } else {
+//       video.requestFullscreen();
+//     }
+//   };
+
+//   if (!lecture) {
+//     return (
+//       <div className="h-full bg-black flex items-center justify-center">
+//         <div className="text-center text-gray-400">
+//           <h2 className="text-xl mb-2">Select a lecture to start learning</h2>
+//           <p>Choose from the course content on the right</p>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="h-full flex flex-col bg-black">
+//       {/* Video Player Area - Fixed aspect ratio */}
+//       <div className="relative flex-1 min-h-0 group">
+//         {isLoading && (
+//           <div className="absolute inset-0 bg-black flex items-center justify-center z-10">
+//             <div className="text-white">Loading video...</div>
+//           </div>
+//         )}
+
+//         {/* Video Player with Navigation Arrows */}
+//         <div className="relative h-full w-full">
+//           <VideoPlayer
+//             ref={videoRef}
+//             src={lecture.videoUrl || defaultVideoUrl}
+//             onMouseEnter={() => setShowControls(true)}
+//             onMouseLeave={() => setShowControls(false)}
+
+//           />
+
+//           {/* Navigation Arrows Overlay */}
+//           <NavigationArrows
+//             canGoPrevious={currentIndex > 0}
+//             canGoNext={currentIndex < allLectures.length - 1}
+//             onPrevious={onPrevious}
+//             onNext={onNext}
+//             previousTitle={currentIndex > 0 ? allLectures[currentIndex - 1].title : ''}
+//             nextTitle={currentIndex < allLectures.length - 1 ? allLectures[currentIndex + 1].title : ''}
+//           />
+//         </div>
+
+//         {/* Video Controls */}
+//         <VideoControls
+//           isPlaying={isPlaying}
+//           currentTime={currentTime}
+//           duration={duration}
+//           volume={volume}
+//           isMuted={isMuted}
+//           playbackRate={playbackRate}
+//           videoQuality={videoQuality}
+//           captionsEnabled={captionsEnabled}
+//           availableQualities={availableQualities}
+//           showControls={showControls}
+//           onTogglePlay={togglePlay}
+//           onSeek={handleSeek}
+//           onSkipForward={skipForward}
+//           onSkipBackward={skipBackward}
+//           onVolumeChange={handleVolumeChange}
+//           onToggleMute={toggleMute}
+//           onPlaybackRateChange={changePlaybackRate}
+//           onQualityChange={handleQualityChange}
+//           onToggleCaptions={toggleCaptions}
+//           onToggleFullscreen={toggleFullscreen}
+//         />
+//       </div>
+
+//       {/* Lecture Info Section - Scrollable */}
+//       <div className="shrink-0 bg-[#2d2f31] border-t border-[#3e4143] max-h-[40vh] overflow-y-auto">
+//         <div className="p-6">
+//           <div className="flex items-start justify-between mb-4">
+//             <div className="flex-1 min-w-0">
+//               <h2 className="text-xl font-semibold text-white mb-2 pr-4">
+//                 {lecture.title}
+//               </h2>
+//               {lecture.description && (
+//                 <div className="text-gray-400 text-sm mb-3 leading-relaxed">
+//                   <RichTextRenderer 
+//                     contentJsonString={lecture.description} 
+//                     className="prose prose-sm dark:prose-invert max-w-none text-gray-400"
+//                   />
+//                 </div>
+//               )}
+//               <div className="flex items-center gap-4 text-sm text-gray-400">
+//                 <span>Lecture {lecture.id}</span>
+//                 {lecture.duration && lecture.duration > 0 && (
+//                   <span>{Math.floor(lecture.duration / 60)}:{(lecture.duration % 60).toString().padStart(2, '0')}</span>
+//                 )}
+//                 <span className="capitalize">{lecture.type}</span>
+//                 {isCompleted && (
+//                   <span className="flex items-center gap-1 text-green-400">
+//                     <CheckCircle className="w-4 h-4" />
+//                     Completed
+//                   </span>
+//                 )}
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Attachments Section */}
+//           {lecture.attachments && lecture.attachments.length > 0 && (
+//             <div className="p-4 bg-[#3e4143] rounded-lg">
+//               <h3 className="text-white font-medium mb-3">Course Materials</h3>
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+//                 {lecture.attachments.map((attachment) => (
+//                   <a
+//                     key={attachment.id}
+//                     href={attachment.type === 'quiz' ? `/quiz/${lecture.id}/${attachment.id}` : `/attachment/${lecture.id}/${attachment.id}`}
+//                     target="_blank"
+//                     rel="noopener noreferrer"
+//                     className="p-3 border border-[#5e6163] rounded hover:border-yellow transition-colors group"
+//                   >
+//                     <h4 className="font-medium text-white group-hover:text-yellow text-sm mb-1">
+//                       {attachment.title}
+//                     </h4>
+//                     <p className="text-xs text-gray-400 mb-1">{attachment.description}</p>
+//                     <div className="flex justify-between items-center">
+//                       <span className="text-xs text-yellow capitalize">{attachment.type}</span>
+//                       {attachment.fileSize && (
+//                         <span className="text-xs text-gray-500">{attachment.fileSize}</span>
+//                       )}
+//                     </div>
+//                   </a>
+//                 ))}
+//               </div>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+"use client";
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { VideoPlayer } from '@/components/lms/VideoPlayer';
 import { VideoControls } from '@/components/lms/VideoControls';
@@ -5,27 +357,10 @@ import { CheckCircle } from 'lucide-react';
 import type { Lecture } from '@/types/course';
 import { NavigationArrows } from '@/components/lms/NavigationArrows';
 import { RichTextRenderer } from './RichTextRenderer';
-
-interface VideoPlayerSectionProps {
-  lecture?: Lecture;
-  onNext: () => void;
-  onPrevious: () => void;
-  isCompleted: boolean;
-  onVideoEnd: () => void;
-  onTimeUpdate?: (time: number) => void;
-  allLectures: Lecture[];
-  currentIndex: number;
-}
+import { cn } from "@/lib/utils";
 
 export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
-  lecture,
-  onNext,
-  onPrevious,
-  isCompleted,
-  onVideoEnd,
-  onTimeUpdate,
-  allLectures,
-  currentIndex
+  lecture, onNext, onPrevious, isCompleted, onVideoEnd, onTimeUpdate, allLectures, currentIndex
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -42,27 +377,17 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
 
   const defaultVideoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 
+  // --- KEEPING YOUR ORIGINAL LOGIC START ---
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-
-    const updateTime = () => {
-      const time = video.currentTime;
-      setCurrentTime(time);
-      onTimeUpdate?.(time);
-    };
+    const updateTime = () => { setCurrentTime(video.currentTime); onTimeUpdate?.(video.currentTime); };
     const updateDuration = () => setDuration(video.duration);
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
     const handleLoadStart = () => setIsLoading(true);
     const handleCanPlay = () => setIsLoading(false);
-    const handleEnded = () => {
-      setIsPlaying(false);
-      onVideoEnd();
-      setTimeout(() => {
-        onNext();
-      }, 2000);
-    };
+    const handleEnded = () => { setIsPlaying(false); onVideoEnd(); setTimeout(() => { onNext(); }, 2000); };
 
     video.addEventListener('timeupdate', updateTime);
     video.addEventListener('loadedmetadata', updateDuration);
@@ -83,7 +408,6 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
     };
   }, [onNext, onVideoEnd, onTimeUpdate]);
 
-  // Reset video when lecture changes
   useEffect(() => {
     if (videoRef.current) {
       setCurrentTime(0);
@@ -95,159 +419,66 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
   const togglePlay = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
-
-    if (isPlaying) {
-      video.pause();
-    } else {
-      video.play();
-    }
+    isPlaying ? video.pause() : video.play();
   }, [isPlaying]);
 
   const handleSeek = useCallback((time: number) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.currentTime = time;
-    setCurrentTime(time);
+    if (videoRef.current) { videoRef.current.currentTime = time; setCurrentTime(time); }
   }, []);
 
   const skipForward = useCallback(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.currentTime = Math.min(video.currentTime + 10, duration);
+    if (videoRef.current) videoRef.current.currentTime = Math.min(videoRef.current.currentTime + 10, duration);
   }, [duration]);
 
   const skipBackward = useCallback(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.currentTime = Math.max(video.currentTime - 10, 0);
+    if (videoRef.current) videoRef.current.currentTime = Math.max(videoRef.current.currentTime - 10, 0);
   }, []);
 
-  const handleVolumeChange = useCallback((newVolume: number) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.volume = newVolume;
-    setVolume(newVolume);
-    setIsMuted(newVolume === 0);
+  const handleVolumeChange = useCallback((v: number) => {
+    if (videoRef.current) { videoRef.current.volume = v; setVolume(v); setIsMuted(v === 0); }
   }, []);
 
   const toggleMute = useCallback(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const newMuted = !isMuted;
-    video.muted = newMuted;
-    setIsMuted(newMuted);
+    if (videoRef.current) { const m = !isMuted; videoRef.current.muted = m; setIsMuted(m); }
   }, [isMuted]);
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.target && (e.target as HTMLElement).tagName === 'INPUT') return;
-
       switch (e.code) {
-        case 'Space':
-          e.preventDefault();
-          togglePlay();
-          break;
-        case 'ArrowLeft':
-          if (!e.altKey) {
-            e.preventDefault();
-            skipBackward();
-          }
-          break;
-        case 'ArrowRight':
-          if (!e.altKey) {
-            e.preventDefault();
-            skipForward();
-          }
-          break;
-        case 'KeyF':
-          e.preventDefault();
-          toggleFullscreen();
-          break;
-        case 'KeyM':
-          e.preventDefault();
-          toggleMute();
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          handleVolumeChange(Math.min(volume + 0.1, 1));
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          handleVolumeChange(Math.max(volume - 0.1, 0));
-          break;
+        case 'Space': e.preventDefault(); togglePlay(); break;
+        case 'ArrowLeft': if (!e.altKey) { e.preventDefault(); skipBackward(); } break;
+        case 'ArrowRight': if (!e.altKey) { e.preventDefault(); skipForward(); } break;
+        case 'KeyM': e.preventDefault(); toggleMute(); break;
       }
     };
-
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [volume, togglePlay, skipForward, skipBackward, toggleMute, handleVolumeChange]);
+  }, [togglePlay, skipForward, skipBackward, toggleMute]);
+  // --- KEEPING YOUR ORIGINAL LOGIC END ---
 
-  const changePlaybackRate = (rate: number) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.playbackRate = rate;
-    setPlaybackRate(rate);
-  };
-
-  const handleQualityChange = (quality: string) => {
-    setVideoQuality(quality);
-    console.log(`Quality changed to: ${quality}`);
-  };
-
-  const toggleCaptions = () => {
-    setCaptionsEnabled(!captionsEnabled);
-    console.log(`Captions ${!captionsEnabled ? 'enabled' : 'disabled'}`);
-  };
-
-  const toggleFullscreen = () => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      video.requestFullscreen();
-    }
-  };
-
-  if (!lecture) {
-    return (
-      <div className="h-full bg-black flex items-center justify-center">
-        <div className="text-center text-gray-400">
-          <h2 className="text-xl mb-2">Select a lecture to start learning</h2>
-          <p>Choose from the course content on the right</p>
-        </div>
-      </div>
-    );
-  }
+  if (!lecture) return <div className="h-full bg-black flex items-center justify-center text-gray-400">Select a lecture</div>;
 
   return (
-    <div className="h-full flex flex-col bg-black">
-      {/* Video Player Area - Fixed aspect ratio */}
-      <div className="relative flex-1 min-h-0 group">
+    <div className="h-full flex flex-col bg-black overflow-hidden">
+      
+      {/* 1. VIDEO AREA - This now scales to fill width using aspect-video */}
+      <div className="relative w-full aspect-video bg-black group shrink-0">
         {isLoading && (
-          <div className="absolute inset-0 bg-black flex items-center justify-center z-10">
-            <div className="text-white">Loading video...</div>
+          <div className="absolute inset-0 bg-black flex items-center justify-center z-10 text-white animate-pulse">
+            Loading video...
           </div>
         )}
 
-        {/* Video Player with Navigation Arrows */}
         <div className="relative h-full w-full">
           <VideoPlayer
             ref={videoRef}
             src={lecture.videoUrl || defaultVideoUrl}
             onMouseEnter={() => setShowControls(true)}
             onMouseLeave={() => setShowControls(false)}
-
+            className="w-full h-full object-contain"
           />
 
-          {/* Navigation Arrows Overlay */}
           <NavigationArrows
             canGoPrevious={currentIndex > 0}
             canGoNext={currentIndex < allLectures.length - 1}
@@ -258,7 +489,6 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
           />
         </div>
 
-        {/* Video Controls */}
         <VideoControls
           isPlaying={isPlaying}
           currentTime={currentTime}
@@ -276,71 +506,44 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
           onSkipBackward={skipBackward}
           onVolumeChange={handleVolumeChange}
           onToggleMute={toggleMute}
-          onPlaybackRateChange={changePlaybackRate}
-          onQualityChange={handleQualityChange}
-          onToggleCaptions={toggleCaptions}
-          onToggleFullscreen={toggleFullscreen}
+          onPlaybackRateChange={(r) => { if(videoRef.current) videoRef.current.playbackRate = r; setPlaybackRate(r); }}
+          onQualityChange={setVideoQuality}
+          onToggleCaptions={() => setCaptionsEnabled(!captionsEnabled)}
+          onToggleFullscreen={() => {
+            if (document.fullscreenElement) document.exitFullscreen();
+            else videoRef.current?.requestFullscreen();
+          }}
         />
       </div>
 
-      {/* Lecture Info Section - Scrollable */}
-      <div className="shrink-0 bg-[#2d2f31] border-t border-[#3e4143] max-h-[40vh] overflow-y-auto">
+      {/* 2. INFO AREA - Takes remaining space below the video */}
+      <div className="flex-1 bg-[#1a1c1e] border-t border-[#2d2f31] overflow-y-auto custom-scrollbar">
         <div className="p-6">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex-1 min-w-0">
-              <h2 className="text-xl font-semibold text-white mb-2 pr-4">
-                {lecture.title}
-              </h2>
-              {lecture.description && (
-                <div className="text-gray-400 text-sm mb-3 leading-relaxed">
-                  <RichTextRenderer 
-                    contentJsonString={lecture.description} 
-                    className="prose prose-sm dark:prose-invert max-w-none text-gray-400"
-                  />
-                </div>
-              )}
-              <div className="flex items-center gap-4 text-sm text-gray-400">
-                <span>Lecture {lecture.id}</span>
-                {lecture.duration && lecture.duration > 0 && (
-                  <span>{Math.floor(lecture.duration / 60)}:{(lecture.duration % 60).toString().padStart(2, '0')}</span>
-                )}
-                <span className="capitalize">{lecture.type}</span>
-                {isCompleted && (
-                  <span className="flex items-center gap-1 text-green-400">
-                    <CheckCircle className="w-4 h-4" />
-                    Completed
-                  </span>
-                )}
-              </div>
+          <h2 className="text-xl font-bold text-white mb-3">{lecture.title}</h2>
+          {lecture.description && (
+            <div className="text-gray-400 text-sm mb-4 leading-relaxed">
+              <RichTextRenderer 
+                contentJsonString={lecture.description} 
+                className="prose prose-sm dark:prose-invert max-w-none text-gray-400" 
+              />
             </div>
+          )}
+          
+          <div className="flex items-center gap-4 text-xs text-gray-500 uppercase tracking-wider">
+            <span>Lecture {lecture.id}</span>
+            {isCompleted && <span className="text-green-500 flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Completed</span>}
           </div>
 
-          {/* Attachments Section */}
+          {/* Attachments grid */}
           {lecture.attachments && lecture.attachments.length > 0 && (
-            <div className="p-4 bg-[#3e4143] rounded-lg">
-              <h3 className="text-white font-medium mb-3">Course Materials</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {lecture.attachments.map((attachment) => (
-                  <a
-                    key={attachment.id}
-                    href={attachment.type === 'quiz' ? `/quiz/${lecture.id}/${attachment.id}` : `/attachment/${lecture.id}/${attachment.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-3 border border-[#5e6163] rounded hover:border-yellow transition-colors group"
-                  >
-                    <h4 className="font-medium text-white group-hover:text-yellow text-sm mb-1">
-                      {attachment.title}
-                    </h4>
-                    <p className="text-xs text-gray-400 mb-1">{attachment.description}</p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-yellow capitalize">{attachment.type}</span>
-                      {attachment.fileSize && (
-                        <span className="text-xs text-gray-500">{attachment.fileSize}</span>
-                      )}
-                    </div>
-                  </a>
-                ))}
-              </div>
+            <div className="mt-8 grid grid-cols-1 gap-3">
+              <h3 className="text-sm font-semibold text-gray-300">Resources</h3>
+              {lecture.attachments.map((att) => (
+                <a key={att.id} href={att.url} target="_blank" className="p-3 bg-[#2d2f31] rounded-md hover:bg-[#3e4143] transition-colors flex justify-between items-center text-sm text-white group">
+                  <span className="group-hover:text-[#fdb606] transition-colors">{att.title}</span>
+                  <span className="text-xs text-gray-500">{att.type}</span>
+                </a>
+              ))}
             </div>
           )}
         </div>

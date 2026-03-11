@@ -4,7 +4,6 @@ import { Star } from "lucide-react";
 import Image from "next/image";
 import { CourseListItem } from "@/services/courses";
 import { constructUrl } from "@/lib/construct-url";
-import Link from "next/link";
 import { motion } from "framer-motion";
 
 interface FeaturedCoursesProps {

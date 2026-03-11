@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from 'react';
 import type { Lecture } from '@/types/course';
 
@@ -14,22 +15,28 @@ export const useLayoutState = (activeLecture?: Lecture) => {
         showChapters: true,
         showContent: true,
         showVideo: false,
-        isChaptersCollapsed: false,
+        isChaptersCollapsed: true, // Closed by default
         isVideoCollapsed: false,
     });
 
-    // Determine if video should be shown based on lecture type and content
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const isDesktop = window.innerWidth >= 1024;
+            if (isDesktop) {
+                setLayoutState(prev => ({ ...prev, isChaptersCollapsed: false }));
+            }
+        }
+    }, []);
+
     useEffect(() => {
         if (!activeLecture) {
             setLayoutState(prev => ({ ...prev, showVideo: false }));
             return;
         }
-
         const hasVideo = Boolean(
             activeLecture.type === 'video' ||
             (activeLecture.videoUrl && activeLecture.videoUrl.length > 0)
         );
-
         setLayoutState(prev => ({ ...prev, showVideo: hasVideo }));
     }, [activeLecture]);
 
@@ -47,9 +54,5 @@ export const useLayoutState = (activeLecture?: Lecture) => {
         }));
     };
 
-    return {
-        ...layoutState,
-        toggleChapters,
-        toggleVideo,
-    };
+    return { ...layoutState, toggleChapters, toggleVideo };
 };

@@ -6,16 +6,20 @@ import TestimonialsCarousel from "@/components/shared/carousels";
 import Link from "next/link";
 import { getBestSellingCourses, getFeaturedCourses, getRecentlyAddedCourses } from "./_components/HomeClients/fetchData";
 import { MotionDiv, MotionSection, MotionH1, MotionP } from "@/components/framer-motion/motion-components";
+import { cn } from "@/lib/utils";
+import { getCurrentUser } from "@/domains/auth/user";
+import { get } from "http";
 
 interface Category {
   name: string;
   icon: string;
-  color: string;
+  colorClass: string;
   numberOfCourses: string;
 }
 
 const Home = async () => {
-  // Parallel data fetching on the server
+  const user = await getCurrentUser();
+
   const [featuredCourses, bestSellingCourses, recentlyAddedCourses] = await Promise.all([
     getFeaturedCourses(),
     getBestSellingCourses(8),
@@ -26,462 +30,314 @@ const Home = async () => {
     {
       name: "Agentic AI",
       icon: "/assets/categories/label-category.png",
-      color: "#EBEBFF",
+      colorClass: "bg-indigo-500/10 hover:bg-indigo-500/20",
       numberOfCourses: "63,476",
     },
     {
       name: "Large Language Models (LLMs)",
       icon: "/assets/categories/business-category.png",
-      color: "#E1F7E3",
+      colorClass: "bg-green-500/10 hover:bg-green-500/20",
       numberOfCourses: "52,822",
     },
     {
       name: "Business Intelligence",
       icon: "/assets/categories/finance-category.png",
-      color: "#FFF2E5",
+      colorClass: "bg-orange/10 hover:bg-orange/20",
       numberOfCourses: "33,841",
     },
     {
       name: "Data Analytics",
       icon: "/assets/categories/personalDev-category.png",
-      color: "#FFFFFF",
+      colorClass: "bg-blue-500/10 hover:bg-blue-500/20",
       numberOfCourses: "20,126",
     },
     {
       name: "Data Engineering",
       icon: "/assets/categories/officeProd-category.png",
-      color: "#F5F7FA",
+      colorClass: "bg-purple-500/10 hover:bg-purple-500/20",
       numberOfCourses: "13,932",
     },
     {
       name: "Python Programming",
       icon: "/assets/categories/photography-category.png",
-      color: "#F5F7FA",
+      colorClass: "bg-rose-500/10 hover:bg-rose-500/20",
       numberOfCourses: "6,196",
     },
   ];
 
   return (
-    <main className="-mb-16">
-        {/* HERO SECTION */}
-      <section className="relative w-full  bg-white dark:bg-[#1a1d24]  overflow-hidden transition-colors duration-300">
-        {/* Content Container */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 md:pt-24 md:pb-28">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            
-            {/* ===== LEFT COLUMN: Text Content ===== */}
-            <div className="space-y-8 text-center lg:text-left">
-              
-              {/* Badge */}
-              <MotionDiv 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-2 bg-yellow/10 dark:bg-yellow/15 px-4 py-2 rounded-full"
+    <main className="-mb-16 bg-background">
+      {/* HERO SECTION */}
+      <section className="relative w-full bg-background overflow-hidden transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 md:pt-20 md:pb-24">
+          <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
+
+            <div className="space-y-6 md:space-y-8 text-center lg:text-left">
+              <MotionDiv
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 bg-orange/10 px-4 py-2 rounded-full border border-orange/20"
               >
-                <span className="w-2 h-2 bg-yellow rounded-full animate-pulse"></span>
-                <span className="text-sm font-medium text-yellow dark:text-yellow">
+                <span className="w-2 h-2 bg-orange rounded-full animate-pulse"></span>
+                <span className="text-xs md:text-sm font-medium text-orange">
                   #1 AI Learning Platform in Africa
                 </span>
               </MotionDiv>
 
-              {/* Main Headline */}
-              <MotionH1 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#0A0A2D] dark:text-white leading-tight"
+              <MotionH1
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
+                className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground tracking-tight leading-[1.15] md:leading-[1.1]"
               >
                 Real-World{" "}
-                <span className="bg-gradient-to-r from-yellow to-yellow-500 bg-clip-text text-transparent">
-                  AI Skills
+                <span className="bg-gradient-to-r from-orange to-[#FFC04D] bg-clip-text text-transparent">
+                  AI Skills,
                 </span>
-                , Made Simple
+                <br className="hidden sm:block" />
+                Made Simple
               </MotionH1>
-              
-              {/* Subtitle */}
-              <MotionP 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="text-lg md:text-xl text-[#4A5568] dark:text-gray-300 max-w-xl mx-auto lg:mx-0 leading-relaxed"
+
+              <MotionP
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
+                className="text-base md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed"
               >
                 Beginner-friendly AI learning designed for Africans. Master in-demand skills with hands-on projects, peer support, and real-world application.
               </MotionP>
 
-              {/* Trust Indicators */}
-              <MotionDiv 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                className="flex flex-wrap items-center justify-center lg:justify-start gap-6 pt-2"
+              <MotionDiv
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}
+                className="flex flex-wrap items-center justify-center lg:justify-start gap-4 md:gap-6 pt-2"
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <div className="flex -space-x-2">
                     {[1, 2, 3, 4].map((i) => (
-                      <div
-                        key={i}
-                        className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow to-[#FFC04D] border-2 border-white dark:border-[#1d2026] flex items-center justify-center text-white text-xs font-semibold"
-                      >
+                      <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-orange to-[#FFC04D] border-2 border-background flex items-center justify-center text-white text-xs font-semibold shadow-sm">
                         {String.fromCharCode(64 + i)}
                       </div>
                     ))}
                   </div>
                   <div className="text-sm">
-                    <p className="font-semibold text-[#0A0A2D] dark:text-white">10,000+</p>
-                    <p className="text-xs text-[#6E7485] dark:text-gray-400">Active Learners</p>
+                    <p className="font-bold text-foreground">10,000+</p>
+                    <p className="text-xs text-muted-foreground font-medium">Active Learners</p>
                   </div>
                 </div>
 
-                <div className="h-8 w-px bg-gray-300 dark:bg-gray-600"></div>
+                <div className="h-8 w-px bg-border hidden sm:block"></div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <div className="flex items-center">
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <svg
-                        key={star}
-                        className="w-4 h-4 text-[#FCAE1A]"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
+                      <svg key={star} className="w-4 h-4 text-orange" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                     ))}
                   </div>
                   <div className="text-sm">
-                    <p className="font-semibold text-[#0A0A2D] dark:text-white">4.9/5</p>
-                    <p className="text-xs text-[#6E7485] dark:text-gray-400">Average Rating</p>
+                    <p className="font-bold text-foreground">4.9/5</p>
+                    <p className="text-xs text-muted-foreground font-medium">Average Rating</p>
                   </div>
                 </div>
               </MotionDiv>
-              
-              {/* CTA Buttons */}
-              <MotionDiv 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4"
+
+              <MotionDiv
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}
+                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 md:gap-4 pt-4"
               >
-                <Link
-                  href="/signup"
-                  className="group relative bg-gradient-to-r from-[#FCAE1A] to-[#FFC04D] text-white text-base font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 w-full sm:w-auto text-center"
-                >
-                  <span className="relative z-10">Start Learning Now</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#FFC04D] to-[#FCAE1A] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </Link>
-                
-                <Link
-                  href="/course"
-                  className="flex items-center justify-center gap-2 text-yellow dark:text-yellow text-base font-semibold px-8 py-4 rounded-lg border-2 border-yellow dark:border-yellow hover:bg-yellow/60 hover:text-white dark:hover:bg-yellow/50 transition-all duration-300 w-full sm:w-auto"
-                >
-                  Browse Courses
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
+                {user ? (
+                  <Link href="/course" className="w-full sm:w-auto flex items-center justify-center gap-2 text-foreground text-base font-semibold px-8 py-3.5 md:py-4 rounded-full border-2 border-border hover:bg-muted transition-all duration-300">
+                    Browse Courses
+                    <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/signup" className="w-full sm:w-auto bg-orange text-white text-base font-semibold px-8 py-3.5 md:py-4 rounded-full shadow-lg shadow-orange/20 hover:shadow-orange/40 transition-all duration-300 text-center">
+                      Start Learning Now
+                    </Link>
+                    <Link href="/course" className="w-full sm:w-auto flex items-center justify-center gap-2 text-foreground text-base font-semibold px-8 py-3.5 md:py-4 rounded-full border-2 border-border hover:bg-muted transition-all duration-300">
+                      Browse Courses
+                      <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
+                  </>
+                )}
               </MotionDiv>
 
-              {/* Small Trust Text */}
-              <MotionP 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
-                className="text-sm text-[#6E7485] dark:text-gray-400 flex items-center justify-center lg:justify-start gap-2"
+              <MotionP
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.6 }}
+                className="text-xs md:text-sm text-muted-foreground flex items-center justify-center lg:justify-start gap-2 font-medium"
               >
-                <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
                 Backed by industry mentors
               </MotionP>
             </div>
-            
-            {/* ===== RIGHT COLUMN: Image Container ===== */}
-            <MotionDiv 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="relative lg:h-[600px] flex items-center justify-center"
+
+            <MotionDiv
+              initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.2 }}
+              className="relative h-[300px] sm:h-[400px] lg:h-[600px] flex items-center justify-center mt-8 lg:mt-0"
             >
-              <div className="relative w-full h-[400px] md:h-[500px] lg:h-full">
-                <Image
-                  src={"/assets/NextHive Hero.png"} 
-                  alt="Hero Illustration: AI Learning Platform"
-                  fill
-                  style={{ objectFit: "contain" }}
-                  priority
-                  className="transition-transform duration-700 hover:scale-105"
-                  quality={95}
-                />
-              </div>
+              <Image
+                src={"/assets/NextHive Hero.png"}
+                alt="Hero Illustration: AI Learning Platform"
+                fill
+                style={{ objectFit: "contain" }}
+                priority
+                className="transition-transform duration-700 hover:scale-105"
+              />
             </MotionDiv>
-            
           </div>
         </div>
       </section>
 
-      {/* END OF HERO SECTION */}
-
-      <MotionSection 
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="space-y-12 px-4 md:px-16 xl:px-36 py-16 lg:py-12 xl:py-16 bg-white dark:bg-darkBlue-300 transition-colors duration-300"
+      {/* CATEGORIES SECTION */}
+      <MotionSection
+        initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+        className="bg-background transition-colors duration-300 py-12 md:py-20"
       >
-        <h4 className="text-center text-[32px] md:text-4xl leading-10 text-darkBlue-300 dark:text-gray-100 font-semibold">
-          Browse Top Category
-        </h4>
-        
-        {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-          {categories.map((category, index) => (
-            <MotionDiv
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
-              className={`flex justify-between items-center gap-2 px-2 py-5 cursor-pointer w-full transition-all duration-300 ${
-                category.color === "#FFFFFF"
-                  ? "shadow-[0px_11.12px_29.65px_0px_#1D20261A] dark:shadow-none"
-                  : ""
-              }`}
-              style={{
-                background: category.color,
-              }}
-            >
-              <Link href={`/course?category=${encodeURIComponent(category.name)}`} className="w-full flex justify-between items-center gap-2">
-                <div className="flex justify-center items-center w-[30%]">
-                  <Image
-                    src={category.icon}
-                    alt="Category Icon"
-                    width={60}
-                    height={60}
-                    className="object-cover"
-                  />
-                </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 md:space-y-12">
+          <h4 className="text-center text-2xl md:text-4xl text-foreground font-bold tracking-tight">
+            Browse Top Categories
+          </h4>
 
-                <div className="flex flex-col gap-2 w-[70%]">
-                  <p className="text-sm font-medium text-gray-900">{category.name}</p>
-                  <p className="text-xs text-[#6E7485]">
-                    {category.numberOfCourses} Courses
-                  </p>
-                </div>
-              </Link>
-            </MotionDiv>
-          ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {categories.map((category, index) => (
+              <MotionDiv key={index} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: index * 0.1 }} whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}>
+                <Link href={`/course?category=${encodeURIComponent(category.name)}`} className={cn("flex items-center gap-4 px-5 py-5 rounded-2xl border border-border transition-all duration-300", category.colorClass)}>
+                  <div className="flex justify-center items-center shrink-0 bg-background rounded-xl p-2 shadow-sm border border-border/50">
+                    <Image src={category.icon} alt={`${category.name} Icon`} width={40} height={40} className="object-cover" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-sm md:text-base font-bold text-foreground leading-tight">{category.name}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground font-medium">{category.numberOfCourses} Courses</p>
+                  </div>
+                </Link>
+              </MotionDiv>
+            ))}
+          </div>
+
+          <p className="text-center text-sm text-muted-foreground font-medium pt-2">
+            We have more categories & subcategories.{" "}
+            <Link href="/course" className="text-orange font-bold hover:underline underline-offset-4">Browse All →</Link>
+          </p>
         </div>
-
-        <p className="text-center text-xs md:text-sm text-[#6E7485] dark:text-gray-400 font-medium">
-          We have more category & subcategory.{" "}
-          <span className="text-yellow cursor-pointer hover:underline">
-            <Link href="/course">
-              Browse All →
-            </Link>
-          </span>
-        </p>
       </MotionSection>
 
-      {/* Only render Best Selling section if data exists */}
+      {/* BEST SELLING SECTION */}
       {bestSellingCourses && bestSellingCourses.length > 0 && (
-        <MotionSection 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="space-y-12 bg-[#F5F7FA] dark:bg-[#2a2f3a] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-68 transition-colors duration-300"
+        <MotionSection
+          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }}
+          className="bg-muted/30 transition-colors duration-300 border-y border-border py-12 md:py-20"
         >
-          <BestSellingCourses courses={bestSellingCourses} />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <BestSellingCourses courses={bestSellingCourses} />
+          </div>
         </MotionSection>
       )}
 
-      <MotionSection 
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7 }}
-        className="space-y-12 bg-white dark:bg-darkBlue-300 px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-25 sm:pb-30 lg:pb-35 transition-colors duration-300"
+      {/* FEATURED & RECENT SECTION */}
+      <MotionSection
+        initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}
+        className="bg-background transition-colors duration-300 pb-16 md:pb-24"
       >
-        {/* Only render Featured section if data exists */}
-        {featuredCourses && featuredCourses.length > 0 && (
-          <MotionDiv 
-            whileHover={{ y: -5 }}
-            className="bg-white dark:bg-[#2a2f3a] space-y-8 border border-[#E9EAF0] dark:border-[#404854] rounded-2xl px-6 py-16 md:p-16 -mt-64 transition-colors duration-300"
-          >
-            <FeaturedCourses courses={featuredCourses} />
-          </MotionDiv>
-        )}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {featuredCourses && featuredCourses.length > 0 && (
+            <MotionDiv className="bg-card space-y-6 md:space-y-8 border border-border shadow-sm rounded-3xl px-4 py-8 md:px-10 md:py-12 -mt-12 md:-mt-24 relative z-10 transition-colors duration-300">
+              <FeaturedCourses courses={featuredCourses} />
+            </MotionDiv>
+          )}
 
-        {/* Only render Recently Added section if data exists */}
-        {recentlyAddedCourses && recentlyAddedCourses.length > 0 && (
-          <div className="flex flex-col items-center space-y-8 mx-auto w-full">
-            <RecentlyAddedCourses courses={recentlyAddedCourses} />
-          </div>
-        )}
+          {recentlyAddedCourses && recentlyAddedCourses.length > 0 && (
+            <div className="flex flex-col items-center space-y-8 mx-auto w-full pt-16 md:pt-20">
+              <RecentlyAddedCourses courses={recentlyAddedCourses} />
+            </div>
+          )}
+        </div>
       </MotionSection>
 
-      <MotionSection 
-        initial={{ opacity: 0, x: -50 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="flex flex-col xl:flex-row justify-between items-stretch gap-8 bg-[#F5F7FA] dark:bg-[#2a2f3a] px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-20 w-full transition-colors duration-300"
+      {/* INSTRUCTOR SECTION */}
+      <MotionSection
+        initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+        className="bg-muted/30 transition-colors duration-300 border-t border-border py-12 md:py-20"
       >
-        <div
-          className="flex-1 px-8 pt-10 w-full xl:w-1/2"
-          style={{
-            background: "linear-gradient(90deg, #CC522B 0%, #FF6636 100%)",
-          }}
-        >
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="text-white w-full md:w-[70%] space-y-4 md:space-y-2">
-              <h2 className="text-xl md:text-2xl font-semibold">
-                Become an instructor
-              </h2>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-stretch w-full rounded-3xl shadow-sm border border-border overflow-hidden">
 
-              <p className="text-xs md:text-sm">
-                Instructors from around the world teach millions of students on
-                your platform. We provide the tools and skills to teach what you
-                love.
-              </p>
-
-              <button className="bg-white cursor-pointer text-yellow font-semibold text-xs md:text-sm px-6 py-3 mt-2 mb-6 w-fit hover:bg-white/95 transition">
-                Start Teaching →
-              </button>
+            <div className="flex-1 px-8 py-10 md:px-12 md:py-14 w-full lg:w-1/2 relative flex flex-col justify-center" style={{ background: "linear-gradient(135deg, #CC522B 0%, #FF6636 100%)" }}>
+              <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 h-full">
+                <div className="text-white w-full md:w-2/3 space-y-4 md:space-y-5 text-center md:text-left">
+                  <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Become an Instructor</h2>
+                  <p className="text-white/90 leading-relaxed text-sm md:text-base">
+                    Instructors from around the world teach millions of students on our platform. We provide the tools and skills to teach what you love.
+                  </p>
+                  <Link href="/posts/instructors" className="inline-block bg-white text-orange font-bold px-6 py-3 md:px-8 md:py-3.5 rounded-full hover:bg-white/90 hover:scale-105 transition-all shadow-md w-full sm:w-auto mt-2 text-center">
+                    Start Teaching →
+                  </Link>
+                </div>
+                <div className="w-full md:w-1/3 hidden md:flex justify-end">
+                  <Image src={"/assets/Become_an_Instructor.png"} alt="Become an Instructor" width={250} height={250} className="w-full max-w-[180px] object-contain drop-shadow-xl" />
+                </div>
+              </div>
             </div>
 
-            <div className="w-full md:w-[30%] hidden md:flex justify-center md:justify-end">
-              <Image
-                src={"/assets/Become_an_Instructor.png"}
-                alt="Become an Instructor"
-                width={500}
-                height={500}
-                className="w-full max-w-xs md:max-w-sm object-contain"
-              />
+            <div className="flex flex-col justify-center flex-1 space-y-6 md:space-y-8 bg-card p-8 md:p-12 w-full lg:w-1/2 transition-colors duration-300 border-t lg:border-t-0 lg:border-l border-border">
+              <p className="text-foreground text-xl md:text-2xl font-bold tracking-tight text-center lg:text-left">
+                Your teaching & earning steps
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-6">
+                {[
+                  { num: 1, text: "Apply to become instructor", bg: "bg-indigo-500/10", color: "text-indigo-500" },
+                  { num: 2, text: "Build & edit your profile", bg: "bg-orange/10", color: "text-orange" },
+                  { num: 3, text: "Create your new course", bg: "bg-rose-500/10", color: "text-rose-500" },
+                  { num: 4, text: "Start teaching & earning", bg: "bg-green-500/10", color: "text-green-500" },
+                ].map((item) => (
+                  <div key={item.num} className="flex items-center gap-3 md:gap-4">
+                    <span className={cn("text-sm font-bold w-10 h-10 flex shrink-0 items-center justify-center rounded-full", item.bg, item.color)}>
+                      {item.num}
+                    </span>
+                    <p className="text-foreground text-sm font-semibold">{item.text}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
+      </MotionSection>
 
-        <div className="flex flex-col justify-center flex-1 space-y-6 bg-white dark:bg-darkBlue-300 p-8 w-full xl:w-1/2 transition-colors duration-300">
-          <p className="text-darkBlue-300 dark:text-gray-100 text-xl md:text-2xl font-semibold">
-            Your teaching & earning steps
-          </p>
+      {/* PARTNERS / TRUST SECTION */}
+      <MotionSection
+        initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }}
+        className="bg-background transition-colors duration-300 py-16 md:py-24"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row justify-between items-center gap-10 md:gap-12">
+          <div className="space-y-4 w-full lg:w-[40%] text-center lg:text-left">
+            <h3 className="font-bold text-2xl md:text-3xl text-foreground tracking-tight">
+              Level up in Tech with NextHive!
+            </h3>
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+              NextHive is the leading pan-African, peer-driven tech school built for the AI era. If you&apos;ve ever felt stuck or bored navigating a new tech field alone, NextHive is where you belong. Learn at your own pace while tapping into the energy of community.
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 md:gap-4 w-full lg:w-[60%]">
             {[
-              {
-                num: 1,
-                text: "Apply to become instructor",
-                bg: "#EBEBFF",
-                color: "#564FFD",
-              },
-              {
-                num: 2,
-                text: "Build & edit your profile",
-                bg: "#FFF0F0",
-                color: "#FF6636",
-              },
-              {
-                num: 3,
-                text: "Create your new course",
-                bg: "#FFF0F0",
-                color: "#E34444",
-              },
-              {
-                num: 4,
-                text: "Start teaching & earning",
-                bg: "#E1F7E3",
-                color: "#23BD33",
-              },
-            ].map((item) => (
-              <div key={item.num} className="flex items-center gap-4">
-                <span
-                  className="text-xs md:text-base font-semibold w-8 h-8 flex items-center justify-center rounded-full"
-                  style={{ backgroundColor: item.bg, color: item.color }}
-                >
-                  {item.num}
-                </span>
-
-                <p className="text-darkBlue-300 dark:text-gray-100 text-[10px] md:text-sm font-medium">
-                  {item.text}
-                </p>
-              </div>
+              { id: "1", image: "/assets/netflix-logo.png" },
+              { id: "2", image: "/assets/youtube-logo.png" },
+              { id: "3", image: "/assets/google-logo.png" },
+              { id: "4", image: "/assets/lenovo-logo.png" },
+              { id: "5", image: "/assets/slack-logo.png" },
+              { id: "6", image: "/assets/verizon-logo.png" },
+              { id: "7", image: "/assets/lexmark-logo.png" },
+              { id: "8", image: "/assets/microsoft-logo.png" },
+            ].map((logo, index) => (
+              <MotionDiv key={logo.id} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: index * 0.05 }}
+                className="flex justify-center items-center bg-card border border-border/50 rounded-xl py-4 px-2 md:py-6 md:px-4 shadow-sm"
+              >
+                <Image src={logo.image} alt="Partner logo" width={80} height={80} className="h-8 md:h-10 w-auto object-contain opacity-70 dark:invert" />
+              </MotionDiv>
             ))}
           </div>
-        </div>
-      </MotionSection>
-
-      <MotionSection 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="flex flex-col lg:flex-row justify-between items-center gap-8 bg-white dark:bg-darkBlue-300 px-4 md:px-16 xl:px-36 pt-16 lg:pt-20 pb-35 w-full transition-colors duration-300"
-      >
-        <div className="space-y-4 w-full lg:w-[30%]">
-          <p className="font-semibold text-2xl text-darkBlue-300 dark:text-gray-100">
-            Level up in Tech with NextHive!
-          </p>
-
-          <p className="text-xs text-[#6E7485] dark:text-gray-400 w-4/5">
-            NextHive is the leading pan-African, peer-driven tech school built for the AI era. If you&apos;ve ever felt stuck or bored navigating a new tech field alone, NextHive is where you belong. Learn at your own pace while tapping into the energy of community, so you can build real skills faster.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 w-full lg:w-[70%]">
-          {[
-            {
-              id: "1",
-              image: "/assets/netflix-logo.png",
-            },
-            {
-              id: "2",
-              image: "/assets/youtube-logo.png",
-            },
-            {
-              id: "3",
-              image: "/assets/google-logo.png",
-            },
-            {
-              id: "4",
-              image: "/assets/lenovo-logo.png",
-            },
-            {
-              id: "5",
-              image: "/assets/slack-logo.png",
-            },
-            {
-              id: "6",
-              image: "/assets/verizon-logo.png",
-            },
-            {
-              id: "7",
-              image: "/assets/lexmark-logo.png",
-            },
-            {
-              id: "8",
-              image: "/assets/microsoft-logo.png",
-            },
-          ].map((logo, index) => (
-            <MotionDiv
-              key={logo.id}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.05 }}
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
-              className="flex justify-center items-center bg-white dark:bg-[#2a2f3a] shadow-[0px_0px_28.48px_0px_#091A4412] dark:shadow-[0px_0px_28.48px_0px_#000000] px-4 transition-colors duration-300"
-            >
-              <Image
-                src={logo.image}
-                alt="logo"
-                width={100}
-                height={100}
-                className="h-20 w-20"
-              />
-            </MotionDiv>
-          ))}
         </div>
       </MotionSection>
 

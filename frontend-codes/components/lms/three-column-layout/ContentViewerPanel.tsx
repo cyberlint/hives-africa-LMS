@@ -6,6 +6,11 @@ import { ResourceRenderer } from '@/components/lms/ResourceRenderer';
 import { CheckCircle, FileText, HelpCircle, Book, PlayCircle } from 'lucide-react';
 import type { Lecture } from '@/types/course';
 import { RichTextRenderer } from '@/components/lms/RichTextRenderer';
+import { TranscriptToggle } from '@/components/TranscriptToggle';
+
+const VIDEO_TRANSCRIPT = `
+We're still working on this feature. 👩‍💻 The transcript for this video will be available soon.
+`;
 
 interface ContentViewerPanelProps {
   lecture?: Lecture;
@@ -90,11 +95,6 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 leading-tight">
                 {lecture.title}
               </h1>
-              {lecture.description && (
-                <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                  <RichTextRenderer contentJsonString={lecture.description} className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-400" />
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -104,11 +104,12 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
           <div className="p-6 max-w-4xl">
             {/* Video Info Card */}
             <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-6 mb-6 transition-colors duration-300">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">About This Lecture</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">About This Lesson</h2>
               <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300">
                 <p>
-                  Watch the video on the right to learn about {lecture.title.toLowerCase()}.
-                  The video player includes controls for playback speed, quality settings, and captions.
+                  {lecture.description ? (
+                    <RichTextRenderer contentJsonString={lecture.description} className="prose prose-sm dark:prose-invert max-w-none text-gray-700 dark:text-gray-300" />
+                  ) : ("No description available for this lesson.") }
                 </p>
                 {lecture.duration && (
                   <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
@@ -119,6 +120,12 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
                   </div>
                 )}
               </div>
+              
+      <div 
+        className="flex-shrink-0 h-[30%] min-h-[150px] overflow-y-auto flex flex-col bg-white dark:bg-[#1d2026] border-t border-border" 
+      >
+        <TranscriptToggle transcriptContent={VIDEO_TRANSCRIPT} />
+      </div>
             </div>
 
             {/* Attachments */}
@@ -204,11 +211,6 @@ export const ContentViewerPanel: React.FC<ContentViewerPanelProps> = ({
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 leading-tight">
               {lecture.title}
             </h1>
-            {lecture.description && (
-              <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                <RichTextRenderer contentJsonString={lecture.description} className="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-400" />
-              </div>
-            )}
           </div>
         </div>
       </div>

@@ -337,6 +337,7 @@
 // };
 
 
+"use client";
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { VideoPlayer } from '@/components/lms/VideoPlayer';
 import { VideoControls } from '@/components/lms/VideoControls';
@@ -348,9 +349,6 @@ import { cn } from '@/lib/utils';
 import { TranscriptToggle } from '@/components/TranscriptToggle';
 
 // --- Constants ---
-const VIDEO_TRANSCRIPT = `
-We're still working on this feature. 👩‍💻 The transcript for this video will be available soon.
-`;
 const DEFAULT_VIDEO_URL = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 const AVAILABLE_QUALITIES = ['Auto', '1080p', '720p', '480p', '360p'];
 
@@ -399,7 +397,6 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
     } else {
       video.play().catch(error => console.error("Video playback failed:", error));
     }
-    setIsPlaying(prev => !prev);
   }, [isPlaying]);
 
   const handleSeek = useCallback((time: number) => {
@@ -446,13 +443,15 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
   }, []);
 
   const toggleFullscreen = useCallback(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    const container = videoRef.current?.parentElement;
+    if (!container) return;
 
     if (document.fullscreenElement) {
       document.exitFullscreen();
     } else {
-      video.requestFullscreen();
+      container.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+      });
     }
   }, []);
   
@@ -467,7 +466,6 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
 
   // --- Effects ---
 
-  // Video Event Listeners
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -506,19 +504,15 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
     };
   }, [onVideoEnd, onTimeUpdate]);
 
-  // Reset video when lecture changes
   useEffect(() => {
     if (videoRef.current) {
       setCurrentTime(0);
       setIsPlaying(false);
       videoRef.current.currentTime = 0;
-      if (videoRef.current.pause) {
-        videoRef.current.pause();
-      }
+      videoRef.current.pause();
     }
   }, [lecture?.id]);
 
-  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return;
@@ -563,7 +557,7 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
   // --- Collapsed View ---
   if (isCollapsed) {
     return (
-      <div className="fixed right-0 top-[80px] border-l border-gray-200 dark:border-gray-800 h-[calc(100vh-80px)] z-20 lg:relative lg:top-0 lg:h-full bg-white dark:bg-[#1d2026] transition-colors duration-300 flex items-center">
+      <div className="fixed right-0 top-[80px] border-l border-gray-200 dark:border-gray-800 h-[calc(100vh-80px)] z-20 lg:relative lg:top-0 lg:h-full bg-white dark:bg-[#1d2026] flex items-center">
         <Button 
           variant="ghost" 
           size="sm" 
@@ -576,34 +570,21 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
     );
   }
 
-  // --- No Lecture/Source View ---
-  if (!lecture || !videoSrc) {
-    return (
-        <div className={cn(
-            "bg-white dark:bg-[#1d2026] border-l border-r border-gray-200 dark:border-gray-800 flex items-center justify-center transition-all duration-300",
-            isMobile ? "w-full min-h-[50vh]" : "w-[480px] h-full"
-        )}>
-            <p className="text-gray-500 dark:text-gray-400">Select a lecture to begin.</p>
-        </div>
-    );
-  }
-
-
-  // --- Main Panel View (The Fixed Layout) ---
+  // --- Main Panel View (Fixed Scaling) ---
   return (
     <div 
       className={cn(
-        // Main container must be flex-col and take up all available height (h-full)
-        "bg-white dark:bg-[#1d2026] border-l border-r border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 ease-in-out **h-full**", 
-        isMobile ? "w-full min-h-[50vh] max-h-screen" : "w-[480px] max-h-screen"
+        // FIXED: Replaced w-[480px] with w-full to fill parent space.
+        "bg-white dark:bg-[#1d2026] border-l border-r border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 ease-in-out h-full w-full", 
+        isMobile ? "min-h-[50vh] max-h-screen" : "max-h-screen"
       )}
     >
       
-      {/* 1. Video Header: Fixed size using flex-shrink-0 */}
+      {/* 1. Video Header */}
       <div className="flex-shrink-0 p-3 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-800 transition-colors duration-300">
         <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Now Playing</span>
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-1 max-w-[200px]">{lecture.title}</h4>
+            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-1 max-w-[300px]">{lecture?.title}</h4>
         </div>
         <Button 
           variant="ghost" 
@@ -615,9 +596,12 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
         </Button>
       </div>
 
-      {/* 2. Video Player Container: Fixed size using flex-shrink-0 and aspect-ratio */}
+      {/* 2. Video Player Container: 
+          FIXED: Changed to flex-1 so it grows to fill the void.
+          Removed flex-shrink-0 so it's not forced to stay small.
+      */}
       <div 
-        className="**flex-shrink-0 aspect-video** bg-black relative w-full group" 
+        className="flex-1 min-h-0 bg-black relative w-full group flex items-center justify-center" 
         onMouseEnter={() => setShowControls(true)}
         onMouseLeave={() => setShowControls(false)}
       >
@@ -627,12 +611,13 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
           </div>
         )}
 
-       <VideoPlayer
-          ref={videoRef}
-          src={videoSrc || DEFAULT_VIDEO_URL}
-          onMouseEnter={() => setShowControls(true)}
-          onMouseLeave={() => setShowControls(false)}
-        />
+        <div className="w-full h-full">
+           <VideoPlayer
+             ref={videoRef}
+             src={videoSrc || DEFAULT_VIDEO_URL}
+             className="w-full h-full object-contain"
+           />
+        </div>
 
         <VideoControls
           isPlaying={isPlaying}
@@ -656,14 +641,6 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
           onToggleCaptions={() => setCaptionsEnabled(prev => !prev)}
           onToggleFullscreen={toggleFullscreen}
         />
-      </div>
-
-      {/* 3. Tabs Section: Set to flex-1 to fill the remaining space, and handle its own scrolling */}
-      <div 
-        className="**flex-1 overflow-y-auto** flex flex-col bg-white dark:bg-[#1d2026]" 
-      >
-        <TranscriptToggle transcriptContent={VIDEO_TRANSCRIPT} />
-        {/* Additional course/lecture details content */}
       </div>
     </div>
   );

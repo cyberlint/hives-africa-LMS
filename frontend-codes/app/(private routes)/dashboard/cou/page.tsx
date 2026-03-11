@@ -1,8 +1,5 @@
-import { Header } from "./_components/header"
-import { Navigation } from "./_components/navigation"
 import { CourseSection } from "./_components/course-section"
 import { ProgressSection } from "./_components/progress-section"
-import { Footer } from "./_components/footer"
 
 const recentCourses = [
   {
