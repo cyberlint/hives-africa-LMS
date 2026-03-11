@@ -309,7 +309,7 @@ export default function ViewAll() {
     <Card className="transition-all duration-300 hover:shadow-md border-border bg-card rounded-2xl overflow-hidden hover:border-orange/30">
       <CardContent className="p-4 sm:p-5">
         <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center">
-          <div className="relative h-40 sm:h-28 w-full sm:w-48 flex-shrink-0 rounded-xl overflow-hidden bg-muted">
+          <div className="relative h-40 sm:h-28 w-full sm:w-48 shrink-0 rounded-xl overflow-hidden bg-muted">
             <Image
               src={course.thumbnail || "/ai.png"}
               alt={course.title}
@@ -348,7 +348,7 @@ export default function ViewAll() {
                 )}
               </div>
               
-              <div className="flex flex-col sm:items-end justify-between min-w-[140px] gap-4 lg:gap-0 lg:h-[88px]">
+              <div className="flex flex-col sm:items-end justify-between min-w-35 gap-4 lg:gap-0 lg:h-22">
                 <div className="flex items-end gap-2 sm:justify-end">
                   <div className="text-xl font-bold text-foreground">${course.price}</div>
                   {course.originalPrice && (
@@ -382,7 +382,7 @@ export default function ViewAll() {
   )
 
   return (
-    <div className="space-y-8 max-w-[1440px] mx-auto pb-12">
+    <div className="space-y-8 max-w-360 mx-auto pb-12">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border/40">
         <div className="space-y-2">

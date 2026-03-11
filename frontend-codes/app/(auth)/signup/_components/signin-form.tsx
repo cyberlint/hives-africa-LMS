@@ -137,7 +137,7 @@ function SignupForm() {
                     type="text"
                     placeholder="Divine Doe"
                     disabled={isLoading}
-                    className="h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-[#FDB606] focus-visible:border-[#FDB606] transition-all duration-200"
+                    className="h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-orange focus-visible:border-orange transition-all duration-200"
                     {...field}
                   />
                 </FormControl>
@@ -157,7 +157,7 @@ function SignupForm() {
                     type="email"
                     placeholder="kofi@gmail.com"
                     disabled={isLoading}
-                    className="h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-[#FDB606] focus-visible:border-[#FDB606] transition-all duration-200"
+                    className="h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-orange focus-visible:border-orange transition-all duration-200"
                     {...field}
                   />
                 </FormControl>
@@ -177,7 +177,7 @@ function SignupForm() {
                     <Input
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
-                      className="h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-[#FDB606] focus-visible:border-[#FDB606] transition-all duration-200"
+                      className="h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-orange focus-visible:border-orange transition-all duration-200"
                       disabled={isLoading}
                       {...field}
                     />
@@ -229,7 +229,7 @@ function SignupForm() {
                     <Input
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="Confirm your password"
-                      className="h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-[#FDB606] focus-visible:border-[#FDB606] transition-all duration-200"
+                      className="h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-orange focus-visible:border-orange transition-all duration-200"
                       disabled={isLoading}
                       {...field}
                     />
@@ -254,7 +254,7 @@ function SignupForm() {
 
           <Button
             type="submit"
-            className="w-full bg-[#FDB606] hover:bg-[#fd9a06] text-white"
+            className="w-full bg-orange hover:bg-[#fd9a06] text-white"
             disabled={isLoading}
           >
             {isLoading ? "Creating account..." : "Create account"}

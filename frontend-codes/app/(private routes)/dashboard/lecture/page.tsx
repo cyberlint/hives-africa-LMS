@@ -30,7 +30,7 @@ const courses = [
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-[1440px] mx-auto">
+      <div className="max-w-360 mx-auto">
         <h1 className="text-3xl font-bold mb-6">Welcome Divine</h1>
 
         <div className="flex flex-col lg:flex-row gap-6">

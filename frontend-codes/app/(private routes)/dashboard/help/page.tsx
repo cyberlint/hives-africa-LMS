@@ -215,7 +215,7 @@ export default function HelpSupport() {
   }
 
   return (
-    <div className="space-y-8 max-w-[1440px] mx-auto pb-12">
+    <div className="space-y-8 max-w-360 mx-auto pb-12">
       
       {/* Header */}
       <div className="text-center space-y-3 py-6">
@@ -298,7 +298,7 @@ export default function HelpSupport() {
                       )}
                     >
                       <div className="flex items-center space-x-3">
-                        <Icon className="h-4 w-4 flex-shrink-0" />
+                        <Icon className="h-4 w-4 shrink-0" />
                         <span className="truncate text-sm">{category.label}</span>
                       </div>
                       <Badge variant="secondary" className={cn("text-[10px]", isActive ? "bg-orange text-white" : "bg-background border-border text-muted-foreground")}>

@@ -121,7 +121,7 @@ export default function PurchaseHistory() {
   }
 
   return (
-    <div className="space-y-8 max-w-[1440px] mx-auto pb-12">
+    <div className="space-y-8 max-w-360 mx-auto pb-12">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 pb-4 border-b border-border/40">
@@ -229,7 +229,7 @@ export default function PurchaseHistory() {
                     <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
                       
                       {/* Thumbnail */}
-                      <div className="hidden sm:block relative h-24 w-36 flex-shrink-0 rounded-xl overflow-hidden bg-muted">
+                      <div className="hidden sm:block relative h-24 w-36 shrink-0 rounded-xl overflow-hidden bg-muted">
                         <Image
                           src={purchase.courseThumbnail ? constructUrl(purchase.courseThumbnail) : "/ai.png"}
                           alt={purchase.courseTitle}

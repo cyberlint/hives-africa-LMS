@@ -114,7 +114,7 @@ function LoginForm() {
             placeholder="chidera@example.com"
             disabled={isLoading}
             className={cn(
-              "h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-[#FDB606] focus-visible:border-[#FDB606] transition-all duration-200",
+              "h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-orange focus-visible:border-orange transition-all duration-200",
               errors.email && "border-red-500 focus-visible:ring-red-500 focus-visible:border-red-500"
             )}
             {...register("email")}
@@ -141,7 +141,7 @@ function LoginForm() {
               placeholder="Enter your password"
               disabled={isLoading}
               className={cn(
-                "h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-[#FDB606] focus-visible:border-[#FDB606] transition-all duration-200",
+                "h-11 rounded-lg border border-border/60 bg-background px-3 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-orange focus-visible:border-orange transition-all duration-200",
                 errors.password && "border-red-500 focus-visible:ring-red-500 focus-visible:border-red-500")}
               {...register("password")}
             />
@@ -164,7 +164,7 @@ function LoginForm() {
 
         <Button
           type="submit"
-          className="w-full bg-[#FDB606] hover:bg-[#fd9a06] text-white"
+          className="w-full bg-orange hover:bg-[#fd9a06] text-white"
           disabled={isLoading}
         >
           {isLoading ? "Logging in..." : "Login now"}
