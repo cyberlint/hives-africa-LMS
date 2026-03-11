@@ -33,7 +33,7 @@ const springVariant: Variants = {
   exit: { opacity: 0, y: -20, scale: 0.95, transition: { duration: 0.2 } }
 };
 
-const itemVariant = {
+const itemVariant: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
 };
