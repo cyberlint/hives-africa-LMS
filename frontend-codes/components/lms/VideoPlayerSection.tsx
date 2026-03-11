@@ -135,7 +135,6 @@ export const VideoPlayerSection: React.FC<VideoPlayerSectionProps> = ({
             src={lecture.videoUrl || defaultVideoUrl}
             onMouseEnter={() => setShowControls(true)}
             onMouseLeave={() => setShowControls(false)}
-            className="w-full h-full object-contain"
           />
 
           <NavigationArrows
