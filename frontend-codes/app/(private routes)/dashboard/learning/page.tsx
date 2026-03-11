@@ -15,6 +15,7 @@ import { useDashboard } from "@/app/(private routes)/dashboard/studentContext"
 import Image from "next/image"
 import Link from "next/link"
 import { constructUrl } from "@/lib/construct-url"
+
 interface MyLearningProps {
   courses?: Course[]
   userProgress?: CourseProgress[]
@@ -367,16 +368,10 @@ export default function MyLearning() {
                     </p>
                   )}
 
-                  <Button
-                    className="w-full bg-[#fdb606] hover:bg-[#f39c12] text-sm transition-colors"
-                    // onClick={(e) => {
-                    //   e.stopPropagation()
-                    //   handleCourseClick(course)
-                    // }}
-                  >
+                  <Link href={`/dashboard/courses/${course.id}`} className="w-full bg-yellow hover:bg-[#f39c12] text-sm transition-colors">
                     <Play className="h-4 w-4 mr-2" />
-                    {progressValue === 0 ? "Start Learning" : progressValue === 100 ? "Review" : "Continue"}
-                  </Button>
+                    {progressValue === 0 ? "Start Learning" : progressValue === 100 ? "Review Course" : "Continue Learning"}
+                  </Link>
                 </div>
               </CardContent>
             </Card>
