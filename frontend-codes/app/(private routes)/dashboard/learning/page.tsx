@@ -15,6 +15,7 @@ import { useDashboard } from "@/app/(private routes)/dashboard/studentContext"
 import Image from "next/image"
 import Link from "next/link"
 import { constructUrl } from "@/lib/construct-url"
+import { cn } from "@/lib/utils"
 
 interface MyLearningProps {
   courses?: Course[]
@@ -30,7 +31,7 @@ export default function MyLearning() {
   const [showFilters, setShowFilters] = useState(false)
   const [showAllCourses, setShowAllCourses] = useState(false)
 
-   const {enrolledCourses, user, loading, error}=useDashboard()
+  const { enrolledCourses, user, loading, error } = useDashboard()
 
   // Show loading state
   if (loading) {
@@ -91,11 +92,11 @@ export default function MyLearning() {
   const handleSearchChange = (value: string) => {
     setSearchQuery(value)
     toast(
-       "Search Updated",{
-         description: value ? `Searching for "${value}"` : "Search cleared",
-       }  
+      "Search Updated", {
+      description: value ? `Searching for "${value}"` : "Search cleared",
+    }
     )
-    
+
   }
 
   const handleFilterChange = (value: string) => {
@@ -107,8 +108,8 @@ export default function MyLearning() {
       "not-started": "Not Started",
     }
     toast(
-       "Filter Applied", {  description: `Showing ${filterLabels[value as keyof typeof filterLabels]}`,}
-    
+      "Filter Applied", { description: `Showing ${filterLabels[value as keyof typeof filterLabels]}`, }
+
     )
   }
 
@@ -119,8 +120,8 @@ export default function MyLearning() {
       alphabetical: "Alphabetical",
       progress: "Progress",
     }
-    toast("Sort Applied",{  description: `Sorted by ${sortLabels[value as keyof typeof sortLabels]}`,}
-    
+    toast("Sort Applied", { description: `Sorted by ${sortLabels[value as keyof typeof sortLabels]}`, }
+
     )
   }
 
@@ -128,8 +129,8 @@ export default function MyLearning() {
     setShowFilters(!showFilters)
     toast(
       showFilters ? "Filters Hidden" : "Filters Shown",
-      { description: showFilters ? "Filter options are now hidden" : "Use filters to refine your search",}
-     
+      { description: showFilters ? "Filter options are now hidden" : "Use filters to refine your search", }
+
     )
   }
 
@@ -139,16 +140,16 @@ export default function MyLearning() {
     setSortBy("recent")
     setShowFilters(false)
     toast(
-      "Filters Cleared",{  description: "All filters have been reset",}
-    
+      "Filters Cleared", { description: "All filters have been reset", }
+
     )
   }
 
   const toggleShowAllCourses = () => {
     setShowAllCourses(!showAllCourses)
-    toast( 
-      showAllCourses ? "Showing Limited Courses" : "Showing All Courses", {   description: showAllCourses ? "Displaying first 6 courses" : "Displaying all available courses",}
-    
+    toast(
+      showAllCourses ? "Showing Limited Courses" : "Showing All Courses", { description: showAllCourses ? "Displaying first 6 courses" : "Displaying all available courses", }
+
     )
   }
 
@@ -305,8 +306,8 @@ export default function MyLearning() {
             <Card
               key={course.id}
               className="hover:shadow-lg transition-all duration-200 cursor-pointer hover:scale-[1.02]"
-              // onClick={() => handleCourseClick(course)}
-              
+            // onClick={() => handleCourseClick(course)}
+
             >
               <CardContent className="p-0">
                 <div className="relative p-1">
@@ -368,9 +369,20 @@ export default function MyLearning() {
                     </p>
                   )}
 
-                  <Link href={`/dashboard/courses/${course.id}`} className="w-full bg-yellow hover:bg-[#f39c12] text-sm transition-colors">
-                    <Play className="h-4 w-4 mr-2" />
-                    {progressValue === 0 ? "Start Learning" : progressValue === 100 ? "Review Course" : "Continue Learning"}
+                  <Link
+                    href={`/dashboard/${course.id}/chapter/1`}
+                    className={cn(
+                      "flex items-center justify-center w-full py-3 px-4 rounded-xl font-bold text-darkBlue-300 transition-all duration-300",
+                      "bg-[#fdb606] hover:bg-[#e2a405] hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98]",
+                      "text-sm uppercase tracking-wide"
+                    )}
+                  >
+                    <Play className="h-4 w-4 mr-2 fill-current" />
+                    {progressValue === 0
+                      ? "Start Learning"
+                      : progressValue === 100
+                        ? "Review Course"
+                        : "Continue Learning"}
                   </Link>
                 </div>
               </CardContent>
@@ -404,16 +416,16 @@ export default function MyLearning() {
                 <p className="text-gray-600 mb-6 text-base">
                   You haven&apos;t enrolled in any courses yet. Explore our course catalog and find something that sparks your interest!
                 </p>
-                  <Button 
-                    asChild 
-                    className="bg-[#fdb606] hover:bg-[#f39c12]"
-                    size="lg"
-                  >
-                    <Link href="/dashboard/courses">
-                      <BookOpen className="h-5 w-5 mr-2" />
-                      Browse All Courses
-                    </Link>
-                  </Button>
+                <Button
+                  asChild
+                  className="bg-[#fdb606] hover:bg-[#f39c12]"
+                  size="lg"
+                >
+                  <Link href="/dashboard/courses">
+                    <BookOpen className="h-5 w-5 mr-2" />
+                    Browse All Courses
+                  </Link>
+                </Button>
               </>
             ) : (
               // Filtered results are empty
