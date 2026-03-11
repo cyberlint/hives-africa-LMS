@@ -372,9 +372,9 @@ export default function MyLearning() {
                   <Link
                     href={`/dashboard/${course.id}/chapter/1`}
                     className={cn(
-                      "flex items-center justify-center w-full py-3 px-4 rounded-xl font-bold text-darkBlue-300 transition-all duration-300",
+                      "flex items-center justify-center w-full py-3 px-4 rounded-xl font-bold text-white transition-all duration-300",
                       "bg-[#fdb606] hover:bg-[#e2a405] hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98]",
-                      "text-sm uppercase tracking-wide"
+                      "text-sm tracking-wide"
                     )}
                   >
                     <Play className="h-4 w-4 mr-2 fill-current" />
