@@ -52,12 +52,12 @@ const data = {
     },
     {
       title: "Events",
-      url: "/events",
+      url: "/community/events",
       icon: IconCalendarEvent,
     },
     {
       title: "Community",
-      url: "/community",
+      url: "/community/village-square",
       icon: IconUsers,
     },
 ],
