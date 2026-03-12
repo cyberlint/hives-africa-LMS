@@ -20,7 +20,6 @@ import { getCurrentUser } from "@/domains/auth/user";
 import { getEvents } from "./get-events";
 import { EventCard } from "./_components/EventCard";
 import { EventCategoryEnum } from "@/lib/zodSchemas";
-import OnboardingFlow from "@/components/onboarding-flow";
 
 /* ------------------------------ PAGE -------------------------------- */
 
@@ -31,7 +30,6 @@ export default async function EventsPage() {
   return (
     <>
       {/* ----------------------------- HERO -------------------------------- */}
-      <OnboardingFlow />
       <section className="bg-background py-28">
         <div className="mx-auto w-full max-w-[1280px] px-6 sm:px-8 lg:px-10 grid gap-14 md:grid-cols-2 items-center">
           <div className="flex flex-col gap-8">
