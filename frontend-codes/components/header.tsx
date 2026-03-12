@@ -104,7 +104,7 @@ export default function Header() {
           <div className="flex items-center space-x-1 sm:space-x-3 shrink-0">
             
             <Button variant="outline" className="hidden md:flex items-center space-x-2 text-sm font-medium border-border/60 hover:bg-muted text-muted-foreground hover:text-foreground rounded-full h-9 px-4" asChild>
-              <Link href="/community">
+              <Link href="/community/events">
                 <Users size={16} strokeWidth={2} />
                 <span>Community</span>
               </Link>

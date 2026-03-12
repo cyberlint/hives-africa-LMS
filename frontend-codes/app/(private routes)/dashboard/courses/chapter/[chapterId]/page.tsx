@@ -42,7 +42,6 @@ const ContentPage: React.FC = () => {
   switch (activeLecture.type) {
     case 'video':
       return (
-        
         <VideoPlayerSection
           lecture={activeLecture}
           onNext={goToNextLecture}
