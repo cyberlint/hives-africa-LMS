@@ -64,7 +64,7 @@ const data = {
     },
     {
       title: "Community",
-      url: "/community/village-square",
+      url: "/community",
       icon: IconUsers,
     },
 ],

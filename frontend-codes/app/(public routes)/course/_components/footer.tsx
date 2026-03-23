@@ -52,9 +52,9 @@ export function Footer() {
             <h4 className="font-bold mb-4">Company</h4>
             <ul className="space-y-2 text-[#8e9aaf]">
               <li>About us</li>
-              <li>Why Hive?</li>
+              <li>Why NextHive?</li>
               <li>Blog</li>
-              <li>Jobs at the Hive</li>
+              <li>Jobs at NextHive</li>
               <li>Partner with NextHive</li>
               <li>Resources</li>
             </ul>
@@ -63,7 +63,7 @@ export function Footer() {
 
         {/* Bottom Row */}
         <div className="border-t border-[#2c3e50] pt-6 flex items-center justify-between text-sm text-[#8e9aaf]">
-          <p>Copyright Hives Africa 2025.</p>
+          <p>Copyright NextHive 2026.</p>
           <div className="flex space-x-6">
             <span>Privacy Policy</span>
             <span>Terms of use</span>

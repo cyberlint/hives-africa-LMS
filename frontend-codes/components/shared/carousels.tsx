@@ -13,7 +13,7 @@ const testimonials = [
     industry: "Education",
     avatar: "/avatars/amara.jpg",
     rating: 5,
-    content: "The Hives Africa LMS has transformed how we deliver vocational training. The platform's ease of use is remarkable and the support team is world-class.",
+    content: "NextHive has transformed how we deliver vocational training. The platform's ease of use is remarkable and the support team is world-class.",
   },
   {
     name: "Kofi Mensah",

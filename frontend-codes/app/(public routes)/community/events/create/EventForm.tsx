@@ -8,8 +8,8 @@ import * as z from "zod";
 
 import { toast } from "sonner";
 
-// All your UI components (Form primitives, buttons, cards, etc.)
-import { Button, buttonVariants } from "@/components/ui/button";
+// UI Components
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"; 
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ import { Uploader } from "@/components/lms/file-uploader/uploader";
 import { ArrowLeft, Loader2, PlusIcon } from "lucide-react";
 import Link from "next/link";
 
-// Your shared schema and actions
+// Shared schema and actions
 import { EventSchema, CreateEventSchema, EventVenueEnum, EventCategoryEnum } from "@/lib/zodSchemas";
 import { createEvent, updateEvent } from "@/app/(public routes)/community/events/events-actions";
 
@@ -28,35 +28,30 @@ import { createEvent, updateEvent } from "@/app/(public routes)/community/events
 interface AuthUser {
     id: string;
     role: 'user' | 'admin';
-    // Add other fields from AuthUser type if necessary
 }
 
-// FIX: Define the schema for data *received from the form inputs* (dates are strings for datetime-local)
+// Define the schema for data received from the form inputs
 type FormInputSchema = Omit<z.infer<typeof CreateEventSchema>, 'startdate' | 'enddate'> & {
     startdate: string;
     enddate: string;
 };
 
-
 interface EventFormProps {
     eventData?: z.infer<typeof EventSchema>; 
-    // The user data is now passed safely from the Server Component
     currentUser: AuthUser; 
 }
 
-// Helper to format Date or string to the required "YYYY-MM-DDThh:mm" string format
+// Helper to format Date or string to the required "YYYY-MM-DDThh:mm" format
 const formatDateForInput = (dateOrString: Date | string | undefined): string | undefined => {
     if (!dateOrString) return undefined;
     
     const date = dateOrString instanceof Date ? dateOrString : new Date(dateOrString);
-    
     if (isNaN(date.getTime())) return undefined;
 
     return date.toISOString().slice(0, 16);
 };
 
-
-// Define a schema for the form validation that expects strings for dates
+// Validator schema that expects strings for dates from the input fields
 const FormValidatorSchema = EventSchema.omit({ 
     id: true, createdAt: true, updatedAt: true, userId: true,
     startdate: true, enddate: true 
@@ -64,12 +59,25 @@ const FormValidatorSchema = EventSchema.omit({
     startdate: z.string().refine((val) => !isNaN(Date.parse(val)), "Start date must be a valid date"),
     enddate: z.string().refine((val) => !isNaN(Date.parse(val)), "End date must be a valid date"),
 }).superRefine((data, ctx) => {
+    
+    // 1. Enforce URL for online events
+    if (data.isOnline) {
+        if (!data.url || data.url.trim() === "") {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ["url"],
+                message: "Event URL is required for online events",
+            });
+        }
+    }
+
+    // 2. Enforce chronological dates
     if (data.startdate && data.enddate) {
         const start = new Date(data.startdate);
         const end = new Date(data.enddate);
         if (end <= start) {
             ctx.addIssue({
-                code: "custom",
+                code: z.ZodIssueCode.custom,
                 path: ["enddate"],
                 message: "End date must be after start date",
             });
@@ -81,47 +89,34 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
 
-    // useForm uses the string-based schema
     const form = useForm<FormInputSchema>({
-        // The Zod resolver uses the string-based schema
         resolver: zodResolver(FormValidatorSchema), 
         defaultValues: {
             title: eventData?.title ?? "",
             shortdescription: eventData?.shortdescription ?? "",
             description: eventData?.description ?? "",
             imageKey: eventData?.imageKey || "", 
-            
-            // Access enum values correctly using .enum
             venue: eventData?.venue ?? EventVenueEnum.enum.NextHive, 
             url: eventData?.url || "",
             eventCategory: eventData?.eventCategory ?? EventCategoryEnum.enum.Tutorial, 
-            
             isOnline: eventData?.isOnline ?? true,
-            
-            // Pass formatted string values to the form inputs
             startdate: formatDateForInput(eventData?.startdate) ?? formatDateForInput(new Date())!,
             enddate: formatDateForInput(eventData?.enddate) ?? formatDateForInput(new Date())!,
         },
     });
 
-    // onSubmit accepts the string-based input values
     function onSubmit(values: FormInputSchema) {
         startTransition(async () => {
             try {
-                // The currentUser prop is guaranteed to be present due to the Server Component check.
-                
-                // Convert string dates back to Date objects for server actions
                 const dataToSend = {
                     ...values,
                     startdate: new Date(values.startdate), 
                     enddate: new Date(values.enddate),     
-                } as z.infer<typeof CreateEventSchema>; // Cast to the expected Zod type
-
+                } as z.infer<typeof CreateEventSchema>; 
 
                 if (eventData && eventData.id) {
                     await updateEvent(eventData.id, dataToSend);
                 } else {
-                    // Use the ID from the currentUser prop
                     await createEvent(dataToSend, currentUser.id);
                 }
 
@@ -140,32 +135,37 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
         });
     }
 
-
     return (
-        <>
-            <div className="flex items-center gap-4">
-                <Link
-                    href="/community/events"
-                    className={buttonVariants({ variant: "outline", size: "icon" })}
-                >
-                    <ArrowLeft className="size-4" />
-                </Link>
-                <h1 className="text-2xl font-bold">
-                    {eventData ? "Edit Event" : "Create Event"}
-                </h1>
+        <div className="mx-auto max-w-4xl py-10 px-4 sm:px-6">
+            
+            {/* Header Section */}
+            <div className="mb-8 flex items-center gap-4">
+                <Button asChild variant="outline" size="icon" className="shrink-0 rounded-full">
+                    <Link href="/community/events">
+                        <ArrowLeft className="h-4 w-4" />
+                    </Link>
+                </Button>
+                <div>
+                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                        {eventData ? "Edit Event" : "Create Event"}
+                    </h1>
+                    <p className="text-sm text-muted-foreground mt-1">
+                        {eventData ? "Update the details of your upcoming event." : "Fill out the details below to host a new event."}
+                    </p>
+                </div>
             </div>
 
-            <Card className="mt-6 p-6">
-                <CardHeader>
-                    <CardTitle>Basic Information</CardTitle>
-                    <CardDescription>Provide basic information about the event</CardDescription>
+            {/* Clean, Flat Card */}
+            <Card className="border-border shadow-sm">
+                <CardHeader className="border-b border-border/50 bg-muted/20 px-6 py-5">
+                    <CardTitle className="text-lg">Event Details</CardTitle>
+                    <CardDescription>Provide the necessary information for the community.</CardDescription>
                 </CardHeader>
 
-                <CardContent>
+                <CardContent className="p-6 sm:p-8">
                     <Form {...form}>
-                        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+                        <form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
                             
-                            {/* Title */}
                             <FormField
                                 control={form.control}
                                 name="title"
@@ -180,7 +180,6 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
                                 )}
                             />
 
-                            {/* Short Description */}
                             <FormField
                                 control={form.control}
                                 name="shortdescription"
@@ -188,29 +187,29 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
                                     <FormItem>
                                         <FormLabel>Short Description</FormLabel>
                                         <FormControl>
-                                            <Textarea placeholder="Short Description" className="min-h-[120px]" {...field} />
+                                            <Textarea placeholder="A brief summary of the event..." className="min-h-[100px] resize-none" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
 
-                            {/* Description */}
                             <FormField
                                 control={form.control}
                                 name="description"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Description</FormLabel>
+                                        <FormLabel>Full Description</FormLabel>
                                         <FormControl>
-                                            <RichTextEditor field={field} />
+                                            <div className="overflow-hidden rounded-md border border-input">
+                                                <RichTextEditor field={field} />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
 
-                            {/* Thumbnail */}
                             <FormField
                                 control={form.control}
                                 name="imageKey"
@@ -229,30 +228,23 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
                                 )}
                             />
 
-                            {/* Venue & Category */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Two-Column Grid Sections */}
+                            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                                 <FormField
                                     control={form.control}
                                     name="venue"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Venue</FormLabel>
-                                            <Select 
-                                                onValueChange={field.onChange} 
-                                                defaultValue={field.value}
-                                                value={field.value}
-                                            >
+                                            <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                                 <FormControl>
-                                                    <SelectTrigger className="w-full">
+                                                    <SelectTrigger>
                                                         <SelectValue placeholder="Select venue" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    {/* FIX: Use .enum to access unique values, resolving the key error */}
                                                     {Object.values(EventVenueEnum.enum).map((venue) => ( 
-                                                        <SelectItem key={venue} value={venue}>
-                                                            {venue}
-                                                        </SelectItem>
+                                                        <SelectItem key={venue} value={venue}>{venue}</SelectItem>
                                                     ))}
                                                 </SelectContent>
                                             </Select>
@@ -267,22 +259,15 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Category</FormLabel>
-                                            <Select 
-                                                onValueChange={field.onChange} 
-                                                defaultValue={field.value}
-                                                value={field.value}
-                                            >
+                                            <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                                 <FormControl>
-                                                    <SelectTrigger className="w-full">
+                                                    <SelectTrigger>
                                                         <SelectValue placeholder="Select category" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    {/* FIX: Use .enum to access unique values, resolving the key error */}
                                                     {Object.values(EventCategoryEnum.enum).map((cat) => ( 
-                                                        <SelectItem key={cat} value={cat}>
-                                                            {cat}
-                                                        </SelectItem>
+                                                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                                                     ))}
                                                 </SelectContent>
                                             </Select>
@@ -290,72 +275,52 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
                                         </FormItem>
                                     )}
                                 />
-                            </div>
 
-                            {/* URL */}
-                            <FormField
-                                control={form.control}
-                                name="url"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Event URL</FormLabel>
-                                        <FormDescription>
-                                            Optional URL for external event registration/page.
-                                        </FormDescription> 
-                                        <FormControl>
-                                            <Input 
-                                                placeholder="Optional URL" 
-                                                {...field} 
-                                                value={field.value ?? ''}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Online / Offline */}
-                            <FormField
-                                control={form.control}
-                                name="isOnline"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Format</FormLabel>
-                                        <Select 
-                                            // Convert boolean to string for the select component
-                                            onValueChange={(val) => field.onChange(val === "true")} 
-                                            defaultValue={String(field.value)}
-                                            value={String(field.value)} 
-                                        >
+                                <FormField
+                                    control={form.control}
+                                    name="url"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Event URL</FormLabel>
                                             <FormControl>
-                                                <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder="Online / In-Person" />
-                                                </SelectTrigger>
+                                                <Input placeholder="https://..." {...field} value={field.value ?? ''} />
                                             </FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="true">Online</SelectItem>
-                                                <SelectItem value="false">In-Person</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                            <FormDescription>Optional external link for the event.</FormDescription> 
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
-                            {/* Start & End Date */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <FormField
+                                    control={form.control}
+                                    name="isOnline"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Format</FormLabel>
+                                            <Select onValueChange={(val) => field.onChange(val === "true")} defaultValue={String(field.value)} value={String(field.value)}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Online / In-Person" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="true">Online</SelectItem>
+                                                    <SelectItem value="false">In-Person</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
                                 <FormField
                                     control={form.control}
                                     name="startdate"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Start Date</FormLabel>
+                                            <FormLabel>Start Date & Time</FormLabel>
                                             <FormControl>
-                                                <Input 
-                                                    type="datetime-local" 
-                                                    {...field} 
-                                                    value={field.value}
-                                                />
+                                                <Input type="datetime-local" {...field} value={field.value} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -367,13 +332,9 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
                                     name="enddate"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>End Date</FormLabel>
+                                            <FormLabel>End Date & Time</FormLabel>
                                             <FormControl>
-                                                <Input 
-                                                    type="datetime-local" 
-                                                    {...field} 
-                                                    value={field.value}
-                                                />
+                                                <Input type="datetime-local" {...field} value={field.value} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -381,21 +342,25 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
                                 />
                             </div>
 
-                            <Button type="submit" disabled={isPending}>
-                                {isPending ? (
-                                    <>
-                                        {eventData ? "Updating..." : "Creating..."} <Loader2 className="animate-spin ml-1" />
-                                    </>
-                                ) : (
-                                    <>
-                                        {eventData ? "Update Event" : "Create Event"} <PlusIcon className="ml-1" size={16} />
-                                    </>
-                                )}
-                            </Button>
+                            <div className="flex justify-end pt-4">
+                                <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
+                                    {isPending ? (
+                                        <>
+                                            {eventData ? "Updating..." : "Creating..."} 
+                                            <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                                        </>
+                                    ) : (
+                                        <>
+                                            {eventData ? "Update Event" : "Create Event"} 
+                                            <PlusIcon className="ml-2 h-4 w-4" />
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
                         </form>
                     </Form>
                 </CardContent>
             </Card>
-        </>
+        </div>
     );
 }

@@ -447,7 +447,8 @@ export const EventSchema = z.object({
   enddate: z.coerce.date({ invalid_type_error: "End date must be a valid date" }),
   imageKey: z.string().nullable(),
   venue: EventVenueEnum,
-  url: z.string().url({ message: "URL must be valid" }).nullable(),
+  // Allow empty strings for form compatibility when optional
+  url: z.string().url({ message: "URL must be valid" }).optional().or(z.literal("")),
   eventCategory: EventCategoryEnum,
   isOnline: z.boolean({ required_error: "Online status must be true or false" }),
   createdAt: z.date({ required_error: "CreatedAt must be a valid date" }),
@@ -460,13 +461,27 @@ export const EventSchema = z.object({
 export const CreateEventSchema = EventSchema
   .omit({ id: true, createdAt: true, updatedAt: true, userId: true }) // user doesn’t provide these
   .superRefine((data, ctx) => {
+    
+    // 1. Enforce URL for online events
+    if (data.isOnline) {
+      if (!data.url || data.url.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["url"], 
+          message: "Event URL is required for online events",
+        });
+      }
+    }
+
+    // 2. Enforce chronological dates
     if (data.enddate <= data.startdate) {
       ctx.addIssue({
-        code: "custom",
+        code: z.ZodIssueCode.custom,
         path: ["enddate"],
         message: "End date must be after start date",
       });
     }
+    
   });
 
 // UPDATE EVENT SCHEMA

@@ -12,7 +12,10 @@ import {
   CheckCircle2, AlertCircle, ExternalLink, Activity,
   Compass, Library, Award, Clock, ArrowRight, Loader,
   LucideIcon,
-  ExternalLinkIcon
+  Users, 
+  MessageSquare, 
+  Calendar,
+  Video
 } from "lucide-react"
 import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Tooltip
@@ -23,7 +26,6 @@ import { constructUrl } from "@/lib/construct-url"
 import { authClient } from "@/lib/auth-client"
 import { useDashboard } from "@/app/(private routes)/dashboard/studentContext"
 import { getDashboardData, DashboardActionItem } from "./actions/get-dashboard-data"
-import { getCurrentUser } from "@/domains/auth/user"
 import { user } from "./dummydata"
 import { requireAuth } from "@/domains/auth/require-auth"
 
@@ -231,7 +233,7 @@ export default function DashboardOverview() {
             </div>
 
             {/* CTA */}
-            <Button className="bg-yellow text-white w-full sm:w-auto rounded-full hover:bg-foreground/90 px-5 py-5 sm:py-2 h-auto font-medium">
+            <Button  asChild className="bg-yellow text-white w-full sm:w-auto rounded-full hover:bg-foreground/90 px-5 py-5 sm:py-2 h-auto font-medium">
               <Link href="/p/username">
               View Profile
               </Link>
@@ -581,8 +583,209 @@ export default function DashboardOverview() {
           )}
         </TabsContent>
 
-        <TabsContent value="community">
-          <div className="p-12 text-center text-muted-foreground border border-dashed rounded-[2rem]">Community Signal Content (Coming Soon)</div>
+        {/* --- COMMUNITY TAB (The Network Signal) --- */}
+        <TabsContent value="community" className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+          
+          {/* Top Banner: Network Pulse */}
+          <div className="relative overflow-hidden rounded-[2rem] border border-border/50 bg-card/20 p-6 sm:p-8 backdrop-blur-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none" />
+            
+            <div className="space-y-2 relative z-10">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                </span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Live Network</span>
+              </div>
+              <h2 className="text-2xl font-bold text-foreground tracking-tight">The Builder's Hive</h2>
+              <p className="text-sm text-muted-foreground max-w-lg">
+                Connect with peers, review trending artifacts, and join live squads to accelerate your skill acquisition.
+              </p>
+            </div>
+
+            <div className="flex gap-4 relative z-10 shrink-0 overflow-x-auto pb-2 sm:pb-0 w-full sm:w-auto">
+              <div className="flex flex-col items-center justify-center px-6 py-4 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-md shadow-sm">
+                <span className="text-2xl font-bold text-foreground">142</span>
+                <span className="text-xs font-medium text-muted-foreground">Active Builders</span>
+              </div>
+              <div className="flex flex-col items-center justify-center px-6 py-4 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-md shadow-sm">
+                <span className="text-2xl font-bold text-orange">2.4k</span>
+                <span className="text-xs font-medium text-muted-foreground">Points Generated</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            {/* LEFT COLUMN: Trending Artifacts (Span 8) */}
+            <div className="lg:col-span-8 space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-semibold text-foreground tracking-tight flex items-center gap-2">
+                  <Flame className="size-5 text-orange" /> Trending Artifacts
+                </h3>
+                <Button variant="ghost" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                  View All <ArrowRight className="ml-1.5 size-4" />
+                </Button>
+              </div>
+
+              <div className="grid gap-4">
+                {/* Artifact Card 1 */}
+                <div className="group p-5 rounded-[2rem] border border-border/40 bg-card/30 hover:bg-card/60 hover:border-border/80 transition-all duration-300 backdrop-blur-sm flex flex-col sm:flex-row gap-5">
+                  <div className="relative h-32 w-full sm:w-48 shrink-0 overflow-hidden rounded-[1.2rem] bg-muted border border-border/50">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 mix-blend-overlay z-10" />
+                    <Image src="/ai.png" alt="Project" className="object-cover opacity-80 group-hover:scale-105 transition-transform duration-700" fill sizes="200px" />
+                  </div>
+                  <div className="flex flex-col flex-1 justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Avatar className="size-5">
+                            <AvatarImage src="/ai.png" />
+                            <AvatarFallback className="text-[9px]">JD</AvatarFallback>
+                          </Avatar>
+                          <span className="text-xs font-medium text-muted-foreground">Sarah Jenkins • 2h ago</span>
+                        </div>
+                        <Badge variant="secondary" className="bg-background text-[10px] uppercase font-bold text-muted-foreground border-none">Capstone</Badge>
+                      </div>
+                      <h4 className="font-semibold text-foreground text-base leading-snug group-hover:text-orange transition-colors">Healthcare Predictive Model</h4>
+                      <p className="text-sm text-muted-foreground line-clamp-2 mt-1.5">
+                        Trained a random forest classifier to predict patient readmission rates with 89% accuracy using cleaned clinical data.
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="flex gap-2">
+                        <span className="text-[10px] font-medium uppercase tracking-wider bg-muted/50 text-muted-foreground px-2 py-1 rounded-md">Python</span>
+                        <span className="text-[10px] font-medium uppercase tracking-wider bg-muted/50 text-muted-foreground px-2 py-1 rounded-md">Machine Learning</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-orange cursor-pointer transition-colors">
+                          <Zap className="size-3.5" /> 24
+                        </span>
+                        <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-blue-500 cursor-pointer transition-colors">
+                          <MessageSquare className="size-3.5" /> 5
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Artifact Card 2 */}
+                <div className="group p-5 rounded-[2rem] border border-border/40 bg-card/30 hover:bg-card/60 hover:border-border/80 transition-all duration-300 backdrop-blur-sm flex flex-col sm:flex-row gap-5">
+                  <div className="flex flex-col flex-1 justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Avatar className="size-5">
+                            <AvatarImage src="/ai.png" />
+                            <AvatarFallback className="text-[9px]">MK</AvatarFallback>
+                          </Avatar>
+                          <span className="text-xs font-medium text-muted-foreground">Marcus K. • 5h ago</span>
+                        </div>
+                        <Badge variant="secondary" className="bg-background text-[10px] uppercase font-bold text-muted-foreground border-none">Peer Review</Badge>
+                      </div>
+                      <h4 className="font-semibold text-foreground text-base leading-snug group-hover:text-orange transition-colors">Architecture Audit: E-Commerce API</h4>
+                      <p className="text-sm text-muted-foreground line-clamp-2 mt-1.5">
+                        Complete breakdown of the provided Node.js architecture, highlighting structural bottlenecks and proposing a microservices refactor.
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="flex gap-2">
+                        <span className="text-[10px] font-medium uppercase tracking-wider bg-muted/50 text-muted-foreground px-2 py-1 rounded-md">System Design</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-orange cursor-pointer transition-colors">
+                          <Zap className="size-3.5" /> 18
+                        </span>
+                        <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-blue-500 cursor-pointer transition-colors">
+                          <MessageSquare className="size-3.5" /> 2
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT COLUMN: Squads & Ops (Span 4) */}
+            <div className="lg:col-span-4 space-y-8">
+              
+              {/* Active Squads (Chats/Guilds) */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-foreground tracking-tight flex items-center gap-2">
+                  <Users className="size-4 text-muted-foreground" /> Active Squads
+                </h3>
+                <div className="bg-card/30 border border-border/50 rounded-[2rem] p-2 backdrop-blur-sm shadow-sm">
+                  {[
+                    { name: "Data Engineering Guild", members: 42, active: true, unread: 3 },
+                    { name: "Frontend Masters", members: 28, active: true, unread: 0 },
+                    { name: "Cohort 4 Study Group", members: 12, active: false, unread: 0 },
+                  ].map((squad, i) => (
+                    <div key={i} className="group flex items-center justify-between p-3 rounded-2xl hover:bg-muted/50 transition-colors cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <div className="size-10 rounded-xl bg-gradient-to-br from-border to-muted flex items-center justify-center border border-border/50">
+                            <span className="text-sm font-bold text-foreground">{squad.name.charAt(0)}</span>
+                          </div>
+                          {squad.active && <div className="absolute -bottom-1 -right-1 size-3.5 bg-green-500 border-2 border-background rounded-full" />}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground group-hover:text-orange transition-colors">{squad.name}</p>
+                          <p className="text-xs text-muted-foreground">{squad.members} members</p>
+                        </div>
+                      </div>
+                      {squad.unread > 0 && (
+                        <span className="size-5 rounded-full bg-orange flex items-center justify-center text-[10px] font-bold text-white">
+                          {squad.unread}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Upcoming Events / Hackathons */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-foreground tracking-tight flex items-center gap-2">
+                  <Calendar className="size-4 text-muted-foreground" /> Upcoming Ops
+                </h3>
+                <div className="grid gap-3">
+                  <div className="group p-4 rounded-[1.5rem] border border-border/50 bg-card/40 hover:bg-card/80 transition-all backdrop-blur-sm shadow-sm cursor-pointer hover:border-orange/30">
+                    <div className="flex items-start gap-4">
+                      <div className="flex flex-col items-center justify-center w-12 h-14 rounded-xl bg-orange/10 text-orange shrink-0 border border-orange/20">
+                        <span className="text-xs font-bold uppercase">Mar</span>
+                        <span className="text-lg font-black leading-none">28</span>
+                      </div>
+                      <div>
+                        <Badge variant="outline" className="text-[9px] uppercase font-bold border-none bg-muted/50 text-muted-foreground mb-1 px-1.5 py-0">Hackathon</Badge>
+                        <h4 className="text-sm font-semibold text-foreground leading-snug group-hover:text-orange transition-colors">72h BI Dashboard Sprint</h4>
+                        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                          <Users className="size-3" /> 40 spots left
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="group p-4 rounded-[1.5rem] border border-border/50 bg-card/40 hover:bg-card/80 transition-all backdrop-blur-sm shadow-sm cursor-pointer">
+                    <div className="flex items-start gap-4">
+                      <div className="flex flex-col items-center justify-center w-12 h-14 rounded-xl bg-muted/50 text-muted-foreground shrink-0 border border-border/50">
+                        <span className="text-xs font-bold uppercase">Apr</span>
+                        <span className="text-lg font-black leading-none">02</span>
+                      </div>
+                      <div>
+                        <Badge variant="outline" className="text-[9px] uppercase font-bold border-none bg-muted/50 text-muted-foreground mb-1 px-1.5 py-0">Webinar</Badge>
+                        <h4 className="text-sm font-semibold text-foreground leading-snug group-hover:text-blue-500 transition-colors">Advanced SQL Optimization</h4>
+                        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                          <Video className="size-3" /> Online Event
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
         </TabsContent>
 
       </Tabs>

@@ -70,9 +70,9 @@ export default function Topbar() {
                 className="w-full justify-start text-sm font-medium hover:bg-muted rounded-lg"
                 asChild
               >
-                <Link href="/community/village-square" onClick={() => setIsCommunityOpen(false)}>
+                <Link href="/community" onClick={() => setIsCommunityOpen(false)}>
                   <Users size={16} className="mr-3 text-blue-500" />
-                  Village Square
+                  Hive
                 </Link>
               </Button>
             </div>
