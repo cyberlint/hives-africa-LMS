@@ -1,4 +1,8 @@
 import { z } from "zod";
+import { ActivityVisibility, 
+         ActivityDifficulty ,
+         ActivityStatus,
+} from "@prisma/client";
 
 // --- Enums ---
 export const courseLevels = ["Beginner", "Intermediate", "Advanced"] as const;
@@ -51,6 +55,66 @@ export const courseCategories = [
   "Operations & Supply Chain Analytics",
 ] as const;
 
+export const ActivityTypeEnum = z.enum([
+  "Project",
+  "Task",
+  "Capstone",
+  "Case_Study",
+  "Client_Simulation",
+  "Challenge",
+  "Hackathon",
+  "Datathon",
+  "Team_Project",
+  "Open_Source_Contribution",
+  "Event_Hosting",
+  "Event_Participation",
+  "Study_Group_Leadership",
+  "Mentorship",
+  "Peer_Review",
+  "Community_Contribution",
+  "Tutorial_Creation",
+  "Content_Translation",
+  "Research",
+  "Article_Publication",
+]);
+
+export const ActivityVisibilityEnum = z.nativeEnum(ActivityVisibility);
+export const ActivityDifficultyEnum = z.nativeEnum(ActivityDifficulty);
+export const ActivityStatusEnum = z.nativeEnum(ActivityStatus);
+
+export const ActivityRequirementEnum = z.enum([
+  "File_Upload",
+  "GitHub_Repo",
+  "Video_Link",
+  "Text_Report",
+  "Peer_Reviews",
+  "Host_An_Online_Event",
+  "Event_Attendance",
+  "Live_Demo",
+]);
+
+export const SubmissionStatusEnum = z.enum([
+  "Draft",
+  "Submitted",
+  "Under_Review",
+  "Revision_Required",
+  "Approved",
+  "Rejected",
+]);
+
+export const ReviewTypeEnum = z.enum([
+  "Peer",
+  "Instructor",
+  "Mentor",
+]);
+
+export const ParticipantRoleEnum = z.enum([
+  "Participant",
+  "Reviewer",
+  "Mentor",
+  "Organizer"
+]);
+
 export const EventVenueEnum = z.enum([
   "NextHive",
   "GoogleMeet",
@@ -81,6 +145,25 @@ export const EventCategoryEnum = z.enum([
   "Bootcamp",
 ], { errorMap: () => ({ message: "Invalid event category selected" }) });
 
+
+// ----- Program Schema -----
+export const createProgramSchema = z.object({
+  title: z.string()
+    .min(5, "Program title must be at least 5 characters."),
+  shortdescription: z.string()
+    .min(10, "Program short description must be at least 10 characters.")
+    .max(150, "Program short description cannot exceed 150 characters."),
+  description: z.string()
+    .min(100, "Program description must be at least 100 characters.")
+    .max(2500, "Program description cannot exceed 2500 characters."),
+  fileKey: z.string()
+    .min(1, "A program image or primary media file key is required."),
+  slug: z.string()
+    .min(3, "Slug must be at least 3 characters.")
+});
+
+// Update program schema
+export const updateProgramSchema = createProgramSchema.partial();
 
 // --- Course Schema ---
 
@@ -167,6 +250,185 @@ export const lessonSchema = z.object({
 });
 
 
+// ---- Activity Schema ----
+const baseActivityObject = z.object({
+  title: z.string().min(5).max(150),
+  description: z.string().min(10).max(2500),
+  type: ActivityTypeEnum,
+  visibility: ActivityVisibilityEnum.default("Public"),
+  difficulty: ActivityDifficultyEnum.default("Intermediate"),
+  points: z.number().int().min(0).max(10000).default(0),
+  isMandatory: z.boolean().default(false),
+  startDate: z.coerce.date().optional(),
+  deadline: z.coerce.date().optional(),
+  courseId: z.string().uuid().optional(),
+  programId: z.string().uuid().optional(),
+  creatorId: z.string(),
+});
+
+export const createActivitySchema = baseActivityObject.superRefine((data, ctx) => {
+  if (data.startDate && data.deadline && data.deadline < data.startDate) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Deadline cannot be before start date",
+      path: ["deadline"],
+    });
+  }
+});
+
+
+// We validate based on type. For example, if it's a "Project", we might require a GitHub repo link or file upload. If it's an "Event Participation", we might require an event ID or proof of attendance. This way we can ensure the right data is collected for each activity type.
+const baseRequirementSchema = z.object({
+  type: ActivityRequirementEnum,
+  config: z.record(z.any()).optional(),
+});
+
+// Submission schema
+export const submissionSchema = z.object({
+  activityId: z.string().uuid(),
+  userId: z.string().uuid().optional(),
+  teamId: z.string().uuid().optional(),
+  participationId: z.string().uuid().optional(),
+  content: z.record(z.any()),
+  status: SubmissionStatusEnum.default("Draft"),
+})
+.superRefine((data, ctx) => {
+  // Rule: Must belong to ONE owner
+  if (!data.userId && !data.teamId) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Submission must belong to a user or a team",
+    });
+  }
+  if (data.userId && data.teamId) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Submission cannot belong to both a user and a team. Please choose one.",
+    });
+  }
+});
+
+// Review schema
+export const reviewSchema = z.object({
+  submissionId: z.string().uuid(),
+  reviewerId: z.string().uuid(),
+  type: ReviewTypeEnum.default("Peer"),
+  score: z.number().min(0).max(100).optional(),
+  feedback: z.string().max(5000).optional(),
+  rubricScores: z.record(z.number()).optional(),
+})
+.superRefine((data, ctx) => {
+  if (data.score === undefined && data.rubricScores === undefined) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Review must include a score or rubric scores",
+    });
+  }
+});
+
+// Reviewer assignment schema
+export const reviewAssignmentSchema = z.object({
+  submissionId: z.string().uuid(),
+  reviewerId: z.string().uuid(),
+  expiresAt: z.coerce.date().optional(),
+});
+
+// Team Schema
+export const teamSchema = z.object({
+  name: z
+    .string()
+    .min(3, "Team name must be at least 3 characters.")
+    .max(60, "Team name cannot exceed 60 characters."),
+  description: z.string().optional(),
+  activityId: z.string().uuid(),
+});
+
+// Participation Schema
+export const participationSchema = z.object({
+  userId: z.string().uuid(),
+  activityId: z.string().uuid(),
+  teamId: z.string().uuid().optional(),
+  role: ParticipantRoleEnum.default("Participant"),
+});
+
+//--- Activity Builder Step Schemas ---
+// For the activity builder, we can have separate schemas for each step. For example, Step 1 might be basic info, Step 2 might be requirements, Step 3 might be review and publish settings. This way we can validate each step independently and provide better feedback to the user.
+
+// Step 1: Overview
+export const activityOverviewSchema = baseActivityObject.pick({
+  title: true,
+  description: true,
+  type: true,
+  difficulty: true,
+  points: true,
+  startDate: true,
+  deadline: true,
+  courseId: true,
+  programId: true,
+}).superRefine((data, ctx) => {
+    // We have to put the date logic here too because .pick() dropped the old superRefine
+    if (data.startDate && data.deadline && data.deadline < data.startDate) {
+       ctx.addIssue({
+         code: z.ZodIssueCode.custom,
+         message: "Deadline cannot be before start date",
+         path: ["deadline"],
+       });
+    }
+  });
+
+// Step 2: Requirements
+export const activityRequirementSchema = z.object({
+  type: ActivityRequirementEnum,
+
+  config: z.object({
+    label: z.string().min(1), // e.g. "GitHub Repository"
+    description: z.string()
+      .min(10, "Requirement description must be at least 10 characters.")
+      .max(150, "Requirement description cannot exceed 150 characters."),
+    required: z.boolean().default(true),
+  }).optional(),
+});
+
+// Step 3: Review & Publish
+export const submissionConfigSchema = z.object({
+  fields: z.array(
+    z.object({
+      name: z.string(),
+      type: z.enum(["text", "file", "url", "video"]),
+      required: z.boolean().default(true),
+    })
+  ).min(1),
+});
+
+// Step 4: Rubric (if using rubric-based grading)
+export const rubricSchema = z.array(
+  z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    weight: z.number().min(0).max(100),
+    maxScore: z.number().min(1),
+  })
+).min(1)
+.superRefine((criteria, ctx) => {
+  const totalWeight = criteria.reduce((sum, c) => sum + c.weight, 0);
+
+  if (totalWeight !== 100) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Rubric weights must sum to 100",
+    });
+  }
+});
+
+// Step 5: KSB Mapping
+export const activityKSBMappingSchema = z.array(
+  z.object({
+    ksbId: z.string().uuid(),
+    weight: z.number().min(0).max(1).default(1),
+  })
+).min(1);
+
+
 
 export const EventSchema = z.object({
   id: z.string().uuid({ message: "Invalid event ID" }),
@@ -224,6 +486,15 @@ export const UpdateEventSchema = EventSchema.partial() // everything optional
 export type CourseSchemaType = z.infer<typeof courseSchema>;
 export type ModuleSchemaType = z.infer<typeof moduleSchema>;
 export type LessonSchemaType = z.infer<typeof lessonSchema>;
+export type CreateActivityInput = z.infer<typeof createActivitySchema>;
+export type ActivityRequirementInput = z.infer<typeof activityRequirementSchema>;
+export type RubricInput = z.infer<typeof rubricSchema>;
+export type ActivityKSBMappingInput = z.infer<typeof activityKSBMappingSchema>;
+export type SubmissionInput = z.infer<typeof submissionSchema>;
+export type ReviewInput = z.infer<typeof reviewSchema>;
+export type ReviewAssignmentInput = z.infer<typeof reviewAssignmentSchema>;
+export type TeamInput = z.infer<typeof teamSchema>;
+export type ParticipationInput = z.infer<typeof participationSchema>;
 export type EventInput = z.infer<typeof CreateEventSchema>;
 export type EventUpdateInput = z.infer<typeof UpdateEventSchema>;
 export type EventOutput = z.infer<typeof EventSchema>;

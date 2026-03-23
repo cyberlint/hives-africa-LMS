@@ -16,6 +16,7 @@ import {
   IconHelp,
   IconInnerShadowTop,
   IconListDetails,
+  IconPlayCard,
   IconReport,
   IconSearch,
   IconSettings,
@@ -50,6 +51,12 @@ const data = {
       url: "/admin/courses",
       icon: IconListDetails,
     },
+    {
+      title: "Learning Activities",
+      url: "/admin/activities",
+      icon: IconPlayCard,
+  },
+    
     {
       title: "Events",
       url: "/community/events",

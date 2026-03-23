@@ -1,206 +1,591 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
+import { useEffect, useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Clock, Award, Loader, AlertCircle, Compass, Library } from "lucide-react"
-import { useDashboard } from "@/app/(private routes)/dashboard/studentContext"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Zap, Trophy, Target, Flame, GitPullRequest,
+  CheckCircle2, AlertCircle, ExternalLink, Activity,
+  Compass, Library, Award, Clock, ArrowRight, Loader,
+  LucideIcon,
+  ExternalLinkIcon
+} from "lucide-react"
+import {
+  Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Tooltip
+} from "recharts"
 import Link from "next/link"
 import Image from "next/image"
 import { constructUrl } from "@/lib/construct-url"
 import { authClient } from "@/lib/auth-client"
+import { useDashboard } from "@/app/(private routes)/dashboard/studentContext"
+import { getDashboardData, DashboardActionItem } from "./actions/get-dashboard-data"
+import { getCurrentUser } from "@/domains/auth/user"
+import { user } from "./dummydata"
+import { requireAuth } from "@/domains/auth/require-auth"
 
-function DashboardOverview() {
-  const { data: session } = authClient.useSession()
-  const { enrolledCourses, loading, error, user: dashboardUser } = useDashboard()
+// Map string icon names from the database to actual Lucide components
+const IconMap: Record<string, LucideIcon> = {
+  Zap,
+  GitPullRequest,
+  Target,
+  Award
+}
 
-  const sessionUser = session?.user || {
-    name: "Guest",
-    email: "guest@example.com",
-    image: "/ai.png",
+function generateKSBInsight(ksbData: { dimension: string; score: number; fullMark: number }[]) {
+
+  if (!ksbData || ksbData.length === 0) return null;
+
+  const activeScores = ksbData.filter(k => k.score > 0);
+
+  if (activeScores.length === 0 || activeScores.every(k => k.score <= 10)) {
+    return {
+      type: "new",
+      text: "Welcome! We don't have quite enough data to map your skills just yet. Complete some projects and come back here to track your growth!",
+      actionText: "Explore Curriculum",
+      link: "/dashboard/courses"
+    };
   }
+
+  const sorted = [...ksbData].sort((a, b) => a.score - b.score);
+  const weakest = sorted[0];
+  const strongest = sorted[sorted.length - 1];
+
+  if (strongest.score - weakest.score <= 10 && strongest.score >= 50) {
+    return {
+      type: "balanced",
+      text: "You're doing great across the board! Keep up the momentum by taking on some new challenges.",
+      actionText: "Find a Challenge",
+      link: "/dashboard/activities"
+    };
+  }
+
+  // Friendly suggestions
+  let actionText = "";
+  let link = "/dashboard/activities";
+
+  if (weakest.dimension === "Knowledge") {
+    actionText = "learning modules";
+    link = "/dashboard/learning";
+  } else if (weakest.dimension === "Skill") {
+    actionText = "hands-on projects";
+    link = "/dashboard/activities?type=project";
+  } else if (weakest.dimension === "Behavior") {
+    actionText = "peer reviews";
+    link = "/dashboard/activities?type=peer_review";
+  }
+
+  const isCritical = weakest.score < 40 && strongest.score >= 50;
+
+  return {
+    type: "gap",
+    isCritical,
+    weakName: weakest.dimension,
+    strongName: strongest.dimension,
+    actionText,
+    link
+  };
+}
+
+export default function DashboardOverview() {
+  const { data: session } = authClient.useSession()
+  const { enrolledCourses, loading: coursesLoading, error, user: dashboardUser } = useDashboard()
+
+  // --- REAL-TIME ENGINE STATE ---
+  const [engineData, setEngineData] = useState({
+    reputationPoints: 0,
+    verifiedKSBs: 0,
+    tier: "Builder",
+    streak: 0,
+    ksbData: [
+      { dimension: 'Knowledge', score: 0, fullMark: 100 },
+      { dimension: 'Skill', score: 0, fullMark: 100 },
+      { dimension: 'Behavior', score: 0, fullMark: 100 },
+    ],
+    nextMoves: [] as DashboardActionItem[],
+    microWins: [] as { id: number, text: string, time: string }[],
+  })
+  const [isEngineLoading, setIsEngineLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadEngine() {
+      const targetUserId = session?.user?.id || dashboardUser?.id;
+      if (!targetUserId) return;
+
+      const result = await getDashboardData(targetUserId);
+      if (result.status === "success" && result.data) {
+        setEngineData(result.data);
+      }
+      setIsEngineLoading(false);
+    }
+
+    if (!coursesLoading) {
+      loadEngine();
+    }
+  }, [session, dashboardUser, coursesLoading]);
 
   const user = {
-    name: sessionUser.name || dashboardUser.name,
+    name: session?.user?.name || dashboardUser?.name || "Builder",
   }
 
-  const userProgress = dashboardUser.progress
+  const userProgress = dashboardUser?.progress || []
 
-  // Loading State
-  if (loading) {
+  if (coursesLoading || isEngineLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex items-center justify-center min-h-[70vh] animate-in fade-in duration-1000">
         <div className="flex flex-col items-center gap-6">
-          <Loader className="h-6 w-6 animate-spin text-orange" strokeWidth={2} />
-          <p className="text-muted-foreground text-sm tracking-wide">Preparing your workspace...</p>
+          <div className="relative flex items-center justify-center">
+            <div className="absolute inset-0 bg-orange/20 blur-xl rounded-full size-12 animate-pulse" />
+            <Loader className="h-8 w-8 animate-spin text-orange relative z-10" strokeWidth={2} />
+          </div>
+          <p className="text-muted-foreground text-sm tracking-wide font-medium">Initializing workspace...</p>
         </div>
       </div>
     )
   }
 
-  // Error State
   if (error && !error.includes('Unauthorized')) {
     return (
       <div className="flex items-center justify-center min-h-[60vh] px-4">
-        <div className="text-center max-w-md p-8 bg-card border border-border rounded-3xl">
+        <div className="text-center max-w-md p-8 bg-card border border-border rounded-3xl shadow-sm">
           <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-6" strokeWidth={1.5} />
-          <h2 className="text-xl font-medium text-foreground mb-2">We encountered a brief interruption.</h2>
-          <p className="text-muted-foreground mb-8 text-sm">Please refresh the page to restore your workspace.</p>
+          <h2 className="text-xl font-medium text-foreground mb-2">Workspace Interrupted</h2>
+          <p className="text-muted-foreground mb-8 text-sm">We encountered an issue while fetching your data.</p>
           <Button onClick={() => window.location.reload()} variant="outline" className="rounded-full px-8 hover:bg-muted">
-            Refresh
+            Refresh Link
           </Button>
         </div>
       </div>
     )
   }
 
-  const totalProgress = userProgress.length > 0 
-    ? userProgress.reduce((acc: number, p) => acc + p.progress, 0) / userProgress.length 
+  const totalProgress = userProgress.length > 0
+    ? userProgress.reduce((acc: number, p) => acc + p.progress, 0) / userProgress.length
     : 0
   const completedCourses = userProgress.filter((p) => p.progress === 100).length
-  const inProgressCourses = userProgress.filter((p) => p.progress > 0 && p.progress < 100).length
   const hasNoCourses = enrolledCourses.length === 0
 
   return (
-    <div className="space-y-10 sm:space-y-12 pb-16 max-w-6xl mx-auto">
-      
-      {/* 1. Welcome Header (Removed redundant avatar block) */}
-      <div className="pb-6 border-b border-border/40">
-        <div className="space-y-3">
-          <h1 className="text-3xl sm:text-4xl font-semibold text-foreground tracking-tight">
-            Welcome back, {user.name.split(' ')[0]}.
-          </h1>
-          <p className="text-base text-muted-foreground max-w-xl leading-relaxed">
-            {hasNoCourses 
-            ? "Even the tallest tree begins as a small seed. Explore the curriculum and start growing your skills today."
-            : "By trying often, the monkey learns to jump from the tree. Keep pushing forward to reach new heights in your learning journey."}
-          </p>
-        </div>
-      </div>
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 pb-20 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-      {/* 2. Stat Overview (Theme compliant) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {[
-          { title: "Enrolled Courses", value: enrolledCourses.length, icon: Library },
-          { title: "Completed", value: completedCourses, icon: Award },
-          { title: "Learning Time", value: "24h", icon: Clock },
-          { title: "Avg Progress", value: `${Math.round(totalProgress)}%`, icon: Compass }
-        ].map((stat, i) => (
-          <div key={i} className="p-5 rounded-2xl bg-card border border-border shadow-sm flex flex-col gap-4 transition-colors">
-            <div className="flex justify-between items-start">
-              <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-              <stat.icon className="h-4 w-4 text-muted-foreground/50" strokeWidth={1.5} />
+      {/* 🟣 A. HERO SECTION */}
+      <div className="relative rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm p-5 sm:p-6 overflow-hidden">
+
+        {/* Subtle Glow (reduced + controlled) */}
+        <div className="absolute -top-20 -right-20 w-64 h-64 bg-orange/10 rounded-full blur-3xl pointer-events-none opacity-60" />
+
+        <div className="relative z-10 flex flex-col gap-6">
+
+          {/* TOP: Identity + Status */}
+          <div className="space-y-3">
+
+            {/* Badges */}
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge
+                variant="outline"
+                className="bg-background/60 border-orange/30 text-orange text-xs px-2.5 py-1 rounded-full flex items-center gap-1"
+              >
+                <Trophy className="size-3.5" />
+                {engineData.tier}
+              </Badge>
+
+              <Badge
+                variant="secondary"
+                className="bg-orange/10 text-orange text-xs px-2.5 py-1 rounded-full flex items-center gap-1 border-none"
+              >
+                <Flame className="size-3.5" fill="currentColor" />
+                {engineData.streak}d
+              </Badge>
             </div>
-            <div className="text-2xl font-semibold text-foreground">{stat.value}</div>
-          </div>
-        ))}
-      </div>
 
-      {/* 3. Main Content Area */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-medium text-foreground">
-            {hasNoCourses ? "Explore the Curriculum" : "Current Focus"}
-          </h2>
-          {!hasNoCourses && (
-            <Link href={"/dashboard/learning"} className="text-sm font-medium text-orange hover:text-orange/80 transition-colors">
-              View all
-            </Link>
-          )}
-        </div>
+            {/* Name */}
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              {user.name.split(" ")[0]}.
+            </h1>
 
-        {hasNoCourses ? (
-          /* Empty State */
-          <div className="rounded-3xl border border-border bg-card/50 px-6 py-20 text-center flex flex-col items-center shadow-sm">
-            <Library className="h-12 w-12 text-muted-foreground/30 mb-6" strokeWidth={1} />
-            <h3 className="text-lg font-medium text-foreground mb-2">
-              Your curriculum awaits
-            </h3>
-            <p className="text-muted-foreground mb-8 max-w-md text-sm leading-relaxed">
-              Browse our selection of carefully crafted projects and courses to begin building your foundation.
+            {/* Subtext */}
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md">
+              {hasNoCourses
+                ? "Your journey to verifiable skills starts here."
+                : `${engineData.verifiedKSBs} competencies verified.`}
             </p>
-            
-            {/* Restored Primary Orange Button */}
-            <Button asChild className="bg-orange hover:bg-orange/90 text-white rounded-full px-8 py-6 shadow-sm shadow-orange/20 font-medium transition-all hover:scale-[1.02]">
-              <Link href={"/dashboard/courses"}>
-                <Compass className="h-5 w-5 mr-2" strokeWidth={2} />
-                Browse Catalog
+          </div>
+
+          {/* BOTTOM: Stats + CTA (stacked on mobile) */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+            {/* Reputation */}
+            <div className="flex items-end justify-between sm:block">
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                Reputation
+              </p>
+              <p className="text-2xl sm:text-3xl font-bold text-foreground">
+                {engineData.reputationPoints}
+                <span className="text-sm font-medium text-muted-foreground ml-1">
+                  pts
+                </span>
+              </p>
+            </div>
+
+            {/* CTA */}
+            <Button className="bg-yellow text-white w-full sm:w-auto rounded-full hover:bg-foreground/90 px-5 py-5 sm:py-2 h-auto font-medium">
+              <Link href="/p/username">
+              View Profile
               </Link>
             </Button>
-            
-            {/* Restored Clickable, Interactive Tags */}
-            <div className="mt-12 flex flex-wrap gap-2 justify-center max-w-lg">
-              {["Data Analysis", "Machine Learning", "UI/UX Design", "Business Intelligence", "Python"].map(tag => (
-                <Link key={tag} href={`/dashboard/courses?category=${encodeURIComponent(tag)}`}>
-                  <Badge variant="outline" className="px-4 py-2 rounded-full font-normal text-muted-foreground border-border hover:border-orange hover:text-orange hover:bg-orange/10 transition-colors cursor-pointer">
-                    {tag}
-                  </Badge>
-                </Link>
-              ))}
-            </div>
           </div>
-        ) : (
-          /* Course Grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {enrolledCourses.slice(0, 4).map((course) => {
-              const progress = userProgress.find((p) => p.courseId === course.id)
-              const thumbnailUrl = constructUrl(course.fileKey)
-              const isCompleted = progress?.progress === 100
-
-              return (
-                <Link href={`/dashboard/${course.id}/chapter`} key={course.id} className="group flex flex-col h-full">
-                  <Card className="rounded-2xl overflow-hidden border border-border shadow-sm hover:shadow-md hover:border-orange/30 transition-all duration-300 flex flex-col h-full bg-card">
-                    <div className="relative h-44 w-full overflow-hidden bg-muted">
-                      <Image
-                        src={thumbnailUrl}
-                        alt={course.title}
-                        className="object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-500"
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                      />
-                    </div>
-                    
-                    <CardContent className="p-5 flex flex-col flex-1">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Avatar className="h-5 w-5 border border-border">
-                          <AvatarImage src={course.instructor.avatar || "/ai.png"} />
-                          <AvatarFallback className="text-[9px] bg-muted text-muted-foreground">{course.instructor.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <span className="text-xs text-muted-foreground line-clamp-1">{course.instructor.name}</span>
-                      </div>
-                      
-                      <h3 className="font-medium text-base text-foreground mb-6 line-clamp-2 leading-snug group-hover:text-orange transition-colors">
-                        {course.title}
-                      </h3>
-                      
-                      <div className="mt-auto pt-4 border-t border-border/50">
-                        <div className="flex justify-between items-center mb-3">
-                          <span className="text-xs text-muted-foreground">
-                            {isCompleted ? "Completed" : "Progress"}
-                          </span>
-                          <span className="text-xs font-medium text-foreground">
-                            {progress?.progress || 0}%
-                          </span>
-                        </div>
-                        <Progress 
-                          value={progress?.progress || 0} 
-                          className="h-1.5 bg-muted" 
-                          indicatorClassName={isCompleted ? "bg-green-500" : "bg-orange"}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              )
-            })}
-          </div>
-        )}
+        </div>
       </div>
 
+      {/* 🎛 Tabs */}
+<Tabs defaultValue="overview" className="w-full">
+  <TabsList className="flex gap-2 overflow-x-auto px-1 pb-2 hide-scrollbar">
+    {[
+      { label: "Overview", value: "overview" },
+      { label: "Proof", value: "portfolio" },
+      { label: "Community", value: "community" },
+      { label: "Journey", value: "journey" },
+    ].map((tab) => (
+      <TabsTrigger
+        key={tab.value}
+        value={tab.value}
+        className="shrink-0 rounded-full px-4 py-2 text-sm font-medium
+        text-muted-foreground
+        data-[state=active]:bg-foreground
+        data-[state=active]:text-background
+        transition-colors"
+      >
+        {tab.label}
+      </TabsTrigger>
+    ))}
+  </TabsList>
+
+        {/* --- OVERVIEW TAB --- */}
+        <TabsContent value="overview" className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <div className="flex flex-col gap-10 lg:grid lg:grid-cols-12 lg:gap-10">
+
+            {/* LEFT COLUMN (Span 8) */}
+            <div className="lg:col-span-8 space-y-10">
+
+              {/* 🟡 Action-Driven Engine (MINIMALIST REDESIGN) */}
+              {!hasNoCourses && engineData.nextMoves.length > 0 && (
+                <div className="space-y-3">
+                  <h2 className="text-base font-semibold flex items-center gap-2">
+                    <Target className="size-4 text-orange" />
+                    Action Required
+                  </h2>
+
+                  <div className="divide-y divide-border/40 rounded-2xl border border-border/50 bg-card/40">
+                    {engineData.nextMoves.map((move) => {
+                      const MoveIcon = IconMap[move.icon] || Zap;
+
+                      return (
+                        <div key={move.id} className="flex items-center justify-between gap-3 p-4">
+
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="p-2 rounded-xl bg-muted/50">
+                              <MoveIcon className="size-4" />
+                            </div>
+
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">
+                                {move.title}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {move.time}
+                              </p>
+                            </div>
+                          </div>
+
+                          <Button asChild size="sm" variant="ghost" className="shrink-0 hover:bg-yellow-200">
+                            <Link href={move.link}>
+                              Review
+                            </Link>
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* 🟢 Blended Course Grid / Empty State */}
+              <div className="space-y-5">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold text-foreground tracking-tight">
+                    {hasNoCourses ? "Explore the Curriculum" : "Current Focus"}
+                  </h2>
+                </div>
+
+                {hasNoCourses ? (
+                  <div className="rounded-[2rem] border border-border bg-card/40 backdrop-blur-sm px-6 py-24 text-center flex flex-col items-center shadow-sm">
+                    <div className="size-20 rounded-full bg-muted/50 flex items-center justify-center mb-6 border border-border/50">
+                      <Library className="h-10 w-10 text-muted-foreground/50" strokeWidth={1.5} />
+                    </div>
+                    <h3 className="text-xl font-medium text-foreground mb-2">Your workspace awaits</h3>
+                    <p className="text-muted-foreground mb-10 max-w-md text-base leading-relaxed">
+                      Browse our selection of carefully crafted projects and courses to begin building your foundation.
+                    </p>
+                    <Button asChild className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-8 py-6 shadow-xl font-medium transition-all hover:scale-[1.03]">
+                      <Link href={"/dashboard/courses"} className="bg-yellow text-white">
+                        <Compass className="h-5 w-5 mr-2" strokeWidth={2} />
+                        Browse Catalog
+                      </Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {enrolledCourses.slice(0, 2).map((course) => {
+                      const progress = userProgress.find((p) => p.courseId === course.id)
+                      const thumbnailUrl = constructUrl(course.fileKey)
+                      const isCompleted = progress?.progress === 100
+
+                      return (
+                        <Link href={`/dashboard/${course.id}/chapter`} key={course.id} className="group flex flex-col h-full">
+                          <Card className="rounded-[2rem] overflow-hidden border border-border/60 shadow-sm hover:shadow-xl hover:border-orange/40 transition-all duration-500 flex flex-col h-full bg-card/60 backdrop-blur-sm">
+                            <div className="relative h-48 w-full overflow-hidden bg-muted">
+                              <Image src={thumbnailUrl} alt={course.title} className="object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" fill sizes="(max-width: 768px) 100vw, 50vw" />
+                            </div>
+                            <CardContent className="p-6 flex flex-col flex-1">
+                              <div className="flex items-center gap-3 mb-4">
+                                <Avatar className="h-6 w-6 border border-border/50">
+                                  <AvatarImage src={course.instructor.avatar || "/ai.png"} />
+                                  <AvatarFallback className="text-[10px] bg-muted text-muted-foreground">{course.instructor.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <span className="text-xs font-medium text-muted-foreground line-clamp-1">{course.instructor.name}</span>
+                              </div>
+                              <h3 className="font-semibold text-lg text-foreground mb-8 line-clamp-2 leading-snug group-hover:text-orange transition-colors">
+                                {course.title}
+                              </h3>
+                              <div className="mt-auto pt-5 border-t border-border/40">
+                                <div className="flex justify-between items-center mb-3">
+                                  <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{isCompleted ? "Completed" : "Progress"}</span>
+                                  <span className="text-sm font-semibold text-foreground">{progress?.progress || 0}%</span>
+                                </div>
+                                <Progress value={progress?.progress || 0} className="h-1.5 bg-muted/50" indicatorClassName={isCompleted ? "bg-green-500" : "bg-orange"} />
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* RIGHT COLUMN (Span 4) */}
+            <div className="lg:col-span-4 space-y-8">
+              {/* 🔵 C. KSB RADAR */}
+              <Card className="rounded-2xl border border-border/50 bg-card/40">
+                <CardHeader className="p-4 border-b border-border/40">
+                  <CardTitle className="text-sm font-semibold flex justify-between">
+                    Skill Matrix
+                    <span className="text-xs text-muted-foreground">
+                      Lv. {Math.floor(engineData.reputationPoints / 500) + 1}
+                    </span>
+                  </CardTitle>
+                </CardHeader>
+
+                <CardContent className="p-4">
+                  <div className="h-[220px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart cx="50%" cy="50%" outerRadius="70%" data={engineData.ksbData}>
+                        <PolarGrid stroke="hsl(var(--border))" strokeDasharray="3 3" />
+                        <PolarAngleAxis dataKey="dimension" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12, fontWeight: 600 }} />
+                        <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", borderRadius: "12px", border: "1px solid hsl(var(--border))", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }} itemStyle={{ color: "hsl(var(--foreground))", fontWeight: 500 }} />
+                        <Radar name="Competence" dataKey="score" stroke="hsl(var(--orange))" strokeWidth={2.5} fill="hsl(var(--orange))" fillOpacity={0.25} />
+                      </RadarChart> 
+                      </ResponsiveContainer>
+                      {/* ---> INSIGHT ENGINE HERE <--- */}
+                  <div className="mt-4 w-full">
+                    {(() => {
+                      const insight = generateKSBInsight(engineData.ksbData);
+                      
+                      if (!insight) return null;
+
+                      return (
+                        <div className={`p-5 rounded-2xl border backdrop-blur-sm transition-colors ${
+                          insight.type === 'gap' && insight.isCritical 
+                            ? 'bg-orange/5 border-orange/20' 
+                            : 'bg-muted/30 border-border/40'
+                        }`}>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">
+                              Quick Tip
+                            </p>
+                            {insight.type === 'gap' && insight.isCritical && (
+                              <span className="flex items-center gap-1 text-[10px] uppercase font-bold text-orange bg-orange/10 px-2 py-0.5 rounded-sm">
+                                <AlertCircle className="size-3" /> Needs Attention
+                              </span>
+                            )}
+                          </div>
+                          
+                          <p className="text-sm text-foreground leading-relaxed mb-4">
+                            {insight.type === "new" || insight.type === "balanced" ? (
+                              insight.text
+                            ) : insight.isCritical ? (
+                              <>
+                                It looks like your <span className="font-semibold text-orange">{insight.weakName}</span> skills could use a little extra love right now. Spending some time on <span className="font-semibold text-foreground">{insight.actionText}</span> will really help you level up!
+                              </>
+                            ) : (
+                              <>
+                                You're doing awesome in <span className="font-semibold text-foreground">{insight.strongName}</span>! To round out your profile, try picking up a few more <span className="font-semibold text-orange">{insight.actionText}</span> to boost your <span className="font-semibold text-orange">{insight.weakName}</span>.
+                              </>
+                            )}
+                          </p>
+
+                          <Button asChild variant={insight.type === 'gap' && insight.isCritical ? 'default' : 'secondary'} className="w-full rounded-xl text-xs font-medium h-9">
+                            <Link href={insight.link}>
+                              {insight.actionText} <ArrowRight className="ml-1.5 size-3" />
+                            </Link>
+                          </Button>
+                        </div>
+                      );
+                    })()}
+                  </div>                   
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* --- PROOF OF WORK TAB --- */}
+        <TabsContent value="portfolio" className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div className="space-y-1">
+              <h2 className="text-2xl font-semibold text-foreground tracking-tight">Verified Outputs</h2>
+              <p className="text-muted-foreground text-sm">Your approved projects, tasks, and earned competencies.</p>
+            </div>
+            <Button variant="outline" className="rounded-full bg-transparent hover:bg-muted/50 border-border/50 font-medium">
+              Share Portfolio URL <ArrowRight className="ml-2 size-4" />
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="group flex flex-col p-6 rounded-[2rem] border border-border/40 bg-card/30 hover:bg-card/60 hover:border-orange/30 transition-all duration-300 backdrop-blur-sm shadow-sm hover:shadow-md">
+              <div className="flex justify-between items-start mb-6">
+                <Badge variant="secondary" className="bg-background border-border/50 text-xs font-medium text-muted-foreground">
+                  Capstone Project
+                </Badge>
+                <span className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20">
+                  <CheckCircle2 className="size-3" /> Approved
+                </span>
+              </div>
+              <h3 className="text-xl font-medium text-foreground mb-3 leading-snug group-hover:text-orange transition-colors">
+                End-to-End Inventory Valuation Dashboard
+              </h3>
+              <p className="text-sm text-muted-foreground line-clamp-2 mb-6 flex-1">
+                Built a fully automated Power BI dashboard extracting real-time inventory aging data from Sage 300 via SQL.
+              </p>
+              <div className="space-y-4 pt-5 border-t border-border/30">
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-xs font-medium bg-muted/50 text-muted-foreground px-2 py-1 rounded-md border border-border/50">Data Modeling</span>
+                  <span className="text-xs font-medium bg-muted/50 text-muted-foreground px-2 py-1 rounded-md border border-border/50">SQL</span>
+                  <span className="text-xs font-medium bg-muted/50 text-muted-foreground px-2 py-1 rounded-md border border-border/50">Power BI</span>
+                </div>
+                <Link href="#" className="inline-flex items-center text-sm font-medium text-foreground hover:text-orange transition-colors">
+                  View Live Demo <ExternalLink className="ml-1.5 size-3" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="group flex flex-col p-6 rounded-[2rem] border border-border/40 bg-card/30 hover:bg-card/60 hover:border-orange/30 transition-all duration-300 backdrop-blur-sm shadow-sm hover:shadow-md">
+              <div className="flex justify-between items-start mb-6">
+                <Badge variant="secondary" className="bg-background border-border/50 text-xs font-medium text-muted-foreground">
+                  Peer Review Task
+                </Badge>
+                <span className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20">
+                  <CheckCircle2 className="size-3" /> Approved
+                </span>
+              </div>
+              <h3 className="text-xl font-medium text-foreground mb-3 leading-snug group-hover:text-orange transition-colors">
+                Code Review: Python API Integration
+              </h3>
+              <p className="text-sm text-muted-foreground line-clamp-2 mb-6 flex-1">
+                Provided structured architectural feedback on a peer's REST API, identifying 2 critical security flaws.
+              </p>
+              <div className="space-y-4 pt-5 border-t border-border/30">
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-xs font-medium bg-muted/50 text-muted-foreground px-2 py-1 rounded-md border border-border/50">Technical Comm.</span>
+                  <span className="text-xs font-medium bg-muted/50 text-muted-foreground px-2 py-1 rounded-md border border-border/50">Code Auditing</span>
+                </div>
+                <Link href="#" className="inline-flex items-center text-sm font-medium text-foreground hover:text-orange transition-colors">
+                  Read Feedback <ExternalLink className="ml-1.5 size-3" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* --- JOURNEY TAB --- */}
+        <TabsContent value="journey" className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {[
+              { title: "Enrolled Courses", value: enrolledCourses.length, icon: Library },
+              { title: "Completed", value: completedCourses, icon: Award },
+              { title: "Learning Time", value: "24h", icon: Clock },
+              { title: "Avg Progress", value: `${Math.round(totalProgress)}%`, icon: Compass }
+            ].map((stat, i) => (
+              <div key={i} className="p-6 rounded-[2rem] bg-card/40 border border-border/50 shadow-sm flex flex-col gap-4 transition-colors backdrop-blur-sm">
+                <div className="flex justify-between items-start">
+                  <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+                  <stat.icon className="h-5 w-5 text-muted-foreground/50" strokeWidth={1.5} />
+                </div>
+                <div className="text-3xl font-semibold text-foreground">{stat.value}</div>
+              </div>
+            ))}
+          </div>
+
+          {!hasNoCourses && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {enrolledCourses.map((course) => {
+                const progress = userProgress.find((p) => p.courseId === course.id)
+                const thumbnailUrl = constructUrl(course.fileKey)
+                const isCompleted = progress?.progress === 100
+
+                return (
+                  <Link href={`/dashboard/${course.id}/chapter`} key={course.id} className="group flex flex-col h-full">
+                    <Card className="rounded-[2rem] overflow-hidden border border-border/60 shadow-sm hover:shadow-xl hover:border-orange/40 transition-all duration-300 flex flex-col h-full bg-card/60 backdrop-blur-sm">
+                      <div className="relative h-44 w-full overflow-hidden bg-muted">
+                        <Image src={thumbnailUrl} alt={course.title} className="object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" />
+                      </div>
+                      <CardContent className="p-6 flex flex-col flex-1">
+                        <div className="flex items-center gap-3 mb-4">
+                          <Avatar className="h-6 w-6 border border-border/50">
+                            <AvatarImage src={course.instructor.avatar || "/ai.png"} />
+                            <AvatarFallback className="text-[10px] bg-muted text-muted-foreground">{course.instructor.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <span className="text-xs font-medium text-muted-foreground line-clamp-1">{course.instructor.name}</span>
+                        </div>
+                        <h3 className="font-semibold text-lg text-foreground mb-6 line-clamp-2 leading-snug group-hover:text-orange transition-colors">
+                          {course.title}
+                        </h3>
+                        <div className="mt-auto pt-5 border-t border-border/40">
+                          <div className="flex justify-between items-center mb-3">
+                            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{isCompleted ? "Completed" : "Progress"}</span>
+                            <span className="text-sm font-semibold text-foreground">{progress?.progress || 0}%</span>
+                          </div>
+                          <Progress value={progress?.progress || 0} className="h-1.5 bg-muted/50" indicatorClassName={isCompleted ? "bg-green-500" : "bg-orange"} />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                )
+              })}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="community">
+          <div className="p-12 text-center text-muted-foreground border border-dashed rounded-[2rem]">Community Signal Content (Coming Soon)</div>
+        </TabsContent>
+
+      </Tabs>
     </div>
   )
 }
-
-export default DashboardOverview;

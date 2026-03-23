@@ -3,9 +3,10 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { 
-  Search, ChevronDown, Users, ShoppingCart, 
+  Search, ChevronDown, ShoppingCart, 
   LayoutDashboard, BookOpen, Heart, History, 
-  Award, Settings, HelpCircle, LogOut 
+  Award, Settings, HelpCircle, LogOut, 
+  MessagesSquare
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -105,7 +106,7 @@ export default function Header() {
             
             <Button variant="outline" className="hidden md:flex items-center space-x-2 text-sm font-medium border-border/60 hover:bg-muted text-muted-foreground hover:text-foreground rounded-full h-9 px-4" asChild>
               <Link href="/community/events">
-                <Users size={16} strokeWidth={2} />
+                <MessagesSquare size={16} strokeWidth={2} />
                 <span>Community</span>
               </Link>
             </Button>

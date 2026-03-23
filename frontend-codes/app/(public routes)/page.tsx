@@ -8,7 +8,6 @@ import { getBestSellingCourses, getFeaturedCourses, getRecentlyAddedCourses } fr
 import { MotionDiv, MotionSection, MotionH1, MotionP } from "@/components/framer-motion/motion-components";
 import { cn } from "@/lib/utils";
 import { getCurrentUser } from "@/domains/auth/user";
-import { get } from "http";
 
 interface Category {
   name: string;

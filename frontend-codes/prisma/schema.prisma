@@ -2,26 +2,25 @@ generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
 }
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id               String            @id
-  name             String
-  email            String
-  emailVerified    Boolean           @default(false)
-  image            String?
-  bio              String?
-  website          String?
+  id                     String   @id
+  name                   String
+  email                  String
+  emailVerified          Boolean  @default(false)
+  image                  String?
+  bio                    String?
+  website                String?
   // ---  Onboarding Fields ---
-  hasCompletedOnboarding Boolean   @default(false)
-  primaryLanguage        String    @default("English")   
-  localLanguage          String?   
-  jobTitle               String?   
-  careerInterests        String[]  @default([])
+  hasCompletedOnboarding Boolean  @default(false)
+  primaryLanguage        String   @default("English")
+  localLanguage          String?
+  jobTitle               String?
+  careerInterests        String[] @default([])
   learningIntent         String?
 
   createdAt        DateTime          @default(now())
@@ -41,6 +40,20 @@ model User {
   payments     Payment[]
   CourseReview CourseReview[]
   events       Event[]
+
+  createdActivities Activity[]      @relation("ActivityCreator")
+  participations    Participation[]
+  submissions       Submission[]    @relation("UserSubmissions")
+  teamMemberships   TeamMember[]
+
+  // Review Engine Relations
+  assignedReviews ReviewAssignment[] @relation("AssignedReviews") // <--- NEW ADDITION
+  reviewsGiven    Review[]           @relation("ReviewsGiven")
+
+  // Value & Credibility Track
+  earnedKSBs       UserKSB[]
+  reputationLedger ReputationTransaction[]
+  portfolio        PortfolioItem[]
 
   @@unique([email])
   @@map("user")
@@ -115,6 +128,9 @@ model Course {
   payments      Payment[]
   wishlistItems Wishlist[]
   reviews       CourseReview[]
+
+  programs   ProgramCourse[]
+  activities Activity[]
 }
 
 enum CourseLevel {
@@ -326,9 +342,9 @@ model Event {
 
 enum EventVenue {
   NextHive
-  GoogleMeet
+  Google_Meet
   Zoom
-  MicrosoftTeams
+  Microsoft_Teams
   Offline
   Hybrid
 }
@@ -336,20 +352,372 @@ enum EventVenue {
 enum EventCategory {
   Hackathon
   Webinar
-  BrainstormingSession
-  NetworkingEvent
-  PanelDiscussion
-  QandASession
+  Brainstorming_Session
+  Networking_Event
+  Panel_Discussion
+  QandA_Session
   Workshop
   Meetup
   Tutorial
   Lecture
-  StudyGroup
+  Study_Group
   Roundtable
-  DemoDay
-  OfficeHours
+  Demo_Day
+  Office_Hours
   Competition
-  FiresideChat
-  CertificationCourse
+  Fireside_Chat
+  Certification_Course
   Bootcamp
+}
+
+// ================ACTIVITY and PROGRAM==========================
+// ==========================================
+// 1. CORE GROUPING
+// ==========================================
+
+model Program {
+  id          String   @id @default(uuid())
+  title       String
+  shortdescription String
+  description String
+  fileKey     String
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  courses    ProgramCourse[]
+  activities Activity[]
+}
+
+model ProgramCourse {
+  programId   String
+  courseId    String
+  isMandatory Boolean @default(true)
+
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  course  Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@id([programId, courseId])
+}
+
+// ==========================================
+// 2. THE ACTIVITY ENGINE
+// ==========================================
+
+model Activity {
+  id          String             @id @default(uuid())
+  title       String
+  description String?
+  type        ActivityType
+  status      ActivityStatus     @default(Draft)
+  visibility  ActivityVisibility @default(Public)
+  difficulty  ActivityDifficulty @default(Intermediate)
+
+  points      Int       @default(0)
+  isMandatory Boolean   @default(false)
+  startDate   DateTime?
+  deadline    DateTime?
+
+  // Relations
+  courseId  String?
+  programId String?
+  creatorId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course  Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  program Program? @relation(fields: [programId], references: [id], onDelete: SetNull)
+  creator User     @relation("ActivityCreator", fields: [creatorId], references: [id])
+
+  requirements   ActivityRequirement[]
+  participations Participation[]
+  submissions    Submission[]
+  ksbs           ActivityKSB[]
+  teams          Team[] //Teams belong to an activity
+}
+
+enum ActivityType {
+  // Builder Track
+  Project
+  Task
+  Capstone
+  Case_Study
+  Client_Simulation
+
+  // Collaborative & Competitive Track
+  Challenge
+  Hackathon
+  Datathon
+  Team_Project
+  Open_Source_Contribution
+
+  // Community & Leadership Track
+  Event_Hosting
+  Event_Participation
+  Study_Group_Leadership
+  Mentorship
+  Peer_Review
+
+  // Creator & Knowledge Track
+  Community_Contribution
+  Tutorial_Creation
+  Content_Translation
+  Research
+  Article_Publication
+}
+
+enum ActivityStatus {
+  Draft
+  Published
+  Active
+  Completed
+  Archived
+}
+
+enum ActivityVisibility {
+  Public
+  Private
+  Connections_Only
+  Program_Only
+  Invite_Only
+}
+
+enum ActivityDifficulty {
+  Beginner
+  Intermediate
+  Advanced
+  Expert
+}
+
+model ActivityRequirement {
+  id         String          @id @default(uuid())
+  activityId String
+  type       RequirementType
+  config     Json?
+  createdAt  DateTime        @default(now())
+
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+}
+
+enum RequirementType {
+  File_Upload
+  GitHub_Repo
+  Video_Link
+  Text_Report
+  Peer_Reviews
+  Host_An_Online_Event
+  Event_Attendance
+  Live_Demo
+}
+
+// ==========================================
+// 3. COLLABORATION & PARTICIPATION (V2 Fixes)
+// ==========================================
+
+model Team {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  activityId  String //Team bound to Activity
+  createdAt   DateTime @default(now())
+
+  activity       Activity        @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  members        TeamMember[]
+  submissions    Submission[]
+  participations Participation[]
+}
+
+model TeamMember {
+  id       String   @id @default(uuid())
+  teamId   String
+  userId   String
+  role     String   @default("MEMBER")
+  joinedAt DateTime @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+}
+
+model Participation {
+  id         String            @id @default(uuid())
+  userId     String
+  activityId String
+  teamId     String? // Links user's participation to their team
+  role       ParticipationRole @default(Participant)
+  progress   Float             @default(0)
+  joinedAt   DateTime          @default(now())
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activity    Activity     @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  team        Team?        @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  submissions Submission[] // Link submissions directly to the participation instance
+
+  @@unique([userId, activityId])
+}
+
+enum ParticipationRole {
+  Participant
+  Reviewer
+  Mentor
+  Organizer
+}
+
+// ==========================================
+// 4. SUBMISSION & REVIEW ENGINE
+// ==========================================
+
+model Submission {
+  id              String           @id @default(uuid())
+  activityId      String
+  userId          String? // Note: App logic MUST enforce (userId OR teamId)
+  teamId          String?
+  participationId String?
+  content         Json
+  status          SubmissionStatus @default(Draft)
+  submittedAt     DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  activity      Activity       @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user          User?          @relation("UserSubmissions", fields: [userId], references: [id], onDelete: Cascade)
+  team          Team?          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  participation Participation? @relation(fields: [participationId], references: [id], onDelete: SetNull)
+
+  reviews     Review[]
+  assignments ReviewAssignment[] // Links to the distribution engine
+  portfolio   PortfolioItem?
+
+  @@index([activityId])
+}
+
+enum SubmissionStatus {
+  Draft
+  Submitted
+  Under_Review
+  Revision_Required
+  Approved
+  Rejected
+}
+
+// The Distribution Engine Table
+model ReviewAssignment {
+  id           String           @id @default(uuid())
+  submissionId String
+  reviewerId   String
+  status       AssignmentStatus @default(Pending)
+  assignedAt   DateTime         @default(now())
+  expiresAt    DateTime? // To handle reviewers who don't complete the task
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  reviewer   User       @relation("AssignedReviews", fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, reviewerId])
+}
+
+enum AssignmentStatus {
+  Pending
+  Accepted
+  Declined
+  Completed
+  Expired
+}
+
+model Review {
+  id           String     @id @default(uuid())
+  submissionId String
+  reviewerId   String
+  type         ReviewType @default(Peer)
+  score        Float?
+  feedback     String?
+  rubricScores Json?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  reviewer   User       @relation("ReviewsGiven", fields: [reviewerId], references: [id], onDelete: Cascade)
+}
+
+enum ReviewType {
+  Peer
+  Instructor
+  Mentor
+}
+
+// ==========================================
+// 5. VALUE LAYER: KSBs, Reputation & Portfolio
+// ==========================================
+
+model KSB {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  type        KSBType
+  createdAt   DateTime @default(now())
+
+  activities ActivityKSB[]
+  earnedBy   UserKSB[]
+}
+
+enum KSBType {
+  Knowledge
+  Skill
+  Behavior
+}
+
+model ActivityKSB {
+  activityId String
+  ksbId      String
+  weight     Float? @default(1.0)
+
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  ksb      KSB      @relation(fields: [ksbId], references: [id], onDelete: Cascade)
+
+  @@id([activityId, ksbId])
+}
+
+model UserKSB {
+  userId   String
+  ksbId    String
+  earnedAt DateTime @default(now())
+  sourceId String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ksb  KSB  @relation(fields: [ksbId], references: [id], onDelete: Cascade)
+
+  @@id([userId, ksbId])
+}
+
+model ReputationTransaction {
+  id         String   @id @default(uuid())
+  userId     String
+  points     Int
+  reason     String
+  activityId String?
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PortfolioItem {
+  id           String     @id @default(uuid())
+  userId       String
+  submissionId String     @unique
+  title        String
+  description  String?
+  visibility   Visibility @default(Private)
+  createdAt    DateTime   @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+}
+
+enum Visibility {
+  Public
+  Private
+  Connections_Only
+  Program_Only
+  Invite_Only
 }
