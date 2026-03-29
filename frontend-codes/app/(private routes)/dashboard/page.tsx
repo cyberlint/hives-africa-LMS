@@ -26,8 +26,6 @@ import { constructUrl } from "@/lib/construct-url"
 import { authClient } from "@/lib/auth-client"
 import { useDashboard } from "@/app/(private routes)/dashboard/studentContext"
 import { getDashboardData, DashboardActionItem } from "./actions/get-dashboard-data"
-import { user } from "./dummydata"
-import { requireAuth } from "@/domains/auth/require-auth"
 
 // Map string icon names from the database to actual Lucide components
 const IconMap: Record<string, LucideIcon> = {

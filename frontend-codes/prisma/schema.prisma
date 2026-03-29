@@ -721,3 +721,43 @@ enum Visibility {
   Program_Only
   Invite_Only
 }
+
+
+// ================ COMMUNICATIONS ENGINE ===============================
+
+model EmailRule {
+  id          String   @id @default(uuid())
+  eventType   String   // The name of the event it listens for
+  templateKey String   // e.g. "submission_approved"
+  delay       Int      @default(0) // in minutes
+
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([eventType])
+}
+
+model EmailJob {
+  id           String   @id @default(cuid())
+  userId       String
+  templateKey  String
+  payload      Json
+
+  status       String   @default("pending") // pending | processing | sent | failed
+  attempts     Int      @default(0)
+  lastError    String?
+
+  scheduledAt  DateTime
+  sentAt       DateTime?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model EventLog {
+  id        String   @id @default(cuid())
+  type      String
+  userId    String
+  payload   Json
+  createdAt DateTime @default(now())
+}

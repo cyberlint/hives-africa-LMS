@@ -23,19 +23,29 @@ export default async function ActivityEditorPage({
   const activityId = resolvedParams.activityId;
   const currentTab = resolvedSearchParams.tab || "overview";
 
-  // Fetch Activity, Programs, and Courses simultaneously for speed
-  const [activity, programs, courses] = await Promise.all([
+  // 1. ADDED: Fetch the global KSBs simultaneously for speed
+  const [activity, programs, courses, globalKSBs] = await Promise.all([
     prisma.activity.findUnique({
       where: { id: activityId },
       include: { requirements: true, ksbs: true }
     }),
     prisma.program.findMany({ select: { id: true, title: true } }),
-    prisma.course.findMany({ select: { id: true, title: true } })
+    prisma.course.findMany({ select: { id: true, title: true } }),
+    prisma.kSB.findMany({ 
+      select: { id: true, title: true, type: true }, 
+      orderBy: { title: 'asc' } 
+    })
   ]);
 
   if (!activity) {
     notFound();
   }
+
+  // 2. ADDED: Format the existing KSBs so the React Hook Form can read them properly
+  const formattedKSBs = activity.ksbs.map(k => ({
+    ksbId: k.ksbId,
+    weight: k.weight || 1.0
+  }));
 
   return (
     <div className="flex flex-col h-full space-y-6 p-6">
@@ -86,8 +96,9 @@ export default async function ActivityEditorPage({
 
           {currentTab === "ksb" && (
             <KSBSection 
-              initialData={activity.ksbs} 
+              initialData={formattedKSBs} // Updated to pass the formatted data
               activityId={activity.id} 
+              availableKSBs={globalKSBs}  // Passing the global library to the dropdown
             />
           )}
         </main>

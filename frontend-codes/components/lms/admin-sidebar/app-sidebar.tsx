@@ -2,27 +2,21 @@
 
 import * as React from "react"
 import {
-  IconBrandMeetup,
-  IconBuildingCommunity,
-  IconCalendarEvent,
   IconCamera,
-  IconChartBar,
   IconDashboard,
   IconDatabase,
   IconFileAi,
   IconFileDescription,
   IconFileWord,
-  IconFolder,
   IconHelp,
-  IconInnerShadowTop,
   IconListDetails,
+  IconPencil,
   IconPlayCard,
   IconReport,
   IconSearch,
   IconSettings,
   IconUsers,
 } from "@tabler/icons-react"
-// import Logo from "@/public/logo.png"
 
 import { NavDocuments } from "./nav-documents"
 import { NavMain } from "./nav-main"
@@ -58,9 +52,9 @@ const data = {
   },
     
     {
-      title: "Events",
-      url: "/community/events",
-      icon: IconCalendarEvent,
+      title: "Review Submissions",
+      url: "/admin/activities/submissions",
+      icon: IconPencil,
     },
     {
       title: "Community",
@@ -164,7 +158,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <Link href="/">
                 {/* <Image src={Logo} alt="NextHive Logo" className="size-5"/> */}
-                <span className="text-base font-semibold">NextHive LMS</span>
+                <span className="text-base font-semibold">NextHive</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

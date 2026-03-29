@@ -8,7 +8,6 @@ import arcjet, {
     shield,
     slidingWindow,
 } from "@arcjet/next";
-import { env } from "./env";
 
 export {
     detectBot,

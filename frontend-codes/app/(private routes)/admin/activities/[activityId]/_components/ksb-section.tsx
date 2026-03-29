@@ -1,34 +1,39 @@
 "use client";
 
 import { useForm, useFieldArray } from "react-hook-form";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Loader2, Save, Plus, Trash2, Award } from "lucide-react";
 
-import { updateActivityKSBs } from "../../_actions/update-ksbs";
+import { updateActivityKSBs } from "../../_actions/update-ksbs"; // Your existing action
+import { createGlobalKSB } from "../../_actions/ksb-actions"; // The new action
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea"; // FIX 1: Added Textarea import
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-
-// MOCK DATA: Eventually, you will fetch these from your `KSB` database table.
-// You can leave these here for now so you can test the UI saving to the DB.
-const mockAvailableKSBs = [
-  { id: "e1234567-89ab-cdef-0123-456789abcdef", title: "Data Cleaning & Preprocessing", type: "SKILL" },
-  { id: "f1234567-89ab-cdef-0123-456789abcdef", title: "Machine Learning Fundamentals", type: "KNOWLEDGE" },
-  { id: "a1234567-89ab-cdef-0123-456789abcdef", title: "Technical Communication", type: "BEHAVIOR" },
-  { id: "b1234567-89ab-cdef-0123-456789abcdef", title: "SQL Query Optimization", type: "SKILL" },
-];
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
 
 interface KSBSectionProps {
-  initialData: any[];
+  initialData?: any[]; 
   activityId: string;
+  availableKSBs?: { id: string; title: string; type: string }[]; 
 }
 
-export function KSBSection({ initialData, activityId }: KSBSectionProps) {
+export function KSBSection({ 
+  initialData = [], 
+  activityId, 
+  availableKSBs = [] 
+}: KSBSectionProps) {
   const [isPending, startTransition] = useTransition();
+  const [isCreatingKSB, setIsCreatingKSB] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // State for the quick-create modal
+  const [newKsb, setNewKsb] = useState({ title: "", type: "Skill" as const, description: "" });
 
   const form = useForm({
     defaultValues: {
@@ -44,7 +49,6 @@ export function KSBSection({ initialData, activityId }: KSBSectionProps) {
   });
 
   function onSubmit(values: any) {
-    // Basic validation: Prevent submitting empty selections
     if (values.ksbs.some((k: any) => !k.ksbId)) {
       toast.error("Please select a valid competency for all rows.");
       return;
@@ -60,18 +64,97 @@ export function KSBSection({ initialData, activityId }: KSBSectionProps) {
     });
   }
 
+  // Handle on-the-fly KSB Creation
+  async function handleCreateKSB() {
+    if (!newKsb.title || !newKsb.description) return;
+    setIsCreatingKSB(true);
+    
+    // FIX 2: Added description to the server action payload!
+    const res = await createGlobalKSB({ 
+      title: newKsb.title, 
+      type: newKsb.type, 
+      description: newKsb.description 
+    });
+    
+    if (res.success) {
+      toast.success("New competency added to the global library!");
+      setIsDialogOpen(false);
+      setNewKsb({ title: "", type: "Skill", description: "" }); // reset
+    } else {
+      toast.error(res.error);
+    }
+    setIsCreatingKSB(false);
+  }
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Award className="size-5 text-yellow-600" />
-          Competency Mapping (KSBs)
-        </CardTitle>
-        <CardDescription>
-          What Knowledge, Skills, and Behaviors will the learner prove by completing this?
-          These will be added to their verified portfolio upon approval.
-        </CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <div className="space-y-1">
+          <CardTitle className="flex items-center gap-2">
+            <Award className="size-5 text-yellow-600" />
+            Competency Mapping (KSBs)
+          </CardTitle>
+          <CardDescription>
+            What Knowledge, Skills, and Behaviors will the learner prove?
+          </CardDescription>
+        </div>
+
+        {/* ON-THE-FLY CREATION MODAL */}
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm" className="h-8 border-dashed">
+              <Plus className="size-3 mr-2" /> New Global KSB
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add to Competency Library</DialogTitle>
+              <DialogDescription>Create a new outcome that can be mapped to any program.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Competency Title</Label>
+                <Input 
+                  placeholder="e.g., Methodical Handling of Data Anomalies" 
+                  value={newKsb.title}
+                  onChange={(e) => setNewKsb({...newKsb, title: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Type</Label>
+                <Select value={newKsb.type} onValueChange={(val: any) => setNewKsb({...newKsb, type: val})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Knowledge">Knowledge</SelectItem>
+                    <SelectItem value="Skill">Skill</SelectItem>
+                    <SelectItem value="Behavior">Behavior</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {/* THE NEW REQUIRED DESCRIPTION FIELD */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <Label>Evaluation Prompt (Required)</Label>
+                </div>
+                <Textarea 
+                  placeholder="e.g., Did the learner demonstrate a clear ability to identify and clean anomalies from the dataset without losing critical information?" 
+                  className="resize-none h-20 text-sm"
+                  value={newKsb.description}
+                  onChange={(e) => setNewKsb({...newKsb, description: e.target.value})}
+                />
+                <p className="text-[10px] text-muted-foreground">Phrase this as a specific question for the reviewer to answer while looking at the evidence.</p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button onClick={handleCreateKSB} disabled={isCreatingKSB || !newKsb.title || !newKsb.description}>
+                {isCreatingKSB ? <Loader2 className="size-4 animate-spin mr-2"/> : null}
+                Create & Add to Library
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </CardHeader>
+      
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -89,14 +172,14 @@ export function KSBSection({ initialData, activityId }: KSBSectionProps) {
                         <FormLabel>Select Competency</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-background">
                               <SelectValue placeholder="Search KSBs..." />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {mockAvailableKSBs.map((ksb) => (
+                            {availableKSBs.map((ksb) => (
                               <SelectItem key={ksb.id} value={ksb.id}>
-                                <span className="text-xs font-bold text-muted-foreground mr-2 border px-1 py-0.5 rounded">
+                                <span className="text-[10px] font-bold text-muted-foreground mr-2 border px-1.5 py-0.5 rounded uppercase">
                                   {ksb.type.charAt(0)}
                                 </span>
                                 {ksb.title}
@@ -121,6 +204,7 @@ export function KSBSection({ initialData, activityId }: KSBSectionProps) {
                             type="number" 
                             step="0.1"
                             min="0.1"
+                            className="bg-background"
                             {...field} 
                             onChange={(e) => field.onChange(parseFloat(e.target.value))}
                           />
@@ -135,7 +219,7 @@ export function KSBSection({ initialData, activityId }: KSBSectionProps) {
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="text-red-500 hover:text-red-700 hover:bg-red-100 mb-0.5"
+                    className="text-red-500 hover:text-red-700 hover:bg-red-100 mb-0.5 shrink-0"
                     onClick={() => remove(index)}
                   >
                     <Trash2 className="size-4" />

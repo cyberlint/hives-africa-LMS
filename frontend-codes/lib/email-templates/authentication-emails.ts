@@ -12,7 +12,7 @@ const styles = {
 export const VerificationEmail = (otp: string) => `
   <div style="${styles.main}">
     <div style="${styles.container}">
-      <h1 style="${styles.logo}">NextHive LMS</h1>
+      <h1 style="${styles.logo}">NextHive</h1>
       <p style="${styles.paragraph}">Hello,</p>
       <p style="${styles.paragraph}">Thank you for joining NextHive. Use the code below to complete registration:</p>
       <div style="${styles.codeContainer}">
@@ -27,7 +27,7 @@ export const VerificationEmail = (otp: string) => `
 export const ResetPasswordEmail = (url: string) => `
   <div style="${styles.main}">
     <div style="${styles.container}">
-      <h1 style="${styles.logo}">NextHive LMS</h1>
+      <h1 style="${styles.logo}">NextHive</h1>
       <p style="${styles.paragraph}">Someone requested a password reset for your account.</p>
       <div style="text-align: center; margin: 32px 0;">
         <a href="${url}" style="${styles.button}">Reset Password</a>
