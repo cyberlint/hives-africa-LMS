@@ -107,7 +107,7 @@ export function RequirementsSection({ initialData, activityId }: RequirementsSec
                       name={`requirements.${index}.config.label`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Label (e.g., "GitHub Repo Link")</FormLabel>
+                          <FormLabel>Label (e.g., GitHub Repo Link)</FormLabel>
                           <FormControl>
                             <Input placeholder="Enter label..." {...field} />
                           </FormControl>

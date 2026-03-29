@@ -62,7 +62,7 @@ export default async function ActivitiesDashboardPage() {
           <div className="border border-dashed rounded-lg p-12 text-center flex flex-col items-center justify-center space-y-3">
             <h3 className="text-lg font-medium">No activities yet</h3>
             <p className="text-sm text-muted-foreground max-w-sm">
-              You haven't created any learning activities. Click the button above to draft your first project, task, or event.
+              {"You haven't created any learning activities. Click the button above to draft your first project, task, or event."}
             </p>
           </div>
         ) : (
