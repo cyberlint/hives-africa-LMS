@@ -433,7 +433,7 @@ export default function DashboardOverview() {
                               </>
                             ) : (
                               <>
-                                You're doing awesome in <span className="font-semibold text-foreground">{insight.strongName}</span>! To round out your profile, try picking up a few more <span className="font-semibold text-orange">{insight.actionText}</span> to boost your <span className="font-semibold text-orange">{insight.weakName}</span>.
+                                You are doing awesome in <span className="font-semibold text-foreground">{insight.strongName}</span>! To round out your profile, try picking up a few more <span className="font-semibold text-orange">{insight.actionText}</span> to boost your <span className="font-semibold text-orange">{insight.weakName}</span>.
                               </>
                             )}
                           </p>
@@ -507,7 +507,7 @@ export default function DashboardOverview() {
                 Code Review: Python API Integration
               </h3>
               <p className="text-sm text-muted-foreground line-clamp-2 mb-6 flex-1">
-                Provided structured architectural feedback on a peer's REST API, identifying 2 critical security flaws.
+                {"Provided structured architectural feedback on a peer's REST API, identifying 2 critical security flaws."}
               </p>
               <div className="space-y-4 pt-5 border-t border-border/30">
                 <div className="flex flex-wrap gap-2">
@@ -596,9 +596,9 @@ export default function DashboardOverview() {
                 </span>
                 <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Live Network</span>
               </div>
-              <h2 className="text-2xl font-bold text-foreground tracking-tight">The Builder's Hive</h2>
+              <h2 className="text-2xl font-bold text-foreground tracking-tight">{"The Builder's Hive"}</h2>
               <p className="text-sm text-muted-foreground max-w-lg">
-                Connect with peers, review trending artifacts, and join live squads to accelerate your skill acquisition.
+                Connect with peers, review trending projects, and join live squads to accelerate your skill acquisition.
               </p>
             </div>
 

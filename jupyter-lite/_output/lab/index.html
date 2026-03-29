@@ -111,7 +111,48 @@
         100% { opacity: 0; }
       }
     </style>
-  </head>
+  
+  <style>
+    /* 1. Swap the Jupyter Logo for the NextHive Logo securely */
+    #jp-MainLogo > svg { 
+        display: none !important; 
+    }
+    #jp-MainLogo {
+        background-image: url("../NextHive%20Logo.png") !important;
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
+        background-position: left center !important;
+        
+        /* Fixed dimensions so it doesn't break the flexbox menu layout */
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        display: block !important;
+    }
+    
+    /* 2. Hide the file name tab entirely */
+    #jp-main-dock-panel > .lm-TabBar { 
+        display: none !important; 
+    }
+  </style>
+
+  <script>
+    /* 3. Auto-close the left sidebar on initial load */
+    window.addEventListener("load", function() {
+      const observer = new MutationObserver((mutations, obs) => {
+        const activeSidebarTab = document.querySelector('.lm-TabBar-tab.lm-mod-current[data-id="filebrowser"]');
+        if (activeSidebarTab) {
+          activeSidebarTab.click();
+          obs.disconnect(); 
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      setTimeout(() => observer.disconnect(), 5000);
+    });
+  </script>
+</head>
+
   <body class="jp-ThemedContainer" data-notebook="lab">
     <div id="jupyterlite-loading-indicator" class="hidden">
       <div class="jupyterlite-loading-indicator-spinner"></div>
