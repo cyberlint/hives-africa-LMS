@@ -13,7 +13,7 @@ export interface DashboardActionItem {
 }
 
 // ===============================
-// 🧠 HELPERS (NEW)
+// 🧠 HELPERS
 // ===============================
 
 function formatTimeAgo(date: Date) {
@@ -209,16 +209,32 @@ export async function getDashboardData(userId: string) {
     if (reputationPoints > 1500) userTier = "Gold Builder";
     if (reputationPoints > 3000) userTier = "Elite Builder";
 
+    // 🆕 STEP 3: FETCH PORTFOLIO (RECENT SUBMISSIONS)
+const recentSubmissions = await prisma.submission.findMany({
+      where: { userId },
+      include: {
+        activity: { select: { title: true, type: true, id: true } },
+        reviews: { 
+          take: 1, 
+          orderBy: { createdAt: 'desc' },
+          select: { score: true, feedback: true } 
+        }
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: 10 
+    });
+
     return {
       status: "success",
       data: {
         reputationPoints,
         verifiedKSBs: uniqueKSBs.size,
         tier: userTier,
-        streak: 1, // next step 😉
+        streak: 1, 
         ksbData,
         nextMoves,
         microWins,
+        portfolio: recentSubmissions
       },
     };
   } catch (error) {

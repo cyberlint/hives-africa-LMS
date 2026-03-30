@@ -12,8 +12,8 @@ import {
   CheckCircle2, AlertCircle, ExternalLink, Activity,
   Compass, Library, Award, Clock, ArrowRight, Loader,
   LucideIcon,
-  Users, 
-  MessageSquare, 
+  Users,
+  MessageSquare,
   Calendar,
   Video
 } from "lucide-react"
@@ -107,6 +107,7 @@ export default function DashboardOverview() {
     ],
     nextMoves: [] as DashboardActionItem[],
     microWins: [] as { id: number, text: string, time: string }[],
+    portfolio: [] as any[], // <--- ADD THIS
   })
   const [isEngineLoading, setIsEngineLoading] = useState(true)
 
@@ -231,9 +232,9 @@ export default function DashboardOverview() {
             </div>
 
             {/* CTA */}
-            <Button  asChild className="bg-yellow text-white w-full sm:w-auto rounded-full hover:bg-foreground/90 px-5 py-5 sm:py-2 h-auto font-medium">
+            <Button asChild className="bg-yellow text-white w-full sm:w-auto rounded-full hover:bg-foreground/90 px-5 py-5 sm:py-2 h-auto font-medium">
               <Link href="/p/username">
-              View Profile
+                View Profile
               </Link>
             </Button>
           </div>
@@ -241,27 +242,27 @@ export default function DashboardOverview() {
       </div>
 
       {/* 🎛 Tabs */}
-<Tabs defaultValue="overview" className="w-full">
-  <TabsList className="flex gap-2 overflow-x-auto px-1 pb-2 hide-scrollbar">
-    {[
-      { label: "Overview", value: "overview" },
-      { label: "Proof", value: "portfolio" },
-      { label: "Community", value: "community" },
-      { label: "Journey", value: "journey" },
-    ].map((tab) => (
-      <TabsTrigger
-        key={tab.value}
-        value={tab.value}
-        className="shrink-0 rounded-full px-4 py-2 text-sm font-medium
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="flex gap-2 overflow-x-auto px-1 pb-2 hide-scrollbar">
+          {[
+            { label: "Overview", value: "overview" },
+            { label: "Proof", value: "portfolio" },
+            { label: "Community", value: "community" },
+            { label: "Journey", value: "journey" },
+          ].map((tab) => (
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className="shrink-0 rounded-full px-4 py-2 text-sm font-medium
         text-muted-foreground
         data-[state=active]:bg-foreground
         data-[state=active]:text-background
         transition-colors"
-      >
-        {tab.label}
-      </TabsTrigger>
-    ))}
-  </TabsList>
+            >
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
         {/* --- OVERVIEW TAB --- */}
         <TabsContent value="overview" className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -398,55 +399,54 @@ export default function DashboardOverview() {
                         <PolarAngleAxis dataKey="dimension" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12, fontWeight: 600 }} />
                         <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", borderRadius: "12px", border: "1px solid hsl(var(--border))", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }} itemStyle={{ color: "hsl(var(--foreground))", fontWeight: 500 }} />
                         <Radar name="Competence" dataKey="score" stroke="hsl(var(--orange))" strokeWidth={2.5} fill="hsl(var(--orange))" fillOpacity={0.25} />
-                      </RadarChart> 
-                      </ResponsiveContainer>
-                      {/* ---> INSIGHT ENGINE HERE <--- */}
-                  <div className="mt-4 w-full">
-                    {(() => {
-                      const insight = generateKSBInsight(engineData.ksbData);
-                      
-                      if (!insight) return null;
+                      </RadarChart>
+                    </ResponsiveContainer>
+                    {/* ---> INSIGHT ENGINE HERE <--- */}
+                    <div className="mt-4 w-full">
+                      {(() => {
+                        const insight = generateKSBInsight(engineData.ksbData);
 
-                      return (
-                        <div className={`p-5 rounded-2xl border backdrop-blur-sm transition-colors ${
-                          insight.type === 'gap' && insight.isCritical 
-                            ? 'bg-orange/5 border-orange/20' 
-                            : 'bg-muted/30 border-border/40'
-                        }`}>
-                          <div className="flex items-center justify-between mb-2">
-                            <p className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">
-                              Quick Tip
+                        if (!insight) return null;
+
+                        return (
+                          <div className={`p-5 rounded-2xl border backdrop-blur-sm transition-colors ${insight.type === 'gap' && insight.isCritical
+                              ? 'bg-orange/5 border-orange/20'
+                              : 'bg-muted/30 border-border/40'
+                            }`}>
+                            <div className="flex items-center justify-between mb-2">
+                              <p className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">
+                                Quick Tip
+                              </p>
+                              {insight.type === 'gap' && insight.isCritical && (
+                                <span className="flex items-center gap-1 text-[10px] uppercase font-bold text-orange bg-orange/10 px-2 py-0.5 rounded-sm">
+                                  <AlertCircle className="size-3" /> Needs Attention
+                                </span>
+                              )}
+                            </div>
+
+                            <p className="text-sm text-foreground leading-relaxed mb-4">
+                              {insight.type === "new" || insight.type === "balanced" ? (
+                                insight.text
+                              ) : insight.isCritical ? (
+                                <>
+                                  It looks like your <span className="font-semibold text-orange">{insight.weakName}</span> skills could use a little extra love right now. Spending some time on <span className="font-semibold text-foreground">{insight.actionText}</span> will really help you level up!
+                                </>
+                              ) : (
+                                <>
+                                  You are doing awesome in <span className="font-semibold text-foreground">{insight.strongName}</span>! To round out your profile, try picking up a few more <span className="font-semibold text-orange">{insight.actionText}</span> to boost your <span className="font-semibold text-orange">{insight.weakName}</span>.
+                                </>
+                              )}
                             </p>
-                            {insight.type === 'gap' && insight.isCritical && (
-                              <span className="flex items-center gap-1 text-[10px] uppercase font-bold text-orange bg-orange/10 px-2 py-0.5 rounded-sm">
-                                <AlertCircle className="size-3" /> Needs Attention
-                              </span>
-                            )}
-                          </div>
-                          
-                          <p className="text-sm text-foreground leading-relaxed mb-4">
-                            {insight.type === "new" || insight.type === "balanced" ? (
-                              insight.text
-                            ) : insight.isCritical ? (
-                              <>
-                                It looks like your <span className="font-semibold text-orange">{insight.weakName}</span> skills could use a little extra love right now. Spending some time on <span className="font-semibold text-foreground">{insight.actionText}</span> will really help you level up!
-                              </>
-                            ) : (
-                              <>
-                                You are doing awesome in <span className="font-semibold text-foreground">{insight.strongName}</span>! To round out your profile, try picking up a few more <span className="font-semibold text-orange">{insight.actionText}</span> to boost your <span className="font-semibold text-orange">{insight.weakName}</span>.
-                              </>
-                            )}
-                          </p>
 
-                          <Button asChild variant={insight.type === 'gap' && insight.isCritical ? 'default' : 'secondary'} className="w-full rounded-xl text-xs font-medium h-9">
-                            <Link href={insight.link}>
-                              {insight.actionText} <ArrowRight className="ml-1.5 size-3" />
-                            </Link>
-                          </Button>
-                        </div>
-                      );
-                    })()}
-                  </div>                   
+                            <Button asChild variant={insight.type === 'gap' && insight.isCritical ? 'default' : 'secondary'} className="w-full rounded-xl text-xs font-medium h-9">
+                              <Link href={insight.link}>
+                                {insight.actionText} <ArrowRight className="ml-1.5 size-3" />
+                              </Link>
+                            </Button>
+                          </div>
+                        );
+                      })()}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -454,72 +454,104 @@ export default function DashboardOverview() {
           </div>
         </TabsContent>
 
-        {/* --- PROOF OF WORK TAB --- */}
+{/* --- PROOF OF WORK & FEEDBACK TAB --- */}
         <TabsContent value="portfolio" className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div className="space-y-1">
-              <h2 className="text-2xl font-semibold text-foreground tracking-tight">Verified Outputs</h2>
-              <p className="text-muted-foreground text-sm">Your approved projects, tasks, and earned competencies.</p>
+              <h2 className="text-2xl font-semibold text-foreground tracking-tight">Verified Outputs & Feedback</h2>
+              <p className="text-muted-foreground text-sm">Review instructor feedback on your submitted projects and peer reviews.</p>
             </div>
             <Button variant="outline" className="rounded-full bg-transparent hover:bg-muted/50 border-border/50 font-medium">
-              Share Portfolio URL <ArrowRight className="ml-2 size-4" />
+              Share Public Portfolio <ArrowRight className="ml-2 size-4" />
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="group flex flex-col p-6 rounded-[2rem] border border-border/40 bg-card/30 hover:bg-card/60 hover:border-orange/30 transition-all duration-300 backdrop-blur-sm shadow-sm hover:shadow-md">
-              <div className="flex justify-between items-start mb-6">
-                <Badge variant="secondary" className="bg-background border-border/50 text-xs font-medium text-muted-foreground">
-                  Capstone Project
-                </Badge>
-                <span className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20">
-                  <CheckCircle2 className="size-3" /> Approved
-                </span>
-              </div>
-              <h3 className="text-xl font-medium text-foreground mb-3 leading-snug group-hover:text-orange transition-colors">
-                End-to-End Inventory Valuation Dashboard
-              </h3>
-              <p className="text-sm text-muted-foreground line-clamp-2 mb-6 flex-1">
-                Built a fully automated Power BI dashboard extracting real-time inventory aging data from Sage 300 via SQL.
-              </p>
-              <div className="space-y-4 pt-5 border-t border-border/30">
-                <div className="flex flex-wrap gap-2">
-                  <span className="text-xs font-medium bg-muted/50 text-muted-foreground px-2 py-1 rounded-md border border-border/50">Data Modeling</span>
-                  <span className="text-xs font-medium bg-muted/50 text-muted-foreground px-2 py-1 rounded-md border border-border/50">SQL</span>
-                  <span className="text-xs font-medium bg-muted/50 text-muted-foreground px-2 py-1 rounded-md border border-border/50">Power BI</span>
-                </div>
-                <Link href="#" className="inline-flex items-center text-sm font-medium text-foreground hover:text-orange transition-colors">
-                  View Live Demo <ExternalLink className="ml-1.5 size-3" />
-                </Link>
-              </div>
+          {!engineData.portfolio || engineData.portfolio.length === 0 ? (
+            <div className="text-center p-12 border border-dashed border-border/50 rounded-3xl bg-muted/10">
+              <Compass className="size-10 text-muted-foreground/50 mx-auto mb-4" />
+              <h3 className="font-semibold text-foreground">No submissions yet</h3>
+              <p className="text-sm text-muted-foreground">Complete activities to build your verifiable portfolio.</p>
             </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {engineData.portfolio.map((sub) => {
+                // 1. Explicitly handle all states
+                const isApproved = sub.status === "Approved";
+                const needsRevision = sub.status === "Revision_Required";
+                const isRejected = sub.status === "Rejected";
+                
+                // 2. Dynamic UI config
+                const statusConfig = {
+                  icon: isApproved ? CheckCircle2 : needsRevision ? AlertCircle : isRejected ? AlertCircle : Clock,
+                  color: isApproved ? "text-green-600 bg-green-500/10 border-green-500/20" : 
+                         needsRevision ? "text-orange bg-orange/10 border-orange/20" : 
+                         isRejected ? "text-red-600 bg-red-500/10 border-red-500/20" : 
+                         "text-blue-500 bg-blue-500/10 border-blue-500/20",
+                  text: sub.status.replace(/_/g, " "),
+                  actionText: isApproved ? "View Verified Output" : 
+                              needsRevision ? "Read Feedback & Revise" : 
+                              isRejected ? "View Details & Retry" : 
+                              "View Status"
+                };
 
-            <div className="group flex flex-col p-6 rounded-[2rem] border border-border/40 bg-card/30 hover:bg-card/60 hover:border-orange/30 transition-all duration-300 backdrop-blur-sm shadow-sm hover:shadow-md">
-              <div className="flex justify-between items-start mb-6">
-                <Badge variant="secondary" className="bg-background border-border/50 text-xs font-medium text-muted-foreground">
-                  Peer Review Task
-                </Badge>
-                <span className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20">
-                  <CheckCircle2 className="size-3" /> Approved
-                </span>
-              </div>
-              <h3 className="text-xl font-medium text-foreground mb-3 leading-snug group-hover:text-orange transition-colors">
-                Code Review: Python API Integration
-              </h3>
-              <p className="text-sm text-muted-foreground line-clamp-2 mb-6 flex-1">
-                {"Provided structured architectural feedback on a peer's REST API, identifying 2 critical security flaws."}
-              </p>
-              <div className="space-y-4 pt-5 border-t border-border/30">
-                <div className="flex flex-wrap gap-2">
-                  <span className="text-xs font-medium bg-muted/50 text-muted-foreground px-2 py-1 rounded-md border border-border/50">Technical Comm.</span>
-                  <span className="text-xs font-medium bg-muted/50 text-muted-foreground px-2 py-1 rounded-md border border-border/50">Code Auditing</span>
-                </div>
-                <Link href="#" className="inline-flex items-center text-sm font-medium text-foreground hover:text-orange transition-colors">
-                  Read Feedback <ExternalLink className="ml-1.5 size-3" />
-                </Link>
-              </div>
+                const feedbackSnippet = sub.reviews?.[0]?.feedback;
+
+                return (
+                  <div key={sub.id} className={`group flex flex-col p-6 rounded-[2rem] border backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 ${
+                    isApproved ? 'bg-green-50/10 hover:bg-green-50/30 hover:border-green-500/30 border-green-500/10' : 
+                    needsRevision ? 'bg-orange/5 hover:bg-orange/10 border-orange/20' : 
+                    isRejected ? 'bg-red-500/5 hover:bg-red-500/10 border-red-500/20' : 
+                    'bg-card/30 hover:bg-card/60 border-border/40'
+                  }`}>
+                    
+                    <div className="flex justify-between items-start mb-4">
+                      <Badge variant="secondary" className="bg-background border-border/50 text-[10px] uppercase font-bold text-muted-foreground">
+                        {sub.activity.type.replace(/_/g, " ")}
+                      </Badge>
+                      <span className={`flex items-center gap-1 text-[10px] uppercase font-bold px-2.5 py-1 rounded-full border ${statusConfig.color}`}>
+                        <statusConfig.icon className="size-3" /> {statusConfig.text}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-lg font-semibold text-foreground mb-4 leading-snug group-hover:text-orange transition-colors line-clamp-2">
+                      {sub.activity.title}
+                    </h3>
+                    
+                    {/* 3. SHOW FEEDBACK PREVIEW IF IT EXISTS */}
+                    {feedbackSnippet ? (
+                      <div className="mb-6 flex-1">
+                        <div className="p-3 rounded-xl bg-background/50 border border-border/50 text-xs text-muted-foreground italic relative">
+                          <MessageSquare className="absolute top-3 left-3 size-3 text-muted-foreground/40" />
+                          <p className="line-clamp-2 pl-6">"{feedbackSnippet}"</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground mb-6 flex-1">
+                        Submitted on {new Date(sub.submittedAt || sub.createdAt).toLocaleDateString()}
+                      </p>
+                    )}
+                    
+                    <div className="space-y-4 pt-4 border-t border-border/30 mt-auto">
+                      {/* Show Instructor Score if evaluated */}
+                      {sub.reviews?.[0]?.score !== undefined && (
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Instructor Score</span>
+                          <span className="font-bold text-foreground">{sub.reviews[0].score}/5</span>
+                        </div>
+                      )}
+                      
+                      {/* Dynamic CTA Link */}
+                      <Link href={`/dashboard/activities/${sub.activityId}`} className={`inline-flex items-center text-xs font-bold uppercase tracking-wider transition-colors ${
+                        isRejected ? "text-red-600 hover:text-red-700" : "text-foreground hover:text-orange"
+                      }`}>
+                        {statusConfig.actionText} <ExternalLink className="ml-1.5 size-3" />
+                      </Link>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
-          </div>
+          )}
         </TabsContent>
 
         {/* --- JOURNEY TAB --- */}
@@ -583,11 +615,11 @@ export default function DashboardOverview() {
 
         {/* --- COMMUNITY TAB (The Network Signal) --- */}
         <TabsContent value="community" className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-          
+
           {/* Top Banner: Network Pulse */}
           <div className="relative overflow-hidden rounded-[2rem] border border-border/50 bg-card/20 p-6 sm:p-8 backdrop-blur-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none" />
-            
+
             <div className="space-y-2 relative z-10">
               <div className="flex items-center gap-2 mb-1">
                 <span className="relative flex h-2.5 w-2.5">
@@ -615,7 +647,7 @@ export default function DashboardOverview() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
+
             {/* LEFT COLUMN: Trending Artifacts (Span 8) */}
             <div className="lg:col-span-8 space-y-6">
               <div className="flex items-center justify-between">
@@ -707,7 +739,7 @@ export default function DashboardOverview() {
 
             {/* RIGHT COLUMN: Squads & Ops (Span 4) */}
             <div className="lg:col-span-4 space-y-8">
-              
+
               {/* Active Squads (Chats/Guilds) */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-foreground tracking-tight flex items-center gap-2">
