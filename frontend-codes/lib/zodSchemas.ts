@@ -117,9 +117,9 @@ export const ParticipantRoleEnum = z.enum([
 
 export const EventVenueEnum = z.enum([
   "NextHive",
-  "GoogleMeet",
+  "Google_Meet",
   "Zoom",
-  "MicrosoftTeams",
+  "Microsoft_Teams",
   "Offline",
   "Hybrid",
 ], { errorMap: () => ({ message: "Invalid event venue selected" }) });
