@@ -107,7 +107,7 @@ export default function DashboardOverview() {
     ],
     nextMoves: [] as DashboardActionItem[],
     microWins: [] as { id: number, text: string, time: string }[],
-    portfolio: [] as any[], // <--- ADD THIS
+    portfolio: [] as any[],
   })
   const [isEngineLoading, setIsEngineLoading] = useState(true)
 
@@ -410,8 +410,8 @@ export default function DashboardOverview() {
 
                         return (
                           <div className={`p-5 rounded-2xl border backdrop-blur-sm transition-colors ${insight.type === 'gap' && insight.isCritical
-                              ? 'bg-orange/5 border-orange/20'
-                              : 'bg-muted/30 border-border/40'
+                            ? 'bg-orange/5 border-orange/20'
+                            : 'bg-muted/30 border-border/40'
                             }`}>
                             <div className="flex items-center justify-between mb-2">
                               <p className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">
@@ -454,7 +454,7 @@ export default function DashboardOverview() {
           </div>
         </TabsContent>
 
-{/* --- PROOF OF WORK & FEEDBACK TAB --- */}
+        {/* --- PROOF OF WORK & FEEDBACK TAB --- */}
         <TabsContent value="portfolio" className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div className="space-y-1">
@@ -479,31 +479,30 @@ export default function DashboardOverview() {
                 const isApproved = sub.status === "Approved";
                 const needsRevision = sub.status === "Revision_Required";
                 const isRejected = sub.status === "Rejected";
-                
+
                 // 2. Dynamic UI config
                 const statusConfig = {
                   icon: isApproved ? CheckCircle2 : needsRevision ? AlertCircle : isRejected ? AlertCircle : Clock,
-                  color: isApproved ? "text-green-600 bg-green-500/10 border-green-500/20" : 
-                         needsRevision ? "text-orange bg-orange/10 border-orange/20" : 
-                         isRejected ? "text-red-600 bg-red-500/10 border-red-500/20" : 
-                         "text-blue-500 bg-blue-500/10 border-blue-500/20",
+                  color: isApproved ? "text-green-600 bg-green-500/10 border-green-500/20" :
+                    needsRevision ? "text-orange bg-orange/10 border-orange/20" :
+                      isRejected ? "text-red-600 bg-red-500/10 border-red-500/20" :
+                        "text-blue-500 bg-blue-500/10 border-blue-500/20",
                   text: sub.status.replace(/_/g, " "),
-                  actionText: isApproved ? "View Verified Output" : 
-                              needsRevision ? "Read Feedback & Revise" : 
-                              isRejected ? "View Details & Retry" : 
-                              "View Status"
+                  actionText: isApproved ? "View Verified Output" :
+                    needsRevision ? "Read Feedback & Revise" :
+                      isRejected ? "View Details & Retry" :
+                        "View Status"
                 };
 
                 const feedbackSnippet = sub.reviews?.[0]?.feedback;
 
                 return (
-                  <div key={sub.id} className={`group flex flex-col p-6 rounded-[2rem] border backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 ${
-                    isApproved ? 'bg-green-50/10 hover:bg-green-50/30 hover:border-green-500/30 border-green-500/10' : 
-                    needsRevision ? 'bg-orange/5 hover:bg-orange/10 border-orange/20' : 
-                    isRejected ? 'bg-red-500/5 hover:bg-red-500/10 border-red-500/20' : 
-                    'bg-card/30 hover:bg-card/60 border-border/40'
-                  }`}>
-                    
+                  <div key={sub.id} className={`group flex flex-col p-6 rounded-[2rem] border backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 ${isApproved ? 'bg-green-50/10 hover:bg-green-50/30 hover:border-green-500/30 border-green-500/10' :
+                      needsRevision ? 'bg-orange/5 hover:bg-orange/10 border-orange/20' :
+                        isRejected ? 'bg-red-500/5 hover:bg-red-500/10 border-red-500/20' :
+                          'bg-card/30 hover:bg-card/60 border-border/40'
+                    }`}>
+
                     <div className="flex justify-between items-start mb-4">
                       <Badge variant="secondary" className="bg-background border-border/50 text-[10px] uppercase font-bold text-muted-foreground">
                         {sub.activity.type.replace(/_/g, " ")}
@@ -512,17 +511,17 @@ export default function DashboardOverview() {
                         <statusConfig.icon className="size-3" /> {statusConfig.text}
                       </span>
                     </div>
-                    
+
                     <h3 className="text-lg font-semibold text-foreground mb-4 leading-snug group-hover:text-orange transition-colors line-clamp-2">
                       {sub.activity.title}
                     </h3>
-                    
+
                     {/* 3. SHOW FEEDBACK PREVIEW IF IT EXISTS */}
                     {feedbackSnippet ? (
                       <div className="mb-6 flex-1">
                         <div className="p-3 rounded-xl bg-background/50 border border-border/50 text-xs text-muted-foreground italic relative">
                           <MessageSquare className="absolute top-3 left-3 size-3 text-muted-foreground/40" />
-                          <p className="line-clamp-2 pl-6">"{feedbackSnippet}"</p>
+                          <p className="line-clamp-2 pl-6">&quot;{feedbackSnippet}&quot;</p>
                         </div>
                       </div>
                     ) : (
@@ -530,7 +529,7 @@ export default function DashboardOverview() {
                         Submitted on {new Date(sub.submittedAt || sub.createdAt).toLocaleDateString()}
                       </p>
                     )}
-                    
+
                     <div className="space-y-4 pt-4 border-t border-border/30 mt-auto">
                       {/* Show Instructor Score if evaluated */}
                       {sub.reviews?.[0]?.score !== undefined && (
@@ -539,11 +538,10 @@ export default function DashboardOverview() {
                           <span className="font-bold text-foreground">{sub.reviews[0].score}/5</span>
                         </div>
                       )}
-                      
+
                       {/* Dynamic CTA Link */}
-                      <Link href={`/dashboard/activities/${sub.activityId}`} className={`inline-flex items-center text-xs font-bold uppercase tracking-wider transition-colors ${
-                        isRejected ? "text-red-600 hover:text-red-700" : "text-foreground hover:text-orange"
-                      }`}>
+                      <Link href={`/dashboard/activities/${sub.activityId}`} className={`inline-flex items-center text-xs font-bold uppercase tracking-wider transition-colors ${isRejected ? "text-red-600 hover:text-red-700" : "text-foreground hover:text-orange"
+                        }`}>
                         {statusConfig.actionText} <ExternalLink className="ml-1.5 size-3" />
                       </Link>
                     </div>
