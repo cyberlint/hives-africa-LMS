@@ -5,12 +5,13 @@ import { PublicProfileClient } from "../_components/public-profile-client";
 export default async function PublicProfilePage({
   params,
 }: {
-  params: { id: string }; // ✅ FIX 1: params is NOT a Promise
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
 
   // 1. Fetch user + approved submissions
   const user = await prisma.user.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       submissions: {
         where: { status: "Approved" },
