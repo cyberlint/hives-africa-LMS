@@ -10,8 +10,8 @@ import {
   ShieldCheck,
   FileText,
   Zap,
-  ListChecks,   // <-- NEW IMPORT
-  ChevronDown   // <-- NEW IMPORT
+  ListChecks,  
+  ChevronDown
 } from "lucide-react";
 import Link from "next/link";
 import { SubmissionEngine } from "../_components/submission-engine";
