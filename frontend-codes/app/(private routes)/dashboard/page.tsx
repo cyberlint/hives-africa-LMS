@@ -148,7 +148,7 @@ export default function DashboardOverview() {
     )
   }
 
-  if (error && !error.includes('Unauthorized')) {
+  if (error && !error.includes("Unauthorized")) {
     return (
       <div className="flex items-center justify-center min-h-[60vh] px-4">
         <div className="text-center max-w-md p-8 bg-card border border-border rounded-3xl shadow-sm">

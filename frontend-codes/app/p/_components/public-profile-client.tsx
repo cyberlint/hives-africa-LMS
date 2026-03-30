@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Trophy,
@@ -191,7 +190,7 @@ export function PublicProfileClient({ profile }: { profile: any }) {
               {selected.reviewers.map((r: any, i: number) => (
                 <div key={i} className="text-sm border p-3 rounded-lg mb-2">
                   <p className="font-medium">{r.name}</p>
-                  <p className="text-muted-foreground italic">"{r.comment}"</p>
+                  <p className="text-muted-foreground italic">&quot;{r.comment}&quot;</p>
                 </div>
               ))}
             </div>
