@@ -1,47 +1,57 @@
 "use client";
 
-import { Star } from "lucide-react";
 import Image from "next/image";
+import { Star, Users, BarChart, Clock, ArrowRight } from "lucide-react";
 import { CourseListItem } from "@/services/courses";
 import { constructUrl } from "@/lib/construct-url";
 import { motion } from "framer-motion";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 
 interface FeaturedCoursesProps {
   courses: CourseListItem[];
 }
 
 const FeaturedCourses = ({ courses }: FeaturedCoursesProps) => {
-  return (
-    <>
-  
-      <div className="flex flex-wrap justify-between items-center gap-x-8 gap-y-2">
-        <h4 className="text-3xl md:text-[32px] text-darkBlue-300 dark:text-gray-100 font-semibold w-full xl:w-1/2">
-          Our Featured Courses
-        </h4>
+  if (!courses || courses.length === 0) return null;
 
-        <p className="text-xs text-[#4E5566] dark:text-gray-400 w-full xl:w-[35%]">
-          Discover our most popular and highly-rated courses, handpicked for you.
-        </p>
+  return (
+    <div className="space-y-12">
+      
+      {/* Premium Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-3 max-w-2xl">
+          <Badge variant="outline" className="bg-orange/5 text-orange border-orange/20 px-3 py-1 font-bold tracking-widest uppercase text-[10px]">
+            Curated Excellence
+          </Badge>
+          <h2 className="text-3xl md:text-4xl font-black text-foreground tracking-tight">
+            Featured Masterclasses
+          </h2>
+          <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
+            Discover our most highly-rated curricula, handpicked by industry experts to accelerate your tech career.
+          </p>
+        </div>
+        <Link href="/course" className="hidden md:flex items-center gap-2 text-sm font-bold text-foreground hover:text-orange transition-colors">
+          View All <ArrowRight className="size-4" />
+        </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {courses.slice(0, 4).map((course) => (
+      {/* The Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {courses.slice(0, 4).map((course, i) => (
           <motion.article
             key={course.id}
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            whileHover={{ y: -8, boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)" }}
-            className="group flex w-full h-full overflow-hidden rounded-xl
-              border border-[#E9EAF0] dark:border-[#404854]
-              bg-white dark:bg-[#2a2f3a]
-              shadow-[0_8px_24px_rgba(0,0,0,0.04)]
-              transition-all duration-300
-              cursor-pointer"
+            transition={{ duration: 0.5, delay: i * 0.1 }}
+            className="group flex flex-col sm:flex-row w-full overflow-hidden rounded-[2rem] border border-border/50 bg-card hover:bg-card/80 shadow-sm hover:shadow-xl hover:border-orange/30 transition-all duration-500 relative cursor-pointer"
           >
-            {/* Image */}
-            <div className="relative w-[30%] bg-muted/40 overflow-hidden">
+            {/* Subtle Hover Glow */}
+            <div className="absolute -top-32 -right-32 size-64 bg-foreground/5 blur-[100px] rounded-full group-hover:bg-orange/10 transition-colors duration-700 pointer-events-none z-0" />
+
+            {/* Image Container */}
+            <div className="relative w-full sm:w-[35%] min-h-[220px] sm:min-h-full bg-muted/40 overflow-hidden shrink-0 z-10">
               <Image
                 src={
                   course.thumbnail
@@ -50,114 +60,103 @@ const FeaturedCourses = ({ courses }: FeaturedCoursesProps) => {
                 }
                 alt={course.title}
                 fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 sm:from-black/20 to-transparent" />
+              
+              {/* Category tag overlay on mobile */}
+              <div className="absolute bottom-4 left-4 sm:hidden">
+                <Badge variant="secondary" className="bg-background/90 backdrop-blur text-foreground border-border/50 text-[10px] uppercase font-bold tracking-wider">
+                  {course.category?.name || "General"}
+                </Badge>
+              </div>
             </div>
 
-            {/* Content */}
-            <div className="w-[70%] flex flex-col transition-colors duration-300">
-              <div className="space-y-2 px-5 py-4">
-                <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1">
-                  <p className="uppercase text-[8px] font-semibold p-1 rounded bg-[#E1F7E3] dark:bg-green-900/30 text-[#15711F] dark:text-green-400">
-                    {course.category?.name || "General"}
-                  </p>
+            {/* Content Container */}
+            <div className="w-full sm:w-[65%] flex flex-col p-6 sm:p-8 relative z-10">
+              
+              {/* Top Meta (Desktop Category & Price) */}
+              <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
+                <Badge variant="secondary" className="hidden sm:inline-flex bg-muted/50 text-muted-foreground border-border/50 text-[10px] uppercase font-bold tracking-wider">
+                  {course.category?.name || "General"}
+                </Badge>
 
-                  <p className="text-[10px] sm:text-xs md:text-sm text-darkBlue-300 dark:text-gray-100">
-                    ₦{course.current_price.toLocaleString()}{" "}
-                    {course.original_price &&
-                      course.original_price > course.current_price && (
-                        <span className="ml-1 text-[10px] md:text-xs text-[#A1A5B3] dark:text-gray-500 line-through">
-                          ₦{course.original_price.toLocaleString()}
-                        </span>
-                      )}
-                  </p>
-                </div>
-
-                <p className="text-[10px] sm:text-xs font-semibold text-darkBlue-300 dark:text-gray-100 line-clamp-2 transition-colors group-hover:text-orange">
-                  {course.title}
-                </p>
-
-                <div className="flex flex-wrap justify-between items-center gap-y-1 pt-2">
-                  <div className="flex items-center gap-2">
-                    <div className="h-4 sm:h-6 w-4 sm:w-6 rounded-full bg-gray-200 dark:bg-[#404854] flex items-center justify-center">
-                      <span className="text-[8px] font-semibold text-gray-600 dark:text-gray-300">
-                        {course.instructor?.first_name?.[0] || "I"}
-                      </span>
-                    </div>
-
-                    <p className="text-[10px] sm:text-xs text-[#4E5566] dark:text-gray-400 font-medium">
-                      {course.instructor?.full_name || "Instructor"}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-1 text-[10px] sm:text-xs">
-                    <p className="flex items-center gap-1 font-semibold text-darkBlue-300 dark:text-gray-100">
-                      <Star fill="#FD8E1F" strokeWidth={0} size={16} />
-                      {course.average_rating.toFixed(1)}
-                    </p>
-
-                    <p className="text-[#A1A5B3] dark:text-gray-500">
-                      ({course.total_reviews.toLocaleString()})
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div
-                className="mt-auto flex flex-wrap justify-between items-center gap-y-1
-                border-t border-[#E9EAF0] dark:border-[#404854]
-                text-[#4E5566] dark:text-gray-400
-                text-[10px] sm:text-xs px-5 py-3 w-full"
-              >
-                <div className="flex items-center gap-1">
-                  <Image
-                    src="/assets/courses/user.png"
-                    alt="User"
-                    width={50}
-                    height={50}
-                    className="h-4 w-4"
-                  />
-                  <p className="font-semibold text-darkBlue-300 dark:text-gray-100">
-                    {course.total_enrollments.toLocaleString()}{" "}
-                    <span className="font-normal text-[#8C94A3] dark:text-gray-500">
-                      students
+                <div className="flex flex-col items-end text-sm">
+                  <span className="font-bold text-orange text-base md:text-lg leading-none">
+                    ₦{course.current_price.toLocaleString()}
+                  </span>
+                  {course.original_price && course.original_price > course.current_price && (
+                    <span className="text-xs font-medium text-muted-foreground line-through mt-1">
+                      ₦{course.original_price.toLocaleString()}
                     </span>
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-1">
-                  <Image
-                    src="/assets/courses/level.png"
-                    alt="Level"
-                    width={50}
-                    height={50}
-                    className="h-4 w-4"
-                  />
-                  <p className="font-medium capitalize text-darkBlue-300 dark:text-gray-100">
-                    {course.difficulty || "All Levels"}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-1">
-                  <Image
-                    src="/assets/courses/clock.png"
-                    alt="Duration"
-                    width={50}
-                    height={50}
-                    className="h-4 w-4"
-                  />
-                  <p className="font-medium text-darkBlue-300 dark:text-gray-100">
-                    Self-paced
-                  </p>
+                  )}
                 </div>
               </div>
+
+              {/* Title */}
+              <h3 className="text-lg md:text-xl font-bold text-foreground leading-snug line-clamp-2 transition-colors group-hover:text-orange mb-4">
+                {course.title}
+              </h3>
+
+              {/* Instructor & Rating */}
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mb-6">
+                <div className="flex items-center gap-2.5">
+                  <div className="size-6 rounded-full bg-muted border border-border/50 flex items-center justify-center shrink-0">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                      {course.instructor?.first_name?.[0] || "I"}
+                    </span>
+                  </div>
+                  <span className="text-xs font-semibold text-muted-foreground">
+                    {course.instructor?.full_name || "Lead Instructor"}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5 text-xs">
+                  <span className="flex items-center gap-1 font-bold text-foreground">
+                    <Star className="size-3.5 text-orange" fill="currentColor" />
+                    {course.average_rating.toFixed(1)}
+                  </span>
+                  <span className="text-muted-foreground font-medium">
+                    ({course.total_reviews.toLocaleString()})
+                  </span>
+                </div>
+              </div>
+
+              {/* Footer Stats */}
+              <div className="mt-auto pt-4 border-t border-border/50 flex flex-wrap justify-between items-center gap-4 text-xs font-medium text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <Users className="size-4 opacity-70" />
+                  <span>
+                    <strong className="text-foreground">{course.total_enrollments.toLocaleString()}</strong> Builders
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <BarChart className="size-4 opacity-70" />
+                    <span className="capitalize">{course.difficulty || "All Levels"}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="size-4 opacity-70" />
+                    <span>Self-paced</span>
+                  </div>
+                </div>
+              </div>
+              
             </div>
           </motion.article>
         ))}
       </div>
- 
-    </>
+
+      {/* Mobile View All */}
+      <div className="md:hidden flex justify-center pt-2">
+        <Link href="/course" className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-orange transition-colors">
+          View All <ArrowRight className="size-4" />
+        </Link>
+      </div>
+
+    </div>
   );
 };
 

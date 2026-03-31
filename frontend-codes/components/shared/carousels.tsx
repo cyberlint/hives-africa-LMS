@@ -1,114 +1,112 @@
 "use client";
 
-import { Star, Quote, CheckCircle2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Star, Quote, Sparkles } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { motion } from "framer-motion";
+import { MotionDiv } from "@/components/framer-motion/motion-components";
+import { Badge } from "@/components/ui/badge";
 
 const testimonials = [
   {
-    name: "Dr. Amara Okoro",
-    role: "Learning Coordinator",
-    company: "Lagos Academy",
-    industry: "Education",
-    avatar: "/avatars/amara.jpg",
+    name: "Chidi Okafor",
+    role: "Backend Builder",
+    focus: "Data Engineering",
+    avatar: "/avatars/chidi.jpg", 
     rating: 5,
-    content: "NextHive has transformed how we deliver vocational training. The platform's ease of use is remarkable and the support team is world-class.",
+    content: "I'm tired of collecting generic paper certificates that employers ignore. I joined NextHive specifically to build a cryptographically verified portfolio.",
   },
   {
-    name: "Kofi Mensah",
-    role: "Startup Founder",
-    company: "TechHub Accra",
-    industry: "Technology",
-    avatar: "/avatars/kofi.jpg",
+    name: "Amina Yusuf",
+    role: "Cloud Enthusiast",
+    focus: "Cloud Architecture",
+    avatar: "/avatars/amina.jpg",
     rating: 5,
-    content: "Scaling our training programs across borders became possible only with this LMS. Highly recommend for any African business looking to grow fast.",
+    content: "Learning complex tech in a vacuum is hard. The idea of joining a 'Hive' and discussing AWS deployments in Hausa and Pidgin is an absolute game-changer.",
   },
   {
-    name: "Sarah Mbeki",
-    role: "HR Director",
-    company: "Nairobi Logistics",
-    industry: "Logistics",
-    avatar: "/avatars/sarah.jpg",
-    rating: 4,
-    content: "Our employee onboarding time decreased by 50% after implementing this platform. The reporting features are top-notch and intuitive.",
+    name: "Kwame Mensah",
+    role: "Self-Taught Dev",
+    focus: "Agentic AI",
+    avatar: "/avatars/kwame.jpg",
+    rating: 5,
+    content: "Self-study is incredibly lonely. I'm here for The Arena. I want to test my skills in high-stakes hackathons and earn my spot on the Vanguard leaderboard.",
   },
   {
-    name: "Jean-Pierre Bakari",
-    role: "Dean of Students",
-    company: "Kigali Institute",
-    industry: "Higher Ed",
-    avatar: "/avatars/jean.jpg",
+    name: "Zola Mbeki",
+    role: "Career Transitioner",
+    focus: "Cybersecurity Ops",
+    avatar: "/avatars/zola.jpg",
     rating: 5,
-    content: "Innovative, robust, and localized. Finally, an LMS that truly understands the African educational landscape and its unique challenges.",
+    content: "The tech tracks are exactly what I needed. No fluff, no 40-hour video lectures on outdated theory—just the core stack required to get hired in Africa today.",
   },
   {
-    name: "Fatima Yusuf",
-    role: "Training Manager",
-    company: "Abuja Finance",
-    industry: "Banking",
-    avatar: "/avatars/fatima.jpg",
+    name: "Oluwaseun Adeyemi",
+    role: "Frontend Developer",
+    focus: "Full Stack",
+    avatar: "/avatars/olu.jpg",
     rating: 5,
-    content: "The compliance training modules are so easy to set up. Our staff actually enjoys the learning process now, which is a huge win for us.",
+    content: "Finally, a platform that feels like it was built for our context. Building capstones focused on African fintech and logistics rather than generic weather apps is brilliant.",
   },
 ];
 
 export default function TestimonialsCarousel() {
   return (
-    <section className="py-24 bg-white dark:bg-darkBlue-300 relative overflow-hidden transition-colors duration-300">
-      <div className="container mx-auto px-4 mb-20 text-center">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+    <section className="py-24 bg-background relative overflow-hidden transition-colors duration-300">
+      
+      {/* Background Ambience */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[300px] bg-orange/5 blur-[120px] rounded-full pointer-events-none -z-10" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 text-center relative z-10">
+        <MotionDiv 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow/10 dark:bg-yellow/20 text-yellow text-xs font-semibold mb-6"
+          className="flex flex-col items-center gap-4"
         >
-          <CheckCircle2 className="w-3.5 h-3.5" />
-          <span>JOIN 10,000+ ORGANIZATIONS</span>
-        </motion.div>
-        <motion.h2 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-darkBlue-300 dark:text-white"
-        >
-          What Our <span className="text-yellow">Community</span> Says
-        </motion.h2>
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-[#4A5568] dark:text-gray-300 text-xl max-w-2xl mx-auto leading-relaxed"
-        >
-          Discover why leading organizations across Africa trust Hives Africa to power their learning ecosystems.
-        </motion.p>
+          <Badge variant="outline" className="bg-orange/10 text-orange border-orange/20 px-4 py-1.5 font-bold tracking-widest uppercase text-[10px] shadow-sm">
+            <Sparkles className="size-3.5 mr-1.5 inline-block" /> The Early Cohort
+          </Badge>
+          
+          <h2 className="text-4xl md:text-5xl font-black tracking-tight text-foreground text-balance">
+            Why Builders are <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange to-amber-500">Joining NextHive</span>
+          </h2>
+          
+          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto leading-relaxed text-balance mt-2">
+            We are building a new standard for tech education in Africa. Hear from the founding members who are ditching traditional courses for verifiable skills.
+          </p>
+        </MotionDiv>
       </div>
 
-      <div className="relative group">
+      <div className="relative group max-w-[100vw] overflow-hidden">
+        
         {/* Carousel Container */}
-        <div className="flex animate-scroll space-x-6 hover:pause w-max items-stretch pb-8">
+        {/* 🚨 FIX: Forced animation duration to 120s for a slow, readable crawl. 
+            Added hover & active pause states for Desktop & Mobile. */}
+        <div 
+          className="flex animate-scroll w-max items-stretch pb-8 gap-6 px-6 hover:[animation-play-state:paused] active:[animation-play-state:paused] cursor-pointer"
+          style={{ animationDuration: "120s" }} 
+        >
           {[...testimonials, ...testimonials, ...testimonials].map((testimonial, index) => (
-            <Card
+            <div
               key={index}
-              className="flex-shrink-0 w-[400px] bg-white dark:bg-[#2a2f3a] border-border/60 dark:border-white/10 hover:border-yellow transition-all duration-300 flex flex-col shadow-sm hover:shadow-md"
+              className="flex-shrink-0 w-[320px] md:w-[400px] bg-card/80 backdrop-blur-md border border-border/50 rounded-[2rem] hover:border-orange/40 hover:bg-card transition-all duration-300 flex flex-col shadow-sm hover:shadow-xl relative overflow-hidden group/card"
             >
-              <CardContent className="p-8 flex-1 flex flex-col relative">
+              <div className="absolute -top-12 -right-12 size-24 bg-orange/0 group-hover/card:bg-orange/10 blur-2xl rounded-full transition-colors duration-500 pointer-events-none" />
+
+              <div className="p-8 flex-1 flex flex-col relative z-10">
                 {/* Header: Quote & Rating */}
                 <div className="flex justify-between items-start mb-6">
-                  <div className="text-primary/10 dark:text-white/10">
-                    <Quote className="w-8 h-8 fill-current" />
+                  <div className="p-2.5 rounded-xl bg-muted/50 border border-border/50 text-orange/80">
+                    <Quote className="size-5 fill-current" />
                   </div>
-                  <div className="flex gap-0.5">
+                  <div className="flex gap-1">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-4 h-4 ${
+                        className={`size-3.5 ${
                           i < testimonial.rating
-                            ? "text-yellow fill-current"
-                            : "text-muted-foreground/30 dark:text-white/10"
+                            ? "text-orange fill-current"
+                            : "text-muted-foreground/30"
                         }`}
                       />
                     ))}
@@ -117,60 +115,66 @@ export default function TestimonialsCarousel() {
 
                 {/* Content Area */}
                 <div className="flex-1 mb-8">
-                  <p className="text-darkBlue-300 dark:text-gray-200 leading-relaxed text-base font-medium">
+                  <p className="text-foreground/90 leading-relaxed text-base md:text-lg font-medium text-pretty">
                     &quot;{testimonial.content}&quot;
                   </p>
                 </div>
 
                 {/* Author Info */}
-                <div className="mt-auto pt-6 border-t border-border/40 dark:border-white/10">
+                <div className="mt-auto pt-6 border-t border-border/50">
                   <div className="flex items-center gap-4">
-                    <Avatar className="h-12 w-12 border border-border/60 dark:border-white/10 shadow-sm">
+                    <Avatar className="size-12 border-2 border-background shadow-md">
                       <AvatarImage
-                        src={testimonial.avatar || "/placeholder.jpg"}
+                        src={testimonial.avatar || undefined}
                         alt={testimonial.name}
                         className="object-cover"
                       />
-                      <AvatarFallback className="bg-primary/5 dark:bg-white/5 text-primary dark:text-white text-xs font-bold">
+                      <AvatarFallback className="bg-muted text-muted-foreground font-black">
                         {testimonial.name.split(" ").map(n => n[0]).join("")}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                      <h4 className="font-bold text-darkBlue-300 dark:text-white text-sm leading-tight">
+                      <h4 className="font-bold text-foreground text-sm leading-tight group-hover/card:text-orange transition-colors">
                         {testimonial.name}
                       </h4>
-                      <p className="text-xs text-[#6E7485] dark:text-gray-400 mt-1">
-                        {testimonial.role} @ {testimonial.company}
+                      <p className="text-xs text-muted-foreground mt-1 font-medium">
+                        {testimonial.role} • <span className="text-foreground/70">{testimonial.focus}</span>
                       </p>
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
 
-        {/* Subtle Fade Effects */}
-        <div className="absolute left-0 top-0 bottom-0 w-32 bg-linear-to-r from-white dark:from-darkBlue-300 to-transparent pointer-events-none z-20" />
-        <div className="absolute right-0 top-0 bottom-0 w-32 bg-linear-to-l from-white dark:from-darkBlue-300 to-transparent pointer-events-none z-20" />
+        {/* CSS Gradient Masks for smooth entry/exit of cards */}
+        <div className="absolute left-0 top-0 bottom-0 w-12 md:w-48 bg-gradient-to-r from-background to-transparent pointer-events-none z-20" />
+        <div className="absolute right-0 top-0 bottom-0 w-12 md:w-48 bg-gradient-to-l from-background to-transparent pointer-events-none z-20" />
       </div>
 
       {/* Trust Badge at bottom */}
-      <div className="container mx-auto px-4 mt-16 flex flex-col items-center">
+      <MotionDiv 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.2 }}
+        className="max-w-7xl mx-auto px-4 mt-12 flex flex-col items-center"
+      >
         <div className="flex -space-x-3 mb-4">
           {[1,2,3,4,5].map(i => (
-            <div key={i} className="w-10 h-10 rounded-full border-2 border-white dark:border-darkBlue-300 bg-muted dark:bg-[#2a2f3a] flex items-center justify-center text-[10px] font-bold overflow-hidden shadow-sm">
-              <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="user" className="w-full h-full object-cover opacity-80" />
+            <div key={i} className="size-10 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[10px] font-bold overflow-hidden shadow-sm">
+              <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="Builder" className="w-full h-full object-cover opacity-80" />
             </div>
           ))}
-          <div className="w-10 h-10 rounded-full border-2 border-white dark:border-darkBlue-300 bg-yellow text-white flex items-center justify-center text-[10px] font-bold shadow-sm">
-            +20
+          <div className="size-10 rounded-full border-2 border-background bg-orange text-white flex items-center justify-center text-xs font-black shadow-sm">
+            +50
           </div>
         </div>
-        <p className="text-sm text-[#6E7485] dark:text-gray-400 font-medium">
-          Joined by <span className="text-darkBlue-300 dark:text-white font-bold">100+</span> individuals this month
+        <p className="text-sm text-muted-foreground font-medium text-center">
+          Joined by <span className="text-foreground font-bold">100+ Founding Builders</span> this month
         </p>
-      </div>
+      </MotionDiv>
     </section>
   );
 }

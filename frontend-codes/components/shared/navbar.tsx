@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Menu, X, ShoppingCart, Moon, Sun } from "lucide-react";
+import { ChevronDown, Menu, X, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,18 +9,35 @@ import { useCart } from "@/contexts/CartContext";
 import { authClient } from "@/lib/auth-client";
 import { ThemeToggle } from "../ui/theme-toggle";
 
+// Rebranded Navigation Links
+const navLinks = [
+  { title: "Tech Tracks", href: "/course" },
+  { title: "The Arena", href: "/arena" },
+  { title: "The Hives", href: "/community" },
+  { title: "Manifesto", href: "/vision" },
+];
+
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
+  
   const { items } = useCart();
-  const { data: session } = authClient.useSession(); // Use Better Auth like admin
+  const { data: session } = authClient.useSession();
   const user = session?.user;
   const cartItemsCount = items.reduce((total, item) => total + item.quantity, 0);
 
   useEffect(() => {
     setMounted(true);
+    
+    // Add scroll listener for glassmorphic effect
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Handles closing mobile menu when outside the menu is clicked
@@ -30,138 +47,215 @@ const Navbar = () => {
         setIsMobileMenuOpen(false);
       }
     }
-
     if (isMobileMenuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      // Prevent body scroll when menu is open
+      document.body.style.overflow = "hidden";
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "unset";
     }
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "unset";
     };
   }, [isMobileMenuOpen]);
 
+  if (!mounted) return null;
+
   return (
-    <nav className="w-full bg-white dark:bg-[#1d2026] text-sm transition-colors duration-300">
-      <div className="mx-auto px-4 md:px-16 py-3 md:py-4 flex justify-between items-center gap-8 w-full">
-        <div className="flex items-center gap-12 xl:gap-24 w-[70%]">
-          <Link href="/">
-            <Image
-              src={"/assets/NextHive Logo.png"}
-              alt="NextHive Logo"
-              width={70}
-              height={70}
-            />
-          </Link>
+    <>
+      <nav 
+        className={`w-full sticky top-0 z-40 transition-all duration-300 border-b ${
+          scrolled 
+            ? "bg-background/80 backdrop-blur-xl border-border/50 shadow-sm py-3" 
+            : "bg-background border-transparent py-4 md:py-5"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center w-full">
+          
+          {/* LEFT: Logo & Desktop Links */}
+          <div className="flex items-center gap-10 xl:gap-16">
+            <Link href="/" className="flex-shrink-0 hover:scale-105 transition-transform">
+              <Image
+                src="/assets/NextHive Logo.png"
+                alt="NextHive Logo"
+                width={100}
+                height={32}
+                className="h-8 w-auto object-contain dark:invert"
+              />
+            </Link>
+
+            {/* Desktop Navigation */}
+            <ul className="hidden lg:flex items-center gap-8">
+              {navLinks.map((link, index) => (
+                <li key={index}>
+                  <Link 
+                    href={link.href} 
+                    className="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* RIGHT: Actions */}
+          <div className="flex items-center gap-3 sm:gap-5 justify-end">
+            
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
+
+            {/* Cart Icon */}
+            <button
+              onClick={() => router.push("/checkout")}
+              className="relative p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Pending Purchases"
+            >
+              <ShoppingCart size={22} strokeWidth={2.5} />
+              {cartItemsCount > 0 && (
+                <span className="absolute top-0 right-0 bg-orange text-white text-[10px] font-black rounded-full h-4 w-4 flex items-center justify-center shadow-sm">
+                  {cartItemsCount > 99 ? '99+' : cartItemsCount}
+                </span>
+              )}
+            </button>
+
+            {/* Auth Buttons */}
+            <div className="hidden sm:flex items-center gap-3">
+              {user ? (
+                <button
+                  onClick={() => router.push("/dashboard")}
+                  className="bg-foreground text-background text-sm font-bold px-6 py-2.5 rounded-full hover:scale-105 transition-transform shadow-md"
+                >
+                  Ecosystem Dashboard
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => router.push("/login")}
+                    className="text-sm font-bold text-foreground hover:text-orange transition-colors px-2"
+                  >
+                    Log in
+                  </button>
+                  <button
+                    onClick={() => router.push("/signup")}
+                    className="bg-orange text-white text-sm font-bold px-6 py-2.5 rounded-full hover:scale-105 transition-transform shadow-md shadow-orange/20"
+                  >
+                    Start Building
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Mobile Hamburger Toggle */}
+            <button
+              className="lg:hidden p-2 text-foreground rounded-full hover:bg-muted transition-colors"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
+      </nav>
 
-        {/* Desktop auth links + cart + hamburger icon */}
-        <div className="flex items-center gap-4 md:w-[30%] justify-end">
-          {/* Theme Toggle */}
-           <ThemeToggle />
+      {/* MOBILE MENU OVERLAY */}
+      {/* Backdrop */}
+      <div 
+        className={`fixed inset-0 bg-background/80 backdrop-blur-sm z-50 lg:hidden transition-opacity duration-300 ${
+          isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
+        aria-hidden="true"
+      />
 
-          {/* Cart Icon */}
-          <button
-            onClick={() => router.push("/checkout")}
-            className="relative p-2 hover:bg-gray-100 dark:hover:bg-[#2a2f3a] rounded-full transition-colors"
-            aria-label="Pending Purchases"
-          >
-            <ShoppingCart size={24} className="text-gray-700 dark:text-gray-300" />
-            {cartItemsCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-yellow text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                {cartItemsCount > 99 ? '99+' : cartItemsCount}
-              </span>
-            )}
-          </button>
-
-          {/* If logged in, redirect to dashboard, else, redirect to login page */}
-          <ul className="flex justify-end items-center gap-4">
-          {user ? (
-            <li>
-              <button
-                onClick={async () => {
-                  try {
-                    router.push("/dashboard");
-                  } catch (err) {
-                    console.error("Unable to redirect to dashboard", err);
-                  }
-                }}
-                className="bg-yellow text-white text-xs md:text-sm font-medium px-6 py-3 cursor-pointer hover:bg-yellow/90 transition inline-block rounded"
-              >
-                Go to Dashboard
-              </button>
-            </li>
-          ) : (
-            <li>
-              <button
-                onClick={() => router.push("/signup")}
-                className="bg-yellow text-white text-xs md:text-sm font-medium px-6 py-3 cursor-pointer hover:bg-yellow/90 transition inline-block rounded"
-              >
-                Start Learning
-              </button>
-            </li>
-          )}
-          </ul>           
-          <button
-            className="lg:hidden text-gray-700 dark:text-gray-300"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile menu */}
+      {/* Slide-out Menu */}
       <div
         ref={menuRef}
-        className={`fixed top-0 left-0 z-50 bg-darkBlue-500/95 dark:bg-[#1d2026]/95 backdrop-blur-lg transform transition-transform duration-300 ease-in-out h-screen overflow-hidden flex flex-col justify-start items-start gap-12 py-4 w-72 ${
+        className={`fixed top-0 left-0 z-50 bg-card border-r border-border/50 h-screen w-[80%] max-w-sm flex flex-col shadow-2xl transform transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] lg:hidden ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex justify-between items-center px-4 w-full">
-          <Link href="/">
+        {/* Mobile Header */}
+        <div className="flex justify-between items-center px-6 py-5 border-b border-border/50">
+          <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
             <Image
-              src={"/assets/NextHive Logo.png"}
+              src="/assets/NextHive Logo.png"
               alt="NextHive Logo"
-              width={70}
-              height={70}
+              width={90}
+              height={30}
+              className="h-7 w-auto object-contain dark:invert"
             />
           </Link>
+          <button 
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="p-2 rounded-full bg-muted text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <X size={20} />
+          </button>
         </div>
 
-        <div className="px-4 w-full">
-          <ul className="flex flex-col gap-8 text-sm text-white">
-            <li>
-              <Link href="/" className="active:text-yellow transition">
-                Why NextHive
-              </Link>
-            </li>
-
-            <li>
-              <Link href="/" className="active:text-yellow transition">
-                Solutions
-              </Link>
-            </li>
-
-            <li>
-              <Link href="/" className="active:text-yellow transition">
-                Pricing
-              </Link>
-            </li>
-
-            <li className="flex items-center gap-1 cursor-pointer group active:text-yellow transition">
-              <span>Resources</span>
-              <ChevronDown className="text-[#384957] group-hover:text-yellow w-4 h-4" />
-            </li>
-
-            {/* Mobile theme toggle */}
-     
-          <ThemeToggle />
+        {/* Mobile Links */}
+        <div className="flex-1 overflow-y-auto py-6 px-6">
+          <ul className="flex flex-col gap-6 text-lg font-bold text-foreground">
+            {navLinks.map((link, index) => (
+              <li key={index}>
+                <Link 
+                  href={link.href} 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block w-full hover:text-orange transition-colors"
+                >
+                  {link.title}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
+
+        {/* Mobile Footer / Auth */}
+        <div className="p-6 border-t border-border/50 space-y-6 bg-muted/30">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-bold text-muted-foreground">Theme</span>
+            <ThemeToggle />
+          </div>
+          
+          <div className="flex flex-col gap-3">
+            {user ? (
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  router.push("/dashboard");
+                }}
+                className="w-full bg-foreground text-background text-base font-bold py-3.5 rounded-xl hover:opacity-90 transition-opacity"
+              >
+                Ecosystem Dashboard
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    router.push("/login");
+                  }}
+                  className="w-full bg-muted text-foreground border border-border/50 text-base font-bold py-3.5 rounded-xl hover:bg-muted/80 transition-colors"
+                >
+                  Log in
+                </button>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    router.push("/signup");
+                  }}
+                  className="w-full bg-orange text-white text-base font-bold py-3.5 rounded-xl shadow-lg shadow-orange/20"
+                >
+                  Start Building
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       </div>
-    </nav>
+    </>
   );
 };
 
