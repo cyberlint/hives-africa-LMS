@@ -119,7 +119,7 @@ const Home = async () => {
                 className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-6"
               >
                 {user ? (
-                  <Link href="/dashboard" className="w-full sm:w-auto flex items-center justify-center gap-2 text-background bg-foreground text-base font-bold px-8 py-4 rounded-full hover:scale-[1.02] transition-transform shadow-xl">
+                  <Link href="/dashboard" className="w-full sm:w-auto flex items-center justify-center gap-2 text-background bg-yellow text-base font-bold px-8 py-4 rounded-full hover:scale-[1.02] transition-transform shadow-xl">
                     Enter Ecosystem
                     <ArrowRight className="size-5" />
                   </Link>

@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Zap, Calendar, ShieldCheck, ArrowRight } from "lucide-react";
+import { Zap, Calendar, ShieldCheck, ArrowRight } from "lucide-react"; // Removed 'Link' from lucide-react
+import Link from "next/link"; // Added correct Next.js Link
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 export type PulseItem = {
   id: string;
@@ -20,7 +22,7 @@ export function LivePulseFeed({ initialData }: { initialData: PulseItem[] }) {
   // Cycle the feed every 4 seconds to make it feel "live"
   useEffect(() => {
     if (items.length <= 4) return; // Only cycle if we have enough items
-    
+
     const interval = setInterval(() => {
       setItems((prev) => {
         const newItems = [...prev];
@@ -48,9 +50,9 @@ export function LivePulseFeed({ initialData }: { initialData: PulseItem[] }) {
 
   return (
     <div className="relative h-[450px] sm:h-[550px] w-full max-w-md mx-auto lg:ml-auto rounded-[2.5rem] border border-border/50 bg-background/40 backdrop-blur-xl shadow-2xl shadow-orange/5 overflow-hidden flex flex-col">
-      
+
       {/* HEADER: The "Live" Indicator */}
-      <div className="flex items-center justify-between p-6 border-b border-border/50 bg-background/50 relative z-10">
+      <div className="flex items-center justify-between p-6 border-b border-border/50 bg-background/50 relative z-10 shrink-0">
         <div className="flex items-center gap-3">
           <div className="relative flex items-center justify-center">
             <span className="absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-20 animate-ping" />
@@ -62,15 +64,15 @@ export function LivePulseFeed({ initialData }: { initialData: PulseItem[] }) {
       </div>
 
       {/* THE FEED (With Top/Bottom CSS Fade Mask) */}
-      <div 
-        className="flex-1 relative p-6 overflow-hidden"
+      <div
+        className="flex-1 min-h-0 relative p-6 overflow-hidden"
         style={{ maskImage: 'linear-gradient(to bottom, transparent, black 5%, black 95%, transparent)' }}
       >
         <div className="flex flex-col gap-4">
           <AnimatePresence initial={false}>
-            {items.slice(0, 5).map((item, index) => {
+            {items.slice(0, 5).map((item) => {
               const { icon: Icon, color, bg } = getIconConfig(item.type);
-              
+
               return (
                 <motion.div
                   key={item.id}
@@ -85,7 +87,7 @@ export function LivePulseFeed({ initialData }: { initialData: PulseItem[] }) {
                     <AvatarImage src={item.user.image || undefined} />
                     <AvatarFallback className="text-xs bg-muted">{item.user.name.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  
+
                   <div className="flex-1 space-y-1 overflow-hidden">
                     <p className="text-sm font-semibold text-foreground leading-tight group-hover:text-orange transition-colors">
                       {item.title}
@@ -106,11 +108,16 @@ export function LivePulseFeed({ initialData }: { initialData: PulseItem[] }) {
       </div>
 
       {/* FOOTER ACTION */}
-      <div className="p-4 border-t border-border/50 bg-background/50 relative z-10">
-        <button className="w-full flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-orange transition-colors py-2">
-          Join the Ecosystem <ArrowRight className="size-3" />
-        </button>
+      <div className="relative z-10 border-t border-border/50 bg-background/50 backdrop-blur-md rounded-b-[inherit] overflow-hidden shrink-0">
+        <Link
+          href="/signup"
+          className="group flex w-full items-center justify-center gap-2.5 px-4 py-5 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-orange hover:bg-muted/50 transition-all duration-300"
+        >
+          Join the Ecosystem
+          <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1.5" />
+        </Link>
       </div>
+
     </div>
   );
 }
