@@ -130,7 +130,7 @@ export default function PanAfricanVision() {
                 >
                   <div className="px-3 py-2 rounded-xl bg-card border border-border shadow-sm">
                     <p className="text-xs font-semibold text-foreground whitespace-nowrap">
-                      "{lang.greeting}"
+                      &quot;{lang.greeting}&quot;
                     </p>
                     <span className="text-[9px] text-muted-foreground uppercase">
                       {lang.name}
