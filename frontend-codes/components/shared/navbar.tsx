@@ -134,7 +134,7 @@ const Navbar = () => {
               ) : (
                 <>
                   <button
-                    onClick={() => router.push("/login")}
+                    onClick={() => router.push("/signin")}
                     className="text-sm font-bold text-foreground hover:text-orange transition-colors px-2"
                   >
                     Log in
@@ -235,7 +235,7 @@ const Navbar = () => {
                 <button
                   onClick={() => {
                     setIsMobileMenuOpen(false);
-                    router.push("/login");
+                    router.push("/signin");
                   }}
                   className="w-full bg-muted text-foreground border border-border/50 text-base font-bold py-3.5 rounded-xl hover:bg-muted/80 transition-colors"
                 >
