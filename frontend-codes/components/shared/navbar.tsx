@@ -127,9 +127,9 @@ const Navbar = () => {
               {user ? (
                 <button
                   onClick={() => router.push("/dashboard")}
-                  className="bg-foreground text-background text-sm font-bold px-6 py-2.5 rounded-full hover:scale-105 transition-transform shadow-md"
+                  className="bg-yellow text-background text-sm font-bold px-6 py-2.5 rounded-full hover:scale-105 transition-transform shadow-md"
                 >
-                  Ecosystem Dashboard
+                  Dashboard
                 </button>
               ) : (
                 <>
@@ -226,9 +226,9 @@ const Navbar = () => {
                   setIsMobileMenuOpen(false);
                   router.push("/dashboard");
                 }}
-                className="w-full bg-foreground text-background text-base font-bold py-3.5 rounded-xl hover:opacity-90 transition-opacity"
+                className="w-full bg-yellow text-background text-base font-bold py-3.5 rounded-xl hover:opacity-90 transition-opacity"
               >
-                Ecosystem Dashboard
+                Dashboard
               </button>
             ) : (
               <>
