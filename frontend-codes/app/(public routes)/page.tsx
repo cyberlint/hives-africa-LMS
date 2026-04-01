@@ -171,11 +171,11 @@ const Home = async () => {
                     Beyond Certificates
                   </div>
                   <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white leading-tight">
-                    We don't just teach tech. <br />
+                    {"We don't just teach tech."} <br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange to-amber-400">We build professionals.</span>
                   </h2>
                   <p className="text-zinc-400 leading-relaxed text-base md:text-lg max-w-md">
-                    Employers don't hire paper certificates; they hire proven problem solvers. Every project you complete on NextHive builds a cryptographically verified portfolio mapped across three critical dimensions.
+                    {"Employers don't hire paper certificates; they hire proven problem solvers. Every project you complete on NextHive builds a cryptographically verified portfolio mapped across three critical dimensions."}
                   </p>
                 </div>
 

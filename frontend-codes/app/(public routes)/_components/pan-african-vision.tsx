@@ -48,7 +48,7 @@ export default function PanAfricanVision() {
               </h2>
               
               <p className="text-lg text-muted-foreground leading-relaxed max-w-lg text-balance">
-                The cognitive load of learning complex tech is heavy enough. You shouldn't have to translate your thoughts twice. NextHive is the first ecosystem built to let you solve local problems with native context.
+                {"The cognitive load of learning complex tech is heavy enough. You shouldn't have to translate your thoughts twice. NextHive is the first ecosystem built to let you solve local problems with native context."}
               </p>
             </MotionDiv>
 
@@ -128,7 +128,7 @@ export default function PanAfricanVision() {
                   >
                     <div className="flex flex-col items-center gap-1 p-3 md:p-4 rounded-[2rem] bg-card/90 backdrop-blur-xl border border-border/50 shadow-lg hover:shadow-green-500/20 hover:border-green-500/40 transition-all duration-300">
                       <span className="text-xs md:text-sm font-black text-foreground group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors whitespace-nowrap">
-                        "{lang.greeting}"
+                        &quot;{lang.greeting}&quot;
                       </span>
                       <Badge variant="secondary" className="bg-muted/80 text-muted-foreground text-[9px] uppercase font-bold border-none px-2 py-0.5">
                         {lang.name}
