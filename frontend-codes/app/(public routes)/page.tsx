@@ -43,92 +43,131 @@ const Home = async () => {
     <main className="-mb-16 bg-background">
 
       {/* 1. THE HOOK: Hero & Live Pulse */}
-      <section className="relative w-full bg-background overflow-hidden transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 md:pt-20 md:pb-24">
-          <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
+      <section className="relative w-full bg-background overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-14 sm:pt-14 sm:pb-16 md:pt-20 md:pb-24">
 
-            <div className="space-y-6 md:space-y-8 text-center lg:text-left">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14 lg:gap-16 items-center">
+
+            {/* LEFT CONTENT */}
+            <div className="space-y-6 sm:space-y-7 md:space-y-8 text-center lg:text-left">
+
+              {/* BADGE */}
               <MotionDiv
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-2 bg-orange/10 px-4 py-2 rounded-full border border-orange/20 shadow-sm"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 bg-orange/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-orange/20 shadow-sm"
               >
                 <span className="w-2 h-2 bg-orange rounded-full animate-pulse"></span>
-                <span className="text-xs md:text-sm font-bold tracking-wide text-orange">
+                <span className="text-[10px] sm:text-xs md:text-sm font-bold tracking-wide text-orange">
                   #1 AI Learning Ecosystem in Africa
                 </span>
               </MotionDiv>
 
+              {/* HEADLINE */}
               <MotionH1
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-4xl sm:text-5xl lg:text-[4rem] font-black text-foreground tracking-tight leading-[1.1] text-balance"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="text-[2rem] leading-[1.2] sm:text-4xl md:text-5xl lg:text-[4rem] font-black text-foreground tracking-tight text-balance"
               >
                 Learn.{" "}
                 <span className="bg-gradient-to-r from-orange to-amber-500 bg-clip-text text-transparent">
-                  Build. {" "}
-                </span>
+                  Build.
+                </span>{" "}
                 <br className="hidden sm:block" />
                 Get Recognized.
               </MotionH1>
 
+              {/* DESCRIPTION */}
               <MotionP
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
-                className="text-base md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed text-balance"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed text-balance"
               >
                 Join live challenges, collaborate with peers, earn reputation, and build verifiable skills — not just certificates.
               </MotionP>
 
+              {/* SOCIAL PROOF */}
               <MotionDiv
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}
-                className="flex flex-wrap items-center justify-center lg:justify-start gap-5 md:gap-6 pt-2"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5 sm:gap-6 pt-2"
               >
-                {/* Upgraded to realistic avatars */}
+                {/* AVATARS */}
                 <div className="flex items-center gap-3">
                   <div className="flex -space-x-3">
                     {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="size-8 md:size-10 rounded-full border-2 border-background overflow-hidden bg-muted shadow-sm">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Builder" className="w-full h-full object-cover" />
+                      <div
+                        key={i}
+                        className="size-7 sm:size-8 md:size-10 rounded-full border-2 border-background overflow-hidden bg-muted shadow-sm"
+                      >
+                        <img
+                          src={`https://i.pravatar.cc/100?img=${i + 10}`}
+                          alt="Builder"
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     ))}
                   </div>
-                  <div className="text-sm">
+                  <div className="text-xs sm:text-sm">
                     <p className="font-black text-foreground">10,000+</p>
-                    <p className="text-xs text-muted-foreground font-medium">Active Builders</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground font-medium">
+                      Active Builders
+                    </p>
                   </div>
                 </div>
 
-                <div className="h-10 w-px bg-border hidden sm:block"></div>
+                {/* DIVIDER */}
+                <div className="hidden sm:block h-10 w-px bg-border"></div>
 
+                {/* RATING */}
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-0.5">
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <svg key={star} className="w-4 h-4 text-orange" fill="currentColor" viewBox="0 0 20 20">
+                      <svg key={star} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                     ))}
                   </div>
-                  <div className="text-sm">
+                  <div className="text-xs sm:text-sm">
                     <p className="font-black text-foreground">4.9/5</p>
-                    <p className="text-xs text-muted-foreground font-medium">Platform Rating</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground font-medium">
+                      Platform Rating
+                    </p>
                   </div>
                 </div>
               </MotionDiv>
 
+              {/* CTA */}
               <MotionDiv
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}
-                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-6"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-4 sm:pt-6"
               >
                 {user ? (
-                  <Link href="/dashboard" className="w-full sm:w-auto flex items-center justify-center gap-2 text-background bg-yellow text-base font-bold px-8 py-4 rounded-full hover:scale-[1.02] transition-transform shadow-xl">
+                  <Link
+                    href="/dashboard"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 text-background bg-yellow text-sm sm:text-base font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-full hover:scale-[1.02] transition-transform shadow-xl"
+                  >
                     Enter Ecosystem
-                    <ArrowRight className="size-5" />
+                    <ArrowRight className="size-4 sm:size-5" />
                   </Link>
                 ) : (
                   <>
-                    <Link href="/signup" className="w-full sm:w-auto bg-orange text-white text-base font-bold px-8 py-4 rounded-full shadow-lg shadow-orange/20 hover:shadow-orange/40 hover:scale-[1.02] transition-all text-center">
+                    <Link
+                      href="/signup"
+                      className="w-full sm:w-auto bg-orange text-white text-sm sm:text-base font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-full shadow-lg shadow-orange/20 hover:shadow-orange/40 hover:scale-[1.02] transition-all text-center"
+                    >
                       Start Building Now
                     </Link>
-                    <Link href="/course" className="w-full sm:w-auto flex items-center justify-center gap-2 text-foreground text-base font-bold px-8 py-4 rounded-full border-2 border-border/50 hover:bg-muted transition-colors">
+                    <Link
+                      href="/course"
+                      className="w-full sm:w-auto flex items-center justify-center gap-2 text-foreground text-sm sm:text-base font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-full border-2 border-border/50 hover:bg-muted transition-colors"
+                    >
                       Explore Tracks
                     </Link>
                   </>
@@ -136,14 +175,18 @@ const Home = async () => {
               </MotionDiv>
             </div>
 
+            {/* RIGHT: LIVE FEED */}
             <MotionDiv
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="relative mt-12 lg:mt-0 flex items-center justify-center lg:justify-end"
+              className="relative mt-6 sm:mt-10 lg:mt-0 flex items-center justify-center lg:justify-end w-full"
             >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[400px] bg-orange/10 blur-[100px] rounded-full pointer-events-none -z-10" />
-              <LivePulseFeed initialData={livePulseData} />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[260px] sm:size-[320px] md:size-[400px] bg-orange/10 blur-[80px] md:blur-[100px] rounded-full pointer-events-none -z-10" />
+
+              <div className="w-full max-w-[420px] md:max-w-[480px] lg:max-w-[520px]">
+                <LivePulseFeed initialData={livePulseData} />
+              </div>
             </MotionDiv>
           </div>
         </div>
