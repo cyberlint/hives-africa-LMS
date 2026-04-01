@@ -16,7 +16,7 @@ export async function createEvent(data: unknown, userId: string) {
   const event = await prisma.event.create({
     data: {
       ...parsed,
-      userId, // now this is correct
+      userId,
     },
   });
 
