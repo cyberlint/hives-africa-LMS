@@ -287,7 +287,7 @@ export async function getTheVanguard() {
       id: user?.id || `unknown-${index}`,
       name: user?.name || "Anonymous Builder",
       image: user?.image || null,
-      role: user?.jobTitle || "NextHive Architect",
+      role: user?.jobTitle || "NextHive Builder",
       points: ag._sum.points || 0,
       rank: index + 1 // 1, 2, 3, 4, 5
     };

@@ -59,12 +59,25 @@ export async function submitInstructorReview({
             skipDuplicates: true, 
           })
         }
+
+        console.log("4.5 Inside transaction: Awarding Reputation...")
+        // Only award points if the activity actually has a point value assigned
+        if (updatedSub.activity.points > 0) {
+          await tx.reputationTransaction.create({
+            data: {
+              userId: updatedSub.userId,
+              points: updatedSub.activity.points, // Pulls the base points from the Activity model
+              reason: `Project Approved: ${updatedSub.activity.title}`,
+              activityId: updatedSub.activityId
+            }
+          })
+        }
       }
 
       return updatedSub
     })
 
-    console.log("5. Transaction complete. Firing Event Bus...")
+    console.log("5. Transaction complete. Firing Event Bus for Communications...")
 
     // Wrap the Event Bus in a try/catch so a notification failure doesn't freeze the app!
     try {
