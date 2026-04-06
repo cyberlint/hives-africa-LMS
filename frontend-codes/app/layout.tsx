@@ -18,7 +18,10 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "NextHive | The Pan-African AI School",
+  title: {
+    template: "%s | NextHive",
+    default: "NextHive | The Pan-African AI Accellerator",
+  },
   description: "Empowering Africa's Future with AI Education",
 
   // Favicon / Icons
@@ -57,7 +60,10 @@ export const metadata: Metadata = {
   // Twitter Card
   twitter: {
     card: "summary_large_image",
-    title: "NextHive | The Pan-African AI School",
+    title: {
+      template: "%s | NextHive",
+      default: "NextHive | The Pan-African AI Accellerator",
+    },
     description: "Empowering Africa's Future with AI Education",
     images: [
       "https://nexthive-lms.t3.storage.dev/Brand%20Identity/NextHive%20Logo%20-%20Orange%20BG.png",

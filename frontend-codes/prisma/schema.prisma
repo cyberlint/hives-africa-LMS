@@ -2,20 +2,26 @@ generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
 }
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+// ==========================================
+// 1. CORE & AUTHENTICATION
+// ==========================================
+
+/// Core user profile containing auth, onboarding, and global relations.
 model User {
-  id                     String   @id
-  name                   String
-  email                  String
-  emailVerified          Boolean  @default(false)
-  image                  String?
-  bio                    String?
-  website                String?
-  // ---  Onboarding Fields ---
+  id            String  @id
+  name          String
+  email         String  @unique
+  emailVerified Boolean @default(false)
+  image         String?
+  bio           String?
+  website       String?
+
   hasCompletedOnboarding Boolean  @default(false)
   primaryLanguage        String   @default("English")
   localLanguage          String?
@@ -23,39 +29,58 @@ model User {
   careerInterests        String[] @default([])
   learningIntent         String?
 
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @default(now()) @updatedAt
-  sessions         Session[]
-  accounts         Account[]
-  courses          Course[]
-  enrollments      Enrollment[]
-  lessonProgress   LessonProgress[]
-  userAchievements UserAchievement[]
-  wishlist         Wishlist[]
+  role       String?
+  banned     Boolean?  @default(false)
+  banReason  String?
+  banExpires DateTime?
 
-  role         String?
-  banned       Boolean?       @default(false)
-  banReason    String?
-  banExpires   DateTime?
-  payments     Payment[]
-  CourseReview CourseReview[]
-  events       Event[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions Session[]
+  accounts Account[]
+  payments Payment[]
+  events   Event[]
+
+  courses        Course[]
+  enrollments    Enrollment[]
+  lessonProgress LessonProgress[]
+  wishlists      Wishlist[]
+  courseReviews  CourseReview[]
 
   createdActivities Activity[]      @relation("ActivityCreator")
   participations    Participation[]
   submissions       Submission[]    @relation("UserSubmissions")
-  teamMemberships   TeamMember[]
 
-  // Review Engine Relations
-  assignedReviews ReviewAssignment[] @relation("AssignedReviews") // <--- NEW ADDITION
-  reviewsGiven    Review[]           @relation("ReviewsGiven")
+  /// Tracks the specific equity a user claimed on a team project.
+  submissionClaims SubmissionRoster[]
 
-  // Value & Credibility Track
+  teamMemberships  TeamMember[]
+  userAchievements UserAchievement[]
   earnedKSBs       UserKSB[]
   reputationLedger ReputationTransaction[]
   portfolio        PortfolioItem[]
 
-  @@unique([email])
+  assignedReviews ReviewAssignment[] @relation("AssignedReviews")
+  reviewsGiven    Review[]           @relation("ReviewsGiven")
+
+  /// The user's V-Signals (verified posts) in the social feed.
+  signals Signal[]
+
+  /// Reactions given by the user to other signals.
+  sparks Spark[]
+
+  threads         Thread[]
+  bountiesCreated Bounty[]     @relation("BountyCreator")
+  bountiesWon     Bounty[]     @relation("BountyWinner")
+  connectionsA    Connection[] @relation("UserAConnections")
+  connectionsB    Connection[] @relation("UserBConnections")
+
+  hiveMemberships  HiveMember[]
+  proposalsCreated Proposal[]    @relation("ProposalCreator")
+  votesCast        Vote[]
+  HiveMessage      HiveMessage[]
+
   @@map("user")
 }
 
@@ -63,13 +88,15 @@ model Session {
   id             String   @id
   expiresAt      DateTime
   token          String   @unique
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
   ipAddress      String?
   userAgent      String?
   userId         String
   impersonatedBy String?
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("session")
 }
@@ -86,9 +113,11 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("account")
 }
@@ -99,38 +128,44 @@ model Verification {
   value      String
   expiresAt  DateTime
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  updatedAt  DateTime @updatedAt
 
   @@map("verification")
 }
 
+// ==========================================
+// 2. LMS & COURSE ENGINE
+// ==========================================
+
 model Course {
-  id               String       @id @default(uuid())
+  id               String @id @default(uuid())
   title            String
   description      String
+  shortdescription String
   fileKey          String
+  slug             String @unique
   price            Float
   originalPrice    Float?
-  registrationFee  Float?       @default(0)
-  duration         Int // duration in hours
-  level            CourseLevel  @default(Beginner)
+  registrationFee  Float? @default(0)
+  duration         Int
   category         String
-  shortdescription String
-  slug             String       @unique
-  status           CourseStatus @default(Draft)
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @default(now()) @updatedAt
-  userId           String
-  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  level  CourseLevel  @default(Beginner)
+  status CourseStatus @default(Draft)
+
+  userId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   module        Module[]
   enrollments   Enrollment[]
   payments      Payment[]
   wishlistItems Wishlist[]
   reviews       CourseReview[]
-
-  programs   ProgramCourse[]
-  activities Activity[]
+  programs      ProgramCourse[]
+  activities    Activity[]
 }
 
 enum CourseLevel {
@@ -154,8 +189,9 @@ model CourseReview {
   courseId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
 }
@@ -164,31 +200,35 @@ model Module {
   id        String   @id @default(uuid())
   title     String
   position  Int
+  courseId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  courseId  String
-  lessons   Lesson[]
-  Course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  lessons Lesson[]
+  Course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
 model Lesson {
-  id             String           @id @default(uuid())
-  title          String
-  description    String?
-  thumbnailKey   String?
-  videoKey       String?
-  position       Int
-  type           LessonType       @default(Video)
-  content        String?
-  duration       Int?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  moduleId       String
-  documentKey    String?
-  quizConfig     Json?
+  id           String  @id @default(uuid())
+  title        String
+  description  String?
+  content      String?
+  thumbnailKey String?
+  videoKey     String?
+  documentKey  String?
+  quizConfig   Json?
+
+  position Int
+  duration Int?
+  type     LessonType @default(Video)
+  moduleId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   attachments    Attachment[]
-  Module         Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   lessonProgress LessonProgress[]
+  Module         Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 }
 
 enum LessonType {
@@ -206,29 +246,32 @@ model Attachment {
   type        String
   url         String
   fileSize    String?
+  lessonId    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  lessonId    String
   Lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 }
 
 model Enrollment {
-  id               String        @id @default(uuid())
-  enrolledAt       DateTime      @default(now())
-  completedAt      DateTime?
-  progress         Float         @default(0)
-  userId           String
-  courseId         String
+  id       String @id @default(uuid())
+  userId   String
+  courseId String
+  progress Float  @default(0)
+
+  paymentId        String?       @unique
   paymentReference String?
   paymentStatus    PaymentStatus @default(Pending)
   paymentAmount    Float?
-  paidAt           DateTime?
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  paymentId        String?       @unique
-  Course           Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  payment          Payment?      @relation(fields: [paymentId], references: [id])
-  User             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  paidAt      DateTime?
+  enrolledAt  DateTime  @default(now())
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  Course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  payment Payment? @relation(fields: [paymentId], references: [id])
+  User    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
   @@index([userId])
@@ -243,17 +286,19 @@ enum PaymentStatus {
 }
 
 model LessonProgress {
-  id          String    @id @default(uuid())
-  completed   Boolean   @default(false)
-  completedAt DateTime?
-  currentTime Int?
+  id          String  @id @default(uuid())
   userId      String
   lessonId    String
+  completed   Boolean @default(false)
+  score       Float?
+  currentTime Int?
+
+  completedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  score       Float?
-  Lesson      Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  Lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
   @@index([userId])
@@ -268,76 +313,55 @@ model Payment {
   status        PaymentStatus @default(Pending)
   paymentMethod String?
   metadata      Json?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
   userId        String
   courseId      String
-  enrollment    Enrollment?
-  course        Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollment Enrollment?
+  course     Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([courseId])
 }
 
-model Achievement {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  icon        String
-  category    String
-  points      Int
-  rarity      String
-  isSecret    Boolean  @default(false)
-  steps       String[] // Stored as array of strings
-  maxProgress Int      @default(1)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  userAchievements UserAchievement[]
-}
-
-model UserAchievement {
-  id            String      @id @default(uuid())
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String
-  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
-  achievementId String
-  unlockedAt    DateTime?
-  progress      Int         @default(0)
-  isUnlocked    Boolean     @default(false)
-
-  @@unique([userId, achievementId])
-}
-
 model Wishlist {
   id        String   @id @default(uuid())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId  String
   createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
 }
 
+// ==========================================
+// 3. EVENTS & PROGRAMS
+// ==========================================
+
 model Event {
-  id               String        @id @default(uuid())
+  id               String   @id @default(uuid())
   title            String
   shortdescription String
   description      String
   startdate        DateTime
   enddate          DateTime
   imageKey         String?
-  venue            EventVenue    @default(NextHive)
   url              String?
-  eventCategory    EventCategory @default(Tutorial)
-  isOnline         Boolean       @default(true)
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
   userId           String
-  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  venue         EventVenue    @default(NextHive)
+  eventCategory EventCategory @default(Tutorial)
+  isOnline      Boolean       @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum EventVenue {
@@ -370,20 +394,15 @@ enum EventCategory {
   Bootcamp
 }
 
-// ================ACTIVITY and PROGRAM==========================
-// ==========================================
-// 1. CORE GROUPING
-// ==========================================
-
 model Program {
-  id          String   @id @default(uuid())
-  title       String
+  id               String   @id @default(uuid())
+  title            String
   shortdescription String
-  description String
-  fileKey     String
-  slug        String   @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  description      String
+  fileKey          String
+  slug             String   @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   courses    ProgramCourse[]
   activities Activity[]
@@ -401,24 +420,24 @@ model ProgramCourse {
 }
 
 // ==========================================
-// 2. THE ACTIVITY ENGINE
+// 4. THE ACTIVITY ENGINE
 // ==========================================
 
+/// Defines verifiable work tasks, challenges, and milestones used to generate Signals.
 model Activity {
-  id          String             @id @default(uuid())
+  id          String    @id @default(uuid())
   title       String
   description String?
-  type        ActivityType
-  status      ActivityStatus     @default(Draft)
-  visibility  ActivityVisibility @default(Public)
-  difficulty  ActivityDifficulty @default(Intermediate)
-
   points      Int       @default(0)
   isMandatory Boolean   @default(false)
   startDate   DateTime?
   deadline    DateTime?
 
-  // Relations
+  type       ActivityType
+  status     ActivityStatus     @default(Draft)
+  visibility ActivityVisibility @default(Public)
+  difficulty ActivityDifficulty @default(Intermediate)
+
   courseId  String?
   programId String?
   creatorId String
@@ -434,32 +453,25 @@ model Activity {
   participations Participation[]
   submissions    Submission[]
   ksbs           ActivityKSB[]
-  teams          Team[] //Teams belong to an activity
+  teams          Team[]
 }
 
 enum ActivityType {
-  // Builder Track
   Project
   Task
   Capstone
   Case_Study
   Client_Simulation
-
-  // Collaborative & Competitive Track
   Challenge
   Hackathon
   Datathon
   Team_Project
   Open_Source_Contribution
-
-  // Community & Leadership Track
   Event_Hosting
   Event_Participation
   Study_Group_Leadership
   Mentorship
   Peer_Review
-
-  // Creator & Knowledge Track
   Community_Contribution
   Tutorial_Creation
   Content_Translation
@@ -512,14 +524,14 @@ enum RequirementType {
 }
 
 // ==========================================
-// 3. COLLABORATION & PARTICIPATION (V2 Fixes)
+// 5. COLLABORATION (Teams & Participation)
 // ==========================================
 
 model Team {
   id          String   @id @default(uuid())
   name        String
   description String?
-  activityId  String //Team bound to Activity
+  activityId  String
   createdAt   DateTime @default(now())
 
   activity       Activity        @relation(fields: [activityId], references: [id], onDelete: Cascade)
@@ -545,15 +557,15 @@ model Participation {
   id         String            @id @default(uuid())
   userId     String
   activityId String
-  teamId     String? // Links user's participation to their team
-  role       ParticipationRole @default(Participant)
+  teamId     String?
   progress   Float             @default(0)
+  role       ParticipationRole @default(Participant)
   joinedAt   DateTime          @default(now())
 
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   activity    Activity     @relation(fields: [activityId], references: [id], onDelete: Cascade)
   team        Team?        @relation(fields: [teamId], references: [id], onDelete: SetNull)
-  submissions Submission[] // Link submissions directly to the participation instance
+  submissions Submission[]
 
   @@unique([userId, activityId])
 }
@@ -566,20 +578,25 @@ enum ParticipationRole {
 }
 
 // ==========================================
-// 4. SUBMISSION & REVIEW ENGINE
+// 6. SUBMISSION & CONTRIBUTION ENGINE
 // ==========================================
 
+/// The core output of a user or team. Used as an anchor to verify V-Signals.
 model Submission {
-  id              String           @id @default(uuid())
+  id              String  @id @default(uuid())
   activityId      String
-  userId          String? // Note: App logic MUST enforce (userId OR teamId)
+  userId          String?
   teamId          String?
   participationId String?
   content         Json
-  status          SubmissionStatus @default(Draft)
-  submittedAt     DateTime?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+
+  /// Holds the GitHub/Figma link for API Anchor verification.
+  verificationUrl String?
+
+  status      SubmissionStatus @default(Draft)
+  submittedAt DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 
   activity      Activity       @relation(fields: [activityId], references: [id], onDelete: Cascade)
   user          User?          @relation("UserSubmissions", fields: [userId], references: [id], onDelete: Cascade)
@@ -587,8 +604,11 @@ model Submission {
   participation Participation? @relation(fields: [participationId], references: [id], onDelete: SetNull)
 
   reviews     Review[]
-  assignments ReviewAssignment[] // Links to the distribution engine
+  assignments ReviewAssignment[]
   portfolio   PortfolioItem?
+
+  /// Ensures strict social consensus on group project contributions.
+  roster SubmissionRoster[]
 
   @@index([activityId])
 }
@@ -602,14 +622,40 @@ enum SubmissionStatus {
   Rejected
 }
 
-// The Distribution Engine Table
+/// Solves "Group Project Trauma" by forcing team consensus on equity splits before points are awarded.
+model SubmissionRoster {
+  id           String @id @default(uuid())
+  submissionId String
+  userId       String
+
+  /// The exact % of work the user claims to have done (e.g. 0.40 = 40%). Used to split reputation points.
+  claimedShare Float
+
+  /// Locked until all team members hit APPROVED. Disputed splits freeze grading.
+  approvalStatus SplitStatus @default(PENDING)
+
+  /// Stores fetched GitHub commits/PRs to algorithmically verify human claims.
+  verifiedMetrics Json?
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, userId])
+}
+
+enum SplitStatus {
+  PENDING
+  APPROVED
+  DISPUTED
+}
+
 model ReviewAssignment {
   id           String           @id @default(uuid())
   submissionId String
   reviewerId   String
   status       AssignmentStatus @default(Pending)
   assignedAt   DateTime         @default(now())
-  expiresAt    DateTime? // To handle reviewers who don't complete the task
+  expiresAt    DateTime?
 
   submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
   reviewer   User       @relation("AssignedReviews", fields: [reviewerId], references: [id], onDelete: Cascade)
@@ -629,12 +675,13 @@ model Review {
   id           String     @id @default(uuid())
   submissionId String
   reviewerId   String
-  type         ReviewType @default(Peer)
   score        Float?
   feedback     String?
   rubricScores Json?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  type         ReviewType @default(Peer)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
   reviewer   User       @relation("ReviewsGiven", fields: [reviewerId], references: [id], onDelete: Cascade)
@@ -647,9 +694,10 @@ enum ReviewType {
 }
 
 // ==========================================
-// 5. VALUE LAYER: KSBs, Reputation & Portfolio
+// 7. VALUE LAYER (KSBs, Portfolio, Rep Ledger)
 // ==========================================
 
+/// Knowledge, Skills, and Behaviors. The granular atoms of competence on the platform.
 model KSB {
   id          String   @id @default(uuid())
   title       String
@@ -659,6 +707,9 @@ model KSB {
 
   activities ActivityKSB[]
   earnedBy   UserKSB[]
+
+  /// Represents the collective expertise/capability of a Hive.
+  hives HiveKSB[]
 }
 
 enum KSBType {
@@ -681,8 +732,8 @@ model ActivityKSB {
 model UserKSB {
   userId   String
   ksbId    String
-  earnedAt DateTime @default(now())
   sourceId String?
+  earnedAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   ksb  KSB  @relation(fields: [ksbId], references: [id], onDelete: Cascade)
@@ -690,9 +741,12 @@ model UserKSB {
   @@id([userId, ksbId])
 }
 
+/// The Immutable Ledger. Single source of truth for all earned value. Never use derived static tables.
 model ReputationTransaction {
-  id         String   @id @default(uuid())
-  userId     String
+  id     String @id @default(uuid())
+  userId String
+
+  /// Can be positive (earned) or negative (spent on Bounties/creating Hives).
   points     Int
   reason     String
   activityId String?
@@ -722,15 +776,339 @@ enum Visibility {
   Invite_Only
 }
 
+// ==========================================
+// 8. THE PROOF-OF-WORK GRAPH (V-Signals)
+// ==========================================
 
-// ================ COMMUNICATIONS ENGINE ===============================
+/// The core Feed content. Replaces traditional noisy posts with verifiable proof-of-work.
+model Signal {
+  id       String     @id @default(uuid())
+  authorId String
+  content  String     @db.Text
+  type     SignalType @default(DISCUSSION)
+
+  // ================= THE CARROT (Proof Anchors) =================
+  /// Tagged a completed course/task to prove validity.
+  activityId      String?
+  /// Tagged a skill they learned to prove competence.
+  ksbId           String?
+  /// Tagged a project they built to show actual output.
+  portfolioItemId String?
+
+  /// Algorithmic driver. Increases dramatically if proof anchors are attached. Sorts the feed.
+  trustScore Float   @default(1.0)
+  mediaKey   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author   User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  sparks   Spark[]
+  threads  Thread[]
+  bounties Bounty[]
+
+  @@index([authorId])
+  @@index([trustScore(sort: Desc)])
+}
+
+enum SignalType {
+  DISCUSSION // Default standard text. Algorithmic base score.
+  SHOWCASE // Sharing a finished project. High algorithm multiplier.
+  MILESTONE // Celebrating a learned skill.
+  FIELD_NOTES // Technical tip. Fosters high-quality knowledge sharing.
+  HELP_NEEDED // Used in conjunction with Bounties.
+}
+
+/// Replaces traditional "Likes" with contextual, meaningful appreciation.
+model Spark {
+  id        String    @id @default(uuid())
+  signalId  String
+  userId    String
+  type      SparkType @default(INSIGHTFUL)
+  createdAt DateTime  @default(now())
+
+  signal Signal @relation(fields: [signalId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([signalId, userId])
+}
+
+enum SparkType {
+  INSIGHTFUL
+  HELPFUL
+  BRILLIANT
+}
+
+model Thread {
+  id        String   @id @default(uuid())
+  signalId  String
+  authorId  String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  signal Signal @relation(fields: [signalId], references: [id], onDelete: Cascade)
+  author User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// 9. THE HELP ECONOMY (Bounties & Connections)
+// ==========================================
+
+/// Liquid Reputation. Turns asking for help into a micro-economy for peer mentorship.
+model Bounty {
+  id          String  @id @default(uuid())
+  creatorId   String
+  signalId    String?
+  title       String
+  description String  @db.Text
+
+  /// Exact number of Reputation Points deducted from Creator's ledger and held in escrow.
+  stake    Int
+  status   BountyStatus @default(OPEN)
+  winnerId String?
+
+  awardedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  creator User    @relation("BountyCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  winner  User?   @relation("BountyWinner", fields: [winnerId], references: [id], onDelete: SetNull)
+  signal  Signal? @relation(fields: [signalId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+}
+
+enum BountyStatus {
+  OPEN
+  IN_PROGRESS
+  AWARDED
+  CANCELLED // Refunds the escrowed points back to the Creator.
+}
+
+/// The Work Graph. Connections built through verifiable collaboration, not empty "Follows".
+model Connection {
+  id      String @id @default(uuid())
+  userAId String
+  userBId String
+
+  /// ID of the team, activity, or review that brought them together.
+  sourceId   String
+  sourceType ConnectionSource
+
+  /// Grows if users collaborate multiple times, deepening the strength of the graph.
+  strength   Float    @default(1.0)
+  lastActive DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  userA User @relation("UserAConnections", fields: [userAId], references: [id], onDelete: Cascade)
+  userB User @relation("UserBConnections", fields: [userBId], references: [id], onDelete: Cascade)
+
+  @@unique([userAId, userBId, sourceId])
+  @@index([userAId])
+  @@index([userBId])
+}
+
+enum ConnectionSource {
+  TEAM_PROJECT
+  PEER_REVIEW
+  MENTORSHIP
+  BOUNTY_HELP
+}
+
+// ==========================================
+// 10. HIVES & GOVERNANCE (Autonomous Squads)
+// ==========================================
+
+/// Acts as a DAO/Startup. Collects reputation, maintains legacy, and governs via sweat equity.
+model Hive {
+  id          String  @id @default(uuid())
+  slug        String  @unique
+  name        String  @unique
+  description String? @db.Text
+
+  /// Retained Earnings. The permanent clout/ranking metric of the Hive.
+  reputation Int @default(0)
+
+  /// Split logic. E.g., 0.15 = 15% to Treasury, 75% to Active Workers, 10% to Dividend Pool.
+  treasurySplit Float   @default(0.15)
+  isRecruiting  Boolean @default(true)
+  isPrivate     Boolean @default(false)
+  creatorId     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members     HiveMember[]
+  ksbs        HiveKSB[]
+  proposals   Proposal[]
+  messages    HiveMessage[]
+}
+
+/// Dynamic cap table. Prevents freeloading by tracking actual contribution.
+model HiveMember {
+  id     String   @id @default(uuid())
+  hiveId String
+  userId String
+  role   HiveRole @default(MEMBER)
+
+  /// Dictates voting power and dividend cuts. Starts small, dilutes over time if inactive.
+  equityShare Float @default(0.01)
+
+  /// Total lifetime reputation points pulled from this Hive.
+  earnedDividends Int @default(0)
+
+  /// Used for LEAD roles to enforce elections and term limits.
+  termEndsAt DateTime?
+  joinedAt   DateTime  @default(now())
+
+  hive Hive @relation(fields: [hiveId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([hiveId, userId])
+}
+
+enum HiveRole {
+  FOUNDER
+  ADMIN
+  LEAD
+  MEMBER
+}
+
+model HiveMessage {
+  id        String   @id @default(uuid())
+  hiveId    String
+  userId    String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  hive       Hive      @relation(fields: [hiveId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Proposal   Proposal? @relation(fields: [proposalId], references: [id])
+  proposalId String?
+
+  @@index([hiveId])
+  @@index([createdAt])
+}
+
+/// Aggregates the strengths of individual members to show what the Hive as a collective is best at.
+model HiveKSB {
+  hiveId String
+  ksbId  String
+  weight Float  @default(1.0)
+
+  hive Hive @relation(fields: [hiveId], references: [id], onDelete: Cascade)
+  ksb  KSB  @relation(fields: [ksbId], references: [id], onDelete: Cascade)
+
+  @@id([hiveId, ksbId])
+}
+
+/// The Democratic Engine. Prevents autocracy via Equity-Weighted voting.
+model Proposal {
+  id        String @id @default(uuid())
+  hiveId    String
+  creatorId String
+
+  /// Used for IMPEACHMENT or LEADERSHIP_VOTE targets.
+  targetUserId String?
+
+  title       String
+  description String         @db.Text
+  type        ProposalType
+  status      ProposalStatus @default(ACTIVE)
+
+  /// True Mutiny protection. Hides creator identity in the UI to prevent retaliation.
+  isAnonymous Boolean @default(true)
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  hive    Hive          @relation(fields: [hiveId], references: [id], onDelete: Cascade)
+  creator User          @relation("ProposalCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  message HiveMessage[]
+  votes   Vote[]
+
+  @@index([hiveId, status])
+}
+
+enum ProposalType {
+  LEADERSHIP_VOTE
+  IMPEACHMENT
+  MEMBER_EXPULSION
+  POLICY_CHANGE
+}
+
+enum ProposalStatus {
+  ACTIVE
+  PASSED
+  FAILED
+  EXECUTED // Means the API automatically processed the result. No admin intervention needed.
+}
+
+/// Casts a vote on a proposal.
+model Vote {
+  id         String     @id @default(uuid())
+  proposalId String
+  userId     String
+  choice     VoteChoice
+
+  /// Captured at time of vote (e.g. 0.15 if they own 15% equity). Prevents mob rule.
+  voteWeight Float
+  createdAt  DateTime @default(now())
+
+  proposal Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([proposalId, userId])
+}
+
+enum VoteChoice {
+  FOR
+  AGAINST
+  ABSTAIN
+}
+
+// ==========================================
+// 11. COMMUNICATIONS & UTILS
+// ==========================================
+
+model Achievement {
+  id               String            @id @default(uuid())
+  title            String
+  description      String
+  icon             String
+  category         String
+  points           Int
+  rarity           String
+  isSecret         Boolean           @default(false)
+  steps            String[]
+  maxProgress      Int               @default(1)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String    @id @default(uuid())
+  userId        String
+  achievementId String
+  progress      Int       @default(0)
+  isUnlocked    Boolean   @default(false)
+  unlockedAt    DateTime?
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+}
 
 model EmailRule {
   id          String   @id @default(uuid())
-  eventType   String   // The name of the event it listens for
-  templateKey String   // e.g. "submission_approved"
-  delay       Int      @default(0) // in minutes
-
+  eventType   String
+  templateKey String
+  delay       Int      @default(0)
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
 
@@ -738,20 +1116,17 @@ model EmailRule {
 }
 
 model EmailJob {
-  id           String   @id @default(cuid())
-  userId       String
-  templateKey  String
-  payload      Json
-
-  status       String   @default("pending") // pending | processing | sent | failed
-  attempts     Int      @default(0)
-  lastError    String?
-
-  scheduledAt  DateTime
-  sentAt       DateTime?
-
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String    @id @default(cuid())
+  userId      String
+  templateKey String
+  payload     Json
+  status      String    @default("pending")
+  attempts    Int       @default(0)
+  lastError   String?
+  scheduledAt DateTime
+  sentAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model EventLog {

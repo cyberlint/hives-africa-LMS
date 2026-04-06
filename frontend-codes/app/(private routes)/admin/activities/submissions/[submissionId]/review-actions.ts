@@ -72,6 +72,15 @@ export async function submitInstructorReview({
             }
           })
         }
+        console.log("4.6 Inside transaction: Generating Social Portfolio Item...")
+        await tx.portfolioItem.create({
+          data: {
+            userId: updatedSub.userId,
+            submissionId,
+            title: updatedSub.activity.title,
+            description: `Verified completion of ${updatedSub.activity.title}`,
+          }
+        })
       }
 
       return updatedSub

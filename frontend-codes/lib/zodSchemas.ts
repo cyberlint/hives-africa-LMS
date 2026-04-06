@@ -2,6 +2,16 @@ import { z } from "zod";
 import { ActivityVisibility, 
          ActivityDifficulty ,
          ActivityStatus,
+
+         KSBType,
+         SignalType,
+         SparkType,
+         BountyStatus,
+         ConnectionSource,
+         HiveRole,
+         ProposalType,
+         ProposalStatus,
+         VoteChoice,
 } from "@prisma/client";
 
 // --- Enums ---
@@ -497,6 +507,70 @@ export const UpdateEventSchema = EventSchema.partial() // everything optional
   });
 
 
+// ====================== COMMUNITY & SOCIAL SCHEMAS ======================
+// We can add schemas for community features like creating a Hive, posting in the forum, sending a message, etc. For example: 
+export const KSBTypeEnum = z.nativeEnum(KSBType);
+export const SignalTypeEnum = z.nativeEnum(SignalType);
+export const SparkTypeEnum = z.nativeEnum(SparkType);
+export const BountyStatusEnum = z.nativeEnum(BountyStatus);
+export const ConnectionSourceEnum = z.nativeEnum(ConnectionSource);
+export const HiveRoleEnum = z.nativeEnum(HiveRole);
+export const ProposalTypeEnum = z.nativeEnum(ProposalType);
+export const ProposalStatusEnum = z.nativeEnum(ProposalStatus);
+export const VoteChoiceEnum = z.nativeEnum(VoteChoice);
+
+export const CreateSignalSchema = z.object({
+  type: SignalTypeEnum,
+  content: z.string().min(5, "Post cannot be empty.").max(5000),
+
+  activityId: z.string().optional().nullable(),
+  ksbId: z.string().optional().nullable(),
+  portfolioItemId: z.string().optional().nullable(),
+  
+  bountyStake: z.number().int().positive().optional(),
+  mediaKey: z.string().optional().nullable(),
+})
+
+export const CreateThreadSchema = z.object({
+  signalId: z.string(),
+  content: z.string().min(1, "Comment cannot be empty.").max(2000),
+});
+
+export const CreateBountySchema = z.object({
+  signalId: z.string().optional().nullable(),
+  title: z.string().min(10, "Title is too short.").max(100),
+  description: z.string().min(10, "Provide more details.").max(5000),
+  // BUSINESS LOGIC: Prevent users from staking 0.
+  stake: z.number().int().min(10), 
+});
+
+export const CreateHiveSchema = z.object({
+  name: z.string().min(3).max(50),
+  description: z.string().max(2000).optional(),
+  isPrivate: z.boolean().default(false),
+  // Ensure the split is a valid percentage logic (0 to 1)
+  treasurySplit: z.number().min(0).max(1).default(0.15),
+});
+
+export const CreateProposalSchema = z.object({
+  hiveId: z.string(),
+  title: z.string().min(5).max(100),
+  description: z.string().min(10).max(3000),
+  targetUserId: z.string().optional().nullable(),
+  
+  // BUSINESS LOGIC: Ensure voting doesn't stay open forever
+  expiresAt: z.coerce.date().refine((date) => date > new Date(), { 
+    message: "Expiration date must be in the future." 
+  }),
+})
+
+export const CastVoteSchema = z.object({
+  proposalId: z.string(),
+});
+
+
+
+
 // Infer the TypeScript type from the schema for easy use elsewhere
 export type CourseSchemaType = z.infer<typeof courseSchema>;
 export type ModuleSchemaType = z.infer<typeof moduleSchema>;
@@ -513,3 +587,9 @@ export type ParticipationInput = z.infer<typeof participationSchema>;
 export type EventInput = z.infer<typeof CreateEventSchema>;
 export type EventUpdateInput = z.infer<typeof UpdateEventSchema>;
 export type EventOutput = z.infer<typeof EventSchema>;
+export type CreateSignalInput = z.infer<typeof CreateSignalSchema>;
+export type CreateThreadInput = z.infer<typeof CreateThreadSchema>;
+export type CreateBountyInput = z.infer<typeof CreateBountySchema>;
+export type CreateHiveInput = z.infer<typeof CreateHiveSchema>;
+export type CreateProposalInput = z.infer<typeof CreateProposalSchema>;
+export type CastVoteInput = z.infer<typeof CastVoteSchema>;
