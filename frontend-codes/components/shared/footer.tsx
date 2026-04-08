@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Twitter, Linkedin, Github, Hexagon, ArrowRight } from "lucide-react";
+import { Twitter, Linkedin, Github, Hexagon, ArrowRight, Facebook } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TikTok_Sans } from "next/font/google";
+import { FaTiktok } from "react-icons/fa";
 
 interface FooterLink {
   title: string;
@@ -21,11 +23,12 @@ const techTracks: FooterLink[] = [
 
 // 2. Replaced random "Programs" with the core Engine of the platform
 const platformEcosystem: FooterLink[] = [
-  { title: "The Arena (Hackathons)", href: "/arena" },
-  { title: "The Hives (Study Groups)", href: "/hives" },
+  { title: "The Arena (Hackathons)", href: "/activities" },
+  { title: "The Hives (Study Groups)", href: "/community/hives" },
   { title: "The Vanguard (Leaderboard)", href: "/vanguard" },
+  { title: "Signal Graph (Social Feed)", href: "/community" },
   { title: "Verifiable Portfolios", href: "/portfolio" },
-  { title: "Localized Curricula", href: "/vision" },
+  { title: "Tech Tracks", href: "/courses" },
 ];
 
 // 3. Upgraded Company links to reflect an elite accelerator, not just an LMS
@@ -146,7 +149,7 @@ const Footer = () => {
           
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full md:w-auto text-center sm:text-left">
             <p className="text-xs font-medium text-muted-foreground">
-              © {new Date().getFullYear()} NextHive Ecosystem. All rights reserved.
+              © {new Date().getFullYear()} NextHive. All rights reserved.
             </p>
             <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2">
               {legalLinks.map((link, index) => (
@@ -162,9 +165,10 @@ const Footer = () => {
           {/* Social Icons (Replaced static PNGs with crisp Lucide SVGs) */}
           <div className="flex items-center gap-4">
             {[
-              { icon: <Twitter className="size-4" />, href: "#" },
-              { icon: <Linkedin className="size-4" />, href: "#" },
-              { icon: <Github className="size-4" />, href: "#" },
+              { icon: <Twitter className="size-4" />, href: "https://twitter.com/nexthive_hq" },
+              { icon: <Linkedin className="size-4" />, href: "https://linkedin.com/company/nexthive" },
+              { icon: <Facebook className="size-4" />, href: "https://facebook.com/nexthive" },
+              { icon: <FaTiktok className="size-4" />, href: "https://tiktok.com/@nexthive_hq" },
             ].map((social, index) => (
               <a 
                 key={index} 

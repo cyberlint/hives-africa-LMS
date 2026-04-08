@@ -69,7 +69,6 @@ export default async function CommunityPage() {
         include: { creator: true }
       })
     ]),
-    // FIXED: Using lowercase 'startdate' and 'enddate' per your schema error
     prisma.event.findMany({
       where: {
         startdate: { lte: new Date() },
@@ -166,7 +165,7 @@ export default async function CommunityPage() {
                   <p className="text-xs text-muted-foreground italic py-2">No active memberships.</p>
                 ) : (
                   hives.map(hive => (
-                    <Link key={hive.id} href={`/community/hives/${hive.id}`} className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-muted/50 transition-all group">
+                    <Link key={hive.slug} href={`/community/hives/${hive.slug}`} className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-muted/50 transition-all group">
                       <div className="size-8 rounded-lg bg-orange/10 text-orange flex items-center justify-center text-[10px] font-black group-hover:scale-110 transition-transform">
                         {getInitials(hive.name)}
                       </div>
@@ -180,7 +179,7 @@ export default async function CommunityPage() {
         </div>
 
         {/* CENTER COLUMN */}
-        <div className="md:col-span-8 lg:col-span-6 h-full overflow-y-auto pr-2 space-y-5 pb-20 scrollbar-thin scrollbar-thumb-border">
+        <div className="md:col-span-8 lg:col-span-6 h-full overflow-y-auto pr-2 space-y-5 pb-20 pt-5 scrollbar-thin scrollbar-thumb-border">
           <FeedComposer user={{ id: session.id, name: session.name || "Anonymous", image: session.image || null, totalRep, portfolioItems }} />
 
           <div className="flex items-center gap-4 px-2">
@@ -276,14 +275,36 @@ export default async function CommunityPage() {
               </h3>
               {liveEvents.length > 0 ? (
                 liveEvents.map(event => (
-                  <Card key={event.id} className="border-border/60 bg-muted/5 overflow-hidden group">
-                    <CardContent className="p-4">
-                      <p className="text-xs font-bold leading-tight group-hover:underline line-clamp-2">{event.title}</p>
-                      <Button asChild variant="outline" size="sm" className="w-full mt-3 h-8 text-[10px] font-bold border-red-500/20 text-red-600 hover:bg-red-500 hover:text-white transition-all rounded-lg">
-                        <Link href={`/community/events/${event.id}`}>Enter Arena</Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
+                  <Card
+  key={event.id}
+  className="group border-border/50 bg-card/30 hover:bg-card/60 transition-all rounded-xl"
+>
+  <CardContent className="p-3 flex items-center justify-between gap-3">
+
+    {/* LEFT: Content */}
+    <div className="min-w-0">
+      <p className="text-sm font-semibold text-foreground leading-snug line-clamp-2 group-hover:text-orange transition-colors">
+        {event.title}
+      </p>
+
+      {/* micro-meta*/}
+      {event.startdate && (
+        <p className="text-[10px] text-muted-foreground mt-1">
+          {new Date(event.startdate).toLocaleDateString()}
+        </p>
+      )}
+    </div>
+
+    {/* RIGHT: Action */}
+    <Link
+      href={`/community/events/${event.id}`}
+      className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-red-500 hover:text-white px-3 py-1.5 rounded-md border border-red-500/30 hover:bg-red-500 transition-all"
+    >
+      Enter
+    </Link>
+
+  </CardContent>
+</Card>
                 ))
               ) : (
                 <div className="p-4 rounded-2xl border border-dashed border-border bg-muted/5 text-center">

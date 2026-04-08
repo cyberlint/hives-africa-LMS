@@ -25,7 +25,7 @@ export function PublicProfileClient({ profile }: { profile: any }) {
     <div className="min-h-screen bg-background pb-24">
 
       {/* HERO */}
-      <section className="max-w-6xl mx-auto px-6 py-14 space-y-6">
+      <section className="max-w-6xl mx-auto px-6 py-6 space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
 
           <div className="flex items-center gap-5">

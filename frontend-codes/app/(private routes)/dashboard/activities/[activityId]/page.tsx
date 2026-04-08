@@ -16,7 +16,7 @@ import {
 import Link from "next/link";
 import { SubmissionEngine } from "../_components/submission-engine";
 
-async function getActivityData(activityId: string, userId: string) {
+async function getActivityData(activityId: string, userId: string, hiveId?: string) {
   const activity = await prisma.activity.findUnique({
     where: { id: activityId },
     include: {
@@ -25,10 +25,14 @@ async function getActivityData(activityId: string, userId: string) {
         include: { ksb: true } 
       }
     }
-  })
+  });
 
+  // If it's a team submission, check for existing submissions by the Hive. 
+  // Otherwise, check for Solo submissions.
   const existingSubmission = await prisma.submission.findFirst({
-    where: { activityId, userId },
+    where: hiveId 
+      ? { activityId, hiveId } 
+      : { activityId, userId, hiveId: null },
     include: {
       reviews: {
         orderBy: { createdAt: 'desc' },
@@ -45,21 +49,55 @@ async function getActivityData(activityId: string, userId: string) {
 
 export default async function ActivityWorkspacePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ activityId: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  
+  // Extract hiveId from the URL (e.g., ?hiveId=abc-123)
+  const hiveIdParam = typeof resolvedSearchParams.hiveId === 'string' ? resolvedSearchParams.hiveId : undefined;
   
   const user = await requireAuth();
   const userId = user.id;
 
   const { activity, existingSubmission } = await getActivityData(
     resolvedParams.activityId,
-    userId
+    userId,
+    hiveIdParam
   );
 
   if (!activity) {
     notFound();
+  }
+
+  // ================= FETCH HIVE ROSTER =================
+  let hiveData = null;
+  let roster: { userId: string; name: string; image: string | null }[] = [];
+
+  if (hiveIdParam) {
+    const fetchedHive = await prisma.hive.findUnique({
+      where: { id: hiveIdParam },
+      include: {
+        members: {
+          include: { user: { select: { id: true, name: true, image: true } } }
+        }
+      }
+    });
+
+    // Security Verification: Ensure the current user is actually in this Hive
+    const isMember = fetchedHive?.members.some(m => m.userId === userId);
+    
+    if (fetchedHive && isMember) {
+      hiveData = fetchedHive;
+      roster = fetchedHive.members.map(m => ({
+        userId: m.user.id,
+        name: m.user.name,
+        image: m.user.image
+      }));
+    }
   }
 
   return (
@@ -68,13 +106,14 @@ export default async function ActivityWorkspacePage({
       <nav className="sticky top-0 z-50 border-b border-border/40 bg-background/70 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center">
           <Link
-            href="/dashboard"
+            // Dynamic back button: go back to the workspace if it's a team, or the general dashboard if solo
+            href={hiveData ? `/community/hives/${hiveData.slug}/workspace` : "/dashboard"}
             className="group flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition"
           >
             <div className="flex items-center justify-center size-8 rounded-full bg-muted/60 group-hover:bg-muted transition mr-2">
               <ArrowLeft className="size-4 group-hover:-translate-x-0.5 transition-transform" />
             </div>
-            <span className="hidden sm:inline">Back</span>
+            <span className="hidden sm:inline">Back to {hiveData ? 'Workspace' : 'Dashboard'}</span>
           </Link>
         </div>
       </nav>
@@ -89,6 +128,13 @@ export default async function ActivityWorkspacePage({
             <Badge className="rounded-full px-3 py-1 text-[10px] text-amber-600 tracking-widest uppercase bg-background/60 border border-border/50 backdrop-blur">
               {activity.type.replace(/_/g, " ")}
             </Badge>
+
+            {/* If submitting for a Hive, show a badge so they know! */}
+            {hiveData && (
+              <Badge variant="outline" className="rounded-full px-3 py-1 text-[10px] tracking-widest uppercase bg-blue-500/10 text-blue-500 border-blue-500/20 backdrop-blur">
+                Submitting for {hiveData.name}
+              </Badge>
+            )}
 
             <div className="flex items-center gap-3 text-xs sm:text-sm">
               <span className="flex items-center gap-1 text-muted-foreground">
@@ -152,17 +198,15 @@ export default async function ActivityWorkspacePage({
               </div>
             </section>
 
-            {/* 2. 🚨 THE NEW ASSESSMENT CHECKLIST 🚨 */}
+            {/* 2. THE NEW ASSESSMENT CHECKLIST */}
             {activity.ksbs.length > 0 && (
               <section>
-                {/* Native HTML details/summary creates a JS-free accordion! */}
                 <details className="group rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-transparent p-5 sm:p-6 transition-all hover:border-blue-500/30" open>
                   <summary className="flex cursor-pointer items-center justify-between font-semibold text-foreground list-none [&::-webkit-details-marker]:hidden outline-none">
                     <div className="flex items-center gap-2">
                       <ListChecks className="size-5 text-blue-500" />
                       Assessment Checklist
                     </div>
-                    {/* The chevron rotates based on the parent 'group' open state */}
                     <ChevronDown className="size-4 text-muted-foreground transition-transform duration-300 group-open:rotate-180" />
                   </summary>
                   
@@ -174,7 +218,6 @@ export default async function ActivityWorkspacePage({
                     <ul className="space-y-4">
                       {activity.ksbs.map((mapping) => (
                         <li key={mapping.ksbId} className="flex gap-3 items-start group/item">
-                          {/* Empty checkbox that lights up on hover */}
                           <div className="mt-0.5 shrink-0 size-4 rounded-[4px] border border-border flex items-center justify-center bg-background group-hover/item:border-blue-500 group-hover/item:bg-blue-500/10 transition-colors" />
                           
                           <div className="space-y-1.5 w-full">
@@ -187,7 +230,6 @@ export default async function ActivityWorkspacePage({
                               </span>
                             </div>
                             
-                            {/* The all-important description is now visible before submission! */}
                             <p className="text-xs text-muted-foreground leading-relaxed">
                               {mapping.ksb.description || "Demonstrate proficiency and practical application of this competency."}
                             </p>
@@ -237,8 +279,11 @@ export default async function ActivityWorkspacePage({
                   ...activity,
                   description: activity.description || "",
                 }}
-                // 3. FIX: Match the exact variable name
                 existingSubmission={existingSubmission}
+                // INJECT THE ROSTER DATA HERE:
+                hiveId={hiveData?.id || null}
+                hiveSlug={hiveData?.slug || null}
+                roster={roster}
               />
             </div>
           </div>

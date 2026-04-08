@@ -14,6 +14,7 @@ import FeaturedCourses from "./_components/featuredCourses";
 import BestSellingCourses from "./_components/bestSellingCourses";
 import TheArena from "./_components/the-arena";
 import TheHives from "./_components/the-hives";
+import TheSignalGraph from "./_components/the-signal-graph";
 import TheVanguard from "./_components/the-vanguard";
 
 // Data Fetching
@@ -23,7 +24,7 @@ import {
   getFeaturedCourses,
   getLivePulseData,
   getArenaChallenges,
-  getActiveHives,
+  getTopHives,
   getTheVanguard
 } from "./_components/HomeClients/fetchData";
 
@@ -35,7 +36,7 @@ const Home = async () => {
     getBestSellingCourses(8),
     getArenaChallenges(),
     getLivePulseData(),
-    getActiveHives(),
+    getTopHives(),
     getTheVanguard(),
   ]);
 
@@ -99,13 +100,13 @@ const Home = async () => {
                 {/* AVATARS */}
                 <div className="flex items-center gap-3">
                   <div className="flex -space-x-3">
-                    {[1, 2, 3, 4].map((i) => (
+                    {[16, 28, 7, 49].map((i) => (
                       <div
                         key={i}
                         className="size-7 sm:size-8 md:size-10 rounded-full border-2 border-background overflow-hidden bg-muted shadow-sm"
                       >
                         <img
-                          src={`https://i.pravatar.cc/100?img=${i + 10}`}
+                          src={`https://i.pravatar.cc/100?img=${i}`}
                           alt="Builder"
                           className="w-full h-full object-cover"
                         />
@@ -400,10 +401,13 @@ const Home = async () => {
       {/* 7. THE COMMUNITY: The Hives */}
       <TheHives hives={activeHives || []} />
 
-      {/* 8. THE GLORY: The Vanguard */}
+      {/* 8. THE SIGNAL GRAPH */}
+      <TheSignalGraph />
+
+      {/* 9. THE GLORY: The Vanguard */}
       <TheVanguard leaders={vanguardLeaders || []} />
 
-      {/* 9. THE TRUST: Partners */}
+      {/* 10. THE TRUST: Partners */}
       <MotionSection
         initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }}
         className="bg-background transition-colors duration-300 py-16 md:py-24"
@@ -414,7 +418,7 @@ const Home = async () => {
               Level up in Tech with NextHive!
             </h3>
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-              NextHive is the leading pan-African, peer-driven tech school built for the AI era. If you&apos;ve ever felt stuck or bored navigating a new tech field alone, NextHive is where you belong.
+              NextHive is the revolutionary pan-African tech accelerator ecosystem built for the AI era. If you&apos;ve ever felt stuck or bored navigating a new tech field alone, <b>NextHive is where you belong</b>.
             </p>
           </div>
 

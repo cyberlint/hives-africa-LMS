@@ -5,41 +5,39 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Trophy, Users, ShieldAlert, Zap, Scale, Lock } from "lucide-react"
+import { Trophy, Users, ShieldAlert, Zap, Scale, Lock, Archive, Plus } from "lucide-react"
 import Link from "next/link"
 
 import JoinHiveButton from "../_components/JoinHiveButton"
+import HiveGovernanceCard from "../_components/HiveGovernanceCard"
+import CreateProposalForm from "../_components/CreateProposalForm"
 
 const getInitials = (name: string) =>
   name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
-
-function getTimeRemaining(expiresAt: Date) {
-  const total = expiresAt.getTime() - Date.now()
-  if (total <= 0) return "Expired"
-  const h = Math.floor((total / (1000 * 60 * 60)) % 24)
-  const d = Math.floor(total / (1000 * 60 * 60 * 24))
-  return d > 0 ? `${d}d ${h}h` : `${h}h`
-}
 
 export default async function HiveDashboard({ params }: { params: Promise<{ slug: string }> }) {
   const session = await requireAuth()
   const resolvedParams = await params
 
+  // 1. FETCH HIVE & ALL PROPOSALS
   const hive = await prisma.hive.findUnique({
     where: { slug: resolvedParams.slug },
     include: {
       ksbs: { include: { ksb: true } },
       members: {
         include: {
-          user: { include: { reputationLedger: { select: { points: true } } } }
+          user: { select: { id: true, name: true, image: true, reputationLedger: { select: { points: true } } } }
         },
         orderBy: { equityShare: 'desc' }
       },
       proposals: {
-        where: { status: 'ACTIVE' },
-        include: { votes: true },
+        // Removed the 'ACTIVE' where clause so we can fetch Archives too
+        include: { 
+          votes: true,
+          creator: { select: { name: true } }
+        },
         orderBy: { createdAt: 'desc' }
       }
     }
@@ -47,8 +45,26 @@ export default async function HiveDashboard({ params }: { params: Promise<{ slug
 
   if (!hive) return notFound()
 
-  const isMember = hive.members.some(m => m.user.id === session.id)
+  // 2. EXTRACT USER MEMBERSHIP & EQUITY
+  const currentMemberRecord = hive.members.find(m => m.user.id === session.id)
+  const isMember = !!currentMemberRecord
+  const userEquity = currentMemberRecord?.equityShare || 0
 
+  // 3. PROCESS PROPOSALS (Ghost Protocol & Sorting)
+  const mappedProposals = hive.proposals.map((prop) => ({
+    ...prop,
+    creatorName: prop.isAnonymous ? "Classified [Ghost Protocol]" : prop.creator?.name || "Unknown",
+  }))
+
+  const activeProposals = mappedProposals.filter(
+    (p) => p.status === "ACTIVE" && new Date(p.expiresAt) > new Date()
+  )
+  
+  const archivedProposals = mappedProposals.filter(
+    (p) => p.status !== "ACTIVE" || new Date(p.expiresAt) <= new Date()
+  )
+
+  // 4. FINANCIALS
   const treasury = hive.members.reduce((acc, member) => {
     const rep = member.user.reputationLedger?.reduce((s, r) => s + (r.points || 0), 0) || 0
     return acc + rep
@@ -197,69 +213,102 @@ export default async function HiveDashboard({ params }: { params: Promise<{ slug
             </TabsContent>
 
             {/* GOVERNANCE */}
-            <TabsContent value="governance" className="m-0 space-y-4">
-              {hive.proposals.map((p) => {
-                const forVotes = p.votes.filter(v => v.choice === 'FOR').reduce((s, v) => s + v.voteWeight, 0)
-                const againstVotes = p.votes.filter(v => v.choice === 'AGAINST').reduce((s, v) => s + v.voteWeight, 0)
-                const total = forVotes + againstVotes
-                const percent = total > 0 ? (forVotes / total) * 100 : 0
+            <TabsContent value="governance" className="m-0 space-y-8">
+              {!isMember && (
+                <div className="p-10 text-center border rounded-xl text-sm text-muted-foreground bg-muted/5">
+                  <ShieldAlert className="size-8 mx-auto mb-3 text-muted-foreground/50" />
+                  <p>Classified Area. You must be a member to access the War Room.</p>
+                </div>
+              )}
 
-                return (
-                  <Card key={p.id}>
-                    <CardHeader>
-                      <CardTitle className="text-sm font-semibold">
-                        {p.title}
-                      </CardTitle>
-                      <CardDescription className="text-xs">
-                        {getTimeRemaining(p.expiresAt)} remaining
-                      </CardDescription>
-                    </CardHeader>
+              {isMember && (
+                <>
+                  {/* ACTIVE MOTIONS */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 border-b border-border/50 pb-2 mb-4">
+                      <ShieldAlert className="size-5 text-indigo-500" />
+                      <h3 className="text-lg font-black uppercase tracking-widest">Active Motions</h3>
+                    </div>
 
-                    <CardContent className="space-y-3">
-                      <p className="text-sm text-muted-foreground">
-                        {p.description}
-                      </p>
+                    {activeProposals.length === 0 ? (
+                      <div className="p-8 text-center border border-dashed rounded-2xl bg-muted/5 text-sm font-medium text-muted-foreground">
+                        No active motions on the floor.
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                        {activeProposals.map((p) => (
+                          <HiveGovernanceCard 
+                            key={p.id} 
+                            proposal={p} 
+                            currentUserId={session.id} 
+                            userEquity={userEquity} 
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
-                      <Progress value={percent} className="h-2" />
-
-                      {isMember && (
-                        <div className="flex flex-col sm:flex-row gap-2">
-                          <Button size="sm" className="flex-1">
-                            Vote For
-                          </Button>
-                          <Button size="sm" variant="outline" className="flex-1">
-                            Vote Against
-                          </Button>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                )
-              })}
+                  {/* ARCHIVED MOTIONS */}
+                  {archivedProposals.length > 0 && (
+                    <div className="space-y-4 mt-12 opacity-80 hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-2 border-b border-border/50 pb-2 mb-4">
+                        <Archive className="size-5 text-muted-foreground" />
+                        <h3 className="text-base font-bold uppercase tracking-widest text-muted-foreground">Archived Motions</h3>
+                      </div>
+                      <div className="space-y-6">
+                        {archivedProposals.map((p) => (
+                          <HiveGovernanceCard 
+                            key={p.id} 
+                            proposal={p} 
+                            currentUserId={session.id} 
+                            userEquity={userEquity} 
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </TabsContent>
           </div>
 
-          {/* RIGHT */}
+          {/* RIGHT COL: ACTIONS */}
           <div>
-            <Card>
+            <Card className="sticky top-6">
               <CardHeader>
                 <CardTitle className="text-sm font-semibold">
                   Actions
                 </CardTitle>
               </CardHeader>
 
-              <CardContent className="space-y-2">
+              <CardContent className="space-y-3">
                 {isMember ? (
                   <>
-                    <Button asChild variant="outline" className="w-full justify-start">
+                    <Button asChild variant="outline" className="w-full justify-start font-medium">
                       <Link href={`/community/hives/${hive.slug}/workspace`}>
                         Enter Workspace
                       </Link>
                     </Button>
 
-                    <Button variant="outline" className="w-full justify-start">
-                      Draft Proposal
-                    </Button>
+                    {/* THE NEW DRAFT PROPOSAL DIALOG OVERRIDE */}
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="w-full justify-start font-bold bg-indigo-600 hover:bg-indigo-700 text-white">
+                          <Plus className="size-4 mr-2" /> Draft Motion
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-xl p-0 border-none bg-transparent shadow-none">
+                        <DialogHeader className="sr-only">
+                          <DialogTitle>Draft a New Motion</DialogTitle>
+                        </DialogHeader>
+                        {/* Map members into the format the form expects */}
+                        <CreateProposalForm 
+                          hiveId={hive.id}
+                          currentUserId={session.id}
+                          members={hive.members.map(m => ({ userId: m.user.id, user: { name: m.user.name } }))}
+                        />
+                      </DialogContent>
+                    </Dialog>
                   </>
                 ) : (
                   <JoinHiveButton

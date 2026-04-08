@@ -58,7 +58,7 @@ export default async function SubmissionsDashboard({
             where: whereClause,
             include: {
                 user: true,
-                team: true,
+                hive: true,
                 activity: {
                     select: { title: true, type: true, course: { select: { title: true } }, program: { select: { title: true } } }
                 }
@@ -137,8 +137,8 @@ export default async function SubmissionsDashboard({
                         </div>
                     ) : (
                         submissions.map((sub) => {
-                            const entityName = sub.user?.name || sub.team?.name || "Unknown"
-                            const isTeam = !!sub.teamId
+                            const entityName = sub.user?.name || sub.hive?.name || "Unknown"
+                            const isHive = !!sub.hiveId
                             const contextLabel = sub.activity.program?.title || sub.activity.course?.title || "Standalone"
 
                             return (
@@ -152,7 +152,7 @@ export default async function SubmissionsDashboard({
                                         </Avatar>
                                         <div className="min-w-0">
                                             <p className="font-semibold text-sm text-foreground truncate">{entityName}</p>
-                                            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{isTeam ? "Team" : "Learner"}</p>
+                                            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{isHive ? "Hive" : "Learner"}</p>
                                         </div>
                                     </div>
 

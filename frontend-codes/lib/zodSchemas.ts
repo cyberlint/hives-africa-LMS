@@ -1,17 +1,20 @@
 import { z } from "zod";
-import { ActivityVisibility, 
-         ActivityDifficulty ,
-         ActivityStatus,
+import {
+  ActivityVisibility,
+  ActivityDifficulty,
+  ActivityStatus,
+  SubmissionStatus,
+  ReviewType,
 
-         KSBType,
-         SignalType,
-         SparkType,
-         BountyStatus,
-         ConnectionSource,
-         HiveRole,
-         ProposalType,
-         ProposalStatus,
-         VoteChoice,
+  KSBType,
+  SignalType,
+  SparkType,
+  BountyStatus,
+  ConnectionSource,
+  HiveRole,
+  ProposalType,
+  ProposalStatus,
+  VoteChoice,
 } from "@prisma/client";
 
 // --- Enums ---
@@ -103,20 +106,8 @@ export const ActivityRequirementEnum = z.enum([
   "Live_Demo",
 ]);
 
-export const SubmissionStatusEnum = z.enum([
-  "Draft",
-  "Submitted",
-  "Under_Review",
-  "Revision_Required",
-  "Approved",
-  "Rejected",
-]);
-
-export const ReviewTypeEnum = z.enum([
-  "Peer",
-  "Instructor",
-  "Mentor",
-]);
+export const SubmissionStatusEnum = z.nativeEnum(SubmissionStatus);
+export const ReviewTypeEnum = z.nativeEnum(ReviewType);
 
 export const ParticipantRoleEnum = z.enum([
   "Participant",
@@ -297,26 +288,26 @@ const baseRequirementSchema = z.object({
 export const submissionSchema = z.object({
   activityId: z.string().uuid(),
   userId: z.string().uuid().optional(),
-  teamId: z.string().uuid().optional(),
+  hiveId: z.string().uuid().optional(),
   participationId: z.string().uuid().optional(),
   content: z.record(z.any()),
   status: SubmissionStatusEnum.default("Draft"),
 })
-.superRefine((data, ctx) => {
-  // Rule: Must belong to ONE owner
-  if (!data.userId && !data.teamId) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Submission must belong to a user or a team",
-    });
-  }
-  if (data.userId && data.teamId) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Submission cannot belong to both a user and a team. Please choose one.",
-    });
-  }
-});
+  .superRefine((data, ctx) => {
+    // Rule: Must belong to ONE owner
+    if (!data.userId && !data.hiveId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Submission must belong to a user or a hive. Please provide one.",
+      });
+    }
+    if (data.userId && data.hiveId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Submission cannot belong to both a user and a team. Please choose one.",
+      });
+    }
+  });
 
 // Review schema
 export const reviewSchema = z.object({
@@ -327,14 +318,14 @@ export const reviewSchema = z.object({
   feedback: z.string().max(5000).optional(),
   rubricScores: z.record(z.number()).optional(),
 })
-.superRefine((data, ctx) => {
-  if (data.score === undefined && data.rubricScores === undefined) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Review must include a score or rubric scores",
-    });
-  }
-});
+  .superRefine((data, ctx) => {
+    if (data.score === undefined && data.rubricScores === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Review must include a score or rubric scores",
+      });
+    }
+  });
 
 // Reviewer assignment schema
 export const reviewAssignmentSchema = z.object({
@@ -357,7 +348,7 @@ export const teamSchema = z.object({
 export const participationSchema = z.object({
   userId: z.string().uuid(),
   activityId: z.string().uuid(),
-  teamId: z.string().uuid().optional(),
+  hiveId: z.string().uuid().optional(),
   role: ParticipantRoleEnum.default("Participant"),
 });
 
@@ -376,15 +367,15 @@ export const activityOverviewSchema = baseActivityObject.pick({
   courseId: true,
   programId: true,
 }).superRefine((data, ctx) => {
-    // We have to put the date logic here too because .pick() dropped the old superRefine
-    if (data.startDate && data.deadline && data.deadline < data.startDate) {
-       ctx.addIssue({
-         code: z.ZodIssueCode.custom,
-         message: "Deadline cannot be before start date",
-         path: ["deadline"],
-       });
-    }
-  });
+  // We have to put the date logic here too because .pick() dropped the old superRefine
+  if (data.startDate && data.deadline && data.deadline < data.startDate) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Deadline cannot be before start date",
+      path: ["deadline"],
+    });
+  }
+});
 
 // Step 2: Requirements
 export const activityRequirementSchema = z.object({
@@ -419,16 +410,16 @@ export const rubricSchema = z.array(
     maxScore: z.number().min(1),
   })
 ).min(1)
-.superRefine((criteria, ctx) => {
-  const totalWeight = criteria.reduce((sum, c) => sum + c.weight, 0);
+  .superRefine((criteria, ctx) => {
+    const totalWeight = criteria.reduce((sum, c) => sum + c.weight, 0);
 
-  if (totalWeight !== 100) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Rubric weights must sum to 100",
-    });
-  }
-});
+    if (totalWeight !== 100) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Rubric weights must sum to 100",
+      });
+    }
+  });
 
 // Step 5: KSB Mapping
 export const activityKSBMappingSchema = z.array(
@@ -471,13 +462,13 @@ export const EventSchema = z.object({
 export const CreateEventSchema = EventSchema
   .omit({ id: true, createdAt: true, updatedAt: true, userId: true }) // user doesn’t provide these
   .superRefine((data, ctx) => {
-    
+
     // 1. Enforce URL for online events
     if (data.isOnline) {
       if (!data.url || data.url.trim() === "") {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["url"], 
+          path: ["url"],
           message: "Event URL is required for online events",
         });
       }
@@ -491,7 +482,7 @@ export const CreateEventSchema = EventSchema
         message: "End date must be after start date",
       });
     }
-    
+
   });
 
 // UPDATE EVENT SCHEMA
@@ -526,7 +517,7 @@ export const CreateSignalSchema = z.object({
   activityId: z.string().optional().nullable(),
   ksbId: z.string().optional().nullable(),
   portfolioItemId: z.string().optional().nullable(),
-  
+
   bountyStake: z.number().int().positive().optional(),
   mediaKey: z.string().optional().nullable(),
 })
@@ -541,7 +532,7 @@ export const CreateBountySchema = z.object({
   title: z.string().min(10, "Title is too short.").max(100),
   description: z.string().min(10, "Provide more details.").max(5000),
   // BUSINESS LOGIC: Prevent users from staking 0.
-  stake: z.number().int().min(10), 
+  stake: z.number().int().min(10),
 });
 
 export const CreateHiveSchema = z.object({
@@ -557,10 +548,10 @@ export const CreateProposalSchema = z.object({
   title: z.string().min(5).max(100),
   description: z.string().min(10).max(3000),
   targetUserId: z.string().optional().nullable(),
-  
+
   // BUSINESS LOGIC: Ensure voting doesn't stay open forever
-  expiresAt: z.coerce.date().refine((date) => date > new Date(), { 
-    message: "Expiration date must be in the future." 
+  expiresAt: z.coerce.date().refine((date) => date > new Date(), {
+    message: "Expiration date must be in the future."
   }),
 })
 

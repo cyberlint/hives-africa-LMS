@@ -162,9 +162,6 @@ export default function SocialNavbar() {
           </Link>
         </div>
       </nav>
-
-      {/* IMPORTANT: prevents content from being hidden behind bottom nav */}
-      <div className="h-20 md:hidden" />
     </>
   )
 }

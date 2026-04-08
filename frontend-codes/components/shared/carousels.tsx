@@ -162,9 +162,9 @@ export default function TestimonialsCarousel() {
         className="max-w-7xl mx-auto px-4 mt-12 flex flex-col items-center"
       >
         <div className="flex -space-x-3 mb-4">
-          {[1,2,3,4,5].map(i => (
+          {[16, 28, 7, 49].map(i => (
             <div key={i} className="size-10 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[10px] font-bold overflow-hidden shadow-sm">
-              <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="Builder" className="w-full h-full object-cover opacity-80" />
+              <img src={`https://i.pravatar.cc/100?img=${i}`} alt="Builder" className="w-full h-full object-cover opacity-80" />
             </div>
           ))}
           <div className="size-10 rounded-full border-2 border-background bg-orange text-white flex items-center justify-center text-xs font-black shadow-sm">

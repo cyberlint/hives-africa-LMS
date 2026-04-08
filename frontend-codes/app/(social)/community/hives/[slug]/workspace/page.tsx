@@ -3,19 +3,18 @@ import { prisma } from "@/lib/db"
 import { notFound, redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
 import {
   Lock, AlertTriangle, CheckCircle2, MessageSquare,
-  Calendar, GitPullRequest, ShieldAlert, FileCode2, Globe
+  Calendar, ShieldAlert, FileCode2, Globe, ArrowRight, Users
 } from "lucide-react"
 import Link from "next/link"
 import HiveChat from "../../_components/HiveChat"
+import WorkspaceProposalCard from "../../_components/WorkspaceProposalCard" // <-- Import the new component
 import type { ComposerUserContext } from "../../../_components/FeedComposer"
 
 const getInitials = (name: string) =>
-  name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+  name.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase()
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -23,28 +22,27 @@ interface PageProps {
 
 export default async function HiveWorkspacePage({ params }: PageProps) {
   const session = await requireAuth()
-  const resolvedParams = await params
+  const { slug } = await params
 
   const hive = await prisma.hive.findUnique({
-    where: { slug: resolvedParams.slug },
+    where: { slug },
     include: {
       members: { include: { user: true } },
-      proposals: {
-        where: { status: 'ACTIVE' },
-        orderBy: { createdAt: 'desc' }
+      proposals: { 
+        where: { status: "ACTIVE" }, 
+        orderBy: { createdAt: "desc" },
+        include: { votes: true } // <-- ADDED: Crucial for determining if they voted
       },
       messages: {
-        include: {
-          user: { select: { id: true, name: true, image: true } }
-        },
-        orderBy: { createdAt: 'asc' }
+        include: { user: { select: { id: true, name: true, image: true } } },
+        orderBy: { createdAt: "asc" }
       }
     }
   })
 
   if (!hive) return notFound()
 
-  const currentMember = hive.members.find(m => m.userId === session.id)
+  const currentMember = hive.members.find((m) => m.userId === session.id)
   if (!currentMember && hive.isPrivate) {
     redirect(`/community/hives/${hive.slug}`)
   }
@@ -73,7 +71,7 @@ export default async function HiveWorkspacePage({ params }: PageProps) {
   }
 
   const pendingSplits = await prisma.submissionRoster.findMany({
-    where: { userId: session.id, approvalStatus: 'PENDING' },
+    where: { userId: session.id, approvalStatus: "PENDING" },
     include: {
       submission: {
         include: { activity: true, roster: { include: { user: true } } }
@@ -84,203 +82,194 @@ export default async function HiveWorkspacePage({ params }: PageProps) {
 
   const activeSplit = pendingSplits[0]
 
-  const activeMission = await prisma.participation.findFirst({
-    where: { userId: session.id, progress: { lt: 100 } },
-    include: { activity: true },
-    orderBy: { joinedAt: 'desc' }
+  const hiveMissions = await prisma.hiveActivity.findMany({
+    where: { hiveId: hive.id },
+    include: {
+      activity: {
+        include: {
+          submissions: {
+            where: { hiveId: hive.id },
+            orderBy: { createdAt: "desc" },
+            take: 1
+          }
+        }
+      }
+    },
+    orderBy: { joinedAt: "desc" }
   })
 
-  return (
-    <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-6 space-y-6">
+  const myParticipations = await prisma.participation.findMany({
+    where: { userId: session.id, hiveId: hive.id }
+  })
 
-      {/* ================= HEADER ================= */}
-      <div className="flex flex-col md:flex-row justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="size-12 rounded-xl bg-muted flex items-center justify-center font-semibold text-sm">
+  const optedInActivityIds = myParticipations.map((p) => p.activityId)
+
+  return (
+    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-5 sm:space-y-6">
+
+      {/* HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <div className="size-12 sm:size-14 rounded-xl bg-orange/10 text-orange border border-orange/20 flex items-center justify-center font-bold text-lg">
             {getInitials(hive.name)}
           </div>
 
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-semibold">{hive.name}</h1>
-              <Badge variant="outline" className="text-xs">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-lg sm:text-2xl font-semibold truncate">
+                {hive.name}
+              </h1>
+
+              <Badge variant="outline" className="text-[10px]">
                 {hive.isPrivate ? <Lock className="size-3 mr-1" /> : <Globe className="size-3 mr-1" />}
                 {hive.isPrivate ? "Private" : "Public"}
               </Badge>
             </div>
 
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               {currentMember
-                ? <>You own <span className="font-medium text-foreground">{equityPercentage}%</span> of this hive</>
+                ? <>Stake: <span className="font-semibold text-foreground">{equityPercentage}%</span></>
                 : <span className="italic">Viewing as guest</span>}
             </p>
           </div>
         </div>
 
         {currentMember && (
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <Calendar className="size-4 mr-2" /> Sync
-            </Button>
-
-            <Button asChild size="sm">
-              <Link href={`/community/hives/${hive.slug}/submit`}>
-                <GitPullRequest className="size-4 mr-2" />
-                Submit
-              </Link>
-            </Button>
-          </div>
+          <Button variant="outline" size="sm" className="w-full sm:w-auto h-10">
+            <Calendar className="size-4 mr-2" />
+            Sync
+          </Button>
         )}
       </div>
 
-      {/* ================= SMART SPLIT ================= */}
+      {/* SPLIT NOTICE */}
       {activeSplit && (
         <Card className="border-orange/30 bg-orange/5">
-          <CardContent className="p-5 flex gap-4">
-            <AlertTriangle className="text-orange mt-1" />
+          <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row gap-4 sm:gap-6">
+            <div className="size-10 sm:size-12 rounded-full bg-orange/20 flex items-center justify-center">
+              <AlertTriangle className="size-5 sm:size-6 text-orange" />
+            </div>
 
-            <div className="flex-1">
-              <h3 className="font-semibold">
-                Approve Split • {activeSplit.submission.activity.title}
+            <div className="flex-1 space-y-3">
+              <h3 className="text-base sm:text-lg font-semibold">
+                Review contribution split
               </h3>
 
-              <p className="text-sm text-muted-foreground mt-1">
-                Confirm contribution shares before payout is distributed.
-              </p>
-
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2">
                 {activeSplit.submission.roster.map((c) => {
                   const isMe = c.userId === session.id
                   return (
-                    <div
-                      key={c.id}
-                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs
-                      ${isMe ? "bg-orange/10 border-orange/30" : "bg-background"}`}
-                    >
-                      <Avatar className="size-6">
-                        <AvatarImage src={c.user.image || undefined} />
-                        <AvatarFallback className="text-[10px]">
-                          {getInitials(c.user.name)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="font-medium">
-                        {isMe ? "You" : c.user.name.split(' ')[0]}
-                      </span>
-                      <span className="text-muted-foreground">
-                        {(c.claimedShare * 100).toFixed(0)}%
-                      </span>
+                    <div key={c.id} className="px-3 py-1.5 rounded-lg text-xs bg-muted/30">
+                      {isMe ? "You" : c.user.name.split(" ")[0]} • {(c.claimedShare * 100).toFixed(0)}%
                     </div>
                   )
                 })}
               </div>
 
-              <div className="mt-4 flex gap-2">
-                <Button size="sm">
-                  <CheckCircle2 className="size-4 mr-2" />
-                  Approve
-                </Button>
-                <Button size="sm" variant="outline">
-                  Dispute
-                </Button>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button className="w-full sm:w-auto">Accept</Button>
+                <Button variant="outline" className="w-full sm:w-auto">Review</Button>
               </div>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* ================= GRID ================= */}
-      <div className="grid lg:grid-cols-3 gap-6">
+      {/* GRID */}
+      <div className="flex flex-col lg:grid lg:grid-cols-3 gap-5 sm:gap-6">
 
         {/* CHAT */}
-        <Card className="lg:col-span-2 flex flex-col h-[600px] overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between border-b">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+        <Card className="lg:col-span-2 flex flex-col rounded-2xl overflow-hidden">
+          <CardHeader className="flex justify-between items-center border-b py-3">
+            <CardTitle className="text-sm flex items-center gap-2">
               <MessageSquare className="size-4" />
-              Hive Chat
+              Team Chat
             </CardTitle>
-
-            <span className="text-xs text-muted-foreground">
-              {hive.members.length} members
-            </span>
+            <Badge>{hive.members.length}</Badge>
           </CardHeader>
 
-          <HiveChat
-            hiveId={hive.id}
-            hiveName={hive.name}
-            currentUserId={session.id}
-            disabled={!currentMember}
-            initialMessages={hive.messages}
-          />
+          <div className="flex-1 min-h-[400px] sm:min-h-[500px]">
+            <HiveChat
+              hiveId={hive.id}
+              hiveName={hive.name}
+              currentUserId={session.id}
+              disabled={!currentMember}
+              initialMessages={hive.messages}
+            />
+          </div>
         </Card>
 
         {/* SIDEBAR */}
-        <div className="space-y-6">
+        <div className="space-y-5">
 
-          {/* MISSION */}
+          {/* MISSIONS */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <FileCode2 className="size-4" />
-                Active Mission
+              <CardTitle className="text-sm flex items-center gap-2">
+                <FileCode2 className="size-4 text-orange" />
+                Active Work
               </CardTitle>
             </CardHeader>
 
-            <CardContent>
-              {activeMission ? (
-                <>
-                  <h4 className="font-medium text-sm">
-                    {activeMission.activity.title}
-                  </h4>
+            <CardContent className="space-y-3">
+              {hiveMissions.map((hm) => {
+                const isOptedIn = optedInActivityIds.includes(hm.activityId)
+                const latestSubmission = hm.activity.submissions[0]
 
-                  <Progress value={activeMission.progress} className="mt-3 h-2" />
+                return (
+                  <div key={hm.activityId} className="p-3 rounded-lg bg-muted/30 space-y-2">
+                    <p className="text-sm font-medium">{hm.activity.title}</p>
 
-                  <div className="flex justify-between text-xs mt-2 text-muted-foreground">
-                    <span>{activeMission.progress}% complete</span>
-                    <span>In progress</span>
+                    {latestSubmission ? (
+                      <p className="text-xs text-green-600 flex items-center gap-1">
+                        <CheckCircle2 className="size-3" /> Submitted
+                      </p>
+                    ) : isOptedIn ? (
+                      <Button asChild size="sm" className="w-full">
+                        <Link href={`/dashboard/activities/${hm.activity.id}?hiveId=${hive.id}`}>
+                          Submit work
+                        </Link>
+                      </Button>
+                    ) : (
+                      <Button asChild size="sm" variant="outline" className="w-full">
+                        <Link href={`/activities/${hm.activity.slug}`}>
+                          Join team
+                        </Link>
+                      </Button>
+                    )}
                   </div>
-                </>
-              ) : (
-                <div className="text-sm text-muted-foreground text-center">
-                  No active mission
-                </div>
-              )}
+                )
+              })}
             </CardContent>
           </Card>
 
           {/* GOVERNANCE */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <ShieldAlert className="size-4" />
-                Governance
+              <CardTitle className="text-sm flex items-center gap-2">
+                <ShieldAlert className="size-4 text-indigo-500" />
+                Decisions
               </CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-3">
-              {hive.proposals.length > 0 ? (
-                hive.proposals.map((p) => (
-                  <div key={p.id} className="p-3 border rounded-lg">
-                    <Badge variant="outline" className="text-[10px] mb-1">
-                      {p.type.replace('_', ' ')}
-                    </Badge>
-
-                    <p className="text-sm font-medium">{p.title}</p>
-                    <p className="text-xs text-muted-foreground line-clamp-2">
-                      {p.description}
-                    </p>
-
-                    <Button size="sm" className="mt-2 w-full">
-                      Vote
-                    </Button>
-                  </div>
-                ))
+              {hive.proposals.length === 0 ? (
+                <div className="p-4 text-center border border-dashed rounded-xl bg-muted/5">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">No active motions</p>
+                </div>
               ) : (
-                <p className="text-sm text-muted-foreground text-center">
-                  No proposals
-                </p>
+                hive.proposals.map((p) => (
+                  <WorkspaceProposalCard 
+                    key={p.id} 
+                    proposal={p} 
+                    currentUserId={session.id}
+                    userEquity={parseFloat(equityPercentage)}
+                  />
+                ))
               )}
             </CardContent>
           </Card>
+
         </div>
       </div>
     </div>

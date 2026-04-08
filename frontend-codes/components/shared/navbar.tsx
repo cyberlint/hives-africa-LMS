@@ -12,8 +12,10 @@ import { ThemeToggle } from "../ui/theme-toggle";
 // Rebranded Navigation Links
 const navLinks = [
   { title: "Tech Tracks", href: "/course" },
-  { title: "The Arena", href: "/arena" },
-  { title: "The Hives", href: "/community" },
+  { title: "The Arena", href: "/activities" },
+  { title: "The Hives", href: "/community/hives" },
+  { title: "Community", href: "/community/" },
+  { title: "Events", href: "/community/events" },
   { title: "Manifesto", href: "/vision" },
 ];
 

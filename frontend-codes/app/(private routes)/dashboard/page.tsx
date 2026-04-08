@@ -233,7 +233,7 @@ export default function DashboardOverview() {
 
             {/* CTA */}
             <Button asChild className="bg-yellow text-white w-full sm:w-auto rounded-full hover:bg-foreground/90 px-5 py-5 sm:py-2 h-auto font-medium">
-              <Link href="/p/username">
+              <Link href={`/p/${session?.user.id}`}>
                 View Profile
               </Link>
             </Button>

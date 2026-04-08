@@ -191,7 +191,7 @@ export default function RFP2026Page() {
       </section>
 
       {/* ================= CTA ================= */}
-      <section className="mx-auto max-w-4xl px-6 pb-20">
+      <section className="mx-auto max-w-4xl px-6  pb-20">
         <div className="rounded-2xl bg-[var(--color-darkBlue-500)] p-12 text-white shadow-lg">
           <h3 className="text-3xl font-bold">6. How to Submit</h3>
 

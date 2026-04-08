@@ -55,7 +55,6 @@ model User {
   /// Tracks the specific equity a user claimed on a team project.
   submissionClaims SubmissionRoster[]
 
-  teamMemberships  TeamMember[]
   userAchievements UserAchievement[]
   earnedKSBs       UserKSB[]
   reputationLedger ReputationTransaction[]
@@ -426,6 +425,7 @@ model ProgramCourse {
 /// Defines verifiable work tasks, challenges, and milestones used to generate Signals.
 model Activity {
   id          String    @id @default(uuid())
+  slug        String?    @unique @default(uuid())
   title       String
   description String?
   points      Int       @default(0)
@@ -438,6 +438,18 @@ model Activity {
   visibility ActivityVisibility @default(Public)
   difficulty ActivityDifficulty @default(Intermediate)
 
+  // ================= THE RULES ENGINE =================
+  /// Can an individual join this without a Hive?
+  allowSolo    Boolean @default(true)
+  
+  /// Can a Hive officially register for this?
+  allowHive    Boolean @default(false)
+  
+  /// If Hives are allowed, what is the required team size?
+  minHiveSize  Int?
+  maxHiveSize  Int?
+
+  // If these are set, the activity is locked to enrolled students only, or program participants only, etc.
   courseId  String?
   programId String?
   creatorId String
@@ -450,10 +462,12 @@ model Activity {
   creator User     @relation("ActivityCreator", fields: [creatorId], references: [id])
 
   requirements   ActivityRequirement[]
+  participatingHives HiveActivity[]
   participations Participation[]
   submissions    Submission[]
   ksbs           ActivityKSB[]
-  teams          Team[]
+
+  @@index([slug])
 }
 
 enum ActivityType {
@@ -527,47 +541,29 @@ enum RequirementType {
 // 5. COLLABORATION (Teams & Participation)
 // ==========================================
 
-model Team {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  activityId  String
-  createdAt   DateTime @default(now())
-
-  activity       Activity        @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  members        TeamMember[]
-  submissions    Submission[]
-  participations Participation[]
-}
-
-model TeamMember {
-  id       String   @id @default(uuid())
-  teamId   String
-  userId   String
-  role     String   @default("MEMBER")
-  joinedAt DateTime @default(now())
-
-  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([teamId, userId])
-}
-
 model Participation {
-  id         String            @id @default(uuid())
-  userId     String
-  activityId String
-  teamId     String?
-  progress   Float             @default(0)
-  role       ParticipationRole @default(Participant)
-  joinedAt   DateTime          @default(now())
+  id          String            @id @default(uuid())
+  /// A participation must belong to a human. If they are part of a Hive, the hiveId field will link them to the team, but we still need to track the individual user for accountability and reputation.
+  userId      String           
+
+  /// The banner they are choosing to fight under. If null, they are solo.
+  hiveId      String?
+  activityId  String
+  progress    Float             @default(0)
+  role        ParticipationRole @default(Participant)
+  joinedAt    DateTime          @default(now())
 
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   activity    Activity     @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  team        Team?        @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  hive        Hive?        @relation(fields: [hiveId], references: [id], onDelete: SetNull)
   submissions Submission[]
 
-  @@unique([userId, activityId])
+  @@unique([userId, activityId]) 
+  
+  @@index([hiveId])
+  @@index([userId])
+  @@index([activityId])
+
 }
 
 enum ParticipationRole {
@@ -586,7 +582,7 @@ model Submission {
   id              String  @id @default(uuid())
   activityId      String
   userId          String?
-  teamId          String?
+  hiveId          String?
   participationId String?
   content         Json
 
@@ -600,7 +596,7 @@ model Submission {
 
   activity      Activity       @relation(fields: [activityId], references: [id], onDelete: Cascade)
   user          User?          @relation("UserSubmissions", fields: [userId], references: [id], onDelete: Cascade)
-  team          Team?          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  hive          Hive?          @relation(fields: [hiveId], references: [id], onDelete: Cascade)
   participation Participation? @relation(fields: [participationId], references: [id], onDelete: SetNull)
 
   reviews     Review[]
@@ -910,7 +906,7 @@ model Connection {
 }
 
 enum ConnectionSource {
-  TEAM_PROJECT
+  HIVE_PROJECT
   PEER_REVIEW
   MENTORSHIP
   BOUNTY_HELP
@@ -939,10 +935,13 @@ model Hive {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members     HiveMember[]
-  ksbs        HiveKSB[]
-  proposals   Proposal[]
-  messages    HiveMessage[]
+  members        HiveMember[]
+  ksbs           HiveKSB[]
+  proposals      Proposal[]
+  messages       HiveMessage[]
+  activeMissions HiveActivity[]  // The activities the Hive is registered for
+  participations Participation[] // The actual members who joined the roster
+  submissions    Submission[]    // The actual work output from the Hive, used to verify V-Signals and distribute reputation.
 }
 
 /// Dynamic cap table. Prevents freeloading by tracking actual contribution.
@@ -990,6 +989,18 @@ model HiveMessage {
 
   @@index([hiveId])
   @@index([createdAt])
+}
+
+/// Connects Hives to Activities they are participating in. Used for Hive-wide projects and challenges.
+model HiveActivity {
+  hiveId     String
+  activityId String
+  joinedAt   DateTime @default(now())
+
+  hive       Hive     @relation(fields: [hiveId], references: [id], onDelete: Cascade)
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@id([hiveId, activityId])
 }
 
 /// Aggregates the strengths of individual members to show what the Hive as a collective is best at.
@@ -1041,9 +1052,9 @@ enum ProposalType {
 }
 
 enum ProposalStatus {
-  ACTIVE
-  PASSED
-  FAILED
+  ACTIVE // Open for voting
+  PASSED // Proposal passed. Execute the outcome.
+  FAILED // Proposal failed.
   EXECUTED // Means the API automatically processed the result. No admin intervention needed.
 }
 
@@ -1057,6 +1068,7 @@ model Vote {
   /// Captured at time of vote (e.g. 0.15 if they own 15% equity). Prevents mob rule.
   voteWeight Float
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt @default(now())
 
   proposal Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)

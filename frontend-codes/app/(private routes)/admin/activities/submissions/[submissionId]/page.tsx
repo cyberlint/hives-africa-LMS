@@ -34,7 +34,7 @@ export default async function SubmissionReviewPage({
     where: { id: resolvedParams.submissionId },
     include: {
       user: true,
-      team: true,
+      hive: true,
       activity: {
         include: {
           ksbs: { include: { ksb: true } },
@@ -54,8 +54,8 @@ if (!submission) notFound()
   }
   
   const currentInstructorId = currentUser.id;
-  const isTeam = !!submission.teamId
-  const entityName = submission.user?.name || submission.team?.name || "Unknown Learner"
+  const isHive = !!submission.hiveId
+  const entityName = submission.user?.name || submission.hive?.name || "Unknown Learner"
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] w-full overflow-hidden bg-background">
@@ -87,7 +87,7 @@ if (!submission) notFound()
         {/* Learner Chip */}
         <div className="hidden md:flex items-center gap-3 px-3 py-1.5 rounded-full bg-muted/50 border border-border">
           <Avatar className="size-6 border border-border">
-            {isTeam ? (
+            {isHive ? (
               <AvatarFallback className="bg-orange/10 text-orange"><Users className="size-3"/></AvatarFallback>
             ) : (
               <>

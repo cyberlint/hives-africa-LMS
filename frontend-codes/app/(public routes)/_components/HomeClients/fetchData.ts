@@ -206,52 +206,45 @@ export async function getArenaChallenges() {
   }));
 }
 
-export async function getActiveHives() {
-  const events = await prisma.event.findMany({
-    where: {
-      // Only show upcoming events
-      startdate: {
-        gte: new Date(),
-      },
-      // Filter for collaborative, peer-to-peer event types
-      eventCategory: {
-        in: [
-          "Study_Group", 
-          "Brainstorming_Session", 
-          "Meetup", 
-          "Workshop", 
-          "Roundtable", 
-          "Tutorial", 
-          "Office_Hours"
-        ]
-      }
+export async function getTopHives() {
+  const topHives = await prisma.hive.findMany({
+    // 1. Rank by Reputation (Leaderboard effect)
+    orderBy: { 
+      reputation: 'desc' 
     },
+    // 2. Fetch exactly 6 Hives (Fits perfectly into 2 rows of your lg:grid-cols-3 layout)
+    take: 6, 
     include: {
-      user: { 
-        select: { 
-          name: true, 
-          image: true, 
-          jobTitle: true // Assuming you have this in your schema, fallback if not
-        } 
+      // 3. Get the total personnel count
+      _count: {
+        select: { members: true }
+      },
+      // 4. Fetch the top 3 members to show their overlapping avatars in the UI
+      members: {
+        take: 3,
+        include: {
+          user: { 
+            select: { 
+              name: true, 
+              image: true 
+            } 
+          }
+        }
       }
-    },
-    orderBy: { startdate: 'asc' }, // Soonest events first
-    take: 4 // Fit 4 cards perfectly on the grid
+    }
   });
 
-  return events.map(e => ({
-    id: e.id,
-    title: e.title,
-    shortdescription: e.shortdescription,
-    category: e.eventCategory,
-    startdate: e.startdate,
-    isOnline: e.isOnline,
-    venue: e.venue,
-    host: {
-      name: e.user.name,
-      image: e.user.image,
-      role: e.user.jobTitle || "NextHive Builder"
-    }
+  // Map the raw Prisma data to exactly match the RankedHive interface your UI expects
+  return topHives.map(hive => ({
+    id: hive.id,
+    slug: hive.slug,
+    name: hive.name,
+    description: hive.description,
+    reputation: hive.reputation,
+    isPrivate: hive.isPrivate,
+    memberCount: hive._count.members,
+    // The members array already perfectly matches { user: { name, image } }
+    members: hive.members 
   }));
 }
 

@@ -1,9 +1,10 @@
 import { evaluateRulesForEvent } from "../engine/rule-evaluator";
+import { EventType } from "./event-types";
 import { prisma } from "@/lib/db";
 
 // 1. Strict dictionary of everything that can happen in NextHive
 export type SystemEvent = {
-  type: "Submission_Approved" | "Submission_Rejected" | "Submission_Revision_Required" | "Hackathon_RSVP" | "Milestone_Reached";
+  type: EventType;
   userId: string;
   payload: Record<string, any>;
 };

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { SubmissionStatus } from "@prisma/client"
 import { prisma } from "@/lib/db" 
 import { eventBus } from "@/domains/communications/events/publisher"
+import { EVENT_TYPES } from "@/domains/communications/events/event-types"
 
 export async function submitInstructorReview({
   submissionId,
@@ -98,19 +99,19 @@ export async function submitInstructorReview({
 
       if (status === "Approved") {
         await eventBus.publish({
-          type: "Submission_Approved",
+          type: EVENT_TYPES.SUBMISSION_APPROVED,
           userId: submission.userId!,
           payload: eventPayload,
         })
       } else if (status === "Revision_Required") {
         await eventBus.publish({
-          type: "Submission_Revision_Required",
+          type: EVENT_TYPES.SUBMISSION_REVISION_REQUIRED,
           userId: submission.userId!,
           payload: eventPayload,
         })
       } else if (status === "Rejected") {
         await eventBus.publish({
-          type: "Submission_Rejected",
+          type: EVENT_TYPES.SUBMISSION_REJECTED,
           userId: submission.userId!,
           payload: eventPayload,
         })

@@ -6,6 +6,14 @@ export default async function Page() {
   const user = await requireAuth();
   const userId = user.id;
 
+  // 1. Get all the Hives this user belongs to
+  const userHiveMemberships = await prisma.hiveMember.findMany({
+    where: { userId: userId },
+    select: { hiveId: true }
+  });
+  const userHiveIds = userHiveMemberships.map(m => m.hiveId);
+
+  // 2. Fetch Activities with Multi-Hive awareness
   const rawActivities = await prisma.activity.findMany({
     where: {
       status: "Published", 
@@ -14,8 +22,18 @@ export default async function Page() {
       ksbs: {
         include: { ksb: true },
       },
+      // Check if the user is on the roster for this activity (Solo or Squad)
+      participations: {
+        where: { userId: userId }
+      },
+      // Find the latest submission made EITHER by the user solo, OR by their Hive
       submissions: {
-        where: { userId: userId },
+        where: {
+          OR: [
+            { userId: userId },
+            { hiveId: { in: userHiveIds } }
+          ]
+        },
         orderBy: { createdAt: "desc" },
         take: 1, 
       },
@@ -25,10 +43,15 @@ export default async function Page() {
 
   const formattedActivities = rawActivities.map((act) => {
     const latestSubmission = act.submissions[0];
-    let currentStatus = "Pending";
+    const participation = act.participations[0];
+    
+    // Smarter default status mapping
+    let currentStatus = "Pending"; // Not joined yet
     
     if (latestSubmission) {
-      currentStatus = latestSubmission.status;
+      currentStatus = latestSubmission.status; // e.g., "Submitted", "Under_Review"
+    } else if (participation) {
+      currentStatus = "In_Progress"; // They are on the roster, but no submission yet
     }
 
     return {
@@ -39,6 +62,11 @@ export default async function Page() {
       points: act.points || 0,
       deadline: act.deadline,
       status: currentStatus,
+      
+      // We pass this extra context down so your ActivitiesBoard can optionally 
+      // render a badge showing *how* they are participating (Solo vs Squad)
+      participationMode: participation ? (participation.hiveId ? "Squad" : "Solo") : null,
+      
       ksbs: act.ksbs.map((mapping) => ({
         title: mapping.ksb.title,
         type: mapping.ksb.type,

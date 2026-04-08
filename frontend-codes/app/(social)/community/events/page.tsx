@@ -22,76 +22,85 @@ export default async function EventsPage() {
   const events = await getEvents();
 
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 pb-20 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-6 md:py-8 space-y-10 pb-24">
       
-      {/* 1. HERO SECTION */}
-      <section className="relative overflow-hidden rounded-[2rem] border border-border/50 bg-card/20 p-8 sm:p-12 lg:p-16 backdrop-blur-md flex flex-col md:flex-row items-center gap-12 group">
-        {/* Ambient Glow */}
-        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-orange/10 rounded-full blur-[100px] pointer-events-none transition-opacity duration-1000 opacity-60 group-hover:opacity-100" />
+      {/* ================= HERO ================= */}
+      <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-card p-6 md:p-10 flex flex-col lg:flex-row items-center gap-8">
+        
+        {/* subtle glow */}
+        <div className="absolute -top-32 -right-32 w-[400px] h-[400px] bg-orange/10 rounded-full blur-[100px] pointer-events-none" />
 
-        <div className="flex flex-col gap-6 relative z-10 flex-1">
-          <Badge variant="outline" className="w-fit bg-orange/5 text-orange border-orange/20 px-3 py-1 font-semibold uppercase tracking-wider text-xs flex items-center gap-2 rounded-full">
-            <Zap className="size-3.5 fill-current" /> Community Events
+        {/* TEXT */}
+        <div className="flex-1 space-y-5 relative z-10 text-center lg:text-left">
+          <Badge className="w-fit mx-auto lg:mx-0 bg-orange/10 text-orange border-none text-xs font-semibold flex items-center gap-2">
+            <Zap className="size-3.5 fill-current" />
+            Events
           </Badge>
 
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-foreground">
-            Connect, Learn, <br className="hidden md:block" /> and Build Together.
+          <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
+            Connect, learn,
+            <br className="hidden md:block" />
+            and build together.
           </h1>
 
-          <p className="max-w-xl text-lg text-muted-foreground leading-relaxed">
-            Events are the pulse of our network. Join live workshops, participate in hackathons, or host your own study room to accelerate your growth.
+          <p className="text-muted-foreground max-w-xl mx-auto lg:mx-0 text-sm md:text-base">
+            Join workshops, attend meetups, or host your own sessions to grow faster with the community.
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 pt-4">
-            <Button asChild size="lg" className="rounded-full px-8 bg-yellow text-background hover:bg-foreground/90 font-medium shadow-xl hover:scale-[1.02] transition-all">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start pt-2">
+            <Button asChild className="rounded-full px-6 h-11 font-semibold">
               <Link href="#events-list">Explore Events</Link>
             </Button>
 
             {user && (
-              <Button asChild variant="outline" size="lg" className="rounded-full px-8 border-border/50 bg-background/50 backdrop-blur-sm hover:bg-muted font-medium">
+              <Button asChild variant="outline" className="rounded-full px-6 h-11 font-semibold">
                 <Link href="/community/events/create">
-                  <PlusCircle className="mr-2 size-5 text-muted-foreground" /> Host an Event
+                  <PlusCircle className="mr-2 size-4" />
+                  Host Event
                 </Link>
               </Button>
             )}
           </div>
         </div>
 
-        <div className="relative z-10 flex-1 w-full max-w-lg md:max-w-none">
-          <div className="relative aspect-[4/3] w-full rounded-[2rem] overflow-hidden border border-border/30 shadow-2xl">
-            <div className="absolute inset-0 bg-gradient-to-tr from-background/40 to-transparent z-10" />
+        {/* IMAGE */}
+        <div className="flex-1 w-full max-w-md lg:max-w-none">
+          <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden border border-border/40">
             <Image
               src="/assets/events-hero.png"
-              alt="Community Events"
+              alt="Events"
               fill
               className="object-cover"
-              priority
               sizes="(max-width: 768px) 100vw, 50vw"
+              priority
             />
           </div>
         </div>
       </section>
 
-      {/* 2. FILTER & SEARCH BAR */}
-      <section className="relative z-20 -mt-6">
-        <div className="mx-auto max-w-4xl">
-          <div className="flex flex-col md:flex-row gap-4 rounded-[1.5rem] bg-card/60 backdrop-blur-xl p-3 border border-border/50 shadow-lg">
+      {/* ================= FILTER BAR ================= */}
+      <section className="sticky top-16 z-30">
+        <div className="bg-background/80 backdrop-blur border border-border/50 rounded-2xl p-3 shadow-sm">
+          
+          <div className="flex flex-col md:flex-row gap-3">
             
+            {/* SEARCH */}
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search events, workshops, or hosts..." 
-                className="h-12 pl-11 bg-background/50 border-transparent focus-visible:ring-1 focus-visible:ring-orange/30 rounded-xl text-base" 
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <Input
+                placeholder="Search events..."
+                className="pl-10 h-11 rounded-xl"
               />
             </div>
 
-            <div className="flex w-full md:w-auto gap-3">
+            {/* FILTERS */}
+            <div className="flex gap-2 w-full md:w-auto">
               <Select defaultValue="all">
-                <SelectTrigger className="h-12 w-full md:w-48 bg-background/50 border-transparent rounded-xl focus:ring-1 focus:ring-orange/30">
+                <SelectTrigger className="h-11 w-full md:w-44 rounded-xl">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-border/50">
-                  <SelectItem value="all">All Categories</SelectItem>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
                   {Object.values(EventCategoryEnum.enum)
                     .sort((a, b) => a.localeCompare(b))
                     .map((category) => (
@@ -103,64 +112,70 @@ export default async function EventsPage() {
               </Select>
 
               <Select defaultValue="any">
-                <SelectTrigger className="h-12 w-full md:w-40 bg-background/50 border-transparent rounded-xl focus:ring-1 focus:ring-orange/30">
-                  <Users className="mr-2 size-4 text-muted-foreground" />
+                <SelectTrigger className="h-11 w-full md:w-36 rounded-xl">
+                  <Users className="mr-2 size-4" />
                   <SelectValue placeholder="Format" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-border/50">
-                  <SelectItem value="any">Any Format</SelectItem>
+                <SelectContent>
+                  <SelectItem value="any">Any</SelectItem>
                   <SelectItem value="online">Online</SelectItem>
-                  <SelectItem value="in-person">In-Person</SelectItem>
+                  <SelectItem value="in-person">In-person</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            
           </div>
         </div>
       </section>
 
-      {/* 3. EVENTS GRID */}
-      <section id="events-list" className="pt-8 scroll-mt-24">
-        <div className="flex items-center justify-between mb-8 px-2">
-          <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            Upcoming Ops 
-            <span className="flex items-center justify-center bg-muted/50 text-muted-foreground text-xs font-bold px-2.5 py-0.5 rounded-full border border-border/50">
+      {/* ================= EVENTS ================= */}
+      <section id="events-list" className="space-y-6 scroll-mt-24">
+        
+        {/* HEADER */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2">
+            Upcoming Events
+            <span className="text-xs px-2 py-0.5 rounded-full bg-muted border">
               {events.length}
             </span>
           </h2>
         </div>
 
+        {/* EMPTY */}
         {events.length === 0 ? (
-          <div className="rounded-[2rem] border border-dashed border-border/60 bg-card/20 backdrop-blur-sm p-16 text-center flex flex-col items-center justify-center">
-            <div className="size-16 rounded-full bg-muted/50 flex items-center justify-center mb-4 border border-border/50">
-              <CalendarSearch className="size-8 text-muted-foreground/50" />
+          <div className="rounded-2xl border border-dashed p-10 text-center">
+            <div className="size-12 mx-auto rounded-full bg-muted flex items-center justify-center mb-3">
+              <CalendarSearch className="size-6 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-medium text-foreground mb-1">No ops scheduled</h3>
-            <p className="text-muted-foreground text-sm max-w-sm">
-              There are currently no upcoming events matching your criteria. Check back later or host your own!
+
+            <p className="font-medium">No events yet</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Check back later or host one.
             </p>
+
             {user && (
-              <Button asChild variant="outline" className="mt-6 rounded-full">
-                <Link href="/community/events/create">Host an Event</Link>
+              <Button asChild className="mt-4 rounded-full">
+                <Link href="/community/events/create">Host Event</Link>
               </Button>
             )}
           </div>
         ) : (
           <>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {/* GRID */}
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {events.map((event) => (
                 <EventCard key={event.id} data={event} />
               ))}
             </div>
-            <div className="mt-14 flex justify-center">
-              <Button variant="outline" size="lg" className="rounded-full px-8 font-medium border-border/50 hover:bg-muted/50">
-                Load more events
+
+            {/* LOAD MORE */}
+            <div className="flex justify-center pt-6">
+              <Button variant="outline" className="rounded-full px-6">
+                Load more
               </Button>
             </div>
           </>
         )}
       </section>
-      
     </div>
   );
 }

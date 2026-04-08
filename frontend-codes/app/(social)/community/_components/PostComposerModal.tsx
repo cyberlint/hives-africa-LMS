@@ -404,7 +404,7 @@ export default function PostComposerModal({ open, onOpenChange, user }: PostComp
           <Button
             onClick={handleSubmit}
             disabled={isPending || isUploading}
-            className="rounded-full px-6 font-semibold"
+            className="rounded-full px-6 font-semibold bg-yellow-500 text-white hover:bg-yellow-600 transition-colors"
           >
             {isPending ? (
               <>

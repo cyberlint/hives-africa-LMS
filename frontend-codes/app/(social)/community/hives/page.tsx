@@ -195,7 +195,7 @@ export default async function HiveDirectoryPage({ searchParams }: PageProps) {
                     ))}
                   </div>
 
-                  <Button asChild className="w-full sm:w-auto">
+                  <Button asChild className="w-full sm:w-auto bg-yellow-500 text-white hover:bg-yellow-600 transition-colors">
                     <Link href={`/community/hives/${hive.slug}`}>
                       {isMember ? "Enter" : "View"}
                     </Link>

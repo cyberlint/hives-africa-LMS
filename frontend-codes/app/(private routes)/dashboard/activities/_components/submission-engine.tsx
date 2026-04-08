@@ -17,18 +17,36 @@ import { toast } from "sonner"
 import Link from "next/link"
 import { createActivitySubmission } from "../../actions/submit-activity"
 
-interface SubmissionEngineProps {
-  activity: {
-    id: string
-    title: string
-    description: string
-    ksbs: { ksbId: string, ksb: { title: string; type: string; description?: string | null } }[]
-    requirements: any[]
-  }
-  existingSubmission: any | null
+// 1. Define what the 'activity' object looks like
+interface ActivityData {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  difficulty: string;
+  points: number;
+  deadline: Date | null;
+  ksbs: any[];
+  requirements: any[];
 }
 
-export function SubmissionEngine({ activity, existingSubmission }: SubmissionEngineProps) {
+// 2. Define the TOP-LEVEL props for the SubmissionEngine component
+interface SubmissionEngineProps {
+  activity: ActivityData;
+  existingSubmission: any;
+  hiveId?: string | null;
+  hiveSlug?: string | null;
+  roster?: { userId: string; name: string; image: string | null }[];
+}
+
+// 3. Destructure everything cleanly in the component signature
+export function SubmissionEngine({ 
+  activity, 
+  existingSubmission,
+  hiveId = null,
+  hiveSlug = null,
+  roster = [] // Default to empty array for Solo submissions
+}: SubmissionEngineProps) {
   const [isRevising, setIsRevising] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [uploadingReqId, setUploadingReqId] = useState<string | null>(null)
