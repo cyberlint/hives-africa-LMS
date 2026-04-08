@@ -122,7 +122,7 @@ export default function BountiesPage() {
                     </h3>
                     
                     <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                      I have an endpoint that queries a massive relation graph. In local development it's fine, but on Vercel edge it's hitting the 50MB memory limit and throwing 502s. Tried pagination but it didn't solve the core spike.
+                      {"I have an endpoint that queries a massive relation graph. In local development it's fine, but on Vercel edge it's hitting the 50MB memory limit and throwing 502s. Tried pagination but it didn't solve the core spike."}
                     </p>
 
                     <div className="flex items-center gap-4 mt-4">
@@ -172,7 +172,7 @@ export default function BountiesPage() {
                     </h3>
                     
                     <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                      My daily ETL pipeline randomly stops processing. The logs don't show a direct failure, it just hangs on the Postgres ingestion node. Willing to jump on a quick 15-minute voice room to screen share.
+                      {"My daily ETL pipeline randomly stops processing. The logs don't show a direct failure, it just hangs on the Postgres ingestion node. Willing to jump on a quick 15-minute voice room to screen share."}
                     </p>
 
                     <div className="flex items-center gap-4 mt-4">

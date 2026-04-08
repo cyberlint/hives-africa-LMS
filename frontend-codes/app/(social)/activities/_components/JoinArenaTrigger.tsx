@@ -43,7 +43,7 @@ export default function JoinArenaTrigger({
         >
           <div className="flex items-center font-semibold">
             <CheckCircle2 className="mr-2 size-4" />
-            You're in
+            {"You're in"}
           </div>
           <span className="text-[10px] font-medium opacity-80">
             {isSolo ? "Participating Solo" : `Participating with ${myParticipation.hive?.name}`}
