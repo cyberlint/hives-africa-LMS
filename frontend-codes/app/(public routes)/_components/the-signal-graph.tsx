@@ -110,7 +110,7 @@ export default function TheSignalGraph() {
             >
               <Button
                 asChild
-                className="h-12 px-6 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                className="h-12 px-6 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold"
               >
                 <Link href="/register" className="flex items-center gap-2">
                   Enter the Network
@@ -134,11 +134,11 @@ export default function TheSignalGraph() {
               >
                 <div className="flex items-center gap-3 mb-4">
                   <Avatar className="size-10">
-                    <AvatarFallback>KO</AvatarFallback>
+                    <AvatarFallback>AM</AvatarFallback>
                   </Avatar>
 
                   <div className="flex-1">
-                    <p className="text-sm font-semibold">Kenneth Odoh</p>
+                    <p className="text-sm font-semibold">Amani Mosi</p>
                     <p className="text-xs text-muted-foreground">
                       Apr 5 • Showcase
                     </p>
@@ -192,11 +192,11 @@ export default function TheSignalGraph() {
               >
                 <div className="flex items-center gap-3 mb-4">
                   <Avatar className="size-10">
-                    <AvatarFallback>KO</AvatarFallback>
+                    <AvatarFallback>UD</AvatarFallback>
                   </Avatar>
 
                   <div className="flex-1">
-                    <p className="text-sm font-semibold">Kenneth Odoh</p>
+                    <p className="text-sm font-semibold">Uchechukwu Dayo</p>
                     <p className="text-xs text-muted-foreground">
                       Now • Bounty
                     </p>

@@ -6,9 +6,11 @@ export default async function CommunityLayout({ children }: { children: React.Re
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col">
+      {/* Navbar stays on top */}
       <SocialNavbar />
 
-      <main className="flex-1 max-w-[1280px] mx-auto px-4 py-6 pb-24 md:pb-6">
+      {/* Main content */}
+      <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-6 md:px-8 py-6 pb-24 md:pb-6">
         {children}
       </main>
     </div>

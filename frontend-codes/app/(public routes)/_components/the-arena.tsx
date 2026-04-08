@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   Flame, Users, Timer, ArrowRight, Swords, 
-  ShieldAlert, Crosshair, Terminal, Skull 
+  ShieldAlert, Crosshair, TerminalIcon, Skull, 
 } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -51,7 +51,7 @@ export default function TheArena({ challenges }: { challenges: ArenaChallenge[] 
                 The Arena
               </h2>
             </div>
-            <p className="text-muted-foreground text-lg max-w-2xl font-medium leading-relaxed">
+            <p className="text-muted-foreground text-sm md:text-base max-w-2xl">
               Global hackathons, high-stakes bounties, and architectural design sprints. Assemble your faction, build verifiable solutions to real-world problems, and dominate the leaderboard.
             </p>
           </MotionDiv>
@@ -88,13 +88,13 @@ export default function TheArena({ challenges }: { challenges: ArenaChallenge[] 
               Awaiting Deployment
             </h3>
             
-            <p className="text-muted-foreground text-lg max-w-lg mx-auto mb-10 relative z-10 leading-relaxed font-medium">
+            <p className="text-muted-foreground text-sm md:text-base max-w-2xl">
               The Arena is currently being reset. The next season of global bounties and tactical missions is being forged. Train your squad in the meantime.
             </p>
             
             <Button asChild variant="outline" className="rounded-full bg-background/50 text-foreground hover:bg-muted font-black px-10 h-14 relative z-10 shadow-lg border-border/60 transition-all uppercase tracking-widest text-xs">
               <Link href="/course">
-                <Terminal className="size-4 mr-2" /> Report to the Forge
+                <TerminalIcon className="size-4 mr-2" /> Train in the meantime
               </Link>
             </Button>
           </MotionDiv>

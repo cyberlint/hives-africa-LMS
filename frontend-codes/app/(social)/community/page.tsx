@@ -129,8 +129,8 @@ export default async function CommunityPage() {
   ].sort(() => Math.random() - 0.5)
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-hidden bg-background">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-full px-4 md:px-6">
+    <div className="min-h-screen bg-background">
+  <div className="grid grid-cols-1 md:grid-cols-12 gap-6 px-0 sm:px-6 md:px-8">
 
         {/* LEFT COLUMN */}
         <div className="md:col-span-4 lg:col-span-3 hidden md:block">
@@ -179,7 +179,7 @@ export default async function CommunityPage() {
         </div>
 
         {/* CENTER COLUMN */}
-        <div className="md:col-span-8 lg:col-span-6 h-full overflow-y-auto pr-2 space-y-5 pb-20 pt-5 scrollbar-thin scrollbar-thumb-border">
+        <div className="md:col-span-8 lg:col-span-6 space-y-5 pb-20 pt-5">
           <FeedComposer user={{ id: session.id, name: session.name || "Anonymous", image: session.image || null, totalRep, portfolioItems }} />
 
           <div className="flex items-center gap-4 px-2">
@@ -193,7 +193,7 @@ export default async function CommunityPage() {
           {signals.map((signal) => {
             const hasSparked = signal.sparks.some(s => s.userId === userId)
             return (
-              <Card key={signal.id} className="border-border/60 shadow-sm hover:shadow-md transition-all overflow-hidden bg-card/50 backdrop-blur-sm">
+              <Card key={signal.id} className="border-border/60 shadow-sm hover:shadow-md transition-all overflow-hidden bg-card/50 backdrop-blur-sm max-md:rounded-none max-md:border-x-0 max-md:shadow-none">
                 <CardHeader className="pb-3 flex flex-row gap-3 items-start">
                   <Avatar className="size-10 border border-border/50">
                     <AvatarImage src={signal.author.image || undefined} />
@@ -231,27 +231,25 @@ export default async function CommunityPage() {
                   )}
 
                   {signal.portfolioItemId && (
-                    <div className="rounded-2xl border border-orange/20 bg-orange/5 p-4 hover:bg-orange/10 transition-colors cursor-pointer group">
-                      <div className="flex gap-4 items-center">
-                        <div className="p-2.5 rounded-xl bg-orange/10 text-orange group-hover:scale-110 transition-transform">
-                          <Briefcase className="size-5" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-black text-orange uppercase tracking-widest mb-1">Verified Proof</p>
-                          <p className="text-sm font-bold text-foreground">Algorithmically Validated Output</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                    <div className="rounded-2xl border border-border/50 bg-muted/30 p-4 hover:bg-muted/50 transition-colors cursor-pointer group">
+  <div className="flex gap-3 items-center">
+    
+    <div className="p-2 rounded-lg bg-orange/10 text-orange-500 group-hover:scale-105 transition-transform">
+      <Briefcase className="size-4.5" />
+    </div>
 
-                  <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest pt-3 border-t border-border/40">
-                    <span className="flex items-center gap-1.5 text-muted-foreground hover:text-orange cursor-pointer transition-colors">
-                      <Zap className="size-3.5 fill-current" /> {signal.sparks.length} Sparks
-                    </span>
-                    <span className="text-muted-foreground hover:text-foreground cursor-pointer transition-colors">
-                      {signal._count.threads} Threaded Replies
-                    </span>
-                  </div>
+    <div className="space-y-0.5">
+      <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+        Verified proof
+      </p>
+      <p className="text-sm font-medium text-foreground">
+        Algorithmically validated output
+      </p>
+    </div>
+
+  </div>
+</div>
+                  )}
                 </CardContent>
 
                 <SignalActions 
