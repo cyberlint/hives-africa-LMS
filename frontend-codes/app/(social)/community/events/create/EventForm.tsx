@@ -22,7 +22,7 @@ import Link from "next/link";
 
 // Shared schema and actions
 import { EventSchema, CreateEventSchema, EventVenueEnum, EventCategoryEnum } from "@/lib/zodSchemas";
-import { createEvent, updateEvent } from "@/app/(public routes)/community/events/events-actions";
+import { createEvent, updateEvent } from "../events-actions";
 
 // Define the expected user type passed from the Server Component
 interface AuthUser {
