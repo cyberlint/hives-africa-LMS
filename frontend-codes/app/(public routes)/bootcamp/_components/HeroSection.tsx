@@ -13,7 +13,6 @@ const LiveHeroPreview = () => {
   const [logs, setLogs] = useState<{ id: number; text: string; type: string }[]>([]);
 
   useEffect(() => {
-    // Timed to simulate the system actions
     const sequence = [
       { t: 800, text: "Joined Hive: Data Alpha", type: "info", rep: 50 },
       { t: 2500, text: "Submission: SQL EDA Approved", type: "success", rep: 75 },
@@ -36,30 +35,32 @@ const LiveHeroPreview = () => {
   }, []);
 
   return (
-    <div className="w-full max-w-[420px] mx-auto rounded-[2rem] bg-card p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50">
+    <div className="w-full max-w-[420px] mx-auto rounded-3xl bg-card p-4 sm:p-6 shadow-sm border border-border/50">
       
-      {/* Widget Header */}
-      <div className="flex items-start justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <div className="flex size-11 items-center justify-center rounded-full border border-border/80 bg-transparent">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-5 gap-4">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <div className="flex size-10 sm:size-11 items-center justify-center rounded-full border border-border/80">
             <User className="size-5 text-muted-foreground/70" />
           </div>
-          <div>
-            <p className="text-sm font-bold text-foreground">New Builder</p>
-            <p className="mt-0.5 flex items-center gap-1 text-[11px] font-black uppercase tracking-widest text-orange">
-              <Zap className="size-3 fill-current" /> {rep} REP
+
+          <div className="min-w-0">
+            <p className="text-sm font-bold truncate">New Builder</p>
+            <p className="mt-0.5 flex items-center gap-1 text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-orange">
+              <Zap className="size-3 fill-current" />
+              {rep} REP
             </p>
           </div>
         </div>
 
-        {/* Live Indicator */}
-        <div className="size-2 rounded-full bg-green-500 mt-2" />
+        {/* Live Dot */}
+        <div className="mt-2 size-2 rounded-full bg-green-500 shrink-0" />
       </div>
 
-      {/* Widget Logs */}
-      <div className="space-y-3 min-h-[180px] flex flex-col justify-end">
+      {/* Logs */}
+      <div className="space-y-2 min-h-[160px] sm:min-h-[180px] flex flex-col justify-end">
         {logs.length === 0 && (
-          <p className="font-mono text-xs text-muted-foreground animate-pulse px-2 text-center">
+          <p className="font-mono text-xs text-muted-foreground animate-pulse text-center">
             Waiting for activity...
           </p>
         )}
@@ -69,13 +70,13 @@ const LiveHeroPreview = () => {
             key={log.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-3 rounded-full border border-border/60 bg-card px-4 py-3 text-xs font-medium shadow-sm"
+            className="flex items-start gap-3 rounded-2xl border border-border/60 bg-card px-3 sm:px-4 py-2.5 text-xs shadow-sm"
           >
-            {log.type === "success" && <CheckCircle2 className="size-4 text-green-500" />}
-            {log.type === "info" && <Users className="size-4 text-[#76c1fb]" />}
-            {log.type === "action" && <Database className="size-4 text-orange" />}
-            
-            <span className={log.type === "action" ? "font-bold text-foreground" : "text-muted-foreground"}>
+            {log.type === "success" && <CheckCircle2 className="size-4 text-green-500 shrink-0" />}
+            {log.type === "info" && <Users className="size-4 text-blue-400 shrink-0" />}
+            {log.type === "action" && <Database className="size-4 text-orange shrink-0" />}
+
+            <span className={`leading-snug ${log.type === "action" ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
               {log.text}
             </span>
           </MotionDiv>
@@ -86,36 +87,38 @@ const LiveHeroPreview = () => {
 };
 
 // ==========================================
-// MAIN COMPONENT: Hero Section
+// MAIN COMPONENT: HERO
 // ==========================================
 export default function HeroSection() {
   return (
-    <section className="relative w-full bg-background pt-10 pb-16 lg:pt-16 lg:pb-24">
+    <section className="relative w-full bg-background pt-12 sm:pt-14 lg:pt-16 pb-14 sm:pb-20 lg:pb-24">
+      
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-8">
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-8 items-center">
           
-          {/* LEFT CONTENT */}
-          <div className="z-10 text-center lg:text-left">
-            
+          {/* LEFT */}
+          <div className="text-center lg:text-left">
+
             {/* Badge */}
             <MotionDiv
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mb-8 inline-flex items-center gap-2 rounded-full border border-orange/30 bg-transparent px-4 py-1.5"
+              transition={{ duration: 0.4 }}
+              className="mb-6 sm:mb-8 inline-flex items-center gap-2 rounded-full border border-orange/30 px-3 sm:px-4 py-1.5"
             >
               <span className="size-2 rounded-full bg-orange" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-orange sm:text-xs">
-                Cohort 001 is now forming
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-orange">
+                Cohort 001 is forming
               </span>
             </MotionDiv>
 
             {/* Headline */}
             <MotionH1
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="mb-6 text-[2.5rem] font-black leading-[1.05] tracking-tight text-foreground sm:text-6xl md:text-[4.5rem]"
+              transition={{ duration: 0.5, delay: 0.05 }}
+              className="mb-5 sm:mb-6 text-[2.2rem] sm:text-5xl md:text-6xl lg:text-[4.5rem] font-black leading-[1.05] tracking-tight"
             >
               The Certificate is Dead. <br />
               <span className="text-orange">
@@ -125,42 +128,38 @@ export default function HeroSection() {
 
             {/* Description */}
             <MotionDiv
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="mx-auto mb-10 max-w-[500px] space-y-4 text-balance lg:mx-0"
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="mx-auto lg:mx-0 max-w-[520px] mb-8 sm:mb-10"
             >
-              <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
-                {"A 4-week data analytics sprint where your work doesn't sit in folders — it becomes a verified, public portfolio as you build."}
+              <p className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed">
+                A 4-week data analytics sprint where your work doesn’t sit in folders — it becomes a verified, public portfolio as you build.
               </p>
             </MotionDiv>
 
             {/* CTA */}
             <MotionDiv
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
               className="flex justify-center lg:justify-start"
             >
               <Link
                 href="/register"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-orange px-8 py-4 text-sm font-bold text-white transition-transform hover:scale-[1.02] sm:w-auto sm:text-base"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-orange px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-bold text-white transition-transform hover:scale-[1.02]"
               >
                 Register Now
                 <ArrowRight className="size-5" />
               </Link>
             </MotionDiv>
+
           </div>
 
-          {/* RIGHT PREVIEW */}
-          <MotionDiv
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="flex w-full items-center justify-center lg:justify-end"
-          >
+          {/* RIGHT */}
+          <div className="flex justify-center lg:justify-end mt-6 lg:mt-0">
             <LiveHeroPreview />
-          </MotionDiv>
+          </div>
 
         </div>
       </div>
