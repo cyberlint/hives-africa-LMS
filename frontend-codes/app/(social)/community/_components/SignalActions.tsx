@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Zap, MessageSquare, LucideShare2, Loader2, Check, Send } from "lucide-react"
+import { Zap, MessageSquare, LucideShare2, Loader2, Check, Send, MessageSquareText } from "lucide-react"
 import { z } from "zod"
 import { CreateThreadSchema } from "@/lib/zodSchemas"
 
@@ -115,7 +115,7 @@ export default function SignalActions({
               : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}
           `}
         >
-          <MessageSquare className="size-4 mr-1" /> 
+          <MessageSquareText className="size-4 mr-1" /> 
           {threads.length}
         </Button>
 

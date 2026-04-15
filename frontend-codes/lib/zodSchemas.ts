@@ -460,7 +460,7 @@ export const EventSchema = z.object({
 
 // CREATE EVENT SCHEMA
 export const CreateEventSchema = EventSchema
-  .omit({ id: true, createdAt: true, updatedAt: true, userId: true }) // user doesn’t provide these
+  .omit({ id: true, createdAt: true, updatedAt: true, userId: true }) // user doesn't provide these
   .superRefine((data, ctx) => {
 
     // 1. Enforce URL for online events
