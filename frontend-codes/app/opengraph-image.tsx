@@ -31,7 +31,7 @@ export default function Image() {
       >
         {/* Hex Pattern Overlay - FIXED with explicit width/height */}
         <img
-          src="https://nexthive-lms.t3.storage.dev/Brand%20Identity/hex-pattern.png"
+          src="https://nexthive-lms.t3.storage.dev/Brand%20Identity/NextHive%20Logo%20-%20Orange%20BG.png"
           alt=""
           width="1440" // Provide base dimensions (120% of 1200)
           height="756" // Provide base dimensions (120% of 630)
