@@ -1,47 +1,43 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { Receiver } from "@upstash/qstash";
 import { processPendingEmails } from "@/domains/communications/workers/sender";
-import crypto from "crypto";
 
-export async function GET(request: Request) {
+// Initialize the Upstash Receiver
+const receiver = new Receiver({
+  currentSigningKey: process.env.QSTASH_CURRENT_SIGNING_KEY!,
+  nextSigningKey: process.env.QSTASH_NEXT_SIGNING_KEY!,
+});
+
+export async function POST(req: NextRequest) {
   try {
-    // ✅ 0. Ensure method is GET only (extra safety)
-    if (request.method !== "GET") {
-      return new NextResponse("Method Not Allowed", { status: 405 });
+    // Extract the unique signature Upstash attaches to the headers
+    const signature = req.headers.get("upstash-signature");
+    
+    if (process.env.NODE_ENV === "production" && !signature) {
+      console.warn("[Cron Security] Missing Upstash signature.");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // ✅ 1. Validate secret exists
-    const secret = process.env.CRON_SECRET;
-
-    // 🔒 Security Note: In production, the secret must be set and will be used to protect this endpoint.
-    if (process.env.NODE_ENV === "production" && !secret) {
-      console.error("[Cron Security] CRON_SECRET is not defined.");
-      return new NextResponse("Server Misconfigured", { status: 500 });
-    }
-
-    // ✅ 2. Authorization Verification (secure compare)
-    const authHeader = request.headers.get("authorization");
+    // Read the raw request body (required to verify the math)
+    const body = await req.text();
 
     if (process.env.NODE_ENV === "production") {
-      if (!authHeader) {
-        console.warn("[Cron Security] Missing authorization header.");
-        return new NextResponse("Unauthorized", { status: 401 });
-      }
-
-      const expected = `Bearer ${secret}`;
-
-      const isValid = crypto.timingSafeEqual(
-        Buffer.from(authHeader),
-        Buffer.from(expected)
-      );
+      // Verify the signature mathematically
+      const isValid = await receiver.verify({
+        signature: signature as string,
+        body,
+      });
 
       if (!isValid) {
-        console.warn("[Cron Security] Invalid authorization attempt blocked.");
-        return new NextResponse("Unauthorized", { status: 401 });
+        console.warn("[Cron Security] Invalid Upstash signature blocked.");
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
     }
 
-    // ✅ 3. Execute worker
+    // Execute worker
+    console.log("🔒 Verified secure request from Upstash QStash");
     console.log("[Cron Execution] Starting email batch processor...");
+    
     await processPendingEmails();
 
     return NextResponse.json(
