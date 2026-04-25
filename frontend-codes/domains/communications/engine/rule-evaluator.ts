@@ -1,9 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/db";
 import { SystemEvent } from "../events/publisher";
 
-const prisma = new PrismaClient();
-
 export async function evaluateRulesForEvent(event: SystemEvent) {
+  console.log(`[Rule Engine] ⚙️ Evaluating rules for: ${event.type}`);
+  
   // 1. Check if there are any active rules for this specific event type
   const rules = await prisma.emailRule.findMany({
     where: {
@@ -28,6 +28,7 @@ export async function evaluateRulesForEvent(event: SystemEvent) {
         payload: event.payload,
         scheduledAt,
         status: "pending", // The worker will pick this up later
+        channel: rule.channel, // email, in_app, push
       },
     });
 

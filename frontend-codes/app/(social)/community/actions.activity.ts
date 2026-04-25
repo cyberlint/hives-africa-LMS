@@ -1,18 +1,26 @@
 "use server"
 
+import { courses } from './../../../data/courses';
+
+
 import { requireAuth } from "@/domains/auth/require-auth"
+import { EVENT_TYPES } from "@/domains/communications/events/event-types"
+import { eventBus } from "@/domains/communications/events/publisher"
 import { prisma } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 
 // 1. JOIN ACTIVITY (Solo or via Hive Roster)
 export async function joinActivity(activitySlug: string, hiveSlug?: string) {
   const session = await requireAuth()
+  const userId = session.id
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL || "https://hives.africa";
 
   // Find the activity using the SLUG since that is what the UI sends
-  const activity = await prisma.activity.findUnique({ 
-    where: { slug: activitySlug } 
+  const activity = await prisma.activity.findUnique({
+    where: { slug: activitySlug }
   })
-  
+
   if (!activity) return { error: "Activity not found." }
 
   if (!hiveSlug && !activity.allowSolo) {
@@ -30,12 +38,29 @@ export async function joinActivity(activitySlug: string, hiveSlug?: string) {
   try {
     await prisma.participation.create({
       data: {
-        userId: session.id,
+        userId: userId,
         activityId: activity.id,
         hiveId: hiveId,
         role: "Participant"
       }
     })
+
+    // Publish this to event bus so that any relevant communications can be triggered (e.g. welcome email, onboarding sequence, etc.)
+    const eventPayload = {
+      activityType: activity.type || "Activity",
+      activityTitle: activity.title,
+      description: activity.description || null,
+      startDate: activity.startDate || null,
+      deadline: activity.deadline || null,
+      points: activity.points || 0,
+      isMandatory: activity.isMandatory || false,
+      actionUrl: `${baseUrl}/dashboard/activities/${activity.id}`,
+    }
+    await eventBus.publish({
+      type: EVENT_TYPES.ACTIVITY_JOINED,
+      userId,
+      payload: eventPayload,
+    });
 
     revalidatePath(`/activities/${activitySlug}`)
     return { success: true, message: "Welcome to the Arena!" }
@@ -79,13 +104,13 @@ export async function commitHiveToActivity(activityId: string, hiveSlug: string)
   }
 
   try {
-    await prisma.hiveActivity.create({ 
-      data: { 
-        activityId: activity.id, 
-        hiveId: hive.id 
-      } 
+    await prisma.hiveActivity.create({
+      data: {
+        activityId: activity.id,
+        hiveId: hive.id
+      }
     })
-    
+
     revalidatePath(`/activities/${activity.slug}`)
     return { success: true, message: "Squad registered!" }
   } catch (error: any) {

@@ -1,5 +1,6 @@
 import { evaluateRulesForEvent } from "../engine/rule-evaluator";
-import { EventType } from "./event-types";
+import { EVENT_TYPES, EventType } from "./event-types";
+import { addToBatch } from "../batching/store";
 import { prisma } from "@/lib/db";
 
 // 1. Strict dictionary of everything that can happen in NextHive
@@ -22,9 +23,22 @@ export const eventBus = {
         payload: event.payload,
       },
     });
+
+    if (event.type === EVENT_TYPES.SPARK_RECEIVED) {
+      addToBatch({
+        userId: event.userId,
+        type: event.type,
+        payload: event.payload,
+        createdAt: Date.now(),
+      });
+
+      return; // STOP here (no rule engine)
+    }
     // In the future (Phase 2), this line changes to send the event to a Redis Queue.
     // For now (Phase 1), we pass it directly to our local engine in the background.
     // Notice we DO NOT 'await' this. We let it run in the background so the user isn't kept waiting!
+
+    // everything else continues normally
     evaluateRulesForEvent(event).catch((err) => {
       console.error(`[Event Bus] ❌ Error processing event behind the scenes:`, err);
     });

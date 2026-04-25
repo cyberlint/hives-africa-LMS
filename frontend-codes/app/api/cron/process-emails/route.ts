@@ -11,7 +11,9 @@ export async function GET(request: Request) {
 
     // ✅ 1. Validate secret exists
     const secret = process.env.CRON_SECRET;
-    if (!secret) {
+
+    // 🔒 Security Note: In production, the secret must be set and will be used to protect this endpoint.
+    if (process.env.NODE_ENV === "production" && !secret) {
       console.error("[Cron Security] CRON_SECRET is not defined.");
       return new NextResponse("Server Misconfigured", { status: 500 });
     }

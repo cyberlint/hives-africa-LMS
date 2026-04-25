@@ -11,6 +11,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     id: session.user.id,
     role: session.user.role as "user" | "admin",
     name: session.user.name ?? undefined,   // normalize null to undefined
+    email: session.user.email ?? undefined, // normalize null to undefined
     image: session.user.image ?? undefined, // normalize null to undefined
     banned: session.user.banned ?? undefined,
   };

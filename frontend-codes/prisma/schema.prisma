@@ -80,6 +80,8 @@ model User {
   votesCast        Vote[]
   HiveMessage      HiveMessage[]
 
+  notificationPreferences NotificationPreference?
+
   @@map("user")
 }
 
@@ -791,7 +793,7 @@ model Signal {
   /// Tagged a project they built to show actual output.
   portfolioItemId String?
 
-  /// Algorithmic driver. Increases dramatically if proof anchors are attached. Sorts the feed.
+  /// Algorithmic driver. Increases dramatically if anchors are attached. Sorts the feed.
   trustScore Float   @default(1.0)
   mediaKey   String?
 
@@ -1120,6 +1122,7 @@ model EmailRule {
   id          String   @id @default(uuid())
   eventType   String
   templateKey String
+  channel     NotificationChannel @default(email)
   delay       Int      @default(0)
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -1127,10 +1130,13 @@ model EmailRule {
   @@index([eventType])
 }
 
+
+
 model EmailJob {
   id          String    @id @default(cuid())
   userId      String
   templateKey String
+  channel     NotificationChannel @default(email)
   payload     Json
   status      String    @default("pending")
   attempts    Int       @default(0)
@@ -1141,10 +1147,50 @@ model EmailJob {
   updatedAt   DateTime  @updatedAt
 }
 
+enum NotificationChannel {
+  email
+  in_app
+  push
+}
+
+
 model EventLog {
   id        String   @id @default(cuid())
   type      String
   userId    String
   payload   Json
   createdAt DateTime @default(now())
+}
+
+// In-app notifications generated from events. Read status is tracked for user experience, but the source of truth is the EventLog and EmailJob tables.
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  body      String
+  type      String   // "in_app"
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// Stores user preferences for receiving notifications across different channels and event types. Used to filter EventLogs and EmailJobs before dispatch.
+model NotificationPreference {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+
+  // Channel toggles
+  email     Boolean  @default(true)
+  inApp     Boolean  @default(true)
+  push      Boolean  @default(true)
+
+  // Fine-grained controls (expand later)
+  activity  Boolean  @default(true)
+  social    Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

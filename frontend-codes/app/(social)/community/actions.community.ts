@@ -5,6 +5,8 @@ import { requireAuth } from "@/domains/auth/require-auth"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import { CreateSignalSchema, CreateThreadSchema } from "@/lib/zodSchemas"
+import { EVENT_TYPES } from "@/domains/communications/events/event-types"
+import { eventBus } from "@/domains/communications/events/publisher"
 
 // Infer the exact TypeScript shape directly from your Zod schema
 export type CreateSignalPayload = z.infer<typeof CreateSignalSchema>
@@ -18,12 +20,12 @@ export async function createSignal(rawPayload: CreateSignalPayload) {
 
   // 0. ZOD VALIDATION (The Gatekeeper)
   const validatedFields = CreateSignalSchema.safeParse(rawPayload)
-  
+
   if (!validatedFields.success) {
     // Return early with the formatted Zod errors so the UI can display them
-    return { 
-      error: "Invalid input data", 
-      details: validatedFields.error.flatten().fieldErrors 
+    return {
+      error: "Invalid input data",
+      details: validatedFields.error.flatten().fieldErrors
     }
   }
 
@@ -47,14 +49,14 @@ export async function createSignal(rawPayload: CreateSignalPayload) {
 
     // Type Multipliers
     if (payload.type === "SHOWCASE" && payload.portfolioItemId) {
-       calculatedTrustScore += 1.0 // Bonus for correctly categorizing a portfolio drop
+      calculatedTrustScore += 1.0 // Bonus for correctly categorizing a portfolio drop
     } else if (payload.type === "FIELD_NOTES") {
-       calculatedTrustScore += 0.5 // We want to encourage technical sharing
+      calculatedTrustScore += 0.5 // We want to encourage technical sharing
     }
 
     // 2. HANDLE BOUNTY ESCROW (If HELP_NEEDED)
     if (payload.type === "HELP_NEEDED" && payload.bountyStake && payload.bountyStake > 0) {
-      
+
       // Ensure they actually have enough Reputation to stake
       const userRep = await prisma.reputationTransaction.aggregate({
         where: { userId },
@@ -96,7 +98,7 @@ export async function createSignal(rawPayload: CreateSignalPayload) {
           data: {
             creatorId: userId,
             signalId: newSignal.id,
-            title: "Help Needed", 
+            title: "Help Needed",
             description: payload.content,
             stake: payload.bountyStake!,
           }
@@ -154,11 +156,32 @@ export async function toggleSpark(signalId: string) {
       await prisma.spark.create({
         data: { signalId, userId }
       })
-      // Optional: Slightly boost Trust Score when sparked by peers
+      // Slightly boost Trust Score when sparked by peers
       await prisma.signal.update({
         where: { id: signalId },
         data: { trustScore: { increment: 0.1 } }
       })
+
+      // Publish an event to notify the signal author of the new spark
+      const signal = await prisma.signal.findUnique({
+        where: { id: signalId },
+        select: {
+          authorId: true, // owner of the content
+          content: true,
+        }
+      })
+
+      if (signal?.authorId && signal.authorId !== userId) {
+    await eventBus.publish({
+      type: EVENT_TYPES.SPARK_RECEIVED,
+      userId: signal.authorId, // receiver, not the sender
+      payload: {
+        signalId,
+        signalContent: signal.content,
+        fromUserId: userId,
+      },
+    })
+  }
     }
 
     revalidatePath("/community")

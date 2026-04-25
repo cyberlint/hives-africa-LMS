@@ -14,7 +14,6 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { useInitializePayment } from "@/hooks/usePayments";
 import { constructUrl } from "@/lib/construct-url";
-import { Trash2, CreditCard, Shield } from "lucide-react"
 
 export default function Cart() {
   const { items, removeItem, subtotal, coupon, applyCoupon, removeCoupon, total, loadingCoupon, clearCart } = useCart();

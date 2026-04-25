@@ -460,7 +460,7 @@ export default function CohortLandingPage() {
                         </Link>
                     </div>
 
-                    {/* subtle trust microline (adds conversion lift on mobile) */}
+                    {/* subtle trust microline (adds conversion lift on mobile) */}en
                     <p className="pt-2 text-[11px] text-muted-foreground/70">
                         No certificates. Just verified output.
                     </p>

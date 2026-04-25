@@ -130,7 +130,7 @@ export default function ShareAchievementModal({ isOpen, onClose, achievement }: 
     if (!recipientEmail) {
       
       toast.error("Email required", {
-        description: "Please enter a recipient email addressl",
+        description: "Please enter a recipient email address",
       })
       return
     }
