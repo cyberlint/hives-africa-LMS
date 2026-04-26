@@ -8,9 +8,13 @@ export default async function OrganizationLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { orgSlug: string };
+  // Change: params is now a Promise
+  params: Promise<{ orgSlug: string }>;
 }) {
-  const org = await getOrganizationDashboard(params.orgSlug);
+  // Change: You must await params before accessing properties
+  const { orgSlug } = await params;
+  
+  const org = await getOrganizationDashboard(orgSlug);
 
   if (!org) notFound();
 
@@ -18,13 +22,10 @@ export default async function OrganizationLayout({
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
-
       {/* HEADER */}
       <header className="flex items-center justify-between border-b pb-4">
-
         {/* LEFT: ORG IDENTITY */}
         <div className="flex items-center gap-3 min-w-0">
-
           {logoSrc && (
             <img
               src={logoSrc}
@@ -43,7 +44,6 @@ export default async function OrganizationLayout({
 
         {/* RIGHT: SYSTEM MENU */}
         <div className="relative group">
-
           <button className="text-sm px-3 py-2 rounded-md border hover:bg-gray-50">
             Menu ▾
           </button>
@@ -53,8 +53,8 @@ export default async function OrganizationLayout({
             bg-white border rounded-lg shadow-lg
             opacity-0 invisible group-hover:opacity-100 group-hover:visible
             transition
+            z-50
           ">
-
             <DropdownItem href={`/orgs/${org.slug}/members`}>
               Members
             </DropdownItem>
@@ -69,9 +69,12 @@ export default async function OrganizationLayout({
 
             <div className="border-t my-1" />
 
-            <DropdownItem href={`/orgs`}>
+            <Link
+              href="/orgs"
+              className="block px-3 py-2 text-sm hover:bg-gray-50"
+            >
               Switch Organization
-            </DropdownItem>
+            </Link>
           </div>
         </div>
       </header>
