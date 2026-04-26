@@ -13,72 +13,75 @@ export const OrgTypeConfig: Record<
     collaborationModes: CollaborationMode[];
   }
 > = {
-  Fellowship_Program: {
-    missions: ["Talent_Development", "Skill_Training", "Community_Building"],
-    operatingModels: ["Cohort_Based", "Apprenticeship_Model", "Hybrid_Model"],
-    collaborationModes: ["Individual_First", "Team_Based", "Hybrid_Collaboration"],
+  Bootcamp_Or_Academy: {
+    missions: [OrgMission.Technical_Upskilling, OrgMission.Workforce_Readiness],
+    operatingModels: [OperatingModel.Strict_Cohort_Based, OperatingModel.Apprenticeship_Driven],
+    collaborationModes: [CollaborationMode.Squad_Based, CollaborationMode.Fluid_Hybrid],
   },
 
-  Startup_Company: {
-    missions: ["Product_Incubation", "Talent_Development", "Hackathons_And_Competitions"],
-    operatingModels: ["Project_Based", "Apprenticeship_Model"],
-    collaborationModes: ["Team_Based", "Hybrid_Collaboration"],
+  University_Or_School: {
+    missions: [OrgMission.Academic_Research, OrgMission.Technical_Upskilling],
+    operatingModels: [OperatingModel.Strict_Cohort_Based],
+    collaborationModes: [CollaborationMode.Solo_Execution, CollaborationMode.Squad_Based],
+  },
+
+  Student_Chapter: {
+    missions: [OrgMission.Ecosystem_Building, OrgMission.Technical_Upskilling, OrgMission.Open_Innovation_And_Hackathons],
+    operatingModels: [OperatingModel.Community_Led_Mentorship, OperatingModel.Event_Driven_Sprints],
+    collaborationModes: [CollaborationMode.Squad_Based, CollaborationMode.Open_Crowdsourced],
   },
 
   Tech_Community: {
-    missions: ["Community_Building", "Open_Source_Contribution", "Hackathons_And_Competitions"],
-    operatingModels: ["Community_Led", "Project_Based"],
-    collaborationModes: ["Hybrid_Collaboration"],
+    missions: [OrgMission.Ecosystem_Building, OrgMission.Open_Innovation_And_Hackathons],
+    operatingModels: [OperatingModel.Community_Led_Mentorship, OperatingModel.Event_Driven_Sprints],
+    collaborationModes: [CollaborationMode.Open_Crowdsourced, CollaborationMode.Fluid_Hybrid],
   },
 
-  Training_Academy: {
-    missions: ["Skill_Training", "Talent_Development"],
-    operatingModels: ["Cohort_Based", "Project_Based"],
-    collaborationModes: ["Individual_First", "Team_Based"],
+  Open_Source_Foundation: {
+    missions: [OrgMission.Ecosystem_Building, OrgMission.Product_Incubation],
+    operatingModels: [OperatingModel.Community_Led_Mentorship, OperatingModel.Self_Paced_Continuous],
+    collaborationModes: [CollaborationMode.Open_Crowdsourced],
   },
 
-  Talent_Accelerator: {
-    missions: ["Talent_Development", "Hiring_And_Placement_Pipeline"],
-    operatingModels: ["Cohort_Based", "Apprenticeship_Model"],
-    collaborationModes: ["Team_Based"],
+  Startup_Incubator: {
+    missions: [OrgMission.Product_Incubation, OrgMission.Workforce_Readiness],
+    operatingModels: [OperatingModel.Apprenticeship_Driven, OperatingModel.Strict_Cohort_Based],
+    collaborationModes: [CollaborationMode.Squad_Based],
   },
 
-  Open_Source_Community: {
-    missions: ["Open_Source_Contribution", "Community_Building"],
-    operatingModels: ["Community_Led", "Project_Based"],
-    collaborationModes: ["Hybrid_Collaboration"],
-  },
-
-  Corporate_Learning_Team: {
-    missions: ["Internal_Team_UpSkilling", "Skill_Training"],
-    operatingModels: ["Cohort_Based", "Hybrid_Model"],
-    collaborationModes: ["Individual_First", "Team_Based"],
-  },
-
-  University_Department: {
-    missions: ["Research_And_Education", "Skill_Training"],
-    operatingModels: ["Cohort_Based"],
-    collaborationModes: ["Individual_First"],
+  Corporate_L_And_D: {
+    missions: [OrgMission.Internal_Corporate_Training, OrgMission.Technical_Upskilling],
+    operatingModels: [OperatingModel.Strict_Cohort_Based, OperatingModel.Self_Paced_Continuous],
+    collaborationModes: [CollaborationMode.Solo_Execution, CollaborationMode.Squad_Based],
   },
 
   Nonprofit_Initiative: {
-    missions: ["Community_Building", "Talent_Development"],
-    operatingModels: ["Community_Led", "Cohort_Based"],
-    collaborationModes: ["Hybrid_Collaboration"],
+    missions: [OrgMission.Ecosystem_Building, OrgMission.Technical_Upskilling],
+    operatingModels: [OperatingModel.Community_Led_Mentorship, OperatingModel.Self_Paced_Continuous],
+    collaborationModes: [CollaborationMode.Open_Crowdsourced, CollaborationMode.Fluid_Hybrid],
   },
 
-  Bootcamp_Provider: {
-    missions: ["Skill_Training", "Talent_Development", "Hiring_And_Placement_Pipeline"],
-    operatingModels: ["Cohort_Based"],
-    collaborationModes: ["Team_Based"],
+  Government_Program: {
+    missions: [OrgMission.Ecosystem_Building, OrgMission.Workforce_Readiness],
+    operatingModels: [OperatingModel.Strict_Cohort_Based, OperatingModel.Event_Driven_Sprints],
+    collaborationModes: [CollaborationMode.Squad_Based],
+  },
+
+  Independent_Fellowship: {
+    missions: [OrgMission.Technical_Upskilling, OrgMission.Workforce_Readiness, OrgMission.Product_Incubation],
+    operatingModels: [OperatingModel.Apprenticeship_Driven, OperatingModel.Strict_Cohort_Based],
+    collaborationModes: [CollaborationMode.Squad_Based],
   },
 
   Other: {
-    missions: ["Community_Building", "Talent_Development"],
-    operatingModels: ["Hybrid_Model"],
-    collaborationModes: ["Hybrid_Collaboration"],
+    missions: [OrgMission.Ecosystem_Building],
+    operatingModels: [OperatingModel.Self_Paced_Continuous],
+    collaborationModes: [CollaborationMode.Fluid_Hybrid],
   },
 };
 
-export const formatEnum = (str: string) =>
-  str.replace(/_/g, " ");
+/**
+ * Utility to make enum strings readable for the UI
+ * e.g., "Bootcamp_Or_Academy" -> "Bootcamp Or Academy"
+ */
+export const formatEnum = (str: string) => str.replace(/_/g, " ");
