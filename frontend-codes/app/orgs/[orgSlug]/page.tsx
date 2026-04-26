@@ -10,12 +10,18 @@ const getInitials = (name: string) =>
     .slice(0, 2)
     .toUpperCase()
 
+type PageParams = {
+  orgSlug: string
+}
+
 export default async function OrgDashboard({
   params,
 }: {
-  params: { orgSlug: string }
+  params: Promise<PageParams>
 }) {
-  const org = await getOrganizationDashboard(params.orgSlug)
+  const { orgSlug } = await params
+
+  const org = await getOrganizationDashboard(orgSlug)
 
   if (!org) return null
 
@@ -80,7 +86,6 @@ export default async function OrgDashboard({
               {/* CONTENT */}
               <div className="flex-1 min-w-0">
 
-                {/* TOP ROW */}
                 <div className="flex items-center justify-between gap-2">
 
                   <p className="text-sm font-medium truncate">
@@ -93,7 +98,6 @@ export default async function OrgDashboard({
 
                 </div>
 
-                {/* SECOND ROW */}
                 <p className="text-xs text-muted-foreground truncate mt-0.5">
                   {hive.description || "No description"}
                 </p>
