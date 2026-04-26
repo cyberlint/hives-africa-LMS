@@ -924,8 +924,8 @@ model Organization {
   name                String
   orgType             OrgType @default(Bootcamp_Or_Academy)
   missions            OrgMission[]
-  OperatingModel      OperatingModel @default(Event_Driven_Sprints)
-  CollaborationMode   CollaborationMode @default(Fluid_Hybrid)
+  operatingModel      OperatingModel @default(Event_Driven_Sprints)
+  collaborationMode   CollaborationMode @default(Fluid_Hybrid)
   description         String? @db.Text
   logoUrl             String?
   website             String?
