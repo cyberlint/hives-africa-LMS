@@ -5,32 +5,32 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
-import { Loader2, Users, Lock, Globe } from "lucide-react"
+import { Loader2, Users, Lock, Globe, Building2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { CreateHiveSchema } from "@/lib/zodSchemas"
+import { toast } from "sonner"
 
-// Import your server action
+// Import your updated server action
 import { createHive } from "../../actions.hive"
 
 interface CreateHiveModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  predefinedOrgSlug?: string;
 }
 
-export default function CreateHiveModal({ open, onOpenChange }: CreateHiveModalProps) {
+export default function CreateHiveModal({ open, onOpenChange, predefinedOrgSlug }: CreateHiveModalProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
-  
+
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [isPrivate, setIsPrivate] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const handleSubmit = () => {
-    // 1. Reset previous errors
     setErrors({})
-    
-    // 2. Client-side validation payload
+
     const payload = { name, description, isPrivate }
     const validated = CreateHiveSchema.safeParse(payload)
 
@@ -41,19 +41,24 @@ export default function CreateHiveModal({ open, onOpenChange }: CreateHiveModalP
       return
     }
 
-    // 3. Fire the server action
     startTransition(async () => {
-      const res = await createHive(validated.data)
-      
+      // 1. Fire the action ONCE with both the form data and the org slug
+      const res = await createHive(validated.data, predefinedOrgSlug)
+
       if (res.error) {
         setErrors({ server: res.error })
+        toast.error(res.error)
       } else if (res.success && res.slug) {
-        // 4. Success! Close modal, clear state, and redirect
-        onOpenChange(false)
+        // 2. Success path
+        toast.success("Hive launched successfully!")
+        
+        // Reset local state
         setName("")
         setDescription("")
         setIsPrivate(false)
-        
+        onOpenChange(false)
+
+        // 3. Redirect directly to the new Hive workspace
         router.push(`/community/hives/${res.slug}`)
       }
     })
@@ -61,7 +66,7 @@ export default function CreateHiveModal({ open, onOpenChange }: CreateHiveModalP
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => {
-      if (!isPending) onOpenChange(isOpen) // Prevent closing while loading
+      if (!isPending) onOpenChange(isOpen)
     }}>
       <DialogContent className="max-w-md rounded-2xl p-6 border-border bg-card shadow-xl">
         <DialogHeader>
@@ -72,9 +77,18 @@ export default function CreateHiveModal({ open, onOpenChange }: CreateHiveModalP
           <p className="text-xs text-muted-foreground mt-1">
             Create an autonomous skill cluster. Stake your reputation and start building a legacy.
           </p>
+          
+          {/* CONTEXT INDICATOR */}
+          {predefinedOrgSlug && (
+            <div className="flex items-center gap-2 mt-3 px-3 py-1.5 bg-orange/5 border border-orange/10 rounded-lg w-fit">
+              <Building2 className="size-3 text-orange" />
+              <span className="text-[10px] font-bold text-orange uppercase tracking-wider">
+                Linking to Organization: {predefinedOrgSlug}
+              </span>
+            </div>
+          )}
         </DialogHeader>
 
-        {/* Global Server Errors (e.g., "Name already taken") */}
         {errors.server && (
           <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold rounded-lg mt-2">
             {errors.server}
@@ -82,34 +96,30 @@ export default function CreateHiveModal({ open, onOpenChange }: CreateHiveModalP
         )}
 
         <div className="space-y-5 mt-4">
-          
-          {/* Hive Name */}
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground">Hive Name</label>
-            <Input 
-              placeholder="e.g., Lagos Data Ops" 
+            <Input
+              placeholder="e.g., Lagos Data Ops"
               value={name}
-              onChange={(e) => { setName(e.target.value); setErrors(p => ({...p, name: ""})) }}
+              onChange={(e) => { setName(e.target.value); setErrors(p => ({ ...p, name: "" })) }}
               disabled={isPending}
-              className="h-10"
+              className="h-10 focus-visible:ring-orange/50"
             />
             {errors.name && <p className="text-[10px] font-bold text-red-500">{errors.name}</p>}
           </div>
 
-          {/* HIVE DESCRIPTION */}
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground">Mission & Focus</label>
-            <textarea 
-              placeholder="What are we building? Who should join our ranks?" 
+            <textarea
+              placeholder="What are we building? Who should join our ranks?"
               value={description}
-              onChange={(e) => { setDescription(e.target.value); setErrors(p => ({...p, description: ""})) }}
+              onChange={(e) => { setDescription(e.target.value); setErrors(p => ({ ...p, description: "" })) }}
               disabled={isPending}
               className="w-full h-24 text-sm bg-background border border-border/50 rounded-md p-3 outline-none focus:ring-1 focus:ring-orange/50 transition-shadow resize-none"
             />
             {errors.description && <p className="text-[10px] font-bold text-red-500">{errors.description}</p>}
           </div>
 
-          {/* PRIVACY TOGGLE */}
           <div className="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-muted/20">
             <div>
               <p className="text-sm font-bold flex items-center gap-2 text-foreground">
@@ -117,8 +127,8 @@ export default function CreateHiveModal({ open, onOpenChange }: CreateHiveModalP
                 {isPrivate ? "Private Treasury" : "Public Hive"}
               </p>
               <p className="text-[10px] text-muted-foreground mt-0.5 max-w-[200px] leading-tight">
-                {isPrivate 
-                  ? "Only invited members can view the cap table and join." 
+                {isPrivate
+                  ? "Only invited members can view the cap table and join."
                   : "Anyone in the community can view and join this Hive."}
               </p>
             </div>
@@ -126,28 +136,26 @@ export default function CreateHiveModal({ open, onOpenChange }: CreateHiveModalP
           </div>
         </div>
 
-        {/* FOOTER ACTIONS */}
         <div className="mt-6 flex justify-end gap-3">
-          <Button 
-            variant="ghost" 
-            disabled={isPending} 
+          <Button
+            variant="ghost"
+            disabled={isPending}
             onClick={() => {
-              // Clear errors if they cancel and reopen later
               setErrors({})
               onOpenChange(false)
             }}
           >
             Cancel
           </Button>
-          
-          <Button 
-            onClick={handleSubmit} 
-            disabled={isPending || !name.trim() || !description.trim()} 
-            className="font-bold bg-foreground text-background hover:bg-foreground/90 rounded-full px-6"
+
+          <Button
+            onClick={handleSubmit}
+            disabled={isPending || !name.trim() || !description.trim()}
+            className="font-bold bg-foreground text-background hover:bg-foreground/90 rounded-full px-6 shadow-lg shadow-black/10"
           >
             {isPending ? (
               <>
-                <Loader2 className="size-4 mr-2 animate-spin" /> 
+                <Loader2 className="size-4 mr-2 animate-spin" />
                 Staking Rep...
               </>
             ) : (

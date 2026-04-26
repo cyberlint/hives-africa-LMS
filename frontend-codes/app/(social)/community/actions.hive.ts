@@ -4,6 +4,7 @@ import { requireAuth } from "@/domains/auth/require-auth"
 import { prisma } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
+import { redirect } from "next/navigation"
 import { CreateHiveSchema } from "@/lib/zodSchemas"
 import slugify from "slugify"
 
@@ -13,7 +14,10 @@ import slugify from "slugify"
 const createSlug = (name: string) =>
   slugify(name, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
 
-export async function createHive(rawPayload: z.infer<typeof CreateHiveSchema>) {
+export async function createHive(
+  rawPayload: z.infer<typeof CreateHiveSchema>, 
+  orgSlug?: string 
+) {
   const session = await requireAuth()
   const userId = session.id
 
@@ -23,16 +27,24 @@ export async function createHive(rawPayload: z.infer<typeof CreateHiveSchema>) {
   try {
     const newHive = await prisma.$transaction(async (tx) => {
       
-      // 1. Generate the base slug
+      // A. If an orgSlug is provided, find the ID
+      let organizationId = null;
+      if (orgSlug) {
+        const org = await tx.organization.findUnique({
+          where: { slug: orgSlug },
+          select: { id: true }
+        });
+        organizationId = org?.id || null;
+      }
+
+      // B. Generate and collision-check slug
       let slug = createSlug(validated.data.name)
-      
-      // 2. Collision Check: If the slug exists, append a random string
       const existing = await tx.hive.findUnique({ where: { slug } })
       if (existing) {
         slug = `${slug}-${Math.random().toString(36).substring(2, 6)}`
       }
 
-      // 3. Create the Hive using the new slug
+      // C. Create the Hive with the organization link
       const hive = await tx.hive.create({
         data: {
           name: validated.data.name,
@@ -40,10 +52,11 @@ export async function createHive(rawPayload: z.infer<typeof CreateHiveSchema>) {
           description: validated.data.description,
           isPrivate: validated.data.isPrivate,
           creatorId: userId,
+          organizationId: organizationId, // THE MISSING LINK
         }
       })
 
-      // 4. Automatically make the creator an ADMIN member
+      // D. Auto-admin
       await tx.hiveMember.create({
         data: {
           userId: userId,
@@ -55,7 +68,12 @@ export async function createHive(rawPayload: z.infer<typeof CreateHiveSchema>) {
       return hive
     })
 
+    // E. REVALIDATE the specific organization path so it shows up instantly
+    if (orgSlug) {
+      revalidatePath(`/community/organizations/${orgSlug}`)
+    }
     revalidatePath("/community/hives")
+
     return { success: true, slug: newHive.slug }
 
   } catch (error: any) {

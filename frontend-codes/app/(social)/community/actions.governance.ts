@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db"
 import { ProposalType, VoteChoice, ProposalStatus, HiveRole } from "@prisma/client"
 import { eventBus } from "@/domains/communications/events/publisher"
 import { EVENT_TYPES } from "@/domains/communications/events/event-types"
+import { ProposalStatusType } from "@/lib/zodSchemas";
 
 // ==========================================
 // 1. CREATE PROPOSAL
@@ -101,33 +102,43 @@ export async function raiseProposal({
 // ==========================================
 export async function castVote({
   proposalId,
+  expectedStatus, // Make this optional
   userId,
   choice,
 }: {
   proposalId: string;
+  expectedStatus?: ProposalStatusType;
   userId: string;
-  choice: VoteChoice;
+  choice: "FOR" | "AGAINST";
 }) {
   try {
-    // 1. Fetch the Proposal and the User's Hive Membership
+    // 1. Build a dynamic database query based on what was passed
+    const whereClause: any = { id: proposalId };
+    
+    // If the client requested a strict status check, add it to the query
+    if (expectedStatus) {
+      whereClause.status = expectedStatus;
+    }
+
+    // 2. Fetch the Proposal
     const proposal = await prisma.proposal.findUnique({
-      where: { id: proposalId },
+      where: whereClause,
       include: { hive: { include: { members: true } } }
     });
 
-    if (!proposal || proposal.status !== "ACTIVE") {
-      return { success: false, error: "Proposal is no longer active." };
+    // 3. Strict failure if it doesn't exist or doesn't match the requested status
+    if (!proposal) {
+      return { success: false, error: "Proposal not found or status mismatch." };
     }
 
-    const member = proposal.hive.members.find(m => m.userId === userId);
+    const member = proposal.hive.members.find((m: any) => m.userId === userId);
     if (!member) {
       return { success: false, error: "You are not a member of this Hive." };
     }
 
-    // 2. Capture their exact equity at the moment of voting
     const voteWeight = member.equityShare;
 
-    // 3. Record or Update the vote
+    // 4. Record or Update the vote
     await prisma.vote.upsert({
       where: {
         proposalId_userId: { proposalId, userId }
@@ -135,9 +146,6 @@ export async function castVote({
       update: { choice, voteWeight },
       create: { proposalId, userId, choice, voteWeight }
     });
-
-    // 4. Check if we should execute the proposal immediately 
-    await processProposalIfReady(proposalId);
 
     revalidatePath(`/community/hives/${proposal.hiveId}`);
     return { success: true };

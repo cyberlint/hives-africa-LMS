@@ -1,130 +1,151 @@
-"use client"
+"use client";
 
-import { useState, useTransition, useRef, useEffect } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Paperclip, Send, Loader2 } from "lucide-react"
-import { sendHiveMessage } from "../../actions.hive-chat"
+import { useState, useTransition, useRef, useEffect } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Paperclip, Send, Loader2 } from "lucide-react";
+import { sendHiveMessage } from "../../actions.hive-chat";
 
-const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+const getInitials = (name: string) =>
+  name.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase();
 
 interface Message {
-  id: string
-  content: string
-  createdAt: Date
+  id: string;
+  content: string;
+  createdAt: Date;
   user: {
-    id: string
-    name: string
-    image: string | null
-  }
+    id: string;
+    name: string;
+    image: string | null;
+  };
 }
 
 interface HiveChatProps {
-  hiveId: string
-  hiveName: string
-  currentUserId: string
-  disabled: boolean
-  initialMessages: Message[]
+  hiveId: string;
+  hiveName: string;
+  currentUserId: string;
+  disabled: boolean;
+  initialMessages: Message[];
 }
 
-export default function HiveChat({ hiveId, hiveName, currentUserId, disabled, initialMessages }: HiveChatProps) {
-  const [content, setContent] = useState("")
-  const [isPending, startTransition] = useTransition()
-  const scrollRef = useRef<HTMLDivElement>(null)
+export default function HiveChat({
+  hiveId,
+  hiveName,
+  currentUserId,
+  disabled,
+  initialMessages,
+}: HiveChatProps) {
+  const [content, setContent] = useState("");
+  const [isPending, startTransition] = useTransition();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [initialMessages])
+  }, [initialMessages]);
 
   const handleSend = () => {
-    if (!content.trim() || disabled) return
+    if (!content.trim() || disabled) return;
 
-    const messageToSend = content
-    setContent("") // Optimistically clear input
+    const messageToSend = content;
+    setContent("");
 
     startTransition(async () => {
-      const res = await sendHiveMessage(hiveId, messageToSend)
-      if (res?.error) {
-        setContent(messageToSend) // Restore if failed
-        console.error(res.error)
-      }
-    })
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
-    }
-  }
+      const res = await sendHiveMessage(hiveId, messageToSend);
+      if (res?.error) setContent(messageToSend);
+    });
+  };
 
   return (
-    <>
-      {/* MESSAGES AREA */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-5 scrollbar-thin scrollbar-thumb-border">
+    <div className="flex flex-col h-full">
+
+      {/* MESSAGES */}
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto px-3 py-4 space-y-2 bg-background"
+      >
         {initialMessages.length === 0 ? (
           <div className="text-center text-xs text-muted-foreground mt-10">
-            Welcome to the {hiveName} workspace! <br/> Start the conversation here.
+            Start the conversation in{" "}
+            <span className="font-medium">{hiveName}</span>
           </div>
         ) : (
           initialMessages.map((msg) => {
-            const isMe = msg.user.id === currentUserId
+            const isMe = msg.user.id === currentUserId;
 
             return (
-              <div key={msg.id} className={`flex gap-3 ${isMe ? "flex-row-reverse" : ""}`}>
-                <Avatar className="size-8 border border-border/50 shadow-sm shrink-0">
-                  <AvatarImage src={msg.user.image || undefined} />
-                  <AvatarFallback className="text-[10px] font-bold bg-muted">{getInitials(msg.user.name)}</AvatarFallback>
-                </Avatar>
-                
-                <div className={`flex flex-col ${isMe ? "items-end" : "items-start"} max-w-[80%]`}>
-                  <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
-                    {isMe ? "You" : msg.user.name}
-                  </p>
-                  <div className={`mt-1 text-sm px-3 py-2 rounded-xl shadow-sm border border-border/40 ${
-                    isMe 
-                      ? "bg-orange/10 text-foreground rounded-tr-sm" 
-                      : "bg-muted/30 text-foreground/90 rounded-tl-sm"
-                  }`}>
-                    {msg.content}
-                  </div>
+              <div
+                key={msg.id}
+                className={`flex gap-2 ${
+                  isMe ? "justify-end" : "justify-start"
+                }`}
+              >
+                {!isMe && (
+                  <Avatar className="size-6 mt-1">
+                    <AvatarImage src={msg.user.image || undefined} />
+                    <AvatarFallback className="text-[9px]">
+                      {getInitials(msg.user.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                )}
+
+                <div
+                  className={`max-w-[75%] px-3 py-2 text-sm leading-snug border shadow-sm
+                  ${
+                    isMe
+                      ? "bg-primary/10 text-foreground rounded-2xl rounded-br-md"
+                      : "bg-muted/40 text-foreground rounded-2xl rounded-bl-md"
+                  }`}
+                >
+                  {!isMe && (
+                    <p className="text-[10px] text-muted-foreground mb-1">
+                      {msg.user.name}
+                    </p>
+                  )}
+
+                  {msg.content}
                 </div>
               </div>
-            )
+            );
           })
         )}
       </div>
 
-      {/* IN-LINE INPUT AREA */}
-      <div className="p-3 border-t border-border/50 bg-card">
-        <div className="relative flex items-center">
-          <Button variant="ghost" size="icon" className="absolute left-1 hover:bg-muted/50 z-10" disabled={disabled}>
+      {/* INPUT */}
+      <div className="px-3 py-2 border-t bg-background/80 backdrop-blur">
+        <div className="flex items-center gap-2">
+
+          <Button variant="ghost" size="icon" disabled={disabled}>
             <Paperclip className="size-4 text-muted-foreground" />
           </Button>
 
-          <Input 
-            className="pl-10 pr-12 h-11 rounded-xl bg-muted/20 border-border/50 focus-visible:ring-orange/30" 
-            placeholder={disabled ? "You must be a member to chat." : `Message ${hiveName}...`} 
+          <Input
+            className="h-10 text-sm rounded-full bg-muted/20 border border-border/40"
+            placeholder={disabled ? "Join hive to chat" : `Message hive...`}
             disabled={disabled || isPending}
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            onKeyDown={handleKeyDown}
-            autoComplete="off"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSend();
+            }}
           />
 
-          <Button 
-            disabled={disabled || isPending || !content.trim()} 
+          <Button
             onClick={handleSend}
-            className="absolute right-1 size-9 bg-orange text-white hover:bg-orange/90 rounded-lg shadow-sm z-10"
+            disabled={disabled || isPending || !content.trim()}
+            className="size-9 rounded-full bg-primary text-primary-foreground"
           >
-            {isPending ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+            {isPending ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Send className="size-4" />
+            )}
           </Button>
+
         </div>
       </div>
-    </>
-  )
+    </div>
+  );
 }

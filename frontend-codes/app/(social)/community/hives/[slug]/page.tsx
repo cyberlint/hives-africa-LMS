@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Trophy, Users, ShieldAlert, Zap, Scale, Lock, Archive, Plus } from "lucide-react"
+import { Trophy, Users, ShieldAlert, Zap, Lock, Archive, Plus } from "lucide-react"
 import Link from "next/link"
 
 import JoinHiveButton from "../_components/JoinHiveButton"
@@ -15,13 +15,12 @@ import HiveGovernanceCard from "../_components/HiveGovernanceCard"
 import CreateProposalForm from "../_components/CreateProposalForm"
 
 const getInitials = (name: string) =>
-  name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+  name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase()
 
 export default async function HiveDashboard({ params }: { params: Promise<{ slug: string }> }) {
   const session = await requireAuth()
   const resolvedParams = await params
 
-  // 1. FETCH HIVE & ALL PROPOSALS
   const hive = await prisma.hive.findUnique({
     where: { slug: resolvedParams.slug },
     include: {
@@ -33,11 +32,7 @@ export default async function HiveDashboard({ params }: { params: Promise<{ slug
         orderBy: { equityShare: 'desc' }
       },
       proposals: {
-        // Removed the 'ACTIVE' where clause so we can fetch Archives too
-        include: { 
-          votes: true,
-          creator: { select: { name: true } }
-        },
+        include: { votes: true, creator: { select: { name: true } } },
         orderBy: { createdAt: 'desc' }
       }
     }
@@ -45,90 +40,83 @@ export default async function HiveDashboard({ params }: { params: Promise<{ slug
 
   if (!hive) return notFound()
 
-  // 2. EXTRACT USER MEMBERSHIP & EQUITY
   const currentMemberRecord = hive.members.find(m => m.user.id === session.id)
   const isMember = !!currentMemberRecord
   const userEquity = currentMemberRecord?.equityShare || 0
-
-  // 3. PROCESS PROPOSALS (Ghost Protocol & Sorting)
+  const retained = (hive.treasurySplit * 100).toFixed(0)
+  const distributed = (100 - hive.treasurySplit * 100).toFixed(0)
   const mappedProposals = hive.proposals.map((prop) => ({
     ...prop,
-    creatorName: prop.isAnonymous ? "Classified [Ghost Protocol]" : prop.creator?.name || "Unknown",
+    creatorName: prop.isAnonymous ? "Classified" : prop.creator?.name || "Unknown",
   }))
 
   const activeProposals = mappedProposals.filter(
     (p) => p.status === "ACTIVE" && new Date(p.expiresAt) > new Date()
   )
-  
+
   const archivedProposals = mappedProposals.filter(
     (p) => p.status !== "ACTIVE" || new Date(p.expiresAt) <= new Date()
   )
 
-  // 4. FINANCIALS
   const treasury = hive.members.reduce((acc, member) => {
     const rep = member.user.reputationLedger?.reduce((s, r) => s + (r.points || 0), 0) || 0
     return acc + rep
   }, 0)
 
-  const retained = (hive.treasurySplit * 100).toFixed(0)
-  const distributed = (100 - hive.treasurySplit * 100).toFixed(0)
-
   return (
-    <div className="max-w-[1100px] mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-5 sm:space-y-6">
+    <div className="max-w-[1100px] mx-auto px-3 sm:px-5 py-4 space-y-5">
 
-      {/* HERO */}
-      <div className="rounded-2xl border bg-card overflow-hidden">
-        <div className="px-4 sm:px-6 py-5 flex flex-col gap-5">
+      {/* HERO (lighter + tighter) */}
+      <div className="rounded-xl border bg-card p-4 sm:p-5 space-y-4">
 
-          {/* Identity */}
-          <div className="flex items-center gap-3">
-            <div className="size-14 sm:size-20 rounded-xl bg-muted flex items-center justify-center text-sm sm:text-xl font-semibold shrink-0">
-              {getInitials(hive.name)}
-            </div>
+        <div className="flex items-start sm:items-center gap-3">
 
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-base sm:text-xl font-semibold truncate">
-                  {hive.name}
-                </h1>
-
-                {hive.isPrivate && (
-                  <Badge variant="outline" className="text-[10px] whitespace-nowrap">
-                    <Lock className="size-3 mr-1" /> Private
-                  </Badge>
-                )}
-              </div>
-
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2">
-                {hive.description || "An autonomous skill cluster."}
-              </p>
-            </div>
+          <div className="size-12 sm:size-14 rounded-lg bg-muted flex items-center justify-center text-sm font-semibold shrink-0">
+            {getInitials(hive.name)}
           </div>
 
-          {/* Stats */}
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <Trophy className="size-4 text-yellow-500" />
-              <div>
-                <p className="text-[10px] text-muted-foreground">Treasury</p>
-                <p className="text-sm font-semibold">
-                  {new Intl.NumberFormat('en-US', { notation: "compact" }).format(treasury)}
-                </p>
-              </div>
+          <div className="min-w-0 flex-1">
+
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-base sm:text-lg font-semibold truncate">
+                {hive.name}
+              </h1>
+
+              {hive.isPrivate && (
+                <Badge variant="outline" className="text-[10px]">
+                  <Lock className="size-3 mr-1" /> Private
+                </Badge>
+              )}
             </div>
 
-            <div className="flex items-center gap-2">
-              <Users className="size-4 text-blue-500" />
-              <div>
-                <p className="text-[10px] text-muted-foreground">Members</p>
-                <p className="text-sm font-semibold">{hive.members.length}</p>
-              </div>
-            </div>
+            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+              {hive.description || "An autonomous skill cluster."}
+            </p>
+
           </div>
         </div>
 
+        {/* Stats (mobile friendly) */}
+        <div className="flex gap-6 text-xs sm:text-sm">
+
+          <div className="flex items-center gap-2">
+            <Trophy className="size-4 text-yellow-500" />
+            <span className="font-medium">
+              {new Intl.NumberFormat('en-US', { notation: "compact" }).format(treasury)}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Users className="size-4 text-blue-500" />
+            <span className="font-medium">
+              {hive.members.length} members
+            </span>
+          </div>
+
+        </div>
+
         {/* Skills */}
-        <div className="px-4 sm:px-6 py-3 border-t flex gap-2 overflow-x-auto scrollbar-thin">
+        <div className="flex gap-2 overflow-x-auto pt-1">
           {hive.ksbs.length > 0 ? (
             hive.ksbs.map(k => (
               <Badge key={k.ksbId} variant="outline" className="text-[10px] whitespace-nowrap">
@@ -141,171 +129,246 @@ export default async function HiveDashboard({ params }: { params: Promise<{ slug
             </span>
           )}
         </div>
+
       </div>
 
       {/* TABS */}
       <Tabs defaultValue="overview">
-        <TabsList className="w-full border-b bg-transparent rounded-none h-11 p-0 overflow-x-auto flex gap-6 px-1">
-          <TabsTrigger value="overview" className="px-0 h-full text-sm font-medium whitespace-nowrap">
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="captable" className="px-0 h-full text-sm font-medium whitespace-nowrap">
-            Cap Table
-          </TabsTrigger>
-          <TabsTrigger value="governance" className="px-0 h-full text-sm font-medium whitespace-nowrap">
-            Governance
-          </TabsTrigger>
+        <TabsList className="w-full border-b bg-transparent rounded-none h-10 p-0 flex gap-5 overflow-x-auto">
+          <TabsTrigger value="overview" className="px-0 text-sm">Overview</TabsTrigger>
+          <TabsTrigger value="captable" className="px-0 text-sm">Cap Table</TabsTrigger>
+          <TabsTrigger value="governance" className="px-0 text-sm">Governance</TabsTrigger>
         </TabsList>
 
-        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 mt-6">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-5 mt-5">
+
+          <div className="lg:col-span-2 space-y-5">
 
             {/* OVERVIEW */}
             <TabsContent value="overview" className="m-0">
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm font-semibold">Overview</CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  This hive is actively forming its core team and pursuing new opportunities.
+                <CardContent className="text-sm text-muted-foreground p-4 leading-relaxed">
+                  This hive is recruiting contributors for real work.
+                  Earn reputation, build proof of contribution, and gain influence as the hive grows.
                 </CardContent>
               </Card>
             </TabsContent>
 
             {/* CAP TABLE */}
-            <TabsContent value="captable" className="m-0">
+            <TabsContent value="captable" className="m-0 space-y-4">
+
               {hive.isPrivate && !isMember ? (
                 <div className="p-10 text-center border rounded-xl text-sm text-muted-foreground">
                   Private cap table
                 </div>
               ) : (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-sm font-semibold">
-                      Equity Distribution
-                    </CardTitle>
-                    <CardDescription className="text-xs">
-                      {retained}% retained • {distributed}% distributed
-                    </CardDescription>
-                  </CardHeader>
+                <>
+                  {/* EQUITY POLICY */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-sm font-semibold">
+                        Equity Policy
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        How value flows in this hive
+                      </CardDescription>
+                    </CardHeader>
 
-                  <CardContent className="p-0">
-                    {hive.members.map((m) => (
-                      <div key={m.id} className="flex items-center justify-between px-4 py-3 border-t gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <Avatar className="size-8">
-                            <AvatarImage src={m.user.image || undefined} />
-                            <AvatarFallback>{getInitials(m.user.name)}</AvatarFallback>
-                          </Avatar>
-                          <span className="text-sm font-medium truncate">
-                            {m.user.name}
-                          </span>
-                        </div>
+                    <CardContent className="space-y-4">
 
-                        <span className="text-sm font-semibold shrink-0">
-                          {(m.equityShare * 100).toFixed(1)}%
+                      {/* Progress bar style split */}
+                      <div className="w-full h-2 rounded-full bg-muted overflow-hidden flex">
+                        <div
+                          className="bg-orange"
+                          style={{ width: `${retained}%` }}
+                        />
+                        <div
+                          className="bg-blue-500"
+                          style={{ width: `${distributed}%` }}
+                        />
+                      </div>
+
+                      {/* Labels */}
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="flex items-center gap-1">
+                          <span className="size-2 rounded-full bg-orange" />
+                          Treasury {retained}%
+                        </span>
+
+                        <span className="flex items-center gap-1">
+                          <span className="size-2 rounded-full bg-blue-500" />
+                          Members {distributed}%
                         </span>
                       </div>
-                    ))}
-                  </CardContent>
-                </Card>
+
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        A portion of all value generated is retained by the hive treasury to
+                        fund future missions, while the rest is distributed among contributors
+                        based on participation and governance decisions.
+                      </p>
+
+                    </CardContent>
+                  </Card>
+
+                  {/* 👇 EXISTING EQUITY DISTRIBUTION */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-sm font-semibold">
+                        Equity Distribution
+                      </CardTitle>
+                    </CardHeader>
+
+                    <CardContent className="p-0">
+                      {hive.members.map((m) => (
+                        <div
+                          key={m.id}
+                          className="flex items-center justify-between px-4 py-3 border-t gap-3"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <Avatar className="size-8">
+                              <AvatarImage src={m.user.image || undefined} />
+                              <AvatarFallback>
+                                {getInitials(m.user.name)}
+                              </AvatarFallback>
+                            </Avatar>
+
+                            <span className="text-sm font-medium truncate">
+                              {m.user.name}
+                            </span>
+                          </div>
+
+                          <span className="text-sm font-semibold shrink-0">
+                            {(m.equityShare * 100).toFixed(1)}%
+                          </span>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                </>
               )}
+
             </TabsContent>
 
             {/* GOVERNANCE */}
-            <TabsContent value="governance" className="m-0 space-y-8">
+            <TabsContent value="governance" className="m-0 space-y-6">
+
               {!isMember && (
-                <div className="p-10 text-center border rounded-xl text-sm text-muted-foreground bg-muted/5">
-                  <ShieldAlert className="size-8 mx-auto mb-3 text-muted-foreground/50" />
-                  <p>Classified Area. You must be a member to access the War Room.</p>
+                <div className="p-8 text-center border rounded-xl text-sm text-muted-foreground">
+                  Members only
                 </div>
               )}
 
               {isMember && (
                 <>
-                  {/* ACTIVE MOTIONS */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 border-b border-border/50 pb-2 mb-4">
-                      <ShieldAlert className="size-5 text-indigo-500" />
-                      <h3 className="text-lg font-black uppercase tracking-widest">Active Motions</h3>
+                  {activeProposals.length === 0 ? (
+                    <div className="p-6 sm:p-8 text-center border border-dashed rounded-2xl bg-muted/5 space-y-4">
+
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-foreground">
+                          No active decisions right now
+                        </p>
+
+                        <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
+                          Motions are how this hive governs itself — from electing leaders to funding work and enforcing rules automatically.
+
+                          Once a motion passes, it executes. No manual enforcement.
+                        </p>
+                      </div>
+
+                      {isMember && (
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button size="sm" className="bg-orange text-white hover:bg-orange/90 font-medium">
+                              <Plus className="size-4 mr-1.5" />
+                              Create motion
+                            </Button>
+                          </DialogTrigger>
+
+                          <DialogContent className="max-w-xl p-0 border-none bg-transparent shadow-none">
+                            <DialogHeader className="sr-only">
+                              <DialogTitle>Create Motion</DialogTitle>
+                            </DialogHeader>
+
+                            <CreateProposalForm
+                              hiveId={hive.id}
+                              currentUserId={session.id}
+                              members={hive.members.map((m) => ({
+                                userId: m.user.id,
+                                user: { name: m.user.name },
+                              }))}
+                            />
+                          </DialogContent>
+                        </Dialog>
+                      )}
+
                     </div>
+                  ) : (
+                    activeProposals.map((p) => (
+                      <HiveGovernanceCard
+                        key={p.id}
+                        proposal={p}
+                        currentUserId={session.id}
+                        userEquity={userEquity}
+                      />
+                    ))
+                  )}
 
-                    {activeProposals.length === 0 ? (
-                      <div className="p-8 text-center border border-dashed rounded-2xl bg-muted/5 text-sm font-medium text-muted-foreground">
-                        No active motions on the floor.
-                      </div>
-                    ) : (
-                      <div className="space-y-6">
-                        {activeProposals.map((p) => (
-                          <HiveGovernanceCard 
-                            key={p.id} 
-                            proposal={p} 
-                            currentUserId={session.id} 
-                            userEquity={userEquity} 
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* ARCHIVED MOTIONS */}
                   {archivedProposals.length > 0 && (
-                    <div className="space-y-4 mt-12 opacity-80 hover:opacity-100 transition-opacity">
-                      <div className="flex items-center gap-2 border-b border-border/50 pb-2 mb-4">
-                        <Archive className="size-5 text-muted-foreground" />
-                        <h3 className="text-base font-bold uppercase tracking-widest text-muted-foreground">Archived Motions</h3>
+                    <div className="space-y-4 pt-6">
+                      <div className="flex items-center gap-2 text-muted-foreground text-xs uppercase">
+                        <Archive className="size-4" /> Archived
                       </div>
-                      <div className="space-y-6">
-                        {archivedProposals.map((p) => (
-                          <HiveGovernanceCard 
-                            key={p.id} 
-                            proposal={p} 
-                            currentUserId={session.id} 
-                            userEquity={userEquity} 
-                          />
-                        ))}
-                      </div>
+
+                      {archivedProposals.map((p) => (
+                        <HiveGovernanceCard
+                          key={p.id}
+                          proposal={p}
+                          currentUserId={session.id}
+                          userEquity={userEquity}
+                        />
+                      ))}
                     </div>
                   )}
                 </>
               )}
             </TabsContent>
+
           </div>
 
-          {/* RIGHT COL: ACTIONS */}
+          {/* RIGHT PANEL */}
           <div>
-            <Card className="sticky top-6">
-              <CardHeader>
-                <CardTitle className="text-sm font-semibold">
-                  Actions
-                </CardTitle>
-              </CardHeader>
+            <Card className="lg:sticky lg:top-6">
+              <CardContent className="p-4 space-y-3">
 
-              <CardContent className="space-y-3">
                 {isMember ? (
                   <>
-                    <Button asChild variant="outline" className="w-full justify-start font-medium">
+                    {/* PRIMARY ACTION NOW WORKSPACE */}
+                    <Button asChild className="w-full bg-orange text-white hover:bg-orange/90">
                       <Link href={`/community/hives/${hive.slug}/workspace`}>
                         Enter Workspace
                       </Link>
                     </Button>
 
-                    {/* THE NEW DRAFT PROPOSAL DIALOG OVERRIDE */}
+                    {/* SECONDARY */}
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button className="w-full justify-start font-bold bg-indigo-600 hover:bg-indigo-700 text-white">
+                        <Button variant="outline" className="w-full">
                           <Plus className="size-4 mr-2" /> Draft Motion
                         </Button>
                       </DialogTrigger>
+
                       <DialogContent className="max-w-xl p-0 border-none bg-transparent shadow-none">
                         <DialogHeader className="sr-only">
                           <DialogTitle>Draft a New Motion</DialogTitle>
                         </DialogHeader>
-                        {/* Map members into the format the form expects */}
-                        <CreateProposalForm 
+
+                        <CreateProposalForm
                           hiveId={hive.id}
                           currentUserId={session.id}
-                          members={hive.members.map(m => ({ userId: m.user.id, user: { name: m.user.name } }))}
+                          members={hive.members.map(m => ({
+                            userId: m.user.id,
+                            user: { name: m.user.name }
+                          }))}
                         />
                       </DialogContent>
                     </Dialog>
@@ -317,9 +380,11 @@ export default async function HiveDashboard({ params }: { params: Promise<{ slug
                     isRecruiting={hive.isRecruiting}
                   />
                 )}
+
               </CardContent>
             </Card>
           </div>
+
         </div>
       </Tabs>
     </div>

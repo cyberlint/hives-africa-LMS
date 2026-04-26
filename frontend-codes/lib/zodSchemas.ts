@@ -15,6 +15,12 @@ import {
   ProposalType,
   ProposalStatus,
   VoteChoice,
+
+    // Organisation meta
+  OrgType,
+  OrgMission,
+  OperatingModel,
+  CollaborationMode,
 } from "@prisma/client";
 
 // --- Enums ---
@@ -94,6 +100,23 @@ export const ActivityTypeEnum = z.enum([
 export const ActivityVisibilityEnum = z.nativeEnum(ActivityVisibility);
 export const ActivityDifficultyEnum = z.nativeEnum(ActivityDifficulty);
 export const ActivityStatusEnum = z.nativeEnum(ActivityStatus);
+
+// ========== Organisation =================
+export const OrganisationTypeEnum = z.nativeEnum(OrgType);
+export const OrganisationMissionEnum = z.nativeEnum(OrgMission);
+export const OrganisationOperatingModelEnum = z.nativeEnum(OperatingModel);
+export const OrganisationCollaborationModeEnum = z.nativeEnum(CollaborationMode);
+
+export const CreateOrganizationSchema = z.object({
+  name: z.string().min(2, "Organization name must be at least 2 characters"),
+  // Handle empty strings from the client gracefully
+  website: z.string().url("Invalid website URL").optional().or(z.literal("")),
+  logoUrl: z.string().optional().or(z.literal("")),
+  orgType: OrganisationTypeEnum,
+  missions: z.array(OrganisationMissionEnum).min(1, "Select at least one mission"),
+  operatingModel: OrganisationOperatingModelEnum,
+  collaborationMode: OrganisationCollaborationModeEnum,
+});
 
 export const ActivityRequirementEnum = z.enum([
   "File_Upload",
@@ -561,7 +584,6 @@ export const CastVoteSchema = z.object({
 
 
 
-
 // Infer the TypeScript type from the schema for easy use elsewhere
 export type CourseSchemaType = z.infer<typeof courseSchema>;
 export type ModuleSchemaType = z.infer<typeof moduleSchema>;
@@ -584,3 +606,5 @@ export type CreateBountyInput = z.infer<typeof CreateBountySchema>;
 export type CreateHiveInput = z.infer<typeof CreateHiveSchema>;
 export type CreateProposalInput = z.infer<typeof CreateProposalSchema>;
 export type CastVoteInput = z.infer<typeof CastVoteSchema>;
+export type ProposalStatusType = z.infer<typeof ProposalStatusEnum>;
+export type CreateOrganizationInput = z.infer<typeof CreateOrganizationSchema>

@@ -81,6 +81,7 @@ model User {
   HiveMessage      HiveMessage[]
 
   notificationPreferences NotificationPreference?
+  OrganizationMember      OrganizationMember[]
 
   @@map("user")
 }
@@ -427,7 +428,7 @@ model ProgramCourse {
 /// Defines verifiable work tasks, challenges, and milestones used to generate Signals.
 model Activity {
   id          String    @id @default(uuid())
-  slug        String?    @unique @default(uuid())
+  slug        String?   @unique @default(uuid())
   title       String
   description String?
   points      Int       @default(0)
@@ -442,14 +443,14 @@ model Activity {
 
   // ================= THE RULES ENGINE =================
   /// Can an individual join this without a Hive?
-  allowSolo    Boolean @default(true)
-  
+  allowSolo Boolean @default(true)
+
   /// Can a Hive officially register for this?
-  allowHive    Boolean @default(false)
-  
+  allowHive Boolean @default(false)
+
   /// If Hives are allowed, what is the required team size?
-  minHiveSize  Int?
-  maxHiveSize  Int?
+  minHiveSize Int?
+  maxHiveSize Int?
 
   // If these are set, the activity is locked to enrolled students only, or program participants only, etc.
   courseId  String?
@@ -463,11 +464,11 @@ model Activity {
   program Program? @relation(fields: [programId], references: [id], onDelete: SetNull)
   creator User     @relation("ActivityCreator", fields: [creatorId], references: [id])
 
-  requirements   ActivityRequirement[]
+  requirements       ActivityRequirement[]
   participatingHives HiveActivity[]
-  participations Participation[]
-  submissions    Submission[]
-  ksbs           ActivityKSB[]
+  participations     Participation[]
+  submissions        Submission[]
+  ksbs               ActivityKSB[]
 
   @@index([slug])
 }
@@ -544,28 +545,26 @@ enum RequirementType {
 // ==========================================
 
 model Participation {
-  id          String            @id @default(uuid())
+  id     String @id @default(uuid())
   /// A participation must belong to a human. If they are part of a Hive, the hiveId field will link them to the team, but we still need to track the individual user for accountability and reputation.
-  userId      String           
+  userId String
 
   /// The banner they are choosing to fight under. If null, they are solo.
-  hiveId      String?
-  activityId  String
-  progress    Float             @default(0)
-  role        ParticipationRole @default(Participant)
-  joinedAt    DateTime          @default(now())
+  hiveId     String?
+  activityId String
+  progress   Float             @default(0)
+  role       ParticipationRole @default(Participant)
+  joinedAt   DateTime          @default(now())
 
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   activity    Activity     @relation(fields: [activityId], references: [id], onDelete: Cascade)
   hive        Hive?        @relation(fields: [hiveId], references: [id], onDelete: SetNull)
   submissions Submission[]
 
-  @@unique([userId, activityId]) 
-  
+  @@unique([userId, activityId])
   @@index([hiveId])
   @@index([userId])
   @@index([activityId])
-
 }
 
 enum ParticipationRole {
@@ -634,6 +633,7 @@ model SubmissionRoster {
 
   /// Stores fetched GitHub commits/PRs to algorithmically verify human claims.
   verifiedMetrics Json?
+  metadata        Json?
 
   submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
   user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -915,6 +915,92 @@ enum ConnectionSource {
 }
 
 // ==========================================
+// MULTI-TENANCY / ORGANIZATIONS
+// ==========================================
+
+model Organization {
+  id                  String  @id @default(uuid())
+  slug                String  @unique
+  name                String
+  orgType             OrgType @default(Bootcamp_Or_Academy)
+  missions            OrgMission[]
+  OperatingModel      OperatingModel @default(Event_Driven_Sprints)
+  CollaborationMode   CollaborationMode @default(Fluid_Hybrid)
+  description         String? @db.Text
+  logoUrl             String?
+  website             String?
+
+  creatorId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members OrganizationMember[]
+  hives   Hive[]
+}
+
+enum OrgType {
+  Bootcamp_Or_Academy
+  University_Or_School
+  Student_Chapter        // e.g., GDSC, SheCodeAfrica Campus Chapters
+  Tech_Community         // e.g., broader regional communities
+  Open_Source_Foundation
+  Startup_Incubator      // Replaces "Talent Accelerator"
+  Corporate_L_And_D      // Learning & Development (Corporate Teams)
+  Nonprofit_Initiative
+  Government_Program     // e.g., State-sponsored tech initiatives
+  Independent_Fellowship
+  Other
+}
+
+enum OrgMission {
+  Technical_Upskilling             // Core skill building
+  Workforce_Readiness              // Hiring/Placement pipelines
+  Product_Incubation               // Building minimum viable products
+  Open_Innovation_And_Hackathons   // Competitive, burst-style building
+  Ecosystem_Building               // General community growth
+  Academic_Research
+  Internal_Corporate_Training      // Specific to upskilling existing employees
+}
+
+enum OperatingModel {
+  Strict_Cohort_Based        // Hard start and end dates
+  Self_Paced_Continuous      // Rolling intake, go at your own pace
+  Apprenticeship_Driven      // Learn by building real client/internal projects
+  Event_Driven_Sprints       // Hackathons, weekend builds
+  Community_Led_Mentorship   // Decentralized, peer-to-peer learning
+}
+
+enum CollaborationMode {
+  Solo_Execution       // Deep work, individual portfolios
+  Squad_Based          // Forced into teams (Hives)
+  Open_Crowdsourced    // Open Source style, anyone can jump in
+  Fluid_Hybrid         // Choice is left entirely to the learner
+}
+
+model OrganizationMember {
+  id             String   @id @default(uuid())
+  organizationId String
+  userId         String
+  role           OrgRole  @default(MEMBER)
+  joinedAt       DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // A user can only have one membership record per organization
+  @@unique([organizationId, userId])
+  // Optimize queries for middleware checks
+  @@index([userId])
+  @@index([organizationId])
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+// ==========================================
 // 10. HIVES & GOVERNANCE (Autonomous Squads)
 // ==========================================
 
@@ -941,9 +1027,13 @@ model Hive {
   ksbs           HiveKSB[]
   proposals      Proposal[]
   messages       HiveMessage[]
-  activeMissions HiveActivity[]  // The activities the Hive is registered for
+  activeMissions HiveActivity[] // The activities the Hive is registered for
   participations Participation[] // The actual members who joined the roster
-  submissions    Submission[]    // The actual work output from the Hive, used to verify V-Signals and distribute reputation.
+  submissions    Submission[] // The actual work output from the Hive, used to verify V-Signals and distribute reputation.
+  organizationId String? // The organisation thus hive is attached to. Could be null for standalone hives (indie hives)
+  organization   Organization?   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
 }
 
 /// Dynamic cap table. Prevents freeloading by tracking actual contribution.
@@ -999,8 +1089,8 @@ model HiveActivity {
   activityId String
   joinedAt   DateTime @default(now())
 
-  hive       Hive     @relation(fields: [hiveId], references: [id], onDelete: Cascade)
-  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  hive     Hive     @relation(fields: [hiveId], references: [id], onDelete: Cascade)
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
 
   @@id([hiveId, activityId])
 }
@@ -1070,7 +1160,7 @@ model Vote {
   /// Captured at time of vote (e.g. 0.15 if they own 15% equity). Prevents mob rule.
   voteWeight Float
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 
   proposal Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -1119,32 +1209,30 @@ model UserAchievement {
 }
 
 model EmailRule {
-  id          String   @id @default(uuid())
+  id          String              @id @default(uuid())
   eventType   String
   templateKey String
   channel     NotificationChannel @default(email)
-  delay       Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  delay       Int                 @default(0)
+  isActive    Boolean             @default(true)
+  createdAt   DateTime            @default(now())
 
   @@index([eventType])
 }
 
-
-
 model EmailJob {
-  id          String    @id @default(cuid())
+  id          String              @id @default(cuid())
   userId      String
   templateKey String
   channel     NotificationChannel @default(email)
   payload     Json
-  status      String    @default("pending")
-  attempts    Int       @default(0)
+  status      String              @default("pending")
+  attempts    Int                 @default(0)
   lastError   String?
   scheduledAt DateTime
   sentAt      DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
 }
 
 enum NotificationChannel {
@@ -1152,7 +1240,6 @@ enum NotificationChannel {
   in_app
   push
 }
-
 
 model EventLog {
   id        String   @id @default(cuid())
@@ -1168,7 +1255,7 @@ model Notification {
   userId    String
   title     String
   body      String
-  type      String   // "in_app"
+  type      String // "in_app"
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 
@@ -1177,17 +1264,17 @@ model Notification {
 
 // Stores user preferences for receiving notifications across different channels and event types. Used to filter EventLogs and EmailJobs before dispatch.
 model NotificationPreference {
-  id        String   @id @default(cuid())
-  userId    String   @unique
+  id     String @id @default(cuid())
+  userId String @unique
 
   // Channel toggles
-  email     Boolean  @default(true)
-  inApp     Boolean  @default(true)
-  push      Boolean  @default(true)
+  email Boolean @default(true)
+  inApp Boolean @default(true)
+  push  Boolean @default(true)
 
   // Fine-grained controls (expand later)
-  activity  Boolean  @default(true)
-  social    Boolean  @default(true)
+  activity Boolean @default(true)
+  social   Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
