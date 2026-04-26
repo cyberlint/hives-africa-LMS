@@ -20,7 +20,7 @@ export async function createOrganization(input: CreateOrganizationInput) {
   if (!parsed.success) {
     throw new Error(parsed.error.errors[0].message);
   }
-
+  
   const { name, website, logoUrl, orgType, missions, operatingModel, collaborationMode } = parsed.data;
 
   // 2. Slug generation
@@ -31,25 +31,26 @@ export async function createOrganization(input: CreateOrganizationInput) {
   }
 
   // 3. Database Execution
-  const org = await prisma.organization.create({
-    data: {
-      name,
-      slug,
-      website: website === "" ? null : website,
-      logoUrl: logoUrl === "" ? null : logoUrl,
-      orgType,
-      missions,
-      operatingModel,
-      collaborationMode,
-      creatorId: user.id,
-      members: {
-        create: {
-          userId: user.id,
-          role: "OWNER",
-        },
+const org = await prisma.organization.create({
+  data: {
+    name,
+    slug,
+    website: website === "" ? null : website,
+    logoUrl: logoUrl === "" ? null : logoUrl,
+    orgType,
+    missions,
+    // 👇 Map lowercase variables to PascalCase fields
+    OperatingModel: operatingModel, 
+    CollaborationMode: collaborationMode,
+    creatorId: user.id,
+    members: {
+      create: {
+        userId: user.id,
+        role: "OWNER",
       },
     },
-  });
+  },
+});
 
   revalidatePath("/orgs");
   redirect(`/orgs/${org.slug}`);
