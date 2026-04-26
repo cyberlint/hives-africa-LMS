@@ -258,7 +258,7 @@ export default function OrganizationOnboarding() {
                 </p>
 
                 <Button onClick={next} size="lg" className="w-full">
-                  Let's design it →
+                  {"Let's design it →"}
                 </Button>
               </motion.div>
             )}
