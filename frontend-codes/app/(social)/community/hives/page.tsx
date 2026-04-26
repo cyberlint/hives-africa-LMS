@@ -8,7 +8,7 @@ import { Trophy, Users } from "lucide-react"
 import Link from "next/link"
 
 import HiveLaunchButton from "./_components/HiveLaunchButton"
-import HiveFiltersInline from "./_components/HiveFiltersInline";
+import HiveFiltersInline from "./_components/HiveFiltersInline"
 
 const getInitials = (name: string) =>
   name
@@ -18,17 +18,24 @@ const getInitials = (name: string) =>
     .substring(0, 2)
     .toUpperCase()
 
+type SearchParams = Record<
+  string,
+  string | string[] | undefined
+>
+
 interface PageProps {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<SearchParams>
 }
 
 export default async function HiveDirectoryPage({ searchParams }: PageProps) {
   const session = await requireAuth()
 
-  const q = typeof searchParams.q === "string" ? searchParams.q : ""
-  const ksb = typeof searchParams.ksb === "string" ? searchParams.ksb : ""
-  const sort = typeof searchParams.sort === "string" ? searchParams.sort : "treasury"
-  const isRecruiting = searchParams.recruiting === "true"
+  const params = await searchParams
+
+  const q = typeof params.q === "string" ? params.q : ""
+  const ksb = typeof params.ksb === "string" ? params.ksb : ""
+  const sort = typeof params.sort === "string" ? params.sort : "treasury"
+  const isRecruiting = params.recruiting === "true"
 
   const hives = await prisma.hive.findMany({
     where: {
@@ -37,17 +44,17 @@ export default async function HiveDirectoryPage({ searchParams }: PageProps) {
         : {}),
       ...(ksb
         ? {
-          ksbs: {
-            some: {
-              ksb: {
-                title: {
-                  contains: ksb,
-                  mode: "insensitive" as Prisma.QueryMode,
+            ksbs: {
+              some: {
+                ksb: {
+                  title: {
+                    contains: ksb,
+                    mode: "insensitive" as Prisma.QueryMode,
+                  },
                 },
               },
             },
-          },
-        }
+          }
         : {}),
       ...(isRecruiting ? { isRecruiting: true } : {}),
     },
@@ -69,8 +76,8 @@ export default async function HiveDirectoryPage({ searchParams }: PageProps) {
       sort === "newest"
         ? { createdAt: "desc" }
         : sort === "members"
-          ? { members: { _count: "desc" } }
-          : undefined,
+        ? { members: { _count: "desc" } }
+        : undefined,
   })
 
   let processedHives = hives.map((hive) => {
@@ -87,7 +94,9 @@ export default async function HiveDirectoryPage({ searchParams }: PageProps) {
   })
 
   if (sort === "treasury") {
-    processedHives = processedHives.sort((a, b) => b.treasury - a.treasury)
+    processedHives = processedHives.sort(
+      (a, b) => b.treasury - a.treasury
+    )
   }
 
   const topHive = processedHives[0]
@@ -98,7 +107,6 @@ export default async function HiveDirectoryPage({ searchParams }: PageProps) {
       {/* HERO */}
       <div className="relative overflow-hidden rounded-3xl px-6 sm:px-10 py-12 sm:py-14 border border-orange/10">
 
-        {/* glow */}
         <div className="absolute inset-0 bg-gradient-to-br from-orange/10 via-transparent to-transparent" />
         <div className="absolute -top-32 -right-32 w-80 h-80 bg-orange/10 blur-3xl rounded-full" />
 
@@ -119,9 +127,7 @@ export default async function HiveDirectoryPage({ searchParams }: PageProps) {
             <HiveFiltersInline />
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <div className="w-full sm:w-auto">
-                <HiveLaunchButton />
-              </div>
+              <HiveLaunchButton />
 
               <Button
                 variant="outline"
@@ -152,7 +158,7 @@ export default async function HiveDirectoryPage({ searchParams }: PageProps) {
         )}
       </div>
 
-      {/* LIST (not grid anymore) */}
+      {/* LIST */}
       <div className="flex flex-col gap-3">
 
         {processedHives.length === 0 ? (
@@ -170,22 +176,25 @@ export default async function HiveDirectoryPage({ searchParams }: PageProps) {
                 key={hive.id}
                 className="p-4 rounded-2xl hover:shadow-md transition flex flex-col gap-3"
               >
-                {/* TOP ROW */}
+
+                {/* TOP */}
                 <div className="flex items-start gap-3">
-                  {/* AVATAR */}
+
                   <div className="size-10 rounded-lg bg-muted flex items-center justify-center font-semibold shrink-0">
                     {getInitials(hive.name)}
                   </div>
 
-                  {/* TITLE + BADGES */}
                   <div className="flex-1 min-w-0">
+
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-sm font-semibold truncate max-w-[160px] sm:max-w-full">
                         {hive.name}
                       </p>
 
                       {sort === "treasury" && index === 0 && (
-                        <Badge className="text-[10px] px-1.5 py-0">#1</Badge>
+                        <Badge className="text-[10px] px-1.5 py-0">
+                          #1
+                        </Badge>
                       )}
 
                       {hive.isPrivate && (
@@ -199,29 +208,31 @@ export default async function HiveDirectoryPage({ searchParams }: PageProps) {
                       )}
                     </div>
 
-                    {/* DESCRIPTION */}
                     <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
                       {hive.description || "No description"}
                     </p>
                   </div>
                 </div>
 
-                {/* BOTTOM ROW */}
+                {/* BOTTOM */}
                 <div className="flex items-center justify-between gap-3">
-                  {/* STATS */}
+
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
+
                     <span className="flex items-center gap-1">
                       <Trophy className="size-3 text-yellow-500" />
-                      {new Intl.NumberFormat("en-US", { notation: "compact" }).format(hive.treasury)}
+                      {new Intl.NumberFormat("en-US", {
+                        notation: "compact",
+                      }).format(hive.treasury)}
                     </span>
 
                     <span className="flex items-center gap-1">
                       <Users className="size-3 text-blue-500" />
                       {hive._count.members}
                     </span>
+
                   </div>
 
-                  {/* ACTION */}
                   <Button
                     asChild
                     size="sm"
@@ -231,6 +242,7 @@ export default async function HiveDirectoryPage({ searchParams }: PageProps) {
                       {isMember ? "Enter" : "View"}
                     </Link>
                   </Button>
+
                 </div>
               </Card>
             )
