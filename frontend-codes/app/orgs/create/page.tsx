@@ -13,7 +13,7 @@ import {
   CollaborationMode,
 } from "@prisma/client";
 
-import { OrgTypeConfig, formatEnum } from "@/lib/org/onboarding-config";
+import { OrgTypeConfig } from "@/components/org/onboarding-config";
 import { Button } from "@/components/ui/button";
 
 // -----------------------------
