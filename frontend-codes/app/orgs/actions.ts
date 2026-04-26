@@ -39,9 +39,8 @@ const org = await prisma.organization.create({
     logoUrl: logoUrl === "" ? null : logoUrl,
     orgType,
     missions,
-    // 👇 Map lowercase variables to PascalCase fields
-    OperatingModel: operatingModel, 
-    CollaborationMode: collaborationMode,
+    operatingModel,
+    collaborationMode,
     creatorId: user.id,
     members: {
       create: {
