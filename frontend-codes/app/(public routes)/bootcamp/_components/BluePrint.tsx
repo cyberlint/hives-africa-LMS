@@ -31,7 +31,7 @@ export default function CurriculumSection() {
           </h2>
 
           <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-            The tech ecosystem doesn't care about your certificates. It cares about what you can execute. 4 weeks. 4 tangible assets. No dead weight.
+            {"The tech ecosystem doesn't care about your certificates. It cares about what you can execute. 4 weeks. 4 tangible assets. No dead weight."}
           </p>
         </div>
 

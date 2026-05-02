@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  LayoutDashboard,
   Database,
   Trophy,
   GitCommit,
@@ -45,11 +44,11 @@ export default function WalkawaySection() {
 
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-black leading-[1.1] tracking-tight">
             This Is Not a Course. <br className="hidden sm:block" />
-            <span className="text-orange">It’s an Asset Factory.</span>
+            <span className="text-orange">{"It's an Asset Factory."}</span>
           </h2>
 
           <p className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto md:mx-0">
-            When you join, you’re not paying for passive "learning". You are paying for a system that forces output. You leave with the exact assets you need to get hired.
+            {"When you join, you're not paying for passive 'learning'. You are paying for a system that forces output. You leave with the exact assets you need to get hired."}
           </p>
         </div>
 
@@ -137,7 +136,7 @@ export default function WalkawaySection() {
             <Users className="size-6 text-orange" />
             <h3 className="text-lg font-bold">Team-Based Execution</h3>
             <p className="text-sm text-muted-foreground">
-              You will be placed in a "Hive". Shared execution and peer accountability so <strong className="text-foreground">you don’t get stuck or disappear.</strong>
+              {'You will be placed in a "Hive". Shared execution and peer accountability so'} <strong className="text-foreground">{"you don't get stuck or disappear."}</strong>
             </p>
             <div className="flex gap-2 mt-auto">
               {[1, 2, 3].map((i) => (
@@ -159,7 +158,7 @@ export default function WalkawaySection() {
           <ShieldCheck className="size-8 text-green-500 mx-auto mb-4" />
           <h4 className="text-lg sm:text-xl font-bold mb-2">The "No Stories" Guarantee</h4>
           <p className="text-sm sm:text-base text-muted-foreground max-w-xl mx-auto">
-            Complete the 4-week sprint. Submit your work. If you don’t feel significantly closer to landing a role, or if you aren't proud of the portfolio you built—<strong className="text-foreground">we will refund your money immediately.</strong> No stress. No hidden conditions.
+            {"Complete the 4-week sprint. Submit your work. If you don't feel significantly closer to landing a role, or if you aren't proud of the portfolio you built"}—<strong className="text-foreground">we will refund your money immediately.</strong> No stress. No hidden conditions.
           </p>
         </MotionDiv>
 
