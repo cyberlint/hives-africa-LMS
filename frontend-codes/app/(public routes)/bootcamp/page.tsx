@@ -1,16 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-    ShieldCheck,
     ArrowRight,
-    CheckCircle2,
-    Activity,
-    Database,
-    LayoutDashboard,
-    Code,
-    BarChart,
 } from "lucide-react";
 
 import {
