@@ -156,7 +156,7 @@ export default function WalkawaySection() {
           className="mt-12 md:mt-16 max-w-3xl mx-auto rounded-2xl border-2 border-green-500/20 bg-green-500/5 p-6 sm:p-8 text-center"
         >
           <ShieldCheck className="size-8 text-green-500 mx-auto mb-4" />
-          <h4 className="text-lg sm:text-xl font-bold mb-2">The "No Stories" Guarantee</h4>
+          <h4 className="text-lg sm:text-xl font-bold mb-2">{'The "No Stories" Guarantee'}</h4>
           <p className="text-sm sm:text-base text-muted-foreground max-w-xl mx-auto">
             {"Complete the 4-week sprint. Submit your work. If you don't feel significantly closer to landing a role, or if you aren't proud of the portfolio you built"}—<strong className="text-foreground">we will refund your money immediately.</strong> No stress. No hidden conditions.
           </p>
