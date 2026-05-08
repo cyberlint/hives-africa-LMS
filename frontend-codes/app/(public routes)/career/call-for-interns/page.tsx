@@ -30,7 +30,7 @@ export default function InternshipProgramPage() {
 
             <div className="mt-10">
               <Link
-                href="https://forms.gle/QNN8Tx8nhrL71Jba9"
+                href="https://www.appsheet.com/start/90a80d70-1d6f-4acc-b2f1-2ba5aa2a963b"
                 className="rounded-md bg-[var(--color-yellow)] px-6 py-3 font-semibold text-black transition hover:opacity-90"
               >
                 Apply Now
@@ -245,7 +245,7 @@ export default function InternshipProgramPage() {
 
           <div className="mt-8">
             <Link
-              href="https://forms.gle/QNN8Tx8nhrL71Jba9"
+              href="https://www.appsheet.com/start/90a80d70-1d6f-4acc-b2f1-2ba5aa2a963b"
               className="inline-block rounded-md bg-[var(--color-yellow)] px-6 py-3 font-semibold text-black transition hover:opacity-90"
             >
               Submit Application
