@@ -178,7 +178,7 @@ export default function EngineAndCTASection() {
               >
                 <div className="mb-5 inline-flex rounded-full border border-border bg-muted/30 px-4 py-1.5">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-foreground">
-                    Total Transparency
+                    The Roadmap
                   </span>
                 </div>
 
