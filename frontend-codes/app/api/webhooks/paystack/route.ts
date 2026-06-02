@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
 async function handleSuccessfulPayment(data: any) {
   try {
-    // Forward to your backend API to update transaction status
+    // Forward to backend API to update transaction status
     const backendUrl = `${process.env.NEXT_CORE_API_URL}/payments/webhook/paystack/`;
     
     await fetch(backendUrl, {
@@ -90,7 +90,7 @@ async function handleSuccessfulPayment(data: any) {
 
 async function handleFailedPayment(data: any) {
   try {
-    // Forward to your backend API to update transaction status
+    // Forward to backend API to update transaction status
     const backendUrl = `${process.env.NEXT_CORE_API_URL}/payments/webhook/paystack/`;
     
     await fetch(backendUrl, {

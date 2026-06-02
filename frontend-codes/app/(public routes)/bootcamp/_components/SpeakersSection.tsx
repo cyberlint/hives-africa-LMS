@@ -4,24 +4,25 @@ import Image from "next/image";
 import { Twitter, Linkedin, BriefcaseBusiness, ShieldAlert } from "lucide-react";
 
 const speakers = [
-  {
-    name: "John Doe",
-    title: "Senior AI Researcher",
-    company: "OpenAI",
-    description: "John leads foundational machine learning research, focusing on the architecture, safety, and deployment of frontier AI models.",
-    image: "https://nexthive-lms.fly.storage.tigris.dev/user-avatars/XXAW3WiPEYa4oq0i1cdkBNWXHFzmaMwr/f25693a7-8961-44e8-8084-da80935c330b-IMG_20251010_110620_852.jpg",
-    twitter: "#",
-    linkedin: "#",
-    featured: true,
-  },
-  {
-    name: "Jane Smith",
-    title: "Lead Data Scientist",
-    company: "Google",
-    image: "https://nexthive-lms.fly.storage.tigris.dev/user-avatars/XXAW3WiPEYa4oq0i1cdkBNWXHFzmaMwr/f25693a7-8961-44e8-8084-da80935c330b-IMG_20251010_110620_852.jpg",
-    twitter: "#",
-    linkedin: "#",
-  },
+{
+  name: "To Be Announced",
+  title: "Featured Speaker",
+  company: "To Be Revealed",
+  description: "Speaker details will be announced shortly.",
+  image: "https://nexthive-lms.fly.storage.tigris.dev/user-avatars/XXAW3WiPEYa4oq0i1cdkBNWXHFzmaMwr/silhoute-man.jpg",
+  twitter: "#",
+  linkedin: "#",
+  featured: true,
+},
+{
+  name: "To Be Announced",
+  title: "Guest Speaker",
+  company: "To Be Revealed",
+  description: "Additional speakers from leading organizations and innovation ecosystems will be announced as confirmations are finalized.",
+  image: "https://nexthive-lms.fly.storage.tigris.dev/user-avatars/XXAW3WiPEYa4oq0i1cdkBNWXHFzmaMwr/silhoute-woman.jpg",
+  twitter: "#",
+  linkedin: "#",
+},
   // ... other speakers
 ];
 

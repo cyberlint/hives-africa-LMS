@@ -135,6 +135,37 @@ model Verification {
   @@map("verification")
 }
 
+// Leads table to track visitors who have indicated interest in a program e.g tried to register for a bootcamp but didn't complete the process. Useful for retargeting and understanding drop-off points in the funnel. 
+// We can capture their email, the program they were interested in, and any other relevant metadata like how they found out about us, etc.
+model Lead {
+  id            String   @id @default(cuid())
+
+  fullName      String
+  email         String
+  phone         String?
+  stage         LeadStage @default(INITIATED)
+  
+  source        String?
+  campaign      String?
+  eventSlug     String?
+
+  hasAccount    Boolean @default(false)
+  convertedToUser Boolean @default(false)
+
+  paymentReference String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum LeadStage {
+  INITIATED
+  PAYMENT_STARTED
+  PAYMENT_COMPLETED
+  ACTIVATED
+  DROPPED
+}
+
 // ==========================================
 // 2. LMS & COURSE ENGINE
 // ==========================================

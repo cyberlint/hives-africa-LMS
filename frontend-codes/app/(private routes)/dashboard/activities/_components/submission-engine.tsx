@@ -410,7 +410,7 @@ export function SubmissionEngine({
             <div className="mt-8 relative">
               {(isReady && isSplitValid) && <div className="absolute inset-0 bg-orange blur-xl opacity-20 rounded-full animate-pulse pointer-events-none" />}
               <Button onClick={handleSubmit} disabled={!isReady || !isSplitValid || isSubmitting || uploadingReqId !== null} className={`w-full rounded-full py-7 text-base font-semibold shadow-xl transition-all duration-300 relative z-10 ${(isReady && isSplitValid) ? 'bg-foreground text-background hover:scale-[1.01]' : 'bg-muted text-muted-foreground'}`}>
-                {isSubmitting ? <><Loader2 className="mr-2 size-5 animate-spin" /> Transmitting...</> : <><Zap className={`mr-2 size-5 ${(isReady && isSplitValid) ? 'text-orange' : ''}`} fill={(isReady && isSplitValid) ? "currentColor" : "none"} /> {(isReady && isSplitValid) ? (isRevising ? "Submit Revision" : "Submit Proof of Work") : "Complete Form & Split to Submit"}</>}
+                {isSubmitting ? <><Loader2 className="mr-2 size-5 animate-spin" /> Transmitting...</> : <><Zap className={`mr-2 size-5 ${(isReady && isSplitValid) ? 'text-orange' : ''}`} fill={(isReady && isSplitValid) ? "currentColor" : "none"} /> {(isReady && isSplitValid) ? (isRevising ? "Submit Revision" : "Submit Proof of Work") : "Complete Form to Submit"}</>}
               </Button>
             </div>
           </div>

@@ -49,7 +49,7 @@ export default function CartCheckoutPage() {
     // MVP strategy: initialize payment using first non-free course id and coupon (backend must handle multi later)
     const firstBillable = items.find(i => !i.isFree);
     if (!firstBillable) {
-      toast.success("All courses are free – enrolling...");
+      toast.success("All courses are free - enrolling...");
       // Simulate enrollment and redirect to learning dashboard.
       clearCart();
       router.push("/learning");
