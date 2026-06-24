@@ -7,9 +7,16 @@ import { EventRegistrationForm } from "./EventRegistrationForm";
 interface EventFooterCTAProps {
   eventId: string;
   eventTitle: string;
+
+  currentUser: {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+  } | null;
 }
 
-export const EventFooterCTA: React.FC<EventFooterCTAProps> = ({ eventId, eventTitle }) => {
+
+export const EventFooterCTA: React.FC<EventFooterCTAProps> = ({ eventId, eventTitle, currentUser }) => {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
@@ -31,6 +38,7 @@ export const EventFooterCTA: React.FC<EventFooterCTAProps> = ({ eventId, eventTi
         <EventRegistrationForm
           eventId={eventId}
           eventTitle={eventTitle}
+          currentUser={currentUser}
           onRegistered={() => setModalOpen(false)}
         />
       </Modal>

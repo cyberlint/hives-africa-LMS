@@ -453,6 +453,29 @@ export const activityKSBMappingSchema = z.array(
 ).min(1);
 
 
+export const EventSpeakerSchema = z.object({
+  name: z
+    .string({ required_error: "Speaker name is required" })
+    .min(2, "Speaker name must be at least 2 characters")
+    .max(100, "Speaker name cannot exceed 100 characters"),
+  title: z
+    .string()
+    .max(150, "Title cannot exceed 150 characters")
+    .nullable()
+    .optional(),
+  bio: z
+    .string()
+    .max(2000, "Bio cannot exceed 2000 characters")
+    .nullable()
+    .optional(),
+ imageUrl: z
+    .string()
+    .url("Please enter a valid image URL")
+    .nullable()
+    .optional()
+    .or(z.literal("")),
+});
+
 
 export const EventSchema = z.object({
   id: z.string().uuid({ message: "Invalid event ID" }),
@@ -471,22 +494,30 @@ export const EventSchema = z.object({
   enddate: z.coerce.date({ invalid_type_error: "End date must be a valid date" }),
   imageKey: z.string().nullable(),
   venue: EventVenueEnum,
-  // Allow empty strings for form compatibility when optional
-  url: z.string().url({ message: "URL must be valid" }).optional().or(z.literal("")),
+  url: z
+    .string()
+    .url({ message: "Please enter a valid URL" })
+    .nullable()
+    .optional()
+    .or(z.literal("")),
   eventCategory: EventCategoryEnum,
   isOnline: z.boolean({ required_error: "Online status must be true or false" }),
   createdAt: z.date({ required_error: "CreatedAt must be a valid date" }),
   updatedAt: z.date({ required_error: "UpdatedAt must be a valid date" }),
   userId: z.string({ required_error: "User ID is required" }),
-});
 
+  speakers: z.array(EventSpeakerSchema).optional(),
+});
 
 // CREATE EVENT SCHEMA
 export const CreateEventSchema = EventSchema
-  .omit({ id: true, createdAt: true, updatedAt: true, userId: true }) // user doesn't provide these
+  .omit({ id: true, createdAt: true, updatedAt: true, userId: true })
+  .extend({
+    speakers: z.array(EventSpeakerSchema).optional(),
+  })
   .superRefine((data, ctx) => {
-
-    // 1. Enforce URL for online events
+    
+    // URL rule (unchanged)
     if (data.isOnline) {
       if (!data.url || data.url.trim() === "") {
         ctx.addIssue({
@@ -497,7 +528,7 @@ export const CreateEventSchema = EventSchema
       }
     }
 
-    // 2. Enforce chronological dates
+    // date rule (unchanged)
     if (data.enddate <= data.startdate) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -508,8 +539,36 @@ export const CreateEventSchema = EventSchema
 
   });
 
+  // REGISTER FOR EVENT SCHEMA
+export const EventRegistrationSchema = z.object({
+  eventId: z.string().uuid(),
+
+  name: z
+    .string({ required_error: "Your name is required" })
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name cannot exceed 100 characters"),
+
+  email: z
+    .string({ required_error: "Email address is required" })
+    .email("Please enter a valid email address"),
+
+  phone: z
+    .string()
+    .max(20, "Phone number is too long")
+    .optional(),
+
+  referralSource: z
+    .string()
+    .max(100)
+    .optional(),
+});
+
 // UPDATE EVENT SCHEMA
-export const UpdateEventSchema = EventSchema.partial() // everything optional
+export const UpdateEventSchema = EventSchema
+  .partial()
+  .extend({
+    speakers: z.array(EventSpeakerSchema).optional(),
+  })
   .superRefine((data, ctx) => {
     if (data.startdate && data.enddate && data.enddate <= data.startdate) {
       ctx.addIssue({
@@ -608,3 +667,4 @@ export type CreateProposalInput = z.infer<typeof CreateProposalSchema>;
 export type CastVoteInput = z.infer<typeof CastVoteSchema>;
 export type ProposalStatusType = z.infer<typeof ProposalStatusEnum>;
 export type CreateOrganizationInput = z.infer<typeof CreateOrganizationSchema>
+export type RegisterEventSchemaType = z.infer<typeof EventRegistrationSchema>

@@ -78,7 +78,7 @@ export default async function SubmissionsDashboard({
 
             <div className="flex flex-col gap-1">
                 <h1 className="text-2xl font-bold tracking-tight">Triage Dashboard</h1>
-                <p className="text-sm text-muted-foreground">Manage and review learner submissions across all your courses.</p>
+                <p className="text-sm text-muted-foreground">Manage and review all individual and hive submissions.</p>
             </div>
 
             {/* COMPACT STATS CARDS */}

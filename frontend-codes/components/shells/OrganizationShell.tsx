@@ -1,0 +1,48 @@
+"use client"
+
+import { ReactNode } from "react"
+import { AppSidebar } from "@/components/lms/admin-sidebar/app-sidebar"
+import { SiteHeader } from "@/components/lms/admin-sidebar/site-header"
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+
+type OrganizationShellProps = {
+  children: ReactNode
+  orgSlug: string
+}
+
+export function OrganizationShell({ children, orgSlug }: OrganizationShellProps) {
+  return (
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--header-height": "calc(var(--spacing) * 12)",
+          "--primary": "#fdb606",
+          "--primary-foreground": "#1d2026",
+          "--sidebar-primary": "#fdb606",
+          "--sidebar-primary-foreground": "#1d2026",
+          "--ring": "#fdb606",
+          "--sidebar-ring": "#fdb606",
+        } as React.CSSProperties
+      }
+    >
+      <AppSidebar
+        mode="org"
+        orgSlug={orgSlug}
+        variant="inset"
+      />
+
+      <SidebarInset>
+        <SiteHeader />
+
+        <div className="flex flex-1 flex-col">
+          <div className="@container/main flex flex-1 flex-col gap-2">
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
+              {children}
+            </div>
+          </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  )
+}

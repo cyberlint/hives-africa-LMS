@@ -58,8 +58,12 @@ export default function CreateHiveModal({ open, onOpenChange, predefinedOrgSlug 
         setIsPrivate(false)
         onOpenChange(false)
 
-        // 3. Redirect directly to the new Hive workspace
-        router.push(`/community/hives/${res.slug}`)
+        // 3. Redirect after creation based on context
+        if (predefinedOrgSlug) {
+          router.push(`/orgs/${predefinedOrgSlug}/hives?highlight=${res.slug}`)
+        } else {
+          router.push(`/community/hives/${res.slug}`)
+        }
       }
     })
   }

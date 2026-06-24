@@ -23,10 +23,10 @@ const techTracks: FooterLink[] = [
 
 // 2. Replaced random "Programs" with the core Engine of the platform
 const platformEcosystem: FooterLink[] = [
-  { title: "The Arena (Hackathons)", href: "/activities" },
-  { title: "The Hives (Study Groups)", href: "/community/hives" },
-  { title: "The Vanguard (Leaderboard)", href: "/vanguard" },
-  { title: "Signal Graph (Social Feed)", href: "/community" },
+  { title: "The Arena", href: "/activities" },
+  { title: "Hives", href: "/community/hives" },
+  { title: "The Vanguard", href: "/vanguard" },
+  { title: "Signal Graph", href: "/community" },
   { title: "Verifiable Portfolios", href: "/portfolio" },
   { title: "Tech Tracks", href: "/courses" },
 ];

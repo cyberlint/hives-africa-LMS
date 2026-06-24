@@ -12,7 +12,7 @@ const testimonials = [
     focus: "Data Engineering",
     avatar: "/avatars/chidi.jpg", 
     rating: 5,
-    content: "I'm tired of collecting generic paper certificates that employers ignore. I joined NextHive specifically to build a cryptographically verified portfolio.",
+    content: "I'm tired of collecting generic paper certificates that employers ignore. I joined NextHive specifically to build a verified portfolio.",
   },
   {
     name: "Amina Yusuf",

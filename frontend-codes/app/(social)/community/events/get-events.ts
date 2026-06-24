@@ -1,32 +1,44 @@
-import "server-only";
-
 import { prisma } from "@/lib/db";
 
+type GetEventsParams = {
+  search?: string;
+  category?: string;
+  format?: "online" | "in-person" | "any";
+};
 
-export async function getEvents() {
-    const data = await prisma.event.findMany({
-        orderBy: {
-            createdAt: "desc",
-        },
-        select: {
-            id:                true,
-            title:             true,
-            shortdescription:  true,
-            description:       true,
-            startdate:         true,
-            enddate:           true,
-            imageKey:          true,
-            venue:             true,
-            url:               true,
-            eventCategory:     true,
-            isOnline:          true,
-            createdAt:         true,
-            updatedAt:         true,
-            userId:            true,
-},
-    });
+export async function getEvents(params: GetEventsParams = {}) {
+  const { search, category, format } = params;
+
+  return prisma.event.findMany({
+    where: {
+      ...(search
+        ? {
+            title: {
+              contains: search,
+              mode: "insensitive",
+            },
+          }
+        : {}),
+
+      ...(category && category !== "all"
+        ? {
+            eventCategory: category as any,
+          }
+        : {}),
+
+      ...(format && format !== "any"
+        ? {
+            isOnline: format === "online",
+          }
+        : {}),
+    },
     
-    return data;
-}
+    include: {
+      speakers: true,
+    },
 
-export type EventType = Awaited<ReturnType<typeof getEvents>>[number]
+    orderBy: {
+      startdate: "asc",
+    },
+  });
+}

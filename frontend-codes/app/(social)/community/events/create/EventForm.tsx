@@ -3,21 +3,22 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form"; 
-import * as z from "zod"; 
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { useFieldArray } from "react-hook-form";
 
 import { toast } from "sonner";
 
 // UI Components
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"; 
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RichTextEditor } from "@/components/lms/rich-text-editor/editor";
 import { Uploader } from "@/components/lms/file-uploader/uploader";
-import { ArrowLeft, Loader2, PlusIcon } from "lucide-react";
+import { ArrowLeft, Loader2, PlusIcon, Trash2, UserPlus } from "lucide-react";
 import Link from "next/link";
 
 // Shared schema and actions
@@ -31,20 +32,23 @@ interface AuthUser {
 }
 
 // Define the schema for data received from the form inputs
-type FormInputSchema = Omit<z.infer<typeof CreateEventSchema>, 'startdate' | 'enddate'> & {
+type FormInputSchema = Omit<
+    z.infer<typeof CreateEventSchema>,
+    "startdate" | "enddate"
+> & {
     startdate: string;
     enddate: string;
 };
 
 interface EventFormProps {
-    eventData?: z.infer<typeof EventSchema>; 
-    currentUser: AuthUser; 
+    eventData?: z.infer<typeof EventSchema>;
+    currentUser: AuthUser;
 }
 
 // Helper to format Date or string to the required "YYYY-MM-DDThh:mm" format
 const formatDateForInput = (dateOrString: Date | string | undefined): string | undefined => {
     if (!dateOrString) return undefined;
-    
+
     const date = dateOrString instanceof Date ? dateOrString : new Date(dateOrString);
     if (isNaN(date.getTime())) return undefined;
 
@@ -52,14 +56,14 @@ const formatDateForInput = (dateOrString: Date | string | undefined): string | u
 };
 
 // Validator schema that expects strings for dates from the input fields
-const FormValidatorSchema = EventSchema.omit({ 
+const FormValidatorSchema = EventSchema.omit({
     id: true, createdAt: true, updatedAt: true, userId: true,
-    startdate: true, enddate: true 
+    startdate: true, enddate: true
 }).extend({
     startdate: z.string().refine((val) => !isNaN(Date.parse(val)), "Start date must be a valid date"),
     enddate: z.string().refine((val) => !isNaN(Date.parse(val)), "End date must be a valid date"),
 }).superRefine((data, ctx) => {
-    
+
     // 1. Enforce URL for online events
     if (data.isOnline) {
         if (!data.url || data.url.trim() === "") {
@@ -90,19 +94,31 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
     const [isPending, startTransition] = useTransition();
 
     const form = useForm<FormInputSchema>({
-        resolver: zodResolver(FormValidatorSchema), 
+        resolver: zodResolver(FormValidatorSchema),
         defaultValues: {
             title: eventData?.title ?? "",
             shortdescription: eventData?.shortdescription ?? "",
             description: eventData?.description ?? "",
-            imageKey: eventData?.imageKey || "", 
-            venue: eventData?.venue ?? EventVenueEnum.enum.NextHive, 
+            imageKey: eventData?.imageKey || "",
+            venue: eventData?.venue ?? EventVenueEnum.enum.NextHive,
             url: eventData?.url || "",
-            eventCategory: eventData?.eventCategory ?? EventCategoryEnum.enum.Tutorial, 
+            eventCategory: eventData?.eventCategory ?? EventCategoryEnum.enum.Tutorial,
             isOnline: eventData?.isOnline ?? true,
             startdate: formatDateForInput(eventData?.startdate) ?? formatDateForInput(new Date())!,
             enddate: formatDateForInput(eventData?.enddate) ?? formatDateForInput(new Date())!,
+            speakers:
+                eventData?.speakers?.map((speaker) => ({
+                    name: speaker.name,
+                    title: speaker.title ?? "",
+                    bio: speaker.bio ?? "",
+                    imageUrl: speaker.imageUrl ?? "",
+                })) ?? [],
         },
+    });
+
+    const { fields, append, remove } = useFieldArray({
+        control: form.control,
+        name: "speakers",
     });
 
     function onSubmit(values: FormInputSchema) {
@@ -110,9 +126,9 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
             try {
                 const dataToSend = {
                     ...values,
-                    startdate: new Date(values.startdate), 
-                    enddate: new Date(values.enddate),     
-                } as z.infer<typeof CreateEventSchema>; 
+                    startdate: new Date(values.startdate),
+                    enddate: new Date(values.enddate),
+                } as z.infer<typeof CreateEventSchema>;
 
                 if (eventData && eventData.id) {
                     await updateEvent(eventData.id, dataToSend);
@@ -126,10 +142,10 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
 
             } catch (err) {
                 console.error(err);
-                const errorMessage = (err && typeof err === 'object' && 'message' in err) 
-                    ? (err as Error).message 
+                const errorMessage = (err && typeof err === 'object' && 'message' in err)
+                    ? (err as Error).message
                     : "An unexpected error occurred";
-                    
+
                 toast.error(errorMessage);
             }
         });
@@ -137,7 +153,7 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
 
     return (
         <div className="mx-auto max-w-4xl py-10 px-4 sm:px-6">
-            
+
             {/* Header Section */}
             <div className="mb-8 flex items-center gap-4">
                 <Button asChild variant="outline" size="icon" className="shrink-0 rounded-full">
@@ -165,7 +181,7 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
                 <CardContent className="p-6 sm:p-8">
                     <Form {...form}>
                         <form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
-                            
+
                             <FormField
                                 control={form.control}
                                 name="title"
@@ -217,8 +233,8 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
                                     <FormItem>
                                         <FormLabel>Thumbnail Image</FormLabel>
                                         <FormControl>
-                                            <Uploader 
-                                                onChange={field.onChange} 
+                                            <Uploader
+                                                onChange={field.onChange}
                                                 value={(field.value ?? "") || ""}
                                                 apiEndpoint="/api/s3/upload-public"
                                             />
@@ -228,6 +244,167 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
                                 )}
                             />
 
+                            {/* SPEAKERS */}
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-lg font-semibold">
+                                            Speakers
+                                        </h3>
+                                        <p className="text-sm text-muted-foreground">
+                                            Add speakers, facilitators, panelists or hosts for this event.
+                                        </p>
+                                    </div>
+
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() =>
+                                            append({
+                                                name: "",
+                                                title: "",
+                                                bio: "",
+                                                imageUrl: "",
+                                            })
+                                        }
+                                    >
+                                        <UserPlus className="size-4 mr-2" />
+                                        Add Speaker
+                                    </Button>
+                                </div>
+
+                                {fields.length === 0 && (
+                                    <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
+                                        No speakers added yet.
+                                    </div>
+                                )}
+
+                                <div className="space-y-6">
+                                    {fields.map((field, index) => (
+                                        <Card key={field.id}>
+                                            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                                                <div>
+                                                    <CardTitle className="text-base">
+                                                        Speaker #{index + 1}
+                                                    </CardTitle>
+
+                                                    <CardDescription>
+                                                        Speaker information
+                                                    </CardDescription>
+                                                </div>
+
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => remove(index)}
+                                                >
+                                                    <Trash2 className="size-4 text-destructive" />
+                                                </Button>
+                                            </CardHeader>
+
+                                            <CardContent className="space-y-6">
+
+                                                {/* PHOTO */}
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`speakers.${index}.imageUrl`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>
+                                                                Speaker Photo
+                                                            </FormLabel>
+
+                                                            <FormControl>
+                                                                <Uploader
+                                                                    value={field.value ?? ""}
+                                                                    onChange={field.onChange}
+                                                                    apiEndpoint="/api/s3/upload-public"
+                                                                />
+                                                            </FormControl>
+
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                {/* NAME + TITLE */}
+                                                <div className="grid gap-4 md:grid-cols-2">
+
+                                                    <FormField
+                                                        control={form.control}
+                                                        name={`speakers.${index}.name`}
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    Name
+                                                                </FormLabel>
+
+                                                                <FormControl>
+                                                                    <Input
+                                                                        placeholder="Jane Doe"
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormField
+                                                        control={form.control}
+                                                        name={`speakers.${index}.title`}
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>
+                                                                    Professional Title
+                                                                </FormLabel>
+
+                                                                <FormControl>
+                                                                    <Input
+                                                                        {...field}
+                                                                        value={field.value ?? ""}
+                                                                        placeholder="Speaker title"
+                                                                    />
+                                                                </FormControl>
+
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                </div>
+
+                                                {/* BIO */}
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`speakers.${index}.bio`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>
+                                                                Bio
+                                                            </FormLabel>
+
+                                                            <FormControl>
+                                                                <Textarea
+                                                                    {...field}
+                                                                    value={field.value ?? ""}
+                                                                    rows={4}
+                                                                    placeholder="Speaker bio"
+                                                                />
+                                                            </FormControl>
+
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </div>
+                            </div>
                             {/* Two-Column Grid Sections */}
                             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                                 <FormField
@@ -243,7 +420,7 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    {Object.values(EventVenueEnum.enum).map((venue) => ( 
+                                                    {Object.values(EventVenueEnum.enum).map((venue) => (
                                                         <SelectItem key={venue} value={venue}>{venue}</SelectItem>
                                                     ))}
                                                 </SelectContent>
@@ -266,7 +443,7 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    {Object.values(EventCategoryEnum.enum).map((cat) => ( 
+                                                    {Object.values(EventCategoryEnum.enum).map((cat) => (
                                                         <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                                                     ))}
                                                 </SelectContent>
@@ -285,7 +462,7 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
                                             <FormControl>
                                                 <Input placeholder="https://..." {...field} value={field.value ?? ''} />
                                             </FormControl>
-                                            <FormDescription>Optional external link for the event.</FormDescription> 
+                                            <FormDescription>Optional external link for the event.</FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -346,12 +523,12 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
                                 <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
                                     {isPending ? (
                                         <>
-                                            {eventData ? "Updating..." : "Creating..."} 
+                                            {eventData ? "Updating..." : "Creating..."}
                                             <Loader2 className="ml-2 h-4 w-4 animate-spin" />
                                         </>
                                     ) : (
                                         <>
-                                            {eventData ? "Update Event" : "Create Event"} 
+                                            {eventData ? "Update Event" : "Create Event"}
                                             <PlusIcon className="ml-2 h-4 w-4" />
                                         </>
                                     )}

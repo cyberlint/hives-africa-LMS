@@ -20,6 +20,7 @@ import {
 
 import { NavDocuments } from "./nav-documents"
 import { NavMain } from "./nav-main"
+import { getNavData } from "./nav-data"
 import { NavSecondary } from "./nav-secondary"
 import { NavUser } from "./nav-user"
 import {
@@ -49,19 +50,19 @@ const data = {
       title: "Learning Activities",
       url: "/admin/activities",
       icon: IconPlayCard,
-  },
-    
+    },
+
     {
       title: "Review Submissions",
       url: "/admin/activities/submissions",
       icon: IconPencil,
     },
     {
-      title: "Community",
-      url: "/community",
+      title: "Hives",
+      url: "/admin/hives",
       icon: IconUsers,
     },
-],
+  ],
   navClouds: [
     {
       title: "Capture",
@@ -113,12 +114,12 @@ const data = {
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/admin/settings",
       icon: IconSettings,
     },
     {
       title: "Get Help",
-      url: "#",
+      url: "https://docs.hives.africa",
       icon: IconHelp,
     },
     {
@@ -146,29 +147,44 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export type SidebarMode = "admin" | "org"
+
+export function AppSidebar({
+  orgSlug,
+  mode = "admin",
+  ...props
+}: React.ComponentProps<typeof Sidebar> & {
+  orgSlug?: string
+  mode?: SidebarMode
+}) {
+  const data = getNavData(orgSlug, mode)
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:p-1.5!"
-            >
-              <Link href="/">
-                {/* <Image src={Logo} alt="NextHive Logo" className="size-5"/> */}
+            <SidebarMenuButton asChild>
+              <Link
+                href={
+                  mode === "admin"
+                    ? "/admin"
+                    : `/orgs/${orgSlug}`
+                }
+              >
                 <span className="text-base font-semibold">NextHive</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={data.navMain} orgSlug={orgSlug} />
         <NavDocuments items={data.documents} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
+
       <SidebarFooter>
         <NavUser />
       </SidebarFooter>

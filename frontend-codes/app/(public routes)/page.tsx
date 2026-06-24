@@ -219,7 +219,7 @@ const Home = async () => {
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange to-amber-400">We build professionals.</span>
                   </h2>
                   <p className="text-zinc-400 leading-relaxed text-base md:text-lg max-w-md">
-                    {"Employers don't hire paper certificates; they hire proven problem solvers. Every project you complete on NextHive builds a cryptographically verified portfolio mapped across three critical dimensions."}
+                    {"Employers don't hire paper certificates; they hire proven problem solvers. Every project you complete on NextHive builds a verified portfolio mapped across three critical dimensions."}
                   </p>
                 </div>
 

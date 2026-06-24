@@ -22,7 +22,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="inset" />
+      <AppSidebar variant="inset" mode="admin"/>
       <SidebarInset>
         <SiteHeader />
         <div className="flex flex-1 flex-col">

@@ -20,7 +20,7 @@ export default function HiveLaunchButton({ orgSlug }: HiveLaunchButtonProps) {
         className="w-full sm:w-auto h-11 px-6 rounded-full font-semibold border-orange text-orange hover:bg-orange/10 transition-colors shadow-sm"
       >
         <ShieldPlus className="size-4 mr-2" />
-        Launch a Hive (-500 Rep)
+        Launch a Hive
       </Button>
 
       {/* Pass the orgSlug into the modal */}
