@@ -52,7 +52,7 @@ export async function createHive(
           description: validated.data.description,
           isPrivate: validated.data.isPrivate,
           creatorId: userId,
-          organizationId: organizationId, // THE MISSING LINK
+          organizationId: organizationId,
         }
       })
 

@@ -14,7 +14,7 @@ interface KSB {
   ksb: { title: string; type: string; description: string | null }
 }
 
-export function EvaluationPanel({ submissionId, reviewerId, ksbs }: { submissionId: string, reviewerId: string, ksbs: KSB[] }) {
+export function EvaluationPanel({ submissionId, reviewerId, ksbs, orgSlug }: { submissionId: string, reviewerId: string, ksbs: KSB[], orgSlug: string }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
@@ -38,13 +38,13 @@ export function EvaluationPanel({ submissionId, reviewerId, ksbs }: { submission
         const overallScore = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0
 
         const result = await submitInstructorReview({
-          submissionId, reviewerId, status, feedback, rubricScores, score: overallScore,
+          submissionId, reviewerId, status, feedback, rubricScores, score: overallScore, orgSlug
         })
         
         if (result.success) {
           toast.success("Review saved successfully!")
           const currentQuery = searchParams.toString()
-          const returnUrl = `/admin/activities/submissions${currentQuery ? `?${currentQuery}` : ""}`
+          const returnUrl = `/orgs/${orgSlug}/activities/submissions${currentQuery ? `?${currentQuery}` : ""}`
           router.push(returnUrl) 
         } else {
           // 2. ACTUALLY SHOW THE BACKEND ERROR

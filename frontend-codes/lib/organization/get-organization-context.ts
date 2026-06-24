@@ -14,9 +14,14 @@ export async function getOrganizationContext(orgSlug: string) {
   const session = await requireAuth();
 
   // 1. Get organization first
-  const organization = await prisma.organization.findUnique({
-    where: { slug: orgSlug },
-  });
+  const organization = await prisma.organization.findFirst({
+  where: {
+    OR: [
+      { id: orgSlug },
+      { slug: orgSlug },
+    ],
+  },
+});
 
   if (!organization) {
     throw new OrganizationAccessError("Organization not found");

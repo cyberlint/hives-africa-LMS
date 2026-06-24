@@ -3,17 +3,37 @@ import { IconCirclePlusFilled } from "@tabler/icons-react";
 import Link from "next/link";
 import { prisma } from "@/lib/db"; // Import your Prisma client
 import { formatDistanceToNow } from "date-fns"; // Optional: for "2 days ago" formatting if you have date-fns installed
+import { requireOrganizationRole } from "@/lib/organization/require-organization-role";
+import { notFound } from "next/dist/client/components/navigation";
 
 // Fetch activities from the database
-async function getActivities() {
-  return await prisma.activity.findMany({
-    orderBy: {
-      createdAt: "desc", // Show the newest activities first
+async function getActivities(orgSlug: string) {
+  const organization = await prisma.organization.findUnique({
+    where: {
+      slug: orgSlug,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!organization) {
+    return [];
+  }
+
+  return prisma.activity.findMany({
+    where: {
+      organizationId: organization.id,
     },
     include: {
       _count: {
-        select: { submissions: true }, // Grab the count of submissions automatically
+        select: {
+          submissions: true,
+        },
       },
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 }
@@ -33,8 +53,31 @@ function getStatusColor(status: string) {
   }
 }
 
-export default async function ActivitiesDashboardPage() {
-  const activities = await getActivities();
+export default async function ActivitiesDashboardPage({
+  params,
+}: {
+  params: Promise<{
+    orgSlug: string;
+  }>;
+}) {
+  const { orgSlug } = await params;
+
+  const organization = await prisma.organization.findUnique({
+  where: {
+    slug: orgSlug,
+  },
+});
+
+if (!organization) {
+  notFound();
+}
+
+await requireOrganizationRole(
+  organization.id,
+  ["OWNER", "ADMIN"]
+);
+
+  const activities = await getActivities(orgSlug);
 
   return (
     <div className="space-y-6">
@@ -49,7 +92,7 @@ export default async function ActivitiesDashboardPage() {
 
         {/* This triggers our magic /new route */}
         <Link 
-          href="/admin/activities/new" 
+          href={`/orgs/${orgSlug}/activities/new`} 
           className={buttonVariants({ variant: "default" })}
         >
           <IconCirclePlusFilled className="mr-2" size={20} /> Create Activity
@@ -91,7 +134,7 @@ export default async function ActivitiesDashboardPage() {
                   {activity._count.submissions} submissions
                 </span>
                 <Link 
-                  href={`/admin/activities/${activity.id}`} 
+                  href={`/orgs/${orgSlug}/activities/${activity.id}`} 
                   className={buttonVariants({ variant: "outline", size: "sm" })}
                 >
                   Edit

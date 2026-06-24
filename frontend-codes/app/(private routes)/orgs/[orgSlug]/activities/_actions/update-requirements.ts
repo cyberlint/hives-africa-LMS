@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/db"; // Matched your import!
 import { revalidatePath } from "next/cache";
 
-export async function updateActivityRequirements(activityId: string, requirements: any[]) {
+export async function updateActivityRequirements(activityId: string, requirements: any[], orgSlug: string) {
   try {
     // Run as a transaction to ensure we don't end up with partial data
     await prisma.$transaction([
@@ -21,7 +21,7 @@ export async function updateActivityRequirements(activityId: string, requirement
       }),
     ]);
 
-    revalidatePath(`/admin/activities/${activityId}`);
+    revalidatePath(`/orgs/${orgSlug}/activities/${activityId}`);
     return { status: "success", message: "Requirements saved successfully." };
   } catch (error) {
     console.error("Failed to update requirements:", error);

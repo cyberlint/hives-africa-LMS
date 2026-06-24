@@ -14,12 +14,13 @@ export default async function ActivityEditorPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ activityId: string }>;
+  params: Promise<{ orgSlug: string; activityId: string }>;
   searchParams: Promise<{ tab?: string }>;
 }) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
   
+  const orgSlug = resolvedParams.orgSlug;
   const activityId = resolvedParams.activityId;
   const currentTab = resolvedSearchParams.tab || "overview";
 
@@ -51,7 +52,7 @@ export default async function ActivityEditorPage({
     <div className="flex flex-col h-full space-y-6 p-6">
       <div className="flex items-center justify-between border-b pb-4">
         <div className="flex items-center gap-4">
-          <Link href="/admin/activities" className="p-2 hover:bg-muted rounded-md transition">
+          <Link href={`/orgs/${orgSlug}/activities`} className="p-2 hover:bg-muted rounded-md transition">
             <ArrowLeft className="size-5 text-muted-foreground" />
           </Link>
           <div>
@@ -68,7 +69,7 @@ export default async function ActivityEditorPage({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-8">
-        <EditorSidebar activityId={activity.id} />
+        <EditorSidebar activityId={activity.id} orgSlug={orgSlug} />
 
         <main className="max-w-3xl">
           {currentTab === "overview" && (

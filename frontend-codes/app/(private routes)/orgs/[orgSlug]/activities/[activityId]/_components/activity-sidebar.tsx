@@ -6,9 +6,10 @@ import { cn } from "@/lib/utils";
 
 interface EditorSidebarProps {
   activityId: string;
+  orgSlug: string;
 }
 
-export function EditorSidebar({ activityId }: EditorSidebarProps) {
+export function EditorSidebar({ activityId, orgSlug }: EditorSidebarProps) {
   const searchParams = useSearchParams();
   const currentTab = searchParams.get("tab") || "overview";
 
@@ -26,7 +27,7 @@ const tabs = [
         return (
           <Link
             key={tab.id}
-            href={`/admin/activities/${activityId}?tab=${tab.id}`}
+            href={`/orgs/${orgSlug}/activities/${activityId}?tab=${tab.id}`}
             className={cn(
               "block px-4 py-2 rounded-md text-sm font-medium transition",
               isActive 

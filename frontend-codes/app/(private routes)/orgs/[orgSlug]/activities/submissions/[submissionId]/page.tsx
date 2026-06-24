@@ -5,9 +5,9 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Clock, GraduationCap, Users } from "lucide-react"
 import Link from "next/link"
 
-import { requireAdmin } from "@/domains/auth/require-role"
 import { SubmissionContent } from "../_components/SubmissionContent"
 import { EvaluationPanel } from "../_components/EvaluationPanel"
+import { requireOrganizationRole } from "@/lib/organization/require-organization-role"
 
 const prisma = new PrismaClient()
 
@@ -15,10 +15,26 @@ export default async function SubmissionReviewPage({
   params,
   searchParams // 1. ADD searchParams to the props
 }: { 
-  params: Promise<{ submissionId: string }>,
+  params: Promise<{orgSlug: string; submissionId: string;}>,
   searchParams: Promise<{ [key: string]: string | undefined }> // 2. Add Type
 }) {
   const resolvedParams = await params;
+
+  const organization = await prisma.organization.findUnique({
+    where: {
+      slug: resolvedParams.orgSlug,
+    },
+  });
+
+  if (!organization) {
+    notFound();
+  }
+
+  const { user } = await requireOrganizationRole(
+    organization.id,
+    ["OWNER", "ADMIN", "MODERATOR"]
+);
+
   const resolvedSearchParams = await searchParams; // 3. Await searchParams
 
   // 4. Clean out undefined values and build the query string
@@ -47,13 +63,7 @@ export default async function SubmissionReviewPage({
 if (!submission) notFound()
 
   // FETCH THE REAL LOGGED-IN INSTRUCTOR
-  const currentUser = await requireAdmin();
-  
-  if (!currentUser || !currentUser.id) {
-    return <div>Unauthorized: You must be logged in to review submissions.</div>
-  }
-  
-  const currentInstructorId = currentUser.id;
+  const currentInstructorId = user.id;  
   const isHive = !!submission.hiveId
   const entityName = submission.user?.name || submission.hive?.name || "Unknown Learner"
 
@@ -66,7 +76,7 @@ if (!submission) notFound()
           
           {/* 5. UPDATE THE LINK HREF with the queryString */}
           <Link 
-            href={`/admin/activities/submissions${queryString}`} 
+            href={`/orgs/${resolvedParams.orgSlug}/activities/submissions${queryString}`} 
             className="p-2 border border-border rounded-full hover:bg-muted text-muted-foreground transition-colors"
           >
             <ArrowLeft className="size-4" />
@@ -118,6 +128,7 @@ if (!submission) notFound()
             submissionId={submission.id} 
             reviewerId={currentInstructorId} 
             ksbs={submission.activity.ksbs} 
+            orgSlug={resolvedParams.orgSlug}
           />
         </div>
 

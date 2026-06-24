@@ -27,8 +27,10 @@ const getStatusBadge = (status: SubmissionStatus) => {
 }
 
 export default async function SubmissionsDashboard({
+    params,
     searchParams,
 }: {
+    params: { orgSlug: string }
     // 1. UPDATE: searchParams is a Promise in Next.js 15
     searchParams: Promise<{ courseId?: string; programId?: string; search?: string }>
 }) {
@@ -45,7 +47,7 @@ export default async function SubmissionsDashboard({
     const queryString = searchParamsString ? `?${searchParamsString}` : ""
 
     const organization = await prisma.organization.findUnique({
-  where: { slug: "nexthive" }, // later replace with param or layout context
+  where: { slug: params.orgSlug },
 })
     
     const whereClause: Prisma.SubmissionWhereInput = {
@@ -197,7 +199,7 @@ export default async function SubmissionsDashboard({
                                             {sub.submittedAt ? `${formatDistanceToNow(new Date(sub.submittedAt))} ago` : ""}
                                         </p>
                                         
-                                        <Link href={`/admin/activities/submissions/${sub.id}${queryString}`}>
+                                        <Link href={`/orgs/${params.orgSlug}/activities/submissions/${sub.id}${queryString}`}>
                                             <Button 
                                                 size="sm" 
                                                 variant={sub.status === "Submitted" ? "default" : "secondary"} 

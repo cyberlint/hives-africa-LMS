@@ -13,13 +13,15 @@ export async function submitInstructorReview({
   feedback,
   rubricScores,
   score,
+  orgSlug
 }: {
   submissionId: string
   reviewerId: string
   status: SubmissionStatus
   feedback: string
-  rubricScores: Record<string, number> 
+  rubricScores: Record<string, number>
   score: number
+  orgSlug: string
 }) {
   try {
     console.log("1. Starting review submission...")
@@ -125,8 +127,8 @@ export async function submitInstructorReview({
     console.log("7. Purging cache and returning success...")
     
     // Purge the current page and the dashboard
-    revalidatePath("/admin/activities/submissions")
-    revalidatePath(`/admin/activities/submissions/${submissionId}`)
+    revalidatePath(`/orgs/${orgSlug}/activities/submissions`)
+    revalidatePath(`/orgs/${orgSlug}/activities/submissions/${submissionId}`)
     
     return { success: true }
 

@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
-export async function updateActivitySettings(activityId: string, data: any) {
+export async function updateActivitySettings(activityId: string, data: any, orgSlug: string) {
   try {
     await prisma.activity.update({
       where: { id: activityId },
@@ -16,7 +16,7 @@ export async function updateActivitySettings(activityId: string, data: any) {
       },
     });
 
-    revalidatePath(`/admin/activities/${activityId}`);
+    revalidatePath(`/orgs/${orgSlug}/activities/${activityId}`);
     return { status: "success", message: "Activity settings saved successfully." };
   } catch (error) {
     console.error("Failed to update settings:", error);

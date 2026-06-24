@@ -8,7 +8,8 @@ export async function updateActivityKSBs(
     ksbs: { 
         ksbId: string; 
         weight: number
-    }[]) {
+    }[], 
+    orgSlug: string) {
   try {
     // Run as a transaction to prevent orphaned relations
     await prisma.$transaction([
@@ -26,7 +27,7 @@ export async function updateActivityKSBs(
       }),
     ]);
 
-    revalidatePath(`/admin/activities/${activityId}`);
+    revalidatePath(`/orgs/${orgSlug}/activities/${activityId}`);
     return { status: "success", message: "KSB mappings saved successfully." };
   } catch (error) {
     console.error("Failed to update KSB mappings:", error);

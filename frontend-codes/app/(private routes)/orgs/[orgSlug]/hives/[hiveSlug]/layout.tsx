@@ -36,14 +36,6 @@ export default async function HiveLayout({
 
     return (
         <div className="space-y-6">
-            <HiveHeader
-                orgSlug={orgSlug}
-                hiveSlug={hive.slug}
-                hiveName={hive.name}
-                hiveDescription={hive.description}
-                memberCount={hive.members?.length}
-            />
-            <HiveTabs orgSlug={orgSlug} hiveSlug={hiveSlug} />
             {children}
         </div>
     );

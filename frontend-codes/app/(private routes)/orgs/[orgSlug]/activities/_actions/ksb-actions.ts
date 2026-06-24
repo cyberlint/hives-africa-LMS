@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/db" // Adjust your import path if needed
 import { revalidatePath } from "next/cache"
 
-export async function createGlobalKSB(data: { title: string, type: "Knowledge" | "Skill" | "Behavior", description?: string }) {
+export async function createGlobalKSB(data: { title: string, type: "Knowledge" | "Skill" | "Behavior", description?: string }, orgSlug: string) {
   try {
     const newKsb = await prisma.kSB.create({
       data: {
@@ -14,7 +14,7 @@ export async function createGlobalKSB(data: { title: string, type: "Knowledge" |
     })
     
     // Refresh the page so the new KSB immediately appears in the dropdowns
-    revalidatePath("/admin/activities/[id]/edit", "page") 
+    revalidatePath(`/orgs/${orgSlug}/activities/[id]/edit`, "page") 
     
     return { success: true, ksb: newKsb }
   } catch (error) {
