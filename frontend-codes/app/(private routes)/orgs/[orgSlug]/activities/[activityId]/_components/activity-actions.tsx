@@ -11,14 +11,15 @@ import { deleteActivity } from "../../_actions/delete-activity";
 interface ActivityActionsProps {
   activityId: string;
   currentStatus: string;
+  orgSlug: string;
 }
 
-export function ActivityActions({ activityId, currentStatus }: ActivityActionsProps) {
+export function ActivityActions({ activityId, currentStatus, orgSlug }: ActivityActionsProps) {
   const [isPending, startTransition] = useTransition();
 
   const handleStatusToggle = (newStatus: "Draft" | "Published") => {
     startTransition(async () => {
-      const result = await updateActivityStatus(activityId, newStatus);
+      const result = await updateActivityStatus(activityId, newStatus, orgSlug);
       if (result.status === "success") {
         toast.success(result.message);
       } else {
@@ -34,7 +35,7 @@ export function ActivityActions({ activityId, currentStatus }: ActivityActionsPr
     
     if (isConfirmed) {
       startTransition(async () => {
-        const result = await deleteActivity(activityId);
+        const result = await deleteActivity(activityId, orgSlug);
         // We only handle the error case here because a success will trigger a redirect
         if (result?.status === "error") {
           toast.error(result.message);

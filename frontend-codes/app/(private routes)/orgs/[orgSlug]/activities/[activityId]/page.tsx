@@ -65,7 +65,7 @@ export default async function ActivityEditorPage({
         </div>
         
         {/* Publish/Delete buttons */}
-        <ActivityActions activityId={activity.id} currentStatus={activity.status} />
+        <ActivityActions activityId={activity.id} currentStatus={activity.status} orgSlug={orgSlug} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-8">
