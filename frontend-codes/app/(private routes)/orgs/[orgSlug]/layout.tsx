@@ -8,7 +8,7 @@ export default async function OrganizationLayout({
   params,
 }: {
   children: ReactNode
-  params: { orgSlug: string }
+  params: Promise<{ orgSlug: string }>
 }) {
   const user = await getCurrentUser();
 
@@ -20,5 +20,6 @@ export default async function OrganizationLayout({
     redirect("/dashboard");
   }
 
-  return <OrganizationShell orgSlug={params.orgSlug}>{children}</OrganizationShell>;
+  const { orgSlug } = await params;
+  return <OrganizationShell orgSlug={orgSlug}>{children}</OrganizationShell>;
 }

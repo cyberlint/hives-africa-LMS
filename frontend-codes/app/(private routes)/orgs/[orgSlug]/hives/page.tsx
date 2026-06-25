@@ -9,18 +9,19 @@ export default async function OrgHivesPage({
     params,
     searchParams,
 }: {
-    params: { orgSlug: string };
+    params: Promise<{ orgSlug: string }>;
     searchParams?: {
         q?: string;
         sort?: "newest" | "oldest";
         visibility?: "all" | "public" | "private";
     };
 }) {
+    const { orgSlug } = await params;
     const query = searchParams?.q?.trim() || "";
     const sort = searchParams?.sort || "newest";
     const visibility = searchParams?.visibility || "all";
     const organization = await prisma.organization.findUnique({
-        where: { slug: params.orgSlug },
+        where: { slug: orgSlug },
     });
 
     if (!organization) {

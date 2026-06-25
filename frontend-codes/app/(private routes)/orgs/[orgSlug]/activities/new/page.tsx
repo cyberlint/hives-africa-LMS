@@ -5,9 +5,9 @@ import { requireOrganizationRole } from "@/lib/organization/require-organization
 export default async function NewActivityRoute({
   params,
 }: {
-  params: { orgSlug: string };
+  params: Promise<{ orgSlug: string }>;
 }) {
-  const { orgSlug } = params;
+  const { orgSlug } = await params;
 
   // 1. Validate org access (OWNER / ADMIN)
   const context = await requireOrganizationRole(orgSlug, [

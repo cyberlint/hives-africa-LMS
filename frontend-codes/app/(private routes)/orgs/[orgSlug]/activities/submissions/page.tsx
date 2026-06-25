@@ -30,7 +30,7 @@ export default async function SubmissionsDashboard({
     params,
     searchParams,
 }: {
-    params: { orgSlug: string }
+    params: Promise<{ orgSlug: string }>
     // 1. UPDATE: searchParams is a Promise in Next.js 15
     searchParams: Promise<{ courseId?: string; programId?: string; search?: string }>
 }) {
@@ -46,8 +46,9 @@ export default async function SubmissionsDashboard({
     const searchParamsString = new URLSearchParams(validParams).toString()
     const queryString = searchParamsString ? `?${searchParamsString}` : ""
 
+    const { orgSlug } = await params;
     const organization = await prisma.organization.findUnique({
-  where: { slug: params.orgSlug },
+  where: { slug: orgSlug },
 })
     
     const whereClause: Prisma.SubmissionWhereInput = {
