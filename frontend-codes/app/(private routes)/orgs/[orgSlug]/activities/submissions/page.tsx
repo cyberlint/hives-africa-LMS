@@ -35,6 +35,7 @@ export default async function SubmissionsDashboard({
     searchParams: Promise<{ courseId?: string; programId?: string; search?: string }>
 }) {
     // 2. UPDATE: Await the searchParams
+    const resolvedParams = await params;
     const resolvedSearchParams = await searchParams;
 
     // 3. UPDATE: Clean out undefined values to prevent "undefined=undefined" in the URL
@@ -200,7 +201,7 @@ export default async function SubmissionsDashboard({
                                             {sub.submittedAt ? `${formatDistanceToNow(new Date(sub.submittedAt))} ago` : ""}
                                         </p>
                                         
-                                        <Link href={`/orgs/${params.orgSlug}/activities/submissions/${sub.id}${queryString}`}>
+                                        <Link href={`/orgs/${resolvedParams.orgSlug}/activities/submissions/${sub.id}${queryString}`}>
                                             <Button 
                                                 size="sm" 
                                                 variant={sub.status === "Submitted" ? "default" : "secondary"} 

@@ -10,16 +10,17 @@ export default async function OrgHivesPage({
     searchParams,
 }: {
     params: Promise<{ orgSlug: string }>;
-    searchParams?: {
+    searchParams?: Promise<{
         q?: string;
         sort?: "newest" | "oldest";
         visibility?: "all" | "public" | "private";
-    };
+    }>;
 }) {
     const { orgSlug } = await params;
-    const query = searchParams?.q?.trim() || "";
-    const sort = searchParams?.sort || "newest";
-    const visibility = searchParams?.visibility || "all";
+    const searchParamsResolved = await searchParams;
+    const query = searchParamsResolved?.q?.trim() || "";
+    const sort = searchParamsResolved?.sort || "newest";
+    const visibility = searchParamsResolved?.visibility || "all";
     const organization = await prisma.organization.findUnique({
         where: { slug: orgSlug },
     });
