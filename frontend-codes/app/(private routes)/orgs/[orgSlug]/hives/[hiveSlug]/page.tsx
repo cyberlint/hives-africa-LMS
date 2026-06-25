@@ -54,10 +54,6 @@ export default async function HiveOverviewPage({ params }: HiveOverviewPageProps
     notFound();
   }
 
-  console.log("orgSlug:", orgSlug);
-  console.log("hiveSlug:", hiveSlug);
-  console.log("organization:", organization.id);
-
   return (
     <section className="space-y-6 pb-24">
       {/* HEADER & TABS */}
@@ -138,7 +134,7 @@ export default async function HiveOverviewPage({ params }: HiveOverviewPageProps
                 </div>
                 <div className="flex-1">
                   <p className="text-sm">
-                    New module <span className="font-semibold text-foreground">"Advanced React Patterns"</span> was published.
+                    New module <span className="font-semibold text-foreground">{"Advanced React Patterns"}</span> was published.
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">Yesterday at 4:30 PM</p>
                 </div>
