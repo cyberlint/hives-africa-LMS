@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAuth } from "@/domains/auth/require-auth";
+import slugify from "slugify"
 
 import {
   CreateOrganizationSchema,
@@ -11,18 +12,15 @@ import {
 } from "@/lib/zodSchemas";
 
 async function generateUniqueSlug(name: string) {
-  let slug = name
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-
-  const baseSlug = slug;
+  const baseSlug = slugify(name);
+  
+  let slug = baseSlug;
   let counter = 2;
 
   while (
     await prisma.organization.findUnique({
       where: { slug },
+      select: { id: true },
     })
   ) {
     slug = `${baseSlug}-${counter++}`;
@@ -48,13 +46,13 @@ export async function createOrganization(input: CreateOrganizationInput) {
     missions,
   } = parsed.data;
 
+  // Generate unique slug
   const slug = await generateUniqueSlug(name);
 
   const organization = await prisma.organization.create({
     data: {
       name,
       slug,
-
       website: website || null,
       logoUrl: logoUrl || null,
 
@@ -75,4 +73,31 @@ export async function createOrganization(input: CreateOrganizationInput) {
   revalidatePath("/orgs");
 
   redirect(`/orgs/${organization.slug}`);
+}
+
+export async function getOrganizationDashboard(slug: string) {
+  return prisma.organization.findUnique({
+    where: { slug },
+    include: {
+      _count: {
+        select: {
+          members: true,
+          hives: true,
+        },
+      },
+
+      hives: {
+        orderBy: {
+          createdAt: "desc",
+        },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          description: true,
+          createdAt: true,
+        },
+      },
+    },
+  });
 }
