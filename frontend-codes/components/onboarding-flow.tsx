@@ -180,7 +180,7 @@ export default function OnboardingFlow() {
 
     setIsSubmitting(true);
     try {
-      const response = await completeOnboardingAction(formData);
+      const response = await completeOnboardingAction(formData as any);
       if (!response?.success) throw new Error(response?.error || "Failed");
 
       // Add a slight delay here if you want to show a success state/confetti later
@@ -461,7 +461,7 @@ export default function OnboardingFlow() {
               >
                 <div className="space-y-2">
                   <h2 className="text-3xl md:text-4xl font-extrabold text-darkBlue-500 tracking-tight">
-                    What's your organization called?
+                    {"What's your organization called?"}
                   </h2>
 
                   <p className="text-muted-foreground text-lg">
@@ -490,7 +490,7 @@ export default function OnboardingFlow() {
 
                 <div className="rounded-2xl border border-border bg-muted/30 p-4">
                   <p className="text-sm text-muted-foreground">
-                    Don't worry, you'll be able to update your organization details later and invite teammates after setup.
+                    {"Don't worry, you'll be able to update your organization details later and invite teammates after setup."}
                   </p>
                 </div>
               </motion.div>
@@ -609,7 +609,7 @@ export default function OnboardingFlow() {
                   </h2>
 
                   <p className="text-muted-foreground text-lg">
-                    We'll tailor your workspace around the programs you run.
+                    {"We'll tailor your workspace around the programs you run."}
                   </p>
                 </div>
 
