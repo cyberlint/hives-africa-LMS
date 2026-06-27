@@ -18,9 +18,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 interface SettingsSectionProps {
   initialData: any;
   activityId: string;
+  orgSlug: string;
 }
 
-export function SettingsSection({ initialData, activityId }: SettingsSectionProps) {
+export function SettingsSection({ initialData, activityId, orgSlug }: SettingsSectionProps) {
   const [isPending, startTransition] = useTransition();
 
   // Helper to format dates for the native datetime-local input
@@ -50,7 +51,7 @@ export function SettingsSection({ initialData, activityId }: SettingsSectionProp
     }
 
     startTransition(async () => {
-      const result = await updateActivitySettings(activityId, values);
+      const result = await updateActivitySettings(activityId, values, orgSlug);
       if (result.status === "success") {
         toast.success(result.message);
       } else {

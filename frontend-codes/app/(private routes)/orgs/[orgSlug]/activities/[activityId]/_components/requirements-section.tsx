@@ -18,9 +18,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 interface RequirementsSectionProps {
   initialData: any[];
   activityId: string;
+  orgSlug: string;
 }
 
-export function RequirementsSection({ initialData, activityId }: RequirementsSectionProps) {
+export function RequirementsSection({ initialData, activityId, orgSlug }: RequirementsSectionProps) {
   const [isPending, startTransition] = useTransition();
 
   const form = useForm({
@@ -39,7 +40,7 @@ export function RequirementsSection({ initialData, activityId }: RequirementsSec
 
   function onSubmit(values: any) {
     startTransition(async () => {
-      const result = await updateActivityRequirements(activityId, values.requirements);
+      const result = await updateActivityRequirements(activityId, values.requirements, orgSlug);
       if (result.status === "success") {
         toast.success(result.message);
       } else {

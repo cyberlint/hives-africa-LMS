@@ -86,6 +86,7 @@ export default async function ActivityEditorPage({
             <RequirementsSection
               initialData={activity.requirements}
               activityId={activity.id}
+              orgSlug={orgSlug}
             />
           )}
 
@@ -93,6 +94,7 @@ export default async function ActivityEditorPage({
             <SettingsSection
               initialData={activity}
               activityId={activity.id}
+              orgSlug={orgSlug}
             />
           )}
 
