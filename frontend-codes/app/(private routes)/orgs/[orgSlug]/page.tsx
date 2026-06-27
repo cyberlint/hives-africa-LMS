@@ -23,7 +23,7 @@ export default async function AdminIndexPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Recent Courses</h2>
         <Link className={buttonVariants({variant: "outline"})} 
-        href="/admin/courses">View All Courses
+        href="/orgs/${`orgSlug`}/courses">View All Courses
         </Link>
       </div>
       <Suspense fallback={<div>Loading recent courses...</div>}>
@@ -45,7 +45,7 @@ async function RenderRecentCourses() {
         description="You haven't created any courses yet."
         action={
           <Link
-            href="/admin/courses/create"
+            href="/orgs/${orgSlug}/courses/create"
             className={buttonVariants()}
           >
             <Plus className="mr-2 h-4 w-4" />

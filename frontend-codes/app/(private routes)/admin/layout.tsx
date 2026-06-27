@@ -11,7 +11,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   }
 
   if (user.role !== "admin") {
-    redirect("/dashboard");
+    redirect("/home");
   }
 
   return <AdminShell>{children}</AdminShell>;

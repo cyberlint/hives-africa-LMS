@@ -22,7 +22,7 @@ import { EventCategoryEnum } from "@/lib/zodSchemas";
 import type { Event, EventSpeaker } from "@prisma/client";
 
 type EventWithSpeakers = Event & {
-  speakers?: EventSpeaker[];
+  speakers: EventSpeaker[];
 };
 
 type EventsClientPageProps = {
@@ -90,7 +90,7 @@ export function EventsClientPage({
 
             {user && (
               <Button asChild variant="outline" className="rounded-full px-6 h-11 font-semibold">
-                <Link href="/community/events/create">
+                <Link href="/events/create">
                   <PlusCircle className="mr-2 size-4" />
                   Host Event
                 </Link>
@@ -199,7 +199,7 @@ export function EventsClientPage({
 
             {user && (
               <Button asChild className="mt-4 rounded-full">
-                <Link href="/community/events/create">Host Event</Link>
+                <Link href="/events/create">Host Event</Link>
               </Button>
             )}
           </div>
@@ -224,104 +224,3 @@ export function EventsClientPage({
     </div>
   );
 }
-
-// "use client";
-
-// import { useRouter } from "next/navigation";
-// import { Input } from "@/components/ui/input";
-// import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
-// import { EventCard } from "./EventCard";
-// import type {
-//   Event,
-//   EventSpeaker,
-// } from "@prisma/client";
-
-// type EventWithSpeakers = Event & {
-//   speakers?: EventSpeaker[];
-// };
-
-// type EventsClientPageProps = {
-//   events: EventWithSpeakers[];
-//   params: {
-//     search?: string;
-//     category?: string;
-//     format?: string;
-//   };
-//   user: {
-//     id: string;
-//     name?: string | null;
-//     image?: string | null;
-//   } | null;
-// };
-
-// export function EventsClientPage({
-//   events,
-//   params,
-//   user,
-// }: EventsClientPageProps) {
-//   const router = useRouter();
-
-//   function updateQuery(key: string, value: string) {
-//     const url = new URL(window.location.href);
-
-//     if (!value || value === "all" || value === "any") {
-//       url.searchParams.delete(key);
-//     } else {
-//       url.searchParams.set(key, value);
-//     }
-
-//     router.push(url.pathname + url.search);
-//   }
-
-//   return (
-//     <div>
-//       {/* SEARCH */}
-//       <div className="relative flex-1">
-//         <Input
-//           placeholder="Search events..."
-//           className="pl-10 h-11 rounded-xl"
-//           defaultValue={params.search || ""}
-//           onChange={(e) => updateQuery("search", e.target.value)}
-//         />
-//       </div>
-
-//       {/* CATEGORY */}
-//       <Select
-//         defaultValue={params.category || "all"}
-//         onValueChange={(val) => updateQuery("category", val)}
-//       >
-//         <SelectTrigger>
-//           <SelectValue placeholder="Category" />
-//         </SelectTrigger>
-//         <SelectContent>
-//           <SelectItem value="all">All</SelectItem>
-//           <SelectItem value="Hackathon">Hackathon</SelectItem>
-//           <SelectItem value="Workshop">Workshop</SelectItem>
-//           <SelectItem value="Meetup">Meetup</SelectItem>
-//         </SelectContent>
-//       </Select>
-
-//       {/* FORMAT */}
-//       <Select
-//         defaultValue={params.format || "any"}
-//         onValueChange={(val) => updateQuery("format", val)}
-//       >
-//         <SelectTrigger>
-//           <SelectValue placeholder="Format" />
-//         </SelectTrigger>
-//         <SelectContent>
-//           <SelectItem value="any">Any</SelectItem>
-//           <SelectItem value="online">Online</SelectItem>
-//           <SelectItem value="in-person">In-person</SelectItem>
-//         </SelectContent>
-//       </Select>
-
-//       {/* EVENTS GRID */}
-//       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 mt-6">
-//         {events.map((event) => (
-//           <EventCard key={event.id} data={event} />
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }

@@ -3,7 +3,7 @@ import type { AuthUser } from "./types";
 import { requireAuth } from "./require-auth";
 
 export async function requireAdmin(
-  redirectTo = "/dashboard"
+  redirectTo = "/home"
 ): Promise<AuthUser> {
   const user = await requireAuth();
 

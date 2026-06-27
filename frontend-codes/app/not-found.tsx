@@ -71,7 +71,7 @@ export default function NotFound() {
               </MotionButton>
             </Link>
 
-            <Link href="/dashboard">
+            <Link href="/home">
               <MotionButton
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

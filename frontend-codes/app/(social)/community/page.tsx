@@ -295,7 +295,7 @@ export default async function CommunityPage() {
 
     {/* RIGHT: Action */}
     <Link
-      href={`/community/events/${event.id}`}
+      href={`/events/${event.id}`}
       className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-red-500 hover:text-white px-3 py-1.5 rounded-md border border-red-500/30 hover:bg-red-500 transition-all"
     >
       Enter

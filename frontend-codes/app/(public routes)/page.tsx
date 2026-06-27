@@ -151,7 +151,7 @@ const Home = async () => {
               >
                 {user ? (
                   <Link
-                    href="/dashboard"
+                    href="/home"
                     className="w-full sm:w-auto flex items-center justify-center gap-2 text-background bg-yellow text-sm sm:text-base font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-full hover:scale-[1.02] transition-transform shadow-xl"
                   >
                     Enter Ecosystem

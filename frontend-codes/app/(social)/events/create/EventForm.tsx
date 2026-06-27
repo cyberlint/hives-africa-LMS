@@ -138,7 +138,7 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
 
                 toast.success(eventData ? "Event updated successfully" : "Event created successfully");
                 form.reset();
-                router.push("/community/events");
+                router.push("/events");
 
             } catch (err) {
                 console.error(err);
@@ -157,7 +157,7 @@ export default function EventForm({ eventData, currentUser }: EventFormProps) {
             {/* Header Section */}
             <div className="mb-8 flex items-center gap-4">
                 <Button asChild variant="outline" size="icon" className="shrink-0 rounded-full">
-                    <Link href="/community/events">
+                    <Link href="/events">
                         <ArrowLeft className="h-4 w-4" />
                     </Link>
                 </Button>

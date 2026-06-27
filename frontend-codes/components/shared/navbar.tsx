@@ -15,7 +15,7 @@ const navLinks = [
   { title: "The Arena", href: "/activities" },
   { title: "The Hives", href: "/community/hives" },
   { title: "Community", href: "/community/" },
-  { title: "Events", href: "/community/events" },
+  { title: "Events", href: "/events" },
   { title: "Manifesto", href: "/vision" },
 ];
 

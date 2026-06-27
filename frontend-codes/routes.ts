@@ -99,7 +99,7 @@ export const LOGIN_URL: string = "/signin";
  * Default redirect url for students
  * @type {string}
  */
-export const DEFAULT_LOGIN_REDIRECT: string = "/dashboard";
+export const DEFAULT_LOGIN_REDIRECT: string = "/home";
 
 /**
  * Default redirect url for admins

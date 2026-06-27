@@ -2,7 +2,7 @@ import { requireAuth } from "@/domains/auth/require-auth"
 import SocialNavbar from "./_components/social-navbar"
 
 export default async function CommunityLayout({ children }: { children: React.ReactNode }) {
-  const session = await requireAuth()
+  // const session = await requireAuth()
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col">

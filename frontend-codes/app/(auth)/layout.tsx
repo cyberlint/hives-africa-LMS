@@ -6,7 +6,7 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await redirectIfAuthenticated(); // ✅ server-side auth
+  await redirectIfAuthenticated(); // server-side auth
 
   return <>{children}</>;
 }

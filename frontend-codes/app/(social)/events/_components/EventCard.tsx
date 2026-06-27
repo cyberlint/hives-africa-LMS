@@ -46,7 +46,7 @@ export function EventCard({ data }: EventCardProps) {
               {data.enddate && (
                 <>
                   {" "}
-                  –{" "}
+                  -{" "}
                   {new Intl.DateTimeFormat("en-US", {
                     month: "short",
                     day: "numeric",
@@ -68,7 +68,7 @@ export function EventCard({ data }: EventCardProps) {
 
         <div className="mt-auto pt-3">
           <Link
-            href={`/community/events/${data.id}`}
+            href={`/events/${data.id}`}
             className="inline-flex items-center gap-2 text-sm font-semibold text-[color:var(--color-orange)]"
           >
             View details →

@@ -54,12 +54,8 @@ function LoginForm() {
       toast.success("Welcome back!", {
         description: "Successfully logged in",
       })
-
-      if ((session?.user as any)?.role === "admin") {
-        router.push("/admin")
-      } else {
-        router.push("/dashboard")
-      }
+      // Redirect to home after login
+      router.push("/home")
       router.refresh()
     } catch (error: any) {
       toast.error("Login Failed", {

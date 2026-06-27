@@ -8,55 +8,69 @@ import {
     publicRoutes,
 } from "./routes";
 
-export async function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest){
     const { nextUrl } = request;
     const session = await auth.api.getSession({
         headers: await headers()
     })
-    console.log(session)
-    const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
     const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-    const isAdminRoute = nextUrl.pathname.startsWith("/admin");
-    const isStudentRoute = nextUrl.pathname.startsWith("/dashboard");
 
-    if (isAuthRoute) {
-        if (session) {
-            if (session.user.role === "admin") {
-                return NextResponse.redirect(
-                    new URL(DEFAULT_ADMIN_LOGIN_REDIRECT, nextUrl.origin)
-                );
-            }
-            return NextResponse.redirect(
-                new URL(DEFAULT_LOGIN_REDIRECT, nextUrl.origin)
-            );
-        }
-        return null;
+    if (session && isAuthRoute) {
+        return NextResponse.redirect(
+            new URL("/home", nextUrl.origin)
+        )
     }
-
-    if (!session && !isPublicRoute) {
-        const signInUrl = new URL("/signin", nextUrl.origin);
-        signInUrl.searchParams.set("callbackUrl", nextUrl.pathname + nextUrl.search);
-        return NextResponse.redirect(signInUrl);
-    }
-
-    if (session && session.user.role) {
-        if (isAdminRoute && session.user.role !== "admin") {
-            return NextResponse.redirect(
-                new URL(DEFAULT_LOGIN_REDIRECT, nextUrl.origin)
-            );
-        }
-        if (isStudentRoute && session.user.role !== "user") {
-            return NextResponse.redirect(
-                new URL(DEFAULT_ADMIN_LOGIN_REDIRECT, nextUrl.origin)
-            );
-        }
-    }
-
-    return null;
 }
 
-export const config = {
-    //  runtime: "nodejs", // ✅ This is correct - keep it as "nodejs"
-    runtime: "bun",
-    matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
-};
+// export async function middleware(request: NextRequest) {
+//     const { nextUrl } = request;
+//     const session = await auth.api.getSession({
+//         headers: await headers()
+//     })
+//     console.log(session)
+//     const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+//     const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+//     const isAdminRoute = nextUrl.pathname.startsWith("/admin");
+//     const isStudentRoute = nextUrl.pathname.startsWith("/dashboard");
+
+//     if (isAuthRoute) {
+//         if (session) {
+//             if (session.user.role === "admin") {
+//                 return NextResponse.redirect(
+//                     new URL(DEFAULT_ADMIN_LOGIN_REDIRECT, nextUrl.origin)
+//                 );
+//             }
+//             return NextResponse.redirect(
+//                 new URL(DEFAULT_LOGIN_REDIRECT, nextUrl.origin)
+//             );
+//         }
+//         return null;
+//     }
+
+//     if (!session && !isPublicRoute) {
+//         const signInUrl = new URL("/signin", nextUrl.origin);
+//         signInUrl.searchParams.set("callbackUrl", nextUrl.router.push(router.push(pathname + nextUrl.search);
+//         return NextResponse.redirect(signInUrl);
+//     }
+
+//     if (session && session.user.role) {
+//         if (isAdminRoute && session.user.role !== "admin") {
+//             return NextResponse.redirect(
+//                 new URL(DEFAULT_LOGIN_REDIRECT, nextUrl.origin)
+//             );
+//         }
+//         if (isStudentRoute && session.user.role !== "user") {
+//             return NextResponse.redirect(
+//                 new URL(DEFAULT_ADMIN_LOGIN_REDIRECT, nextUrl.origin)
+//             );
+//         }
+//     }
+
+//     return null;
+// }
+
+// export const config = {
+//     //  runtime: "nodejs",
+//     runtime: "bun",
+//     matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+// };

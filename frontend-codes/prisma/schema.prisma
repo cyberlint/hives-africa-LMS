@@ -22,11 +22,13 @@ model User {
   bio           String?
   website       String?
 
-  hasCompletedOnboarding Boolean  @default(false)
-  primaryLanguage        String   @default("English")
+  userType               UserType? @default(INDIVIDUAL)
+  hasCompletedOnboarding Boolean      @default(false)
+  profile                UserProfile?
+  primaryLanguage        String       @default("English")
   localLanguage          String?
   jobTitle               String?
-  careerInterests        String[] @default([])
+  careerInterests        String[]     @default([])
   learningIntent         String?
 
   role       String?
@@ -82,8 +84,48 @@ model User {
 
   notificationPreferences NotificationPreference?
   OrganizationMember      OrganizationMember[]
+  OnboardingSession       OnboardingSession[]
 
   @@map("user")
+}
+
+// Useful for the onboarding flow to determine if a user is an individual or representing an organization.
+enum UserType {
+  INDIVIDUAL
+  ORGANIZATION
+}
+
+// UserProfile is a separate table to store additional user information. In this instance, it will be used for user onboarding.
+model UserProfile {
+  id String @id @default(uuid())
+
+  userId String @unique
+
+  primaryLanguage String?
+  localLanguage   String?
+
+  jobTitle String?
+
+  careerInterests String[] @default([])
+
+  learningIntent String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// OnboardingSession is a separate table to track the onboarding flow for users. It will be used to determine if a user has completed the onboarding process and to store any additional metadata related to the onboarding process.
+model OnboardingSession {
+  id          String   @id @default(uuid())
+  userId      String
+  userType    UserType
+  completedAt DateTime @default(now())
+  metadata    Json?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Session {
@@ -138,24 +180,24 @@ model Verification {
 // Leads table to track visitors who have indicated interest in a program e.g tried to register for a bootcamp but didn't complete the process. Useful for retargeting and understanding drop-off points in the funnel. 
 // We can capture their email, the program they were interested in, and any other relevant metadata like how they found out about us, etc.
 model Lead {
-  id            String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  fullName      String
-  email         String
-  phone         String?
-  stage         LeadStage @default(INITIATED)
-  
-  source        String?
-  campaign      String?
-  eventSlug     String?
+  fullName String
+  email    String
+  phone    String?
+  stage    LeadStage @default(INITIATED)
 
-  hasAccount    Boolean @default(false)
+  source    String?
+  campaign  String?
+  eventSlug String?
+
+  hasAccount      Boolean @default(false)
   convertedToUser Boolean @default(false)
 
   paymentReference String?
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum LeadStage {
@@ -394,18 +436,18 @@ model Event {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  speakers EventSpeaker[]
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  speakers      EventSpeaker[]
   registrations EventRegistration[]
 }
 
 model EventSpeaker {
-  id        String @id @default(uuid())
-  eventId   String
-  name      String
-  title     String?
-  bio       String?
-  imageUrl  String?
+  id       String  @id @default(uuid())
+  eventId  String
+  name     String
+  title    String?
+  bio      String?
+  imageUrl String?
 
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
@@ -413,17 +455,17 @@ model EventSpeaker {
 }
 
 model EventRegistration {
-  id        String @id @default(uuid())
-  eventId   String
+  id      String @id @default(uuid())
+  eventId String
 
-  userId    String?
+  userId String?
 
-  name      String
-  email     String
-  phone     String?
+  name           String
+  email          String
+  phone          String?
   referralSource String?
 
-  answers   Json?
+  answers Json?
 
   createdAt DateTime @default(now())
 
@@ -522,17 +564,17 @@ model Activity {
   maxHiveSize Int?
 
   // If these are set, the activity is locked to enrolled students only, or program participants only, etc.
-  courseId  String?
-  programId String?
-  creatorId String
+  courseId       String?
+  programId      String?
+  creatorId      String
   organizationId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  course  Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
-  program Program? @relation(fields: [programId], references: [id], onDelete: SetNull)
-  creator User     @relation("ActivityCreator", fields: [creatorId], references: [id])
+  course       Course?       @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  program      Program?      @relation(fields: [programId], references: [id], onDelete: SetNull)
+  creator      User          @relation("ActivityCreator", fields: [creatorId], references: [id])
   organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   requirements       ActivityRequirement[]
@@ -994,64 +1036,46 @@ enum ConnectionSource {
 // ==========================================
 
 model Organization {
-  id                  String  @id @default(uuid())
-  slug                String  @unique
-  name                String
-  orgType             OrgType @default(Bootcamp_Or_Academy)
-  missions            OrgMission[]
-  operatingModel      OperatingModel @default(Event_Driven_Sprints)
-  collaborationMode   CollaborationMode @default(Fluid_Hybrid)
-  description         String? @db.Text
-  logoUrl             String?
-  website             String?
+  id String @id @default(uuid())
+
+  slug String @unique
+  name String
+
+  orgType  OrgType
+  missions OrgMission[]
+
+  description String? @db.Text
+  logoUrl     String?
+  website     String?
 
   creatorId String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members OrganizationMember[]
-  hives   Hive[]
+  members    OrganizationMember[]
+  hives      Hive[]
   activities Activity[]
-
 }
 
 enum OrgType {
-  Bootcamp_Or_Academy
-  University_Or_School
-  Student_Chapter        // e.g., GDSC, SheCodeAfrica Campus Chapters
-  Tech_Community         // e.g., broader regional communities
-  Open_Source_Foundation
-  Startup_Incubator      // Replaces "Talent Accelerator"
-  Corporate_L_And_D      // Learning & Development (Corporate Teams)
-  Nonprofit_Initiative
-  Government_Program     // e.g., State-sponsored tech initiatives
-  Independent_Fellowship
-  Other
+  INNOVATION_CHALLENGE
+  FELLOWSHIP
+  BOOTCAMP
+  UNIVERSITY
+  COMMUNITY
+  INCUBATOR
+  CORPORATE_LEARNING
+  OTHER
 }
 
 enum OrgMission {
-  Technical_Upskilling             // Core skill building
-  Workforce_Readiness              // Hiring/Placement pipelines
-  Product_Incubation               // Building minimum viable products
-  Open_Innovation_And_Hackathons   // Competitive, burst-style building
-  Ecosystem_Building               // General community growth
-  Academic_Research
-  Internal_Corporate_Training      // Specific to upskilling existing employees
-}
-
-enum OperatingModel {
-  Strict_Cohort_Based        // Hard start and end dates
-  Self_Paced_Continuous      // Rolling intake, go at your own pace
-  Apprenticeship_Driven      // Learn by building real client/internal projects
-  Event_Driven_Sprints       // Hackathons, weekend builds
-  Community_Led_Mentorship   // Decentralized, peer-to-peer learning
-}
-
-enum CollaborationMode {
-  Solo_Execution       // Deep work, individual portfolios
-  Squad_Based          // Forced into teams (Hives)
-  Open_Crowdsourced    // Open Source style, anyone can jump in
-  Fluid_Hybrid         // Choice is left entirely to the learner
+  OPEN_INNOVATION
+  TALENT_DEVELOPMENT
+  COMMUNITY_BUILDING
+  PRODUCT_INCUBATION
+  WORKFORCE_READINESS
+  OTHER
 }
 
 model OrganizationMember {

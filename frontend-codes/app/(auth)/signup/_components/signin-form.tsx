@@ -94,7 +94,7 @@ function SignupForm() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard",
+        callbackURL: "/home",
       })
     } catch (error: any) {
       toast.error("Sign in failed", {
@@ -106,7 +106,7 @@ function SignupForm() {
     try {
       await authClient.signIn.social({
         provider: "github",
-        callbackURL: "/dashboard",
+        callbackURL: "/home",
       })
     } catch (error: any) {
       toast.error("Sign in failed", {

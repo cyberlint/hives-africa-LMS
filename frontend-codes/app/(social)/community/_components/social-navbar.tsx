@@ -24,7 +24,7 @@ export default function SocialNavbar() {
   const navItems = [
     { label: "Home", href: "/community", icon: Home },
     { label: "Hives", href: "/community/hives", icon: Users },
-    { label: "Events", href: "/community/events", icon: Calendar },
+    { label: "Events", href: "/events", icon: Calendar },
     { label: "Inbox", href: "/community/messages", icon: MessageSquareText },
   ]
 

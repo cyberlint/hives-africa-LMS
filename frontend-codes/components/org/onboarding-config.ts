@@ -1,7 +1,5 @@
 import {
   OrgMission,
-  OperatingModel,
-  CollaborationMode,
   OrgType,
 } from "@prisma/client";
 

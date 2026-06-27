@@ -19,8 +19,6 @@ import {
     // Organisation meta
   OrgType,
   OrgMission,
-  OperatingModel,
-  CollaborationMode,
 } from "@prisma/client";
 
 // --- Enums ---
@@ -104,8 +102,6 @@ export const ActivityStatusEnum = z.nativeEnum(ActivityStatus);
 // ========== Organisation =================
 export const OrganisationTypeEnum = z.nativeEnum(OrgType);
 export const OrganisationMissionEnum = z.nativeEnum(OrgMission);
-export const OrganisationOperatingModelEnum = z.nativeEnum(OperatingModel);
-export const OrganisationCollaborationModeEnum = z.nativeEnum(CollaborationMode);
 
 export const CreateOrganizationSchema = z.object({
   name: z.string().min(2, "Organization name must be at least 2 characters"),
@@ -114,8 +110,6 @@ export const CreateOrganizationSchema = z.object({
   logoUrl: z.string().optional().or(z.literal("")),
   orgType: OrganisationTypeEnum,
   missions: z.array(OrganisationMissionEnum).min(1, "Select at least one mission"),
-  operatingModel: OrganisationOperatingModelEnum,
-  collaborationMode: OrganisationCollaborationModeEnum,
 });
 
 export const ActivityRequirementEnum = z.enum([
@@ -470,7 +464,6 @@ export const EventSpeakerSchema = z.object({
     .optional(),
  imageUrl: z
     .string()
-    .url("Please enter a valid image URL")
     .nullable()
     .optional()
     .or(z.literal("")),

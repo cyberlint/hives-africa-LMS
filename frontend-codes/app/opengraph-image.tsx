@@ -87,7 +87,7 @@ export default function Image() {
             textAlign: 'center',
           }}
         >
-          The Pan-African AI School
+          The Pan-African Career Accellerator
         </p>
       </div>
     ),

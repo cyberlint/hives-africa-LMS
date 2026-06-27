@@ -190,7 +190,7 @@ export default async function EventDetailsPage({ params }: PageProps) {
         {user &&
   (user.id === event.user.id || user.role === "admin") && (
     <Button asChild variant="outline">
-      <Link href={`/community/events/${event.id}/edit`}>
+      <Link href={`/events/${event.id}/edit`}>
         Edit Event
       </Link>
     </Button>

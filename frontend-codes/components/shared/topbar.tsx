@@ -69,7 +69,7 @@ export default function Topbar() {
                 className="w-full justify-start text-xs font-bold text-zinc-300 hover:text-white hover:bg-white/10 rounded-xl h-10"
                 asChild
               >
-                <Link href="/community/events" onClick={() => setIsCommunityOpen(false)}>
+                <Link href="/events" onClick={() => setIsCommunityOpen(false)}>
                   <CalendarDays size={14} className="mr-2.5 text-green-500" />
                   Events
                 </Link>

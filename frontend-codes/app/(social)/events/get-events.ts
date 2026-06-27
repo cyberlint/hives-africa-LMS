@@ -44,3 +44,5 @@ export async function getEvents(params: GetEventsParams = {}) {
     },
   });
 }
+
+export type EventType = Awaited<ReturnType<typeof getEvents>>[number];
