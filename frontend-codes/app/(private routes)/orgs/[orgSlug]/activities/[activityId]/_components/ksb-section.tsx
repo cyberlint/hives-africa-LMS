@@ -21,16 +21,19 @@ interface KSBSectionProps {
   initialData?: any[]; 
   activityId: string;
   availableKSBs?: { id: string; title: string; type: string }[]; 
+  orgSlug: string;
 }
 
 export function KSBSection({ 
   initialData = [], 
   activityId, 
-  availableKSBs = [] 
+  availableKSBs = [],
+  orgSlug,
 }: KSBSectionProps) {
   const [isPending, startTransition] = useTransition();
   const [isCreatingKSB, setIsCreatingKSB] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
 
   // State for the quick-create modal
   const [newKsb, setNewKsb] = useState({ title: "", type: "Skill" as const, description: "" });
@@ -55,7 +58,7 @@ export function KSBSection({
     }
 
     startTransition(async () => {
-      const result = await updateActivityKSBs(activityId, values.ksbs);
+      const result = await updateActivityKSBs(activityId, values.ksbs, orgSlug);
       if (result.status === "success") {
         toast.success(result.message);
       } else {
@@ -73,8 +76,8 @@ export function KSBSection({
     const res = await createGlobalKSB({ 
       title: newKsb.title, 
       type: newKsb.type, 
-      description: newKsb.description 
-    });
+      description: newKsb.description},
+      orgSlug);
     
     if (res.success) {
       toast.success("New competency added to the global library!");
