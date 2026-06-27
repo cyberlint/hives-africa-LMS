@@ -19,7 +19,7 @@ export default async function ActivityEditorPage({
 }) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
-  
+
   const orgSlug = resolvedParams.orgSlug;
   const activityId = resolvedParams.activityId;
   const currentTab = resolvedSearchParams.tab || "overview";
@@ -32,9 +32,9 @@ export default async function ActivityEditorPage({
     }),
     prisma.program.findMany({ select: { id: true, title: true } }),
     prisma.course.findMany({ select: { id: true, title: true } }),
-    prisma.kSB.findMany({ 
-      select: { id: true, title: true, type: true }, 
-      orderBy: { title: 'asc' } 
+    prisma.kSB.findMany({
+      select: { id: true, title: true, type: true },
+      orderBy: { title: 'asc' }
     })
   ]);
 
@@ -63,7 +63,7 @@ export default async function ActivityEditorPage({
             </p>
           </div>
         </div>
-        
+
         {/* Publish/Delete buttons */}
         <ActivityActions activityId={activity.id} currentStatus={activity.status} orgSlug={orgSlug} />
       </div>
@@ -73,33 +73,35 @@ export default async function ActivityEditorPage({
 
         <main className="max-w-3xl">
           {currentTab === "overview" && (
-            <OverviewSection 
-              initialData={activity} 
-              activityId={activity.id} 
-              programs={programs} 
-              courses={courses} 
+            <OverviewSection
+              initialData={activity}
+              activityId={activity.id}
+              programs={programs}
+              courses={courses}
+              orgSlug={orgSlug}
             />
           )}
-          
+
           {currentTab === "requirements" && (
-            <RequirementsSection 
-              initialData={activity.requirements} 
-              activityId={activity.id} 
+            <RequirementsSection
+              initialData={activity.requirements}
+              activityId={activity.id}
             />
           )}
 
           {currentTab === "settings" && (
-            <SettingsSection 
-              initialData={activity} 
-              activityId={activity.id} 
+            <SettingsSection
+              initialData={activity}
+              activityId={activity.id}
             />
           )}
 
           {currentTab === "ksb" && (
-            <KSBSection 
+            <KSBSection
               initialData={formattedKSBs} // Updated to pass the formatted data
-              activityId={activity.id} 
+              activityId={activity.id}
               availableKSBs={globalKSBs}  // Passing the global library to the dropdown
+              orgSlug={orgSlug}
             />
           )}
         </main>

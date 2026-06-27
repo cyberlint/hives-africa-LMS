@@ -38,9 +38,10 @@ interface OverviewSectionProps {
   activityId: string;
   programs: { id: string; title: string }[];
   courses: { id: string; title: string }[];
+  orgSlug: string;
 }
 
-export function OverviewSection({ initialData, activityId, programs, courses }: OverviewSectionProps) {
+export function OverviewSection({ initialData, activityId, programs, courses, orgSlug }: OverviewSectionProps) {
   const [isPending, startTransition] = useTransition();
 
   const form = useForm({
@@ -59,7 +60,7 @@ export function OverviewSection({ initialData, activityId, programs, courses }: 
 
   function onSubmit(values: any) {
     startTransition(async () => {
-      const result = await updateActivityOverview(activityId, values);
+      const result = await updateActivityOverview(activityId, values, orgSlug);
 
       if (result.status === "success") {
         toast.success(result.message);

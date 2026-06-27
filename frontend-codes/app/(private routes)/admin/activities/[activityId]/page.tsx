@@ -14,13 +14,14 @@ export default async function ActivityEditorPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ activityId: string }>;
+  params: Promise<{ activityId: string, orgSlug: string }>;
   searchParams: Promise<{ tab?: string }>;
 }) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
   
   const activityId = resolvedParams.activityId;
+  const orgSlug = resolvedParams.orgSlug;
   const currentTab = resolvedSearchParams.tab || "overview";
 
   // 1. ADDED: Fetch the global KSBs simultaneously for speed
@@ -76,7 +77,8 @@ export default async function ActivityEditorPage({
               initialData={activity} 
               activityId={activity.id} 
               programs={programs} 
-              courses={courses} 
+              courses={courses}
+              orgSlug={orgSlug}
             />
           )}
           

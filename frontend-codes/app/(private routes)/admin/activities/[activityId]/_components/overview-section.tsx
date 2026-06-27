@@ -38,6 +38,7 @@ interface OverviewSectionProps {
   activityId: string;
   programs: { id: string; title: string }[];
   courses: { id: string; title: string }[];
+  orgSlug: string;
 }
 
 export function OverviewSection({ initialData, activityId, programs, courses }: OverviewSectionProps) {
