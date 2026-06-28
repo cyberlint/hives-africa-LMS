@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 title: {
 template: "%s | NextHive",
 default:
-"NextHive | Program Operations Platform for Innovation, Learning & Talent Development",
+"NextHive | Innovation, Learning & Talent Development Ecosystem",
 },
 
 description:
@@ -50,7 +50,7 @@ apple: "/apple-touch-icon.png",
 
 openGraph: {
 title:
-"NextHive | Program Operations Platform for Innovation, Learning & Talent Development",
+"NextHive | Innovation, Learning & Talent Development Ecosystem",
 
 description:
   "Run innovation challenges, fellowships, accelerators, bootcamps, workforce development initiatives, and learning programs from a single platform.",
@@ -74,7 +74,7 @@ twitter: {
 card: "summary_large_image",
 
 title:
-  "NextHive | Program Operations Platform for Innovation, Learning & Talent Development",
+  "NextHive | Innovation, Learning & Talent Development Ecosystem",
 
 description:
   "Manage innovation challenges, cohorts, learning programs, submissions, reviews, teams, and outcomes at scale.",
