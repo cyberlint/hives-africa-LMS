@@ -2,7 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/domains/auth/require-auth";
 import { constructUrl } from "@/lib/construct-url";
-import { IconCirclePlusFilled } from "@tabler/icons-react";
+import { IconCirclePlus, } from "@tabler/icons-react";
+import { Users, Box } from "lucide-react";
 
 export default async function OrganizationsIndexPage() {
   const user = await requireAuth();
@@ -22,142 +23,76 @@ export default async function OrganizationsIndexPage() {
   });
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-10 space-y-10">
-
-      {/* ================= HEADER ================= */}
-      <div className="flex flex-col md:flex-row justify-between gap-4 border-b pb-6">
-
+    <div className="max-w-6xl mx-auto p-6 md:p-12 space-y-12">
+      
+      {/* HEADER: Clean, spacious, and purposeful */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-4xl font-extrabold tracking-tight text-slate-950">
             Organizations
           </h1>
-
-          <p className="text-gray-500 mt-1 max-w-xl">
-            Your execution layer for cohorts, teams, and real-world learning systems.
+          <p className="text-slate-500 mt-2 text-lg">
+            Manage your cohorts, teams, and learning ecosystems.
           </p>
         </div>
 
         <Link
           href="/orgs/create"
-          className="bg-orange text-primary-foreground px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-all inline-flex items-center gap-2"
+          className="inline-flex items-center gap-2.5 bg-orange text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-slate-800 transition-all shadow-sm"
         >
-          <IconCirclePlusFilled size={20} />
-          <span>New Organization</span>
+          <IconCirclePlus size={20} />
+          Create Organization
         </Link>
       </div>
 
-      {/* ================= EMPTY STATE ================= */}
-      {memberships.length === 0 ? (
-        <div className="text-center py-20 bg-white border rounded-2xl">
+      {/* GRID: Refined Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {memberships.map(({ organization, role }) => {
+          const logoSrc = organization.logoUrl ? constructUrl(organization.logoUrl) : null;
 
-          <div className="mx-auto w-14 h-14 bg-orange/10 rounded-full flex items-center justify-center mb-4">
-            <svg
-              className="w-7 h-7 text-orange"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          return (
+            <Link
+              key={organization.id}
+              href={`/orgs/${organization.slug}`}
+              className="group flex flex-col gap-5 p-6 bg-white border border-slate-200 rounded-2xl hover:border-orange hover:shadow-lg hover:shadow-orange-500/5 transition-all duration-300"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M3 21V5a2 2 0 012-2h14a2 2 0 012 2v16M3 21h18M9 7h6M9 11h6M9 15h4"
-              />
-            </svg>
-          </div>
-
-          <h2 className="text-xl font-semibold mb-2">
-            Create your first organization
-          </h2>
-
-          <p className="text-gray-500 max-w-md mx-auto mb-6">
-            Organizations are environments where institutions evaluate, coordinate and develop people and teams. Create an organization to get started with your first cohort or team.
-          </p>
-
-          <Link
-            href="/orgs/create"
-            className="bg-muted text-primary-foreground px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-all inline-flex items-center gap-2"
-          >
-            <IconCirclePlusFilled size={20} />
-            <span>Create Organization</span>
-          </Link>
-        </div>
-      ) : (
-        /* ================= GRID ================= */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-          {memberships.map(({ organization, role }) => {
-            const logoSrc = organization.logoUrl
-              ? constructUrl(organization.logoUrl)
-              : null;
-
-            return (
-              <Link
-                key={organization.id}
-                href={`/orgs/${organization.slug}`}
-                className="
-                  group bg-white border rounded-2xl p-5
-                  hover:shadow-md hover:border-gray-300
-                  transition-all flex flex-col gap-4
-                "
-              >
-
-                {/* HEADER */}
-                <div className="flex items-center gap-4">
-
-                  {logoSrc ? (
-                    <img
-                      src={logoSrc}
-                      alt={organization.name}
-                      className="w-12 h-12 rounded-lg object-cover border"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-lg bg-gray-100 border flex items-center justify-center font-bold text-gray-400 uppercase">
-                      {organization.name.slice(0, 2)}
-                    </div>
-                  )}
-
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-lg font-bold truncate text-orange group-hover:text-orange transition-colors">
-                      {organization.name}
-                    </h3>
-
-                    <span className="inline-block mt-1 text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded bg-gray-100 text-gray-600">
-                      {role}
-                    </span>
+              <div className="flex items-start gap-4">
+                {logoSrc ? (
+                  <img src={logoSrc} alt={organization.name} className="w-12 h-12 rounded-xl object-cover border border-slate-100" />
+                ) : (
+                  <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-slate-400 uppercase border border-slate-200">
+                    {organization.name.slice(0, 2)}
                   </div>
+                )}
+                
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-slate-950 text-lg truncate group-hover:text-orange transition-colors">
+                    {organization.name}
+                  </h3>
+                  <span className="inline-flex items-center mt-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                    {role}
+                  </span>
                 </div>
+              </div>
 
-                {/* DESCRIPTION */}
-                <p className="text-sm text-gray-500 line-clamp-2">
-                  {organization.description || "No description provided."}
-                </p>
+              <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">
+                {organization.description || "No description provided for this organization."}
+              </p>
 
-                {/* FOOTER */}
-                <div className="flex items-center justify-between text-sm text-gray-500 pt-3 border-t">
-
-                  <div className="flex items-center gap-1">
-                    <span className="font-medium text-gray-700">
-                      {organization._count.members}
-                    </span>
-                    <span>members</span>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    <span className="font-medium text-gray-700">
-                      {organization._count.hives}
-                    </span>
-                    <span>hives</span>
-                  </div>
-
+              <div className="flex items-center gap-6 pt-4 border-t border-slate-100 text-slate-600">
+                <div className="flex items-center gap-2 text-sm">
+                  <Users size={16} className="text-slate-400" />
+                  <span className="font-semibold text-slate-900">{organization._count.members}</span>
                 </div>
-
-              </Link>
-            );
-          })}
-
-        </div>
-      )}
+                <div className="flex items-center gap-2 text-sm">
+                  <Box size={16} className="text-slate-400" />
+                  <span className="font-semibold text-slate-900">{organization._count.hives}</span>
+                </div>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }

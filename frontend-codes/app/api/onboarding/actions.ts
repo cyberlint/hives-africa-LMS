@@ -1,10 +1,10 @@
 "use server";
 
+import { createOrganization } from "@/lib/organization/create-organization";
 import { OrgMission, OrgType } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/domains/auth/require-auth";
 import { revalidatePath } from "next/cache";
-import slugify from "slugify";
 
 type OnboardingData = {
   userType: "INDIVIDUAL" | "ORGANIZATION";
@@ -17,29 +17,6 @@ type OnboardingData = {
   organizationType?: string;
   organizationMission?: string;
 };
-
-async function generateUniqueSlug(name: string) {
-  const baseSlug = slugify(name, {
-    lower: true,
-    strict: true,
-    trim: true,
-  });
-
-  let slug = baseSlug;
-  let counter = 2;
-
-  while (
-    await prisma.organization.findUnique({
-      where: { slug },
-      select: { id: true },
-    })
-  ) {
-    slug = `${baseSlug}-${counter}`;
-    counter++;
-  }
-
-  return slug;
-}
 
 export async function completeOnboardingAction(
   data: OnboardingData
@@ -82,26 +59,12 @@ export async function completeOnboardingAction(
        * Organization Flow
        */
       if (data.userType === "ORGANIZATION") {
-        const slug = await generateUniqueSlug(
-          data.organizationName!
-        );
-
-        const organization = await tx.organization.create({
-          data: {
-            name: data.organizationName!,
-            slug,
-            creatorId: session.id,
-            orgType: data.organizationType as OrgType,
-            missions: [data.organizationMission as OrgMission],
-          },
-        });
-
-        await tx.organizationMember.create({
-          data: {
-            organizationId: organization.id,
-            userId: session.id,
-            role: "OWNER",
-          },
+        await createOrganization({
+          creatorId: session.id,
+          name: data.organizationName!,
+          orgType: data.organizationType as OrgType,
+          missions: [data.organizationMission as OrgMission],
+          db: tx,
         });
       }
 

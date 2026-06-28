@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { completeOnboardingAction } from "../app/api/onboarding/actions"; // Adjust path
 import { motion, Variants, AnimatePresence } from "framer-motion";
+import { ORGANIZATION_TYPES, ORGANIZATION_MISSIONS } from "./organization/config";
 
 // Constants for the onboarding flow
 const USER_TYPES = [
@@ -68,90 +69,6 @@ export default function OnboardingFlow() {
     organizationType: "",
     organizationMission: "",
   });
-
-  const ORGANIZATION_TYPES = [
-    {
-      id: "INNOVATION_CHALLENGE",
-      icon: "🏆",
-      title: "Innovation Challenge",
-      desc: "Run idea competitions, hackathons and open innovation programs."
-    },
-    {
-      id: "FELLOWSHIP",
-      icon: "🎓",
-      title: "Fellowship",
-      desc: "Manage cohorts, mentors, milestones and participant progress."
-    },
-    {
-      id: "BOOTCAMP",
-      icon: "🚀",
-      title: "Bootcamp",
-      desc: "Deliver intensive training and workforce readiness programs."
-    },
-    {
-      id: "UNIVERSITY",
-      icon: "🏫",
-      title: "University",
-      desc: "Coordinate academic, innovation and student engagement programs."
-    },
-    {
-      id: "COMMUNITY",
-      icon: "🤝",
-      title: "Community",
-      desc: "Build and engage professional or interest-based communities."
-    },
-    {
-      id: "INCUBATOR",
-      icon: "💡",
-      title: "Startup Incubator",
-      desc: "Support founders, startups and venture-building initiatives."
-    },
-    {
-      id: "CORPORATE_LEARNING",
-      icon: "🏢",
-      title: "Corporate Learning",
-      desc: "Upskill employees and manage internal talent development."
-    },
-    {
-      id: "OTHER",
-      icon: "✨",
-      title: "Other",
-      desc: "Something else that doesn't fit the categories above."
-    }
-  ];
-
-  const ORGANIZATION_MISSIONS = [
-    {
-      id: "OPEN_INNOVATION",
-      icon: "💡",
-      title: "Open Innovation",
-      desc: "Source ideas, solutions and talent from a wider community."
-    },
-    {
-      id: "TALENT_DEVELOPMENT",
-      icon: "🎓",
-      title: "Talent Development",
-      desc: "Train, mentor and develop future-ready talent."
-    },
-    {
-      id: "COMMUNITY_BUILDING",
-      icon: "🤝",
-      title: "Community Building",
-      desc: "Grow and engage a thriving professional community."
-    },
-    {
-      id: "PRODUCT_INCUBATION",
-      icon: "🚀",
-      title: "Product Incubation",
-      desc: "Support teams and ideas from concept to execution."
-    },
-    {
-      id: "WORKFORCE_READINESS",
-      icon: "🏆",
-      title: "Workforce Readiness",
-      desc: "Prepare participants for employment and industry opportunities."
-    }
-  ];
 
   const toggleInterest = (interest: string) => {
     setFormData((prev) => {

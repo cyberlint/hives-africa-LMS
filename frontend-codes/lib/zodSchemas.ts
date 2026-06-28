@@ -105,8 +105,18 @@ export const OrganisationMissionEnum = z.nativeEnum(OrgMission);
 
 export const CreateOrganizationSchema = z.object({
   name: z.string().min(2, "Organization name must be at least 2 characters"),
-  // Handle empty strings from the client gracefully
-  website: z.string().url("Invalid website URL").optional().or(z.literal("")),
+  website: z.preprocess(
+      (value) => {
+        if (typeof value !== "string") return value;
+        const website = value.trim();
+        if (!website) return "";
+        if (!/^https?:\/\//i.test(website)) {
+          return `https://${website}`;
+        }
+        return website;
+      },
+      z.string().url("Invalid website URL").or(z.literal(""))
+    ),
   logoUrl: z.string().optional().or(z.literal("")),
   orgType: OrganisationTypeEnum,
   missions: z.array(OrganisationMissionEnum).min(1, "Select at least one mission"),
