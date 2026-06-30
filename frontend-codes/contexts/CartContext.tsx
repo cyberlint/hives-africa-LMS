@@ -3,8 +3,9 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { PaymentsService } from "@/services/payments";
 import { toast } from "sonner";
 
-export interface CartCourseItem {
-  id: string; // course id
+export interface CheckoutItem {
+  id: string; // product id (course, bootcamp, program)
+  type?: string; // 'course' | 'bootcamp' | 'program' | etc.
   title: string;
   slug?: string;
   fileKey?: string;
@@ -13,6 +14,10 @@ export interface CartCourseItem {
   isFree?: boolean;
   instructor?: string;
   thumbnail?: string;
+  // optional product-specific data controlling post-payment flow
+  successRedirect?: string;
+  failureRedirect?: string;
+  metadata?: any;
 }
 
 interface CouponState {
@@ -22,8 +27,8 @@ interface CouponState {
 }
 
 interface CartContextValue {
-  items: CartCourseItem[];
-  addItem: (item: Omit<CartCourseItem, "quantity"> & { quantity?: number }) => void; // quantity ignored (single-item mode)
+  items: CheckoutItem[];
+  addItem: (item: Omit<CheckoutItem, "quantity"> & { quantity?: number }) => void; // quantity ignored (single-item mode)
   removeItem: (courseId: string) => void;
   updateQuantity: (courseId: string, quantity: number) => void; // retained as no-op for backward compatibility
   clearCart: () => void;
@@ -52,7 +57,7 @@ function loadStored<T>(key: string, fallback: T): T {
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartCourseItem[]>(() => loadStored<CartCourseItem[]>(STORAGE_KEY, []));
+  const [items, setItems] = useState<CheckoutItem[]>(() => loadStored<CheckoutItem[]>(STORAGE_KEY, []));
   const [coupon, setCoupon] = useState<CouponState>(() => loadStored<CouponState>(COUPON_KEY, { code: null, discountAmount: 0 }));
   const [loadingCoupon, setLoadingCoupon] = useState(false);
 
@@ -64,11 +69,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== "undefined") localStorage.setItem(COUPON_KEY, JSON.stringify(coupon));
   }, [coupon]);
 
-  const addItem = useCallback((item: Omit<CartCourseItem, "quantity"> & { quantity?: number }) => {
+  const addItem = useCallback((item: Omit<CheckoutItem, "quantity"> & { quantity?: number }) => {
     setItems(prev => {
-      const existing = prev.find(p => p.id === item.id);
+      const existing = prev.find(p => p.id === item.id && p.type === item.type);
       if (existing) {
-        // Single-item-per-course: do not increment, just warn (toast handled upstream in button)
+        // Single-item-per-product: do not increment, just keep existing (toast handled upstream)
         return prev;
       }
       return [...prev, { ...item, quantity: 1 }]; // force quantity = 1
@@ -110,7 +115,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const firstCourse = items[0];
     try {
       setLoadingCoupon(true);
-      const res = await PaymentsService.validateCoupon(code, firstCourse.id);
+      // Validate coupon against product id; backend may accept item type later
+      const res = await PaymentsService.validateCoupon(code, firstCourse?.id);
       if (res.valid) {
         setCoupon({ code: res.coupon.code, discountAmount: res.discount_amount, raw: res });
         toast.success("Coupon applied");

@@ -10,6 +10,10 @@ import { useEnrollment } from "@/hooks/useEnrollment";
 
 export interface CheckoutButtonProps {
   courseId?: string | number; // Accept number from mock list, convert to string
+  itemType?: string; // 'course' | 'bootcamp' | 'program' etc. Backwards compatible with courseId
+  successRedirect?: string;
+  failureRedirect?: string;
+  metadata?: any;
   slug?: string;
   price?: string | number; // If "Free" or 0 => direct enroll flow placeholder
   title?: string;
@@ -32,6 +36,7 @@ export interface CheckoutButtonProps {
  */
 export function CheckoutButton({
   courseId,
+  itemType,
   slug,
   price,
   title,
@@ -46,6 +51,9 @@ export function CheckoutButton({
   analyticsId,
   onFreeEnroll,
   isEnrolled = false,
+  successRedirect,
+  failureRedirect,
+  metadata,
 }: CheckoutButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -109,14 +117,18 @@ export function CheckoutButton({
         }
 
         addItem({
-            id: idStr,
-            title: title || `Course ${idStr}`,
-            slug,
-            thumbnail,
-            unitPrice: numericPrice,
-            quantity: 1,
-            isFree: numericPrice === 0,
-            instructor,
+          id: idStr,
+          type: itemType || 'course',
+          title: title || `Course ${idStr}`,
+          slug,
+          thumbnail,
+          unitPrice: numericPrice,
+          quantity: 1,
+          isFree: numericPrice === 0,
+          instructor,
+          successRedirect: successRedirect,
+          failureRedirect: failureRedirect,
+          metadata: metadata,
         });
         if (showAddedToast) {
           toast.success("Added to cart", { description: title || "Course added" });

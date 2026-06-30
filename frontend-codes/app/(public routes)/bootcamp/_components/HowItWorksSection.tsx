@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { 
   User, 
   Users, 
@@ -13,6 +12,7 @@ import {
   AlertTriangle
 } from "lucide-react";
 import { MotionDiv } from "@/components/framer-motion/motion-components";
+import CheckoutButton from "@/components/lms/checkout-button";
 
 // ==========================================
 // DATA
@@ -160,7 +160,19 @@ const engineSteps = [
 // ==========================================
 // COMPONENT
 // ==========================================
-export default function EngineAndCTASection() {
+
+interface HowItWorksSectionProps{
+  checkoutConfig: {
+    courseId: string;
+    itemType: string;
+    title: string;
+    price: number;
+    successRedirect: string;
+    failureRedirect: string;
+    metadata: Record<string, any>;
+  };
+}
+export default function EngineAndCTASection( { checkoutConfig }: HowItWorksSectionProps) {
   return (
     <section className="bg-background py-16 md:py-24 lg:py-32 border-t border-border/50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -290,13 +302,17 @@ export default function EngineAndCTASection() {
 
     {/* CTA */}
     <div className="flex flex-col items-center gap-4 pt-2">
-      <Link
-        href="/register"
-        className="group inline-flex items-center gap-2 rounded-full bg-orange px-8 py-4 text-base font-bold text-white shadow-xl shadow-orange/20 transition-all hover:scale-[1.02] sm:px-10 sm:py-5"
-      >
-        Secure Your Spot Now
-        <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
-      </Link>
+      <CheckoutButton
+                      courseId={checkoutConfig.courseId}
+                      itemType={checkoutConfig.itemType}
+                      title={checkoutConfig.title}
+                      price={checkoutConfig.price}
+                      successRedirect={checkoutConfig.successRedirect}
+                      failureRedirect={checkoutConfig.failureRedirect}
+                      metadata={checkoutConfig.metadata}
+                      label="Secure Your Spot Now"
+                      className="group relative inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-orange px-8 py-4 text-base font-bold text-white transition-all shadow-lg shadow-orange/20 hover:scale-[1.02] hover:shadow-orange/30"
+                    />
 
       <div className="flex items-center gap-2 rounded-full bg-orange/10 px-4 py-2 text-xs font-bold text-orange sm:text-sm">
         <AlertTriangle className="size-4" />

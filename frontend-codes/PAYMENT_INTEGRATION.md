@@ -78,9 +78,22 @@ Initializes a payment session with Paystack.
 
 **Request:**
 ```json
+// Legacy (course)
 {
   "course_id": "uuid-string",
   "coupon_code": "OPTIONAL_COUPON"
+}
+
+// Generic (recommended)
+{
+  "item_id": "uuid-or-sku",
+  "item_type": "course|bootcamp|program",
+  "amount": 50000, // integer (kobo or minor units depending on your conventions)
+  "coupon_code": "OPTIONAL_COUPON",
+  "redirect_url": "https://your-app.com/payment/callback",
+  "success_url": "https://your-app.com/bootcamp/onboarding",
+  "failure_url": "https://your-app.com/payment/failure",
+  "metadata": { "some": "value" }
 }
 ```
 
@@ -89,8 +102,11 @@ Initializes a payment session with Paystack.
 {
   "authorization_url": "https://checkout.paystack.com/...",
   "reference": "TXN-2024...",
+  "access_code": "XXXX",
   "amount": 50000,
-  "currency": "NGN"
+  "currency": "NGN",
+  "item_type": "course",
+  "item_id": "uuid-or-sku"
 }
 ```
 
@@ -106,11 +122,23 @@ Verifies a payment transaction.
 
 **Response:**
 ```json
+// Course purchases (legacy)
 {
   "status": "success",
   "message": "Payment verified successfully",
   "enrollment_id": "uuid",
-  "course_title": "Course Name"
+  "course_title": "Course Name",
+  "course_id": "uuid"
+}
+
+// Generic non-course purchases (bootcamp/program)
+{
+  "status": "success",
+  "message": "Payment verified successfully",
+  "purchase_type": "bootcamp",
+  "item_id": "bootcamp-123",
+  "next_route": "/bootcamp/onboarding",
+  "metadata": { /* paystack transaction object */ }
 }
 ```
 
@@ -122,9 +150,14 @@ const initializePayment = useInitializePayment();
 
 const handlePayment = async () => {
   try {
+    // Generic initialization example
     const result = await initializePayment.mutateAsync({
-      course_id: "course-uuid",
-      coupon_code: "DISCOUNT10"
+      item_id: "bootcamp-123",
+      item_type: "bootcamp",
+      amount: 2500000,
+      coupon_code: "EARLYBIRD",
+      redirect_url: window.location.origin + '/payment/callback',
+      success_url: window.location.origin + '/bootcamp/onboarding'
     });
     window.location.href = result.authorization_url;
   } catch (error) {

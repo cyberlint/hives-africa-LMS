@@ -11,13 +11,20 @@ export interface PaymentTransaction {
   paid_at?: string;
   created_at: string;
   updated_at: string;
-  course_id: string;
+  // Backwards compatible: course_id may be present for course purchases
+  course_id?: string;
+  item_id?: string;
+  item_type?: string;
   user_id: string;
   metadata?: Record<string, any>;
 }
 
 export interface PaymentInitializationRequest {
-  course_id: string;
+  // Legacy
+  course_id?: string;
+  // Generic
+  item_id?: string;
+  item_type?: string;
   coupon_code?: string;
   amount?: number;
   currency?: string;
@@ -44,6 +51,8 @@ export interface PaymentVerificationResponse {
   transaction: PaymentTransaction;
   enrollment_id?: string;
   course_title?: string;
+  purchase_type?: string;
+  item_id?: string;
 }
 
 export interface PaymentError {

@@ -1,12 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import {
-    ArrowRight,
-} from "lucide-react";
-
-import {
-    MotionDiv,
     MotionSection,
 } from "@/components/framer-motion/motion-components";
 import HeroSection from "./_components/HeroSection";
@@ -16,6 +10,17 @@ import SpeakersSection from "./_components/SpeakersSection";
 import AutomaticPortfolioSection from "./_components/PortfolioDoneForYou";
 import CurriculumSection from "./_components/BluePrint";
 import FAQSection from "./_components/FAQSection";
+import CheckoutButton from "@/components/lms/checkout-button";
+
+const checkoutConfig = {
+    courseId: "bootcamp-001",
+    itemType: "bootcamp",
+    title: "Data Launchpad Sprint",
+    price: 30000,
+    successRedirect: "/bootcamp/onboarding",
+    failureRedirect: "/payment/failure",
+    metadata: { product: "Data Launchpad Sprint", next_route: "/bootcamp/onboarding" }
+};
 
 // ==========================================
 // MAIN PAGE COMPONENT
@@ -25,13 +30,13 @@ export default function CohortLandingPage() {
     return (
         <main className="-mb-16 bg-background">
             {/* 1. HERO SECTION */}
-            <HeroSection />
+            <HeroSection checkoutConfig={checkoutConfig} />
 
             {/* 2. WHAT YOU WALK AWAY WITH */}
             <WalkawaySection />
 
             {/* 3. THE WORK ENGINE (Dual Card Layout) */}
-            <HowItWorksSection />
+            <HowItWorksSection checkoutConfig={checkoutConfig} />
 
             {/* 4. PORTFOLIO AUTO-GENERATION */}
             <AutomaticPortfolioSection />
@@ -75,23 +80,7 @@ export default function CohortLandingPage() {
 
                     {/* CTA */}
                     <div className="pt-4 sm:pt-6">
-                        <Link
-                            href="/register"
-                            className="
-          group relative inline-flex w-full sm:w-auto
-          items-center justify-center gap-2
-          rounded-full bg-orange
-          px-8 sm:px-10 py-4 sm:py-5
-          text-sm sm:text-base font-bold text-white
-          shadow-lg shadow-orange/20
-          transition-all duration-300
-          hover:scale-[1.02] hover:shadow-orange/40
-          active:scale-[0.98]
-        "
-                        >
-                            Enter the Arena
-                            <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" />
-                        </Link>
+                        <CheckoutButton {...checkoutConfig} />
                     </div>
 
                     {/* subtle trust microline (adds conversion lift on mobile) */}

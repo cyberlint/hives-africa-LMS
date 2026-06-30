@@ -63,9 +63,15 @@ export default function CartCheckoutPage() {
       const callbackUrl = `${window.location.origin}/payment/callback`;
       
       const response = await initializePaymentMutation.mutateAsync({
-        course_id: firstBillable.id,
+        // Use generic payload; still support legacy course_id on backend
+        item_id: firstBillable.id,
+        item_type: firstBillable.type || 'course',
+        amount: firstBillable.unitPrice,
         coupon_code: coupon.code || undefined,
         redirect_url: callbackUrl,
+        success_url: firstBillable.successRedirect,
+        failure_url: firstBillable.failureRedirect,
+        metadata: firstBillable.metadata,
       });
 
       if (response?.authorization_url) {
@@ -112,7 +118,7 @@ export default function CartCheckoutPage() {
             <div className="lg:col-span-2 space-y-6">
               <Card className="border-gray-200 dark:border-[#404854] dark:bg-[#2a2f3a]">
                 <CardHeader>
-                  <h2 className="text-lg font-semibold text-darkBlue-300 dark:text-gray-100">Courses ({items.length})</h2>
+                  <h2 className="text-lg font-semibold text-darkBlue-300 dark:text-gray-100">Cart ({items.length})</h2>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {items.map(item => (
@@ -130,7 +136,8 @@ export default function CartCheckoutPage() {
                       <div className="flex-1 min-w-0 space-y-1">
                         <p className="text-sm font-medium text-darkBlue-300 dark:text-gray-100 line-clamp-2 md:line-clamp-3">{item.title}</p>
                         {item.instructor && <p className="text-xs text-[#6E7485] dark:text-gray-400">By {item.instructor}</p>}
-                        {item.isFree && <p className="text-[11px] text-green-700 dark:text-green-400">Free course</p>}
+                        {item.isFree && <p className="text-[11px] text-green-700 dark:text-green-400">Free item</p>}
+                        {item.type && item.type !== 'course' && <p className="text-[11px] text-[#6E7485] dark:text-gray-400">Type: {item.type}</p>}
                         {/* Quantity controls removed for single-item-per-course mode */}
                       </div>
                       <div className="flex sm:flex-col justify-between sm:justify-between items-end sm:items-end gap-2 sm:gap-0">

@@ -1,19 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import CheckoutButton from "@/components/lms/checkout-button";
 import { ArrowRight, Zap, User, CheckCircle2, ShieldCheck, Gift, Briefcase } from "lucide-react";
 import { MotionDiv, MotionH1 } from "@/components/framer-motion/motion-components";
 
 // ==========================================
-// MICRO-COMPONENT: Live System Preview (Simulates Social Proof & Instant Win)
+// MICRO-COMPONENT: Live System Preview
 // ==========================================
 const LiveHeroPreview = () => {
   const [rep, setRep] = useState(0);
   const [logs, setLogs] = useState<{ id: number; text: string; type: string }[]>([]);
 
   useEffect(() => {
-    // Tweaked sequence to show immediate, tangible wins
     const sequence = [
       { t: 800, text: "Day 1: Portfolio Shell Created", type: "info", rep: 50 },
       { t: 2500, text: "Project 1: SQL EDA Approved", type: "success", rep: 75 },
@@ -37,10 +36,8 @@ const LiveHeroPreview = () => {
 
   return (
     <div className="w-full max-w-[420px] mx-auto rounded-3xl bg-card p-4 sm:p-6 shadow-xl border border-border/50 relative overflow-hidden">
-      {/* Subtle glow effect behind the card */}
       <div className="absolute -z-10 inset-0 bg-gradient-to-tr from-orange/5 to-transparent opacity-50" />
       
-      {/* Header */}
       <div className="flex items-start justify-between mb-5 gap-4">
         <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <div className="flex size-10 sm:size-11 items-center justify-center rounded-full border border-border/80 bg-background">
@@ -56,14 +53,12 @@ const LiveHeroPreview = () => {
           </div>
         </div>
 
-        {/* Live Dot */}
         <div className="flex items-center gap-1.5">
           <span className="text-[9px] font-bold uppercase tracking-wider text-green-500">Live</span>
           <div className="size-2 rounded-full bg-green-500 shrink-0 animate-pulse" />
         </div>
       </div>
 
-      {/* Logs */}
       <div className="space-y-2 min-h-[160px] sm:min-h-[180px] flex flex-col justify-end">
         {logs.length === 0 && (
           <p className="font-mono text-xs text-muted-foreground animate-pulse text-center">
@@ -95,7 +90,19 @@ const LiveHeroPreview = () => {
 // ==========================================
 // MAIN COMPONENT: HERO
 // ==========================================
-export default function HeroSection() {
+interface HeroSectionProps {
+  checkoutConfig: {
+    courseId: string;
+    itemType: string;
+    title: string;
+    price: number;
+    successRedirect: string;
+    failureRedirect: string;
+    metadata: Record<string, any>;
+  };
+}
+
+export default function HeroSection({ checkoutConfig }: HeroSectionProps) {
   return (
     <section className="relative w-full bg-background pt-12 sm:pt-14 lg:pt-20 pb-14 sm:pb-20 lg:pb-24 overflow-hidden">
       
@@ -143,7 +150,7 @@ export default function HeroSection() {
               </p>
             </MotionDiv>
 
-            {/* Value Stacking (The "Deal") */}
+            {/* Value Stacking */}
             <MotionDiv
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
@@ -171,13 +178,18 @@ export default function HeroSection() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="flex flex-col items-center lg:items-start gap-4"
             >
-              <Link
-                href="/register"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-orange px-8 py-4 text-base font-bold text-white transition-all shadow-lg shadow-orange/20 hover:scale-[1.02] hover:shadow-orange/30"
-              >
-                Secure Your Spot Now
-                <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
-              </Link>
+              {/* Corrected key assignments here */}
+              <CheckoutButton
+                courseId={checkoutConfig.courseId}
+                itemType={checkoutConfig.itemType}
+                title={checkoutConfig.title}
+                price={checkoutConfig.price}
+                successRedirect={checkoutConfig.successRedirect}
+                failureRedirect={checkoutConfig.failureRedirect}
+                metadata={checkoutConfig.metadata}
+                label="Secure Your Spot Now"
+                className="group relative inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-orange px-8 py-4 text-base font-bold text-white transition-all shadow-lg shadow-orange/20 hover:scale-[1.02] hover:shadow-orange/30"
+              />
             </MotionDiv>
 
           </div>

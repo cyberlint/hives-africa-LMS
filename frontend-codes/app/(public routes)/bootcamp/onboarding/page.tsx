@@ -27,8 +27,8 @@ const onboardingSteps = [
     title: "Enter Your NextHive Squad",
     desc: "No Slack. No Discord. Join your dedicated Hive directly on our platform to meet your accountability partners and vote on squad rules.",
     icon: Hexagon,
-    actionText: "Join Hive Alpha",
-    actionLink: "/hives/cohort-001",
+    actionText: "Join Hive",
+    actionLink: "/community/hives/data-launchpad-sprint",
   },
   {
     id: "calendar",

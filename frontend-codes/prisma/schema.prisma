@@ -360,6 +360,17 @@ enum PaymentStatus {
   Refunded
 }
 
+/// Types of items that can be sold/paid for in the system.
+enum ItemType {
+  Course
+  Program
+  Bootcamp
+  Event
+  Enrollment
+  Subscription
+  Other
+}
+
 model LessonProgress {
   id          String  @id @default(uuid())
   userId      String
@@ -389,17 +400,23 @@ model Payment {
   paymentMethod String?
   metadata      Json?
   userId        String
-  courseId      String
+  /// backward compatibility: courseId has been replaced by itemType and itemId combo to support generic payment checkouts beyond just courses. For future proof, write to those fields instead.
+  courseId      String?
+  /// Polymorphic item reference: the type of item this payment is for (e.g. Course, Program, Event)
+  itemType      ItemType?
+  /// The id of the item (stores the primary key of the referenced item)
+  itemId        String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   enrollment Enrollment?
-  course     Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course     Course?      @relation(fields: [courseId], references: [id], onDelete: Cascade)
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([courseId])
+  @@index([itemType, itemId])
 }
 
 model Wishlist {

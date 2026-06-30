@@ -96,7 +96,7 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
     
     <Input
   type="tel"
-  placeholder="Phone Number (optional)"
+  placeholder="Phone Number"
   value={phone}
   onChange={(e) => setPhone(e.target.value)}
 />

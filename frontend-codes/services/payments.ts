@@ -14,9 +14,17 @@ export interface CouponValidationResult {
 }
 
 export interface InitializePaymentPayload {
-  course_id: string; // UUID
+  // Backwards compatible: legacy `course_id` accepted
+  course_id?: string;
+  // New generic fields
+  item_id?: string;
+  item_type?: string; // 'course'|'bootcamp'|...
+  amount?: number;
   coupon_code?: string;
   redirect_url?: string;
+  success_url?: string;
+  failure_url?: string;
+  metadata?: any;
   channels?: string[];
 }
 
@@ -38,6 +46,10 @@ export interface VerifyPaymentResponse {
   thumbnail?: string;
   instructor?: string;
   course_id?: string;
+  purchase_type?: string;
+  item_id?: string;
+  next_route?: string;
+  success_redirect?: string;
   price?: number;
 }
 
@@ -66,6 +78,19 @@ export const PaymentsService = {
   },
 
   async initializePayment(payload: InitializePaymentPayload): Promise<InitializePaymentResponse> {
+    // Map legacy payload to generic shape expected by backend
+    const mapped = {
+      item_id: payload.item_id || payload.course_id,
+      item_type: payload.item_type || (payload.course_id ? 'course' : payload.item_type),
+      amount: payload.amount,
+      coupon_code: payload.coupon_code,
+      redirect_url: payload.redirect_url,
+      success_url: payload.success_url,
+      failure_url: payload.failure_url,
+      metadata: payload.metadata,
+      channels: payload.channels,
+    };
+
     // Use Next.js API route which forwards to backend
     const response = await fetch('/api/payments/initialize', {
       method: 'POST',
@@ -73,7 +98,7 @@ export const PaymentsService = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(mapped),
     });
 
     if (!response.ok) {

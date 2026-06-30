@@ -4,9 +4,18 @@ import { auth } from '@/lib/auth'; // Assuming auth is available here, or use re
 import { Paystack, formatAmountForPaystack, generatePaymentReference } from '@/lib/paystack';
 
 interface PaymentRequestBody {
-  course_id: string;
+  // Legacy
+  course_id?: string;
+  // Generic
+  item_id?: string;
+  item_type?: string;
+  amount?: number;
   coupon_code?: string;
-  redirect_url?: string;
+  redirect_url?: string; // callback used by client
+  success_url?: string; // product-specific success redirect
+  failure_url?: string;
+  metadata?: any;
+  channels?: string[];
 }
 
 export async function POST(request: NextRequest) {
@@ -23,44 +32,51 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id;
     const userEmail = session.user.email;
     const body: PaymentRequestBody = await request.json();
-    const { course_id, redirect_url, channels } = body as any;
+    const { item_id, item_type, course_id, amount: bodyAmount, redirect_url, channels, success_url, failure_url, metadata } = body as any;
 
-    if (!course_id) {
-      return NextResponse.json({ error: 'Course ID is required' }, { status: 400 });
+    // Normalize legacy course_id -> item_id + item_type
+    const itemId = item_id || course_id;
+    const itemType = item_type || (course_id ? 'course' : undefined);
+
+    // Map to Prisma enum casing (Course, Program, Event, etc.)
+    const mapItemType = (t?: string) => {
+      if (!t) return undefined;
+      const s = t.toString().toLowerCase();
+      if (s === 'course') return 'Course';
+      if (s === 'program') return 'Program';
+      if (s === 'bootcamp') return 'Bootcamp';
+      if (s === 'event') return 'Event';
+      if (s === 'enrollment') return 'Enrollment';
+      if (s === 'subscription') return 'Subscription';
+      return 'Other';
+    };
+    const prismaItemType = mapItemType(itemType);
+
+    // 1. Resolve product and amount
+    let amount: number | undefined = bodyAmount;
+    let productTitle: string | undefined = undefined;
+    if (itemType === 'course' && itemId) {
+      const course = await prisma.course.findUnique({ where: { id: itemId } });
+      if (!course) return NextResponse.json({ error: 'Course not found' }, { status: 404 });
+
+      // Check enrollment for courses
+      const existingEnrollment = await prisma.enrollment.findUnique({
+        where: { userId_courseId: { userId, courseId: itemId } },
+      });
+      if (existingEnrollment && existingEnrollment.paymentStatus === 'Completed') {
+        return NextResponse.json({ error: 'You are already enrolled in this course' }, { status: 400 });
+      }
+
+      amount = amount ?? course.price;
+      productTitle = course.title;
+      if (amount === 0) {
+        return NextResponse.json({ error: 'Payment not required for free course' }, { status: 400 });
+      }
     }
 
-    // 1. Fetch Course details
-    const course = await prisma.course.findUnique({
-      where: { id: course_id },
-    });
-
-    if (!course) {
-      return NextResponse.json({ error: 'Course not found' }, { status: 404 });
-    }
-
-    // Check if user is already enrolled
-    const existingEnrollment = await prisma.enrollment.findUnique({
-      where: {
-        userId_courseId: {
-          userId,
-          courseId: course_id,
-        },
-      },
-    });
-
-    if (existingEnrollment && existingEnrollment.paymentStatus === 'Completed') {
-      return NextResponse.json(
-        { error: 'You are already enrolled in this course' },
-        { status: 400 }
-      );
-    }
-
-    // 2. Calculate Amount (Handle coupons here if needed, strictly just course price for now)
-    // TODO: Integrate Coupon validation logic if needed
-    const amount = course.price;
-    if (amount === 0) {
-      // Free course logic should be handled separately or here
-      return NextResponse.json({ error: 'Payment not required for free course' }, { status: 400 });
+    // For non-course items, require amount to be provided
+    if (!amount) {
+      return NextResponse.json({ error: 'Amount is required for this product type' }, { status: 400 });
     }
 
     // 3. Generate Reference
@@ -74,11 +90,20 @@ export async function POST(request: NextRequest) {
         currency: 'NGN',
         status: 'Pending',
         userId: userId,
-        courseId: course_id,
+        // keep legacy relation for compatibility
+        ...(itemType === 'course' && itemId ? { courseId: itemId } : {}),
+        // set polymorphic fields for future-proof queries
+        ...(prismaItemType && itemId ? { itemType: prismaItemType, itemId: itemId } : {}),
         metadata: {
-          course_title: course.title,
-          ...body
-        }
+          item_type: itemType,
+          item_id: itemId,
+          title: productTitle,
+          success_url,
+          failure_url,
+          ...metadata,
+          // keep original request for debugging
+          requested: body,
+        },
       },
     });
 
@@ -90,14 +115,18 @@ export async function POST(request: NextRequest) {
       {
         custom_fields: [
           {
-            display_name: "Course",
-            variable_name: "course",
-            value: course.title
+            display_name: productTitle ? 'Product' : 'Item',
+            variable_name: 'product',
+            value: productTitle || itemId
           }
         ],
-        course_id: course_id,
+        item_type: itemType,
+        item_id: itemId,
         user_id: userId,
-        payment_reference: reference // Pass our reference in metadata for cross-check
+        payment_reference: reference,
+        success_url,
+        failure_url,
+        metadata: metadata,
       },
       channels // Pass channels if provided (e.g. ['card', 'bank'])
     );
@@ -120,6 +149,10 @@ export async function POST(request: NextRequest) {
       authorization_url: paystackResponse.data.authorization_url,
       reference: reference, // Return OUR reference
       access_code: paystackResponse.data.access_code,
+      amount,
+      currency: 'NGN',
+      item_type: itemType,
+      item_id: itemId,
     });
 
   } catch (error: any) {

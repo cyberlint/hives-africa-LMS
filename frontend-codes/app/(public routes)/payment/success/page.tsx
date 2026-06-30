@@ -59,7 +59,13 @@ function PaymentStatusContent() {
   }, [reference, verificationStatus, verifyPaymentMutation]);
 
   const handleStartLearning = () => {
-    router.push('/dashboard/learning');
+    // If backend returned an explicit next route or success redirect, prefer it
+    const nextRoute = paymentDetails?.next_route || paymentDetails?.success_redirect || (paymentDetails?.purchase_type === 'bootcamp' ? '/bootcamp/onboarding' : undefined);
+    if (nextRoute) {
+      router.push(nextRoute);
+    } else {
+      router.push('/dashboard/learning');
+    }
   };
 
   const handleGoHome = () => {
