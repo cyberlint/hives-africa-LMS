@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -24,6 +24,7 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -54,8 +55,9 @@ function LoginForm() {
       toast.success("Welcome back!", {
         description: "Successfully logged in",
       })
-      // Redirect to home after login
-      router.push("/home")
+
+      const redirectTo = searchParams.get("redirectTo") || "/home"
+      router.push(redirectTo)
       router.refresh()
     } catch (error: any) {
       toast.error("Login Failed", {
@@ -68,9 +70,10 @@ function LoginForm() {
 
   const handleGoogleSignIn = async () => {
     try {
+      const redirectTo = searchParams.get("redirectTo") || "/home"
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/signin",
+        callbackURL: `/signin?redirectTo=${encodeURIComponent(redirectTo)}`,
       })
     } catch (error: any) {
       toast.error("Sign in failed", {
@@ -81,9 +84,10 @@ function LoginForm() {
 
   const handleGithubSignIn = async () => {
     try {
+      const redirectTo = searchParams.get("redirectTo") || "/home"
       await authClient.signIn.social({
         provider: "github",
-        callbackURL: "/signin",
+        callbackURL: `/signin?redirectTo=${encodeURIComponent(redirectTo)}`,
       })
     } catch (error: any) {
       toast.error("Sign in failed", {

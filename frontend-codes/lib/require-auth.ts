@@ -9,6 +9,7 @@ import {
     DEFAULT_ADMIN_LOGIN_REDIRECT,
     DEFAULT_LOGIN_REDIRECT
 } from "@/routes";
+import { buildLoginRedirect, getRedirectPathFromReferer, getSafeRedirectPath } from "@/lib/auth-redirect";
 
 function isAdminRoute(pathname: string): boolean {
     return pathname.startsWith(adminPrefix);
@@ -21,12 +22,14 @@ function isStudentRoute(pathname: string): boolean {
 export async function requireAuth(): Promise<{ user: { role: string;[key: string]: any } }>;
 export async function requireAuth(pathname: string): Promise<{ user: { role: string;[key: string]: any } }>;
 export async function requireAuth(pathname?: string): Promise<{ user: { role: string;[key: string]: any } }> {
+    const headersList = await headers();
     const session = await auth.api.getSession({
-        headers: await headers(),
+        headers: headersList,
     });
 
     if (!session) {
-        return redirect(LOGIN_URL);
+        const redirectPath = pathname || getSafeRedirectPath(headersList.get("x-redirect-to") || headersList.get("x-pathname")) || getRedirectPathFromReferer(headersList.get("referer"));
+        return redirect(buildLoginRedirect(redirectPath));
     }
 
     const userRole = session.user.role;

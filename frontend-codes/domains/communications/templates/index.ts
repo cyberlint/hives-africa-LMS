@@ -3,6 +3,9 @@
 import { submissionApproved } from "./submission_approved";
 import { activityJoined } from "./activity_welcome";
 import { sparkBatch } from "./spark_batch";
+import { courseWelcome } from "./course_welcome";
+import { courseProgressReminder } from "./course_progress_reminder";
+import { courseCompleted } from "./course_completed";
 
 // Hive Governance templates
 import { proposalRaised } from "./proposal_raised";
@@ -21,6 +24,9 @@ export const templates: Record<
   
   submission_approved: submissionApproved,
   activity_welcome: activityJoined,
+  course_welcome: courseWelcome,
+  course_progress_reminder: courseProgressReminder,
+  course_completed: courseCompleted,
 
   // Hive Governance templates
   proposal_raised: proposalRaised,

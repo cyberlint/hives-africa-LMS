@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
+import { eventBus } from '@/domains/communications/events/publisher';
+import { EVENT_TYPES } from '@/domains/communications/events/event-types';
 
 // Update lesson progress
 export async function POST(
@@ -41,7 +43,7 @@ export async function POST(
 
     const course = await prisma.course.findUnique({
       where: { id: courseId },
-      select: { price: true },
+      select: { price: true, title: true },
     });
 
     const isFree = course?.price === 0;
@@ -99,6 +101,7 @@ export async function POST(
       });
 
       const progressPercentage = (completedLessons / allLessons.length) * 100;
+      const wasCompleted = Boolean(enrollment.completedAt);
 
       await prisma.enrollment.update({
         where: { id: enrollment.id },
@@ -107,6 +110,22 @@ export async function POST(
           completedAt: progressPercentage === 100 ? new Date() : null,
         },
       });
+
+      if (progressPercentage === 100 && !wasCompleted) {
+        void eventBus.publish({
+          type: EVENT_TYPES.COURSE_COMPLETED,
+          userId,
+          payload: {
+            courseId,
+            courseTitle: course?.title || 'your course',
+            courseUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://hives.africa'}/dashboard/courses/${courseId}`,
+            completedAt: new Date().toISOString(),
+            certificateUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://hives.africa'}/dashboard/courses/${courseId}/certificate`,
+          },
+        }).catch((error) => {
+          console.error('Failed to publish course completion event:', error);
+        });
+      }
     }
 
     return NextResponse.json({

@@ -2,22 +2,13 @@ import "server-only";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { DEFAULT_ADMIN_LOGIN_REDIRECT, DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import { getRedirectPathFromReferer, getSafeRedirectPath } from "@/lib/auth-redirect";
 
 export async function redirectIfAuthenticated(){
     const headersList = await headers();
     const session = await auth.api.getSession({ headers: headersList});
     if (session) {
-        redirect("/home");
+        const redirectTo = getSafeRedirectPath(headersList.get("x-redirect-to") || getRedirectPathFromReferer(headersList.get("referer")));
+        redirect(redirectTo);
     }
 }
-
-// export async function redirectIfAuthenticated() {
-//     const headersList = await headers();
-//     const session = await auth.api.getSession({ headers: headersList });
-
-//     if (session) {
-//         const role = session.user.role as "admin" | "user";
-//         redirect(role === "admin" ? DEFAULT_ADMIN_LOGIN_REDIRECT : DEFAULT_LOGIN_REDIRECT);
-//     }
-// }

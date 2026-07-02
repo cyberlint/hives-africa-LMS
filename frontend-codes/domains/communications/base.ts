@@ -3,11 +3,12 @@ export function baseEmailLayout(
   preheader: string = "NextHive Notification"
 ) {
   const brandColor = "#FDB606";
-  const textColor = "#18181b";
-  const mutedColor = "#71717a";
-  const bgColor = "#f4f4f5";
+  const textColor = "#0f172a";
+  const mutedColor = "#64748b";
+  const bgColor = "#f3f5f9";
   const cardColor = "#ffffff";
-  const borderColor = "#e5e7eb";
+  const borderColor = "#e2e8f0";
+  const softAccent = "#fef3c7";
 
   const logoUrl = "https://nexthive-lms.t3.tigrisfiles.io/Brand%20Identity/NextHive%20Logo%20Dark.png";
 
@@ -38,7 +39,8 @@ export function baseEmailLayout(
 
   @media screen and (max-width: 600px) {
     .container { width: 100% !important; }
-    .padding { padding: 24px 20px !important; }
+    .body-padding { padding: 28px 24px 24px 24px !important; }
+    .footer-padding { padding: 0 24px 28px 24px !important; }
   }
 </style>
 </head>
@@ -50,23 +52,25 @@ export function baseEmailLayout(
   ${preheader}
 </div>
 
-<table width="100%" role="presentation" style="padding:48px 0;">
+<table width="100%" role="presentation" style="padding:32px 12px; background-color:${bgColor};">
 <tr>
 <td align="center">
 
-  <table width="600" class="container" role="presentation" style="max-width:600px;">
+  <table width="640" class="container" role="presentation" style="max-width:640px; background:${cardColor}; border:1px solid ${borderColor}; border-radius:24px; overflow:hidden; box-shadow:0 16px 40px rgba(15,23,42,0.06);">
 
-    <!-- LOGO -->
+    <!-- HERO -->
     <tr>
-      <td align="center" style="padding:0 0 18px 0;">
+      <td style="background:linear-gradient(135deg, ${softAccent} 0%, #ffffff 100%); padding:32px 36px 22px 36px; border-bottom:1px solid ${borderColor};">
+        <div style="font-size:12px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:#b45309; margin:0 0 10px 0;">
+          NextHive
+        </div>
         <img 
           src="${logoUrl}" 
           alt="NextHive"
-          width="140"
-          style="margin:0 auto;"
+          width="124"
+          style="margin:0;"
           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
         />
-        <!-- fallback -->
         <div style="
           display:none;
           font-size:18px;
@@ -78,32 +82,18 @@ export function baseEmailLayout(
       </td>
     </tr>
 
-    <!-- CARD -->
+    <!-- BODY -->
     <tr>
-      <td style="
-        background:${cardColor};
-        border:1px solid ${borderColor};
-        border-radius:16px;
-        overflow:hidden;
-      ">
-
-        <!-- BODY -->
-        <table width="100%" role="presentation">
-          <tr>
-            <td class="padding" style="padding:36px 34px;">
-              ${content}
-            </td>
-          </tr>
-        </table>
-
+      <td class="body-padding" style="padding:32px 36px 24px 36px;">
+        ${content}
       </td>
     </tr>
 
     <!-- FOOTER -->
     <tr>
-      <td align="center" style="padding:22px 16px 0 16px;">
+      <td class="footer-padding" style="padding:0 36px 30px 36px; border-top:1px solid ${borderColor};">
         <p style="
-          margin:0;
+          margin:16px 0 0 0;
           font-size:12.5px;
           color:${mutedColor};
           line-height:1.6;

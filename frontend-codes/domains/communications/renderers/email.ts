@@ -1,9 +1,9 @@
 import { Block } from "../blocks/types";
 
 const baseTextStyle = `
-  font-size:15.5px;
-  line-height:1.7;
-  color:#27272a;
+  font-size:16px;
+  line-height:1.75;
+  color:#334155;
   margin:0 0 16px 0;
 `;
 
@@ -17,11 +17,12 @@ export function renderEmailBlocks(blocks: Block[]) {
         case "heading":
           return `
             <h2 style="
-              margin:0 0 10px 0;
-              font-size:20px;
-              font-weight:800;
-              letter-spacing:-0.4px;
-              color:#111827;
+              margin:0 0 12px 0;
+              font-size:24px;
+              font-weight:700;
+              letter-spacing:-0.02em;
+              line-height:1.2;
+              color:#0f172a;
             ">
               ${block.content ?? ""}
             </h2>
@@ -37,11 +38,11 @@ export function renderEmailBlocks(blocks: Block[]) {
         case "list":
           return `
             <ul style="
-              margin:0 0 18px 0;
-              padding-left:18px;
-              color:#27272a;
-              font-size:15px;
-              line-height:1.7;
+              margin:0 0 20px 0;
+              padding-left:20px;
+              color:#334155;
+              font-size:16px;
+              line-height:1.75;
             ">
               ${(block.items || [])
                 .map(
@@ -58,10 +59,10 @@ export function renderEmailBlocks(blocks: Block[]) {
         case "callout":
           return `
             <div style="
-              background:#fffbeb;
-              border:1px solid #fde68a;
-              padding:16px 16px;
-              border-radius:12px;
+              background:#f8fafc;
+              border:1px solid #e2e8f0;
+              padding:16px 18px;
+              border-radius:14px;
               margin:20px 0;
             ">
               ${
@@ -72,7 +73,7 @@ export function renderEmailBlocks(blocks: Block[]) {
                       font-weight:700;
                       letter-spacing:0.08em;
                       text-transform:uppercase;
-                      color:#a16207;
+                      color:#475569;
                     ">
                       ${block.label}
                     </p>`
@@ -83,7 +84,7 @@ export function renderEmailBlocks(blocks: Block[]) {
                 margin:0;
                 font-size:15px;
                 line-height:1.6;
-                color:#78350f;
+                color:#334155;
               ">
                 ${block.content ?? ""}
               </p>
@@ -92,17 +93,19 @@ export function renderEmailBlocks(blocks: Block[]) {
 
         case "cta":
           return `
-            <div style="margin:26px 0 8px 0;">
+            <div style="margin:24px 0 8px 0;">
               <a href="${block.url}"
                 style="
                   display:inline-block;
-                  background:#FDB606;
-                  color:#111827;
-                  font-weight:700;
+                  background:#111827;
+                  color:#ffffff;
+                  font-weight:600;
                   font-size:14px;
-                  padding:12px 20px;
-                  border-radius:8px;
+                  line-height:1;
+                  padding:14px 22px;
+                  border-radius:999px;
                   text-decoration:none;
+                  box-shadow:0 8px 20px rgba(15,23,42,0.12);
                 ">
                 ${block.label ?? "Continue"}
               </a>

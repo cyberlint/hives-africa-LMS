@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -40,6 +40,7 @@ type SignupFormData = z.infer<typeof signupSchema>
 
 function SignupForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -92,9 +93,10 @@ function SignupForm() {
 
   const handleGoogleSignIn = async () => {
     try {
+      const redirectTo = searchParams.get("redirectTo") || "/home"
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/home",
+        callbackURL: `/signin?redirectTo=${encodeURIComponent(redirectTo)}`,
       })
     } catch (error: any) {
       toast.error("Sign in failed", {
@@ -104,9 +106,10 @@ function SignupForm() {
   }
   const handleGithubSignIn = async () => {
     try {
+      const redirectTo = searchParams.get("redirectTo") || "/home"
       await authClient.signIn.social({
         provider: "github",
-        callbackURL: "/home",
+        callbackURL: `/signin?redirectTo=${encodeURIComponent(redirectTo)}`,
       })
     } catch (error: any) {
       toast.error("Sign in failed", {

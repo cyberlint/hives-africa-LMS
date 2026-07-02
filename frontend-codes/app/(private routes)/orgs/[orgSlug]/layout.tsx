@@ -10,22 +10,37 @@ export default async function OrganizationLayout({
 }: {
   children: ReactNode
   params: Promise<{ orgSlug: string }>
-}) {  
+}) {
   const { orgSlug } = await params;
   const user = await requireAuth();
 
+  const organization = await prisma.organization.findFirst({
+    where: {
+      OR: [{ id: orgSlug }, { slug: orgSlug }],
+    },
+    select: {
+      id: true,
+      slug: true,
+      creatorId: true,
+    },
+  });
+
+  if (!organization) {
+    redirect("/orgs");
+  }
+
   const membership = await prisma.organizationMember.findFirst({
     where: {
-        userId: user.id,
-        organization: {
-            slug: orgSlug,
-        },
+      organizationId: organization.id,
+      userId: user.id,
     },
-});
+  });
 
-if (!membership) {
+  const hasAccess = membership !== null || organization.creatorId === user.id;
+
+  if (!hasAccess) {
     redirect("/orgs");
-}
+  }
 
-  return <OrganizationShell orgSlug={orgSlug}>{children}</OrganizationShell>;
+  return <OrganizationShell orgSlug={organization.slug}>{children}</OrganizationShell>;
 }

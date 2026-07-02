@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
+import { eventBus } from '@/domains/communications/events/publisher';
+import { EVENT_TYPES } from '@/domains/communications/events/event-types';
 
 // Get user's enrollments
 export async function GET(request: NextRequest) {
@@ -104,6 +106,11 @@ export async function POST(request: NextRequest) {
     // Check if course exists and is free
     const course = await prisma.course.findUnique({
       where: { id: courseId, status: 'Published' },
+      include: {
+        user: {
+          select: { name: true },
+        },
+      },
     });
 
     if (!course) {
@@ -146,6 +153,20 @@ export async function POST(request: NextRequest) {
         paymentAmount: 0,
         paidAt: new Date(),
       },
+    });
+
+    void eventBus.publish({
+      type: EVENT_TYPES.COURSE_ENROLLED,
+      userId,
+      payload: {
+        courseId,
+        courseTitle: course.title,
+        courseUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://hives.africa'}/dashboard/courses/${courseId}`,
+        enrolledAt: enrollment.enrolledAt.toISOString(),
+        instructorName: course.user?.name,
+      },
+    }).catch((error) => {
+      console.error('Failed to publish free course enrollment event:', error);
     });
 
     return NextResponse.json({

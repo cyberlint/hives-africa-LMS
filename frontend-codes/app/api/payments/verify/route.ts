@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { Paystack, formatAmountFromPaystack } from '@/lib/paystack';
+import { eventBus } from '@/domains/communications/events/publisher';
+import { EVENT_TYPES } from '@/domains/communications/events/event-types';
 
 export async function POST(request: NextRequest) {
   try {
@@ -114,6 +116,10 @@ const paymentMd: Record<string, any> =
 
     // If course purchase, create/update enrollment
     if (itemType === 'course' && itemId) {
+      const existingEnrollment = await prisma.enrollment.findUnique({
+        where: { userId_courseId: { userId, courseId: itemId } },
+      });
+
       const enrollment = await prisma.enrollment.upsert({
         where: { userId_courseId: { userId, courseId: itemId } },
         update: {
@@ -136,6 +142,24 @@ const paymentMd: Record<string, any> =
 
       // Fetch course details for response
       const course = await prisma.course.findUnique({ where: { id: itemId }, include: { user: { select: { name: true, image: true } } } });
+
+      const shouldPublishEnrollmentEvent = !existingEnrollment || existingEnrollment.paymentStatus !== 'Completed';
+
+      if (shouldPublishEnrollmentEvent) {
+        void eventBus.publish({
+          type: EVENT_TYPES.COURSE_ENROLLED,
+          userId,
+          payload: {
+            courseId: itemId,
+            courseTitle: course?.title || md.title || 'your course',
+            courseUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://hives.africa'}/dashboard/courses/${itemId}`,
+            enrolledAt: new Date().toISOString(),
+            instructorName: course?.user?.name,
+          },
+        }).catch((error) => {
+          console.error('Failed to publish course enrollment event:', error);
+        });
+      }
 
       return NextResponse.json({
         status: 'success',
