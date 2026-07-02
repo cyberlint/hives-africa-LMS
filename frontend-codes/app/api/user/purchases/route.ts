@@ -31,9 +31,9 @@ export async function GET(request: NextRequest) {
 
         const formattedPurchases = purchases.map((purchase) => ({
             id: purchase.id,
-            courseTitle: purchase.course.title,
-            courseId: purchase.course.id,
-            courseSlug: purchase.course.slug,
+            courseTitle: purchase.course?.title || 'Course',
+            courseId: purchase.course?.id || purchase.itemId || null,
+            courseSlug: purchase.course?.slug || null,
             amount: purchase.amount,
             currency: purchase.currency,
             date: purchase.createdAt,

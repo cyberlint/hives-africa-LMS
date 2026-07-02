@@ -52,22 +52,30 @@ export async function GET(request: NextRequest) {
 
     // Format the response
     const formattedPurchases = payments.map((payment) => {
+      const course = payment.course;
+      const courseTitle = course?.title || 'Course';
+      const instructorName = course?.user?.name || 'Instructor';
+      const originalPrice = course?.price ?? 0;
+      const discount = originalPrice > 0
+        ? Math.round(((originalPrice - payment.amount) / originalPrice) * 100) || 0
+        : 0;
+
       return {
         id: payment.id,
-        courseTitle: payment.course.title,
-        instructor: payment.course.user.name,
-        instructorAvatar: payment.course.user.image || '/ai.png',
-        courseThumbnail: payment.course.fileKey || '/ai.png',
+        courseTitle,
+        instructor: instructorName,
+        instructorAvatar: course?.user?.image || '/ai.png',
+        courseThumbnail: course?.fileKey || '/ai.png',
         purchaseDate: payment.createdAt.toISOString().split('T')[0],
         amount: payment.amount,
-        originalPrice: payment.course.price,
-        discount: Math.round(((payment.course.price - payment.amount) / payment.course.price) * 100) || 0,
+        originalPrice,
+        discount,
         paymentMethod: payment.paymentMethod || 'Card Payment',
         status: 'completed',
         receiptUrl: `/api/purchases/${payment.id}/receipt`,
-        category: payment.course.category,
+        category: course?.category || 'General',
         paymentReference: payment.reference,
-        courseId: payment.course.id,
+        courseId: course?.id || payment.itemId || null,
       };
     });
 
