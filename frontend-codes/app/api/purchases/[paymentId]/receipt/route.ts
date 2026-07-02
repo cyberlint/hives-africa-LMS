@@ -51,6 +51,13 @@ export async function GET(
       );
     }
 
+    if (!payment.course) {
+      return NextResponse.json(
+        { error: 'Course not found for payment' },
+        { status: 404 }
+      );
+    }
+
     // Verify the payment belongs to the authenticated user
     if (payment.userId !== userId) {
       return NextResponse.json(
