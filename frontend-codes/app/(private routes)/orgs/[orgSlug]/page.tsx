@@ -11,7 +11,13 @@ import { Plus } from "lucide-react";
 import { Suspense } from "react";
 import { EmptyState } from "@/components/shared/EmptyState";
 
-export default async function AdminIndexPage() {
+export default async function AdminIndexPage({
+  params,
+}: {
+  params: Promise<{ orgSlug: string }>;
+}) {
+  const { orgSlug } = await params;
+  console.log("ORG PAGE", orgSlug);
   const enrollmentData = await adminGetEnrolmentStats();
 
   return (
@@ -23,7 +29,8 @@ export default async function AdminIndexPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Recent Courses</h2>
         <Link className={buttonVariants({variant: "outline"})} 
-        href="/orgs/${`orgSlug`}/courses">View All Courses
+        href={`/orgs/${orgSlug}/courses`}>
+          View All Courses
         </Link>
       </div>
       <Suspense fallback={<div>Loading recent courses...</div>}>

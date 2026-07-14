@@ -1,7 +1,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { requireAuth } from "@/lib/require-auth";
+import { requireAuth } from "@/domains/auth/require-auth";
 
 class OrganizationAccessError extends Error {
   constructor(message: string) {
@@ -32,7 +32,7 @@ export async function getOrganizationContext(orgSlug: string) {
     where: {
       organizationId_userId: {
         organizationId: organization.id,
-        userId: session.user.id,
+        userId: session.id,
       },
     },
   });
@@ -42,7 +42,7 @@ export async function getOrganizationContext(orgSlug: string) {
   }
 
   return {
-    user: session.user,
+    user: session,
     organization,
     membership,
   };
