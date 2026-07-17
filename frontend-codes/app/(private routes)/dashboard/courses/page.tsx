@@ -258,9 +258,9 @@ export default function ViewAll() {
         <div className="mt-4 pt-4 border-t border-border/50 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-end gap-2">
-              <span className="text-xl font-bold text-foreground">${course.price}</span>
+              <span className="text-xl font-bold text-foreground">₦{course.price}</span>
               {course.originalPrice && (
-                <span className="text-sm text-muted-foreground line-through pb-0.5">${course.originalPrice}</span>
+                <span className="text-sm text-muted-foreground line-through pb-0.5">₦{course.originalPrice}</span>
               )}
             </div>
             <Badge

@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/select";
 import { EventCard } from "./EventCard";
 
-// Assuming you still have this schema available
 import { EventCategoryEnum } from "@/lib/zodSchemas"; 
 import type { Event, EventSpeaker } from "@prisma/client";
 
@@ -74,9 +73,9 @@ export function EventsClientPage({
           </Badge>
 
           <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
-            Connect, learn,
+            Connect, Learn,
             <br className="hidden md:block" />
-            and build together.
+            {" "}and Build together.
           </h1>
 
           <p className="text-muted-foreground max-w-xl mx-auto lg:mx-0 text-sm md:text-base">

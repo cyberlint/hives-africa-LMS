@@ -14,8 +14,13 @@
   --animate-scroll: scroll 40s linear infinite;
 
   @keyframes scroll {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
   }
 }
 
@@ -155,6 +160,7 @@
   .pause {
     animation-play-state: paused;
   }
+
   .custom-scrollbar-on-hover {
     /* Reserves space for the scrollbar, preventing any content compression. */
     scrollbar-gutter: stable;
@@ -345,4 +351,59 @@
       scrollbar-color: hsl(var(--border)) transparent !important;
     }
   }
+}
+
+/* ========================= */
+/* Other Custom Animations - Home page */
+/* ========================= */
+
+@keyframes capability-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes capability-spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-capability-spin {
+  animation: capability-spin 45s linear infinite;
+}
+
+.animate-capability-spin-reverse {
+  animation: capability-spin-reverse 45s linear infinite;
+}
+
+@keyframes capability-flow {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(64px);
+    opacity: 0;
+  }
+}
+
+.animate-capability-flow {
+  animation: capability-flow 2.5s linear infinite;
 }

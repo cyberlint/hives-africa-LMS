@@ -1,7 +1,5 @@
 import Footer from "@/components/shared/footer";
-import Navbar from "@/components/shared/navbar";
-import Topbar from "@/components/shared/topbar";
-
+import Navbar from "@/components/navigation/Navbar";
 
 /**
  * Public routes layout: wraps only public marketing / browsing pages.
@@ -11,7 +9,6 @@ export default function PublicRoutesLayout({ children }: { children: React.React
   return (
     <>
     <main className="overflow-x-hidden bg-white dark:bg-darkBlue-300 transition-colors duration-300">
-      <Topbar />
       <Navbar />
       {children}
 

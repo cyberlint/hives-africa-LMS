@@ -4,14 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { MotionDiv, MotionH1, MotionP, MotionButton } from "@/components/framer-motion/motion-components";
 import { Home, BookOpen } from "lucide-react";
-import Topbar from "@/components/shared/topbar";
-import Navbar from "@/components/shared/navbar";
+import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/shared/footer";
 
 export default function NotFound() {
   return (
     <main className="min-h-screen flex flex-col bg-white dark:bg-darkBlue-300 transition-colors duration-300">
-      <Topbar />
       <Navbar />
       
       <div className="grow flex flex-col items-center justify-center px-4 py-12">

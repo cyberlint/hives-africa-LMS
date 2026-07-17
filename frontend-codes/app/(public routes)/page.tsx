@@ -53,7 +53,7 @@ const Home = async () => {
             <div className="space-y-6 sm:space-y-7 md:space-y-8 text-center lg:text-left">
 
               {/* BADGE */}
-              <MotionDiv
+              {/* <MotionDiv
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
@@ -63,7 +63,7 @@ const Home = async () => {
                 <span className="text-[10px] sm:text-xs md:text-sm font-bold tracking-wide text-orange">
                   #1 AI Learning Ecosystem in Africa
                 </span>
-              </MotionDiv>
+              </MotionDiv> */}
 
               {/* HEADLINE */}
               <MotionH1
@@ -91,14 +91,14 @@ const Home = async () => {
               </MotionP>
 
               {/* SOCIAL PROOF */}
-              <MotionDiv
+              {/* <MotionDiv
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
                 className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5 sm:gap-6 pt-2"
-              >
+              > */}
                 {/* AVATARS */}
-                <div className="flex items-center gap-3">
+                {/* <div className="flex items-center gap-3">
                   <div className="flex -space-x-3">
                     {[16, 28, 7, 49].map((i) => (
                       <div
@@ -119,13 +119,13 @@ const Home = async () => {
                       Active Builders
                     </p>
                   </div>
-                </div>
+                </div> */}
 
                 {/* DIVIDER */}
-                <div className="hidden sm:block h-10 w-px bg-border"></div>
+                {/* <div className="hidden sm:block h-10 w-px bg-border"></div> */}
 
                 {/* RATING */}
-                <div className="flex items-center gap-3">
+                {/* <div className="flex items-center gap-3">
                   <div className="flex items-center gap-0.5">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <svg key={star} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange" fill="currentColor" viewBox="0 0 20 20">
@@ -139,8 +139,8 @@ const Home = async () => {
                       Platform Rating
                     </p>
                   </div>
-                </div>
-              </MotionDiv>
+                </div> */}
+              {/* </MotionDiv> */}
 
               {/* CTA */}
               <MotionDiv
