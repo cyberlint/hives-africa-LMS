@@ -22,7 +22,7 @@ model User {
   bio           String?
   website       String?
 
-  userType               UserType? @default(INDIVIDUAL)
+  userType               UserType?    @default(INDIVIDUAL)
   hasCompletedOnboarding Boolean      @default(false)
   profile                UserProfile?
   primaryLanguage        String       @default("English")
@@ -233,14 +233,16 @@ model Course {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  module        Module[]
-  enrollments   Enrollment[]
-  payments      Payment[]
-  wishlistItems Wishlist[]
-  reviews       CourseReview[]
-  programs      ProgramCourse[]
-  activities    Activity[]
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module         Module[]
+  enrollments    Enrollment[]
+  payments       Payment[]
+  wishlistItems  Wishlist[]
+  reviews        CourseReview[]
+  programs       ProgramCourse[]
+  activities     Activity[]
+  Organization   Organization?   @relation(fields: [organizationId], references: [id])
+  organizationId String?
 }
 
 enum CourseLevel {
@@ -411,7 +413,7 @@ model Payment {
   updatedAt DateTime @updatedAt
 
   enrollment Enrollment?
-  course     Course?      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course     Course?     @relation(fields: [courseId], references: [id], onDelete: Cascade)
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
