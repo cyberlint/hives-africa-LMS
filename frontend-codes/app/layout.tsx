@@ -17,10 +17,10 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.hives.africa"),
   title: {
     template: "%s | NextHive",
-    default:
-      "NextHive | Innovation, Learning & Talent Development Ecosystem",
+    default: "NextHive | Innovation, Learning & Talent Development Ecosystem",
   },
 
   description:

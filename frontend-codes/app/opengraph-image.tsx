@@ -87,7 +87,7 @@ export default function Image() {
             textAlign: 'center',
           }}
         >
-          The Pan-African Career Accellerator
+          Innovation, Learning & Talent Development Ecosystem
         </p>
       </div>
     ),

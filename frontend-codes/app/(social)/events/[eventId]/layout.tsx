@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getEventById } from "../events-actions";
 import { constructUrl } from "@/lib/construct-url";
 
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://hives.africa";
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.hives.africa";
 const SITE_NAME = "NextHive";
 
 type LayoutProps = {
