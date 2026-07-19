@@ -39,7 +39,7 @@ export default async function OrganizationLayout({
   const hasAccess = membership !== null || organization.creatorId === user.id;
 
   if (!hasAccess) {
-    redirect("/orgs");
+    redirect("/403");
   }
 
   return <OrganizationShell orgSlug={organization.slug}>{children}</OrganizationShell>;
