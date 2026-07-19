@@ -2,7 +2,6 @@ import { ImageResponse } from "next/og";
 import { getEventById } from "../events-actions";
 import { constructUrl } from "@/lib/construct-url";
 
-export const runtime = "edge";
 export const alt = "NextHive Event";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
