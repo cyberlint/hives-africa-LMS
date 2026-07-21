@@ -1,3 +1,5 @@
+import { authRoutes } from "@/routes";
+
 const DEFAULT_REDIRECT = "/home";
 
 function isSafeRedirect(value: string): boolean {
@@ -6,12 +8,29 @@ function isSafeRedirect(value: string): boolean {
   return true;
 }
 
+function isAuthRoute(pathname: string): boolean {
+  return authRoutes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  );
+}
+
 export function getSafeRedirectPath(value: string | null | undefined): string {
   if (!value) return DEFAULT_REDIRECT;
 
   try {
     const decoded = decodeURIComponent(value);
-    return isSafeRedirect(decoded) ? decoded : DEFAULT_REDIRECT;
+    if (!isSafeRedirect(decoded)) return DEFAULT_REDIRECT;
+
+    const url = new URL(decoded, "http://local");
+    const pathname = url.pathname;
+
+    if (isAuthRoute(pathname)) {
+      const nested = url.searchParams.get("redirectTo");
+      if (nested) return getSafeRedirectPath(nested);
+      return DEFAULT_REDIRECT;
+    }
+
+    return url.pathname + url.search;
   } catch {
     return DEFAULT_REDIRECT;
   }
@@ -23,7 +42,7 @@ export function getRedirectPathFromReferer(referer: string | null | undefined): 
   try {
     const url = new URL(referer);
     const pathname = url.pathname + url.search;
-    return isSafeRedirect(pathname) ? pathname : DEFAULT_REDIRECT;
+    return getSafeRedirectPath(pathname);
   } catch {
     return DEFAULT_REDIRECT;
   }

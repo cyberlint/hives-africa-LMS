@@ -7,7 +7,6 @@ export function middleware(request: NextRequest) {
 
   requestHeaders.set("x-pathname", pathname);
   requestHeaders.set("x-redirect-to", pathname);
-
   return NextResponse.next({
     request: {
       headers: requestHeaders,

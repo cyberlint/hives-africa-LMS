@@ -7,8 +7,10 @@ import { getRedirectPathFromReferer, getSafeRedirectPath } from "@/lib/auth-redi
 export async function redirectIfAuthenticated(){
     const headersList = await headers();
     const session = await auth.api.getSession({ headers: headersList});
+    const xRedirectTo = headersList.get("x-redirect-to");
+    const referer = headersList.get("referer");
+    const redirectTo = session ? getSafeRedirectPath(xRedirectTo || getRedirectPathFromReferer(referer)) : null;
     if (session) {
-        const redirectTo = getSafeRedirectPath(headersList.get("x-redirect-to") || getRedirectPathFromReferer(headersList.get("referer")));
-        redirect(redirectTo);
+        redirect(redirectTo!);
     }
 }
