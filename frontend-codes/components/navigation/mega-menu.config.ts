@@ -557,7 +557,7 @@ export const megaMenuConfig = {
                     {
                         id: "explore-learning",
                         title: "Explore Learning",
-                        href: "/learning",
+                        href: "/course",
                         icon: BookOpen,
                         description:
                             "Browse courses, learning paths, and bootcamps.",
@@ -607,7 +607,7 @@ export const megaMenuConfig = {
                     {
                         id: "explore-learning",
                         title: "Explore Learning",
-                        href: "/learning",
+                        href: "/course",
                         icon: BookOpen,
                         description:
                             "Browse courses, learning paths, and bootcamps.",

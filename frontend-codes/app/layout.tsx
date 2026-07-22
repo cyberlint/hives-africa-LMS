@@ -40,13 +40,6 @@ export const metadata: Metadata = {
     "Africa innovation ecosystem",
     "NextHive",
   ],
-
-  icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon-32x32.png",
-    apple: "/apple-touch-icon.png",
-  },
-
   openGraph: {
     title:
       "NextHive | Innovation, Learning & Talent Development Ecosystem",
