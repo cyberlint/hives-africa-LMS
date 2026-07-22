@@ -3,7 +3,9 @@
 import { prisma } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import { CreateEventSchema, UpdateEventSchema, EventRegistrationSchema } from "@/lib/zodSchemas";
-
+import { format } from "date-fns";
+import { eventRegistrationConfirmation } from "@/lib/email-templates/event-registration-email";
+import { resend } from "@/lib/resend";
 //------------ CREATE EVENT ----------------------------- */
 export async function createEvent(
   data: unknown,
@@ -95,17 +97,17 @@ export async function deleteEvent(eventId: string) {
 //------------ GET SINGLE EVENT ----------------------------- */
 export async function getEventById(eventId: string) {
   const event = await prisma.event.findUnique({
-  where: { id: eventId },
-  include: {
-    speakers: true,
-    user: {
-      select: {
-        id: true,
-        name: true,
+    where: { id: eventId },
+    include: {
+      speakers: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+        },
       },
     },
-  },
-});
+  });
 
   if (!event) throw new Error("Event not found");
 
@@ -122,17 +124,68 @@ export async function registerForEvent(
   const parsed = EventRegistrationSchema.parse(data);
 
   try {
-    return await prisma.eventRegistration.create({
-      data: {
-        eventId,
-        userId,
-
-        name: parsed.name,
-        email: parsed.email,
-        phone: parsed.phone,
-        referralSource: parsed.referralSource,
+    // Get the event first (needed for the confirmation email)
+    const event = await prisma.event.findUnique({
+      where: {
+        id: eventId,
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
+
+    if (!event) {
+      throw new Error("Event not found.");
+    }
+
+    // Create registration
+    const registration =
+      await prisma.eventRegistration.create({
+        data: {
+          eventId,
+          userId,
+          name: parsed.name,
+          email: parsed.email,
+          phone: parsed.phone,
+          referralSource: parsed.referralSource,
+        },
+      });
+
+    // Generate email
+    const email =
+      eventRegistrationConfirmation({
+        attendeeName: parsed.name,
+        eventTitle: event.title,
+        description: event.description ?? undefined,
+        startDate: format(
+          event.startdate,
+          "EEEE, MMMM d, yyyy • h:mm a"
+        ),
+        endDate: event.enddate
+          ? format(
+              event.enddate,
+              "EEEE, MMMM d, yyyy • h:mm a"
+            )
+          : undefined,
+        location: event.venue ?? undefined,
+        meetingLink: event.url ?? undefined,
+        organizer: event.user?.name ?? undefined,
+        actionUrl: `${process.env.NEXT_PUBLIC_APP_URL}/events/${event.id}`,
+      });
+
+    // Send email
+    await resend.emails.send({
+      from: `NextHive <${process.env.EMAIL_FROM}>`,
+      to: parsed.email,
+      subject: email.subject,
+      html: email.html,
+    });
+
+    return registration;
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&

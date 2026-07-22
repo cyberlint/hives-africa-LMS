@@ -1,3 +1,6 @@
+import { verificationEmail } from "./verification-email-template"
+import { resetPasswordEmail } from "./reset-password-email-template"
+
 const styles = {
   main: 'background-color: #ffffff; font-family: system-ui, -apple-system, sans-serif;',
   container: 'margin: 0 auto; padding: 20px 0 48px; max-width: 600px;',

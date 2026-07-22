@@ -3,7 +3,9 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./db";
 import { emailOTP, admin } from "better-auth/plugins";
 import { resend } from "./resend";
-import { VerificationEmail, ResetPasswordEmail } from "lib/email-templates/authentication-emails";
+// import { VerificationEmail, ResetPasswordEmail } from "lib/email-templates/authentication-emails";
+import { verificationEmail } from "@/lib/email-templates/verification-email-template"
+import { resetPasswordEmail } from "@/lib/email-templates/reset-password-email-template"
 
 export const auth = betterAuth({
     baseURL: process.env.BETTER_AUTH_URL,
@@ -18,11 +20,13 @@ export const auth = betterAuth({
         enabled: true,
         requireEmailVerification: true,
         async sendResetPassword({ user, url }) {
+            const EMAIL_FROM = process.env.EMAIL_FROM || "auth@notifications.hives.africa";
+            const emailTemplate  = resetPasswordEmail(url);
             await resend.emails.send({
-                from: "NextHive <auth@notifications.hives.africa>",
+                from: `NextHive <${EMAIL_FROM}>`,
                 to: [user.email],
-                subject: "Reset your password",
-                html: ResetPasswordEmail(url),
+                subject: emailTemplate .subject,
+                html: emailTemplate .html,
             });
         },
     },
@@ -41,11 +45,12 @@ export const auth = betterAuth({
             sendVerificationOnSignUp: true,
             async sendVerificationOTP({ email, otp }) {
                 try {
+                    const emailTemplate  = verificationEmail(otp);
                     await resend.emails.send({
-                        from: "NextHive <auth@notifications.hives.africa>",
+                        from: `NextHive <${process.env.EMAIL_FROM}>`,
                         to: [email],
-                        subject: "Verify your email",
-                        html: VerificationEmail(otp),
+                        subject: emailTemplate.subject,
+                        html: emailTemplate.html,
                     });
                     console.log(`OTP sent to ${email}`);
                 } catch (err) {

@@ -7,6 +7,14 @@ const baseTextStyle = `
   margin:0 0 16px 0;
 `;
 
+const calloutVariants = {
+  default: { background: "#f8fafc", border: "#e2e8f0", label: "#475569", text: "#334155", textAlign: "left", fontSize: "15px", fontWeight: "400", letterSpacing: "normal", },
+  success: { background: "#f0fdf4", border: "#bbf7d0", label: "#15803d", text: "#166534", textAlign: "left", fontSize: "15px", fontWeight: "400", letterSpacing: "normal", },
+  warning: { background: "#fffbeb", border: "#fde68a", label: "#ca8a04", text: "#92400e", textAlign: "left", fontSize: "15px", fontWeight: "400", letterSpacing: "normal", },
+  danger: { background: "#fef2f2", border: "#fecaca", label: "#dc2626", text: "#991b1b", textAlign: "left", fontSize: "15px", fontWeight: "400", letterSpacing: "normal", },
+  highlight: { background: "#fffbeb", border: "#fde68a", label: "#ca8a04", text: "#111827", textAlign: "center", fontSize: "34px", fontWeight: "700", letterSpacing: "8px", },
+} as const;
+
 export function renderEmailBlocks(blocks: Block[]) {
   if (!blocks || !Array.isArray(blocks)) return "";
 
@@ -45,52 +53,61 @@ export function renderEmailBlocks(blocks: Block[]) {
               line-height:1.75;
             ">
               ${(block.items || [])
-                .map(
-                  (item) => `
+              .map(
+                (item) => `
                     <li style="margin-bottom:8px;">
                       ${item}
                     </li>
                   `
-                )
-                .join("")}
+              )
+              .join("")}
             </ul>
           `;
 
-        case "callout":
-          return `
+        case "callout": {
+          const variant =
+            calloutVariants[
+            block.variant ?? "default"
+            ];
+
+          return ` 
             <div style="
-              background:#f8fafc;
-              border:1px solid #e2e8f0;
+              background:${variant.background};
+              border:1px solid ${variant.border};
               padding:16px 18px;
               border-radius:14px;
               margin:20px 0;
             ">
-              ${
-                block.label
-                  ? `<p style="
-                      margin:0 0 6px 0;
-                      font-size:11px;
-                      font-weight:700;
-                      letter-spacing:0.08em;
-                      text-transform:uppercase;
-                      color:#475569;
-                    ">
-                      ${block.label}
-                    </p>`
-                  : ""
-              }
 
-              <p style="
-                margin:0;
-                font-size:15px;
-                line-height:1.6;
-                color:#334155;
-              ">
-                ${block.content ?? ""}
-              </p>
-            </div>
-          `;
+      ${block.label
+              ? `<p style="
+              margin:0 0 6px 0;
+              font-size:11px;
+              font-weight:700;
+              letter-spacing:0.08em;
+              text-transform:uppercase;
+              color:${variant.label};
+            ">
+              ${block.label}
+            </p>`
+              : ""
+            }
 
+      <p style="
+        margin:0;
+        color:${variant.text};
+        font-size:${variant.fontSize};
+        font-weight:${variant.fontWeight};
+        line-height:1.6;
+        text-align:${variant.textAlign};
+        letter-spacing:${variant.letterSpacing};
+      ">
+        ${block.content ?? ""}
+      </p>
+
+    </div>
+  `;
+        }
         case "cta":
           return `
             <div style="margin:24px 0 8px 0;">
