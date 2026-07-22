@@ -6,8 +6,8 @@ import {
   IconUsers,
   IconSettings,
   IconHelp,
-  IconDatabase,
-  IconReport,
+  IconCalendarEvent,
+  IconTopologyStar3,
 } from "@tabler/icons-react"
 
 export type SidebarMode = "admin" | "org"
@@ -37,7 +37,7 @@ export function getNavData(
         icon: IconUsers,
       },
       {
-        title: "Courses",
+        title: "Programs",
         url:
           mode === "admin"
             ? "/admin/courses"
@@ -45,7 +45,7 @@ export function getNavData(
         icon: IconListDetails,
       },
       {
-        title: "Learning Activities",
+        title: "Activity Center",
         url:
           mode === "admin"
             ? "/admin/activities"
@@ -53,7 +53,7 @@ export function getNavData(
         icon: IconPlayCard,
       },
       {
-        title: "Review Submissions",
+        title: "Submissions",
         url:
           mode === "admin"
             ? "/admin/activities/submissions"
@@ -78,17 +78,17 @@ export function getNavData(
       },
     ],
 
-    documents: [
-      {
-        name: "Data Library",
-        url: "#",
-        icon: IconDatabase,
-      },
-      {
-        name: "Reports",
-        url: "#",
-        icon: IconReport,
-      },
+    platform: [
+  {
+    name: "Events",
+    url: "/events",
+    icon: IconCalendarEvent,
+  },
+  {
+    name: "Signal Graph",
+    url: "/community",
+    icon: IconTopologyStar3,
+  },
     ],
   }
 }

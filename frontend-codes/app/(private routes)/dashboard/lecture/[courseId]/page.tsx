@@ -117,7 +117,7 @@ export default function CoursePage({ params }: PageProps) {
       <div className="max-w-7xl mx-auto">
         <Link href="/dashboard/courses" className="inline-flex items-center text-gray-600 mb-6 hover:text-gray-900">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Dashboard
+          Back to Home
         </Link>
 
         <div className="flex flex-col lg:flex-row gap-6">

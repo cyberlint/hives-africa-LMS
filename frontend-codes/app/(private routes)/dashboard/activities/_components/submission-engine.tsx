@@ -257,7 +257,7 @@ export function SubmissionEngine({
               <div className="pt-6 border-t border-border/50">
                 {existingSubmission.status === "Approved" ? (
                   <Button asChild className="w-full rounded-full py-6 font-semibold bg-foreground text-background hover:bg-foreground/90 shadow-md">
-                    <Link href="/dashboard">Return to Dashboard <ArrowLeft className="ml-2 size-4" /></Link>
+                    <Link href="/dashboard">Return to Home <ArrowLeft className="ml-2 size-4" /></Link>
                   </Button>
                 ) : (
                   <div className="flex flex-col sm:flex-row gap-3">

@@ -18,7 +18,7 @@ import {
   IconUsers,
 } from "@tabler/icons-react"
 
-import { NavDocuments } from "./nav-documents"
+import { NavPlatform } from "./nav-platform"
 import { NavMain } from "./nav-main"
 import { getNavData } from "./nav-data"
 import { NavSecondary } from "./nav-secondary"
@@ -37,23 +37,23 @@ import Link from "next/link"
 const data = {
   navMain: [
     {
-      title: "Dashboard",
+      title: "Home",
       url: "/admin",
       icon: IconDashboard,
     },
     {
-      title: "Courses",
+      title: "Programs",
       url: "/admin/courses",
       icon: IconListDetails,
     },
     {
-      title: "Learning Activities",
+      title: "Activity Center",
       url: "/admin/activities",
       icon: IconPlayCard,
     },
 
     {
-      title: "Review Submissions",
+      title: "Submissions",
       url: "/admin/activities/submissions",
       icon: IconPencil,
     },
@@ -181,7 +181,7 @@ export function AppSidebar({
 
       <SidebarContent>
         <NavMain items={data.navMain} orgSlug={orgSlug} />
-        <NavDocuments items={data.documents} />
+        <NavPlatform items={data.platform} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
 

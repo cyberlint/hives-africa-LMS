@@ -70,7 +70,6 @@ const Hero2 = () => {
                     <span className="text-sm font-medium text-white">
                         Learn • Build • Collaborate • Grow
                     </span>
-                    <ArrowRight className="h-4 w-4 text-white" />
                 </motion.div>
 
                 {/* Hero section */}
