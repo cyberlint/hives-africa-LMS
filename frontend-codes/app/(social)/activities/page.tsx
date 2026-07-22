@@ -1,6 +1,10 @@
 import { prisma } from "@/lib/db"
 import Link from "next/link"
-import { Prisma } from "@prisma/client"
+import {
+  Prisma,
+  ActivityType,
+  ActivityDifficulty,
+} from "@prisma/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -42,8 +46,21 @@ function buildWhereClause(params: { [key: string]: string | undefined }): Prisma
     ]
   }
 
-  if (params.type) where.type = params.type
-  if (params.difficulty) where.difficulty = params.difficulty
+  if (
+  params.type &&
+  Object.values(ActivityType).includes(params.type as ActivityType)
+) {
+  where.type = params.type as ActivityType
+}
+
+if (
+  params.difficulty &&
+  Object.values(ActivityDifficulty).includes(
+    params.difficulty as ActivityDifficulty
+  )
+) {
+  where.difficulty = params.difficulty as ActivityDifficulty
+}
 
   return where
 }
