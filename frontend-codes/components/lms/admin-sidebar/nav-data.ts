@@ -8,6 +8,7 @@ import {
   IconHelp,
   IconCalendarEvent,
   IconTopologyStar3,
+  IconTrophy,
 } from "@tabler/icons-react"
 
 export type SidebarMode = "admin" | "org"
@@ -83,6 +84,11 @@ export function getNavData(
     name: "Events",
     url: "/events",
     icon: IconCalendarEvent,
+  },
+  {
+    name: "Arena",
+    url: "/activities",
+    icon: IconTrophy,
   },
   {
     name: "Signal Graph",
