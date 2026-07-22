@@ -1,50 +1,71 @@
 import { prisma } from "@/lib/db"
 import Link from "next/link"
+import { Prisma } from "@prisma/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Trophy, Users, User, Clock, Zap, Target } from "lucide-react"
+import { Trophy, Users, User, Clock, Target, type LucideIcon } from "lucide-react"
 import ActivityFilters from "./_components/ActivityFilters"
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | undefined }>
 }
 
-export default async function ActivitiesHubPage({ searchParams }: PageProps) {
-  const resolvedParams = await searchParams
-  
-  const whereClause: any = {
-    status: { in: ['Published', 'Active'] },
-    visibility: 'Public',
+function getModeDisplay(activity: { allowSolo: boolean; allowHive: boolean; minHiveSize: number | null; maxHiveSize: number | null }): {
+  label: string
+  Icon: LucideIcon
+} {
+  if (activity.allowSolo && !activity.allowHive) {
+    return { label: "Solo Only", Icon: User }
+  }
+  if (!activity.allowSolo && activity.allowHive) {
+    return {
+      label: `Squads (${activity.minHiveSize ?? 1}-${activity.maxHiveSize ?? "∞"})`,
+      Icon: Users,
+    }
+  }
+  return { label: "Solo & Squads", Icon: Users }
+}
+
+function buildWhereClause(params: { [key: string]: string | undefined }): Prisma.ActivityWhereInput {
+  const where: Prisma.ActivityWhereInput = {
+    status: { in: ["Published", "Active"] },
+    visibility: "Public",
     courseId: null,
-    programId: null
+    programId: null,
   }
 
-  if (resolvedParams.q) {
-    whereClause.OR = [
-      { title: { contains: resolvedParams.q, mode: 'insensitive' } },
-      { description: { contains: resolvedParams.q, mode: 'insensitive' } }
+  if (params.q) {
+    where.OR = [
+      { title: { contains: params.q, mode: "insensitive" } },
+      { description: { contains: params.q, mode: "insensitive" } },
     ]
   }
 
-  if (resolvedParams.type) whereClause.type = resolvedParams.type
-  if (resolvedParams.difficulty) whereClause.difficulty = resolvedParams.difficulty
+  if (params.type) where.type = params.type
+  if (params.difficulty) where.difficulty = params.difficulty
+
+  return where
+}
+
+export default async function ActivitiesHubPage({ searchParams }: PageProps) {
+  const resolvedParams = await searchParams
+  const whereClause = buildWhereClause(resolvedParams)
 
   const activities = await prisma.activity.findMany({
     where: whereClause,
     include: {
       ksbs: { include: { ksb: true } },
       _count: {
-        select: { participations: true, participatingHives: true }
-      }
+        select: { participations: true, participatingHives: true },
+      },
     },
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: "desc" },
   })
 
   return (
-    <div className="max-w-[1400px] mx-auto py-8 px-4 sm:px-6 space-y-8">
-
-      {/* HEADER (lighter + tighter) */}
+    <div className="mx-auto max-w-[1400px] space-y-8 px-4 py-8 sm:px-6">
+      {/* HEADER */}
       <div className="space-y-2">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
           The Arena
@@ -59,7 +80,7 @@ export default async function ActivitiesHubPage({ searchParams }: PageProps) {
 
       {/* EMPTY STATE */}
       {activities.length === 0 && (
-        <div className="py-16 flex flex-col items-center text-center border border-dashed border-border/60 rounded-2xl bg-muted/5">
+        <div className="py-16 flex flex-col items-center text-center border border-dashed border-border/60 rounded-2xl bg-muted/30">
           <Target className="size-10 text-muted-foreground/40 mb-3" />
           <h3 className="text-base font-semibold text-foreground">No challenges found</h3>
           <p className="text-xs text-muted-foreground mt-1 max-w-sm">
@@ -74,26 +95,19 @@ export default async function ActivitiesHubPage({ searchParams }: PageProps) {
       {/* GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {activities.map((activity) => {
-          let modeText = "Solo & Squads"
-          let ModeIcon = Users
-
-          if (activity.allowSolo && !activity.allowHive) {
-            modeText = "Solo Only"
-            ModeIcon = User
-          } else if (!activity.allowSolo && activity.allowHive) {
-            modeText = `Squads (${activity.minHiveSize || 1}-${activity.maxHiveSize || '∞'})`
-          }
+          const { label: modeText, Icon: ModeIcon } = getModeDisplay(activity)
+          const totalParticipants = activity._count.participations + activity._count.participatingHives
 
           return (
             <Card
               key={activity.id}
-              className="group rounded-xl border-border/50 hover:border-orange/40 hover:shadow-md transition-all flex flex-col"
+              className="group flex flex-col rounded-xl border border-border/50 bg-card transition-all hover:border-primary/40 hover:shadow-md"
             >
               {/* HEADER */}
               <CardHeader className="p-4 pb-3 space-y-3">
                 <div className="flex items-center justify-between">
-                  <Badge className="bg-orange/10 text-orange text-[9px] font-semibold uppercase tracking-wide border-none">
-                    {activity.type.replace(/_/g, ' ')}
+                  <Badge className="border-none bg-primary/10 text-primary text-[9px] font-semibold uppercase tracking-wide">
+                    {activity.type.replace(/_/g, " ")}
                   </Badge>
 
                   <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
@@ -102,7 +116,7 @@ export default async function ActivitiesHubPage({ searchParams }: PageProps) {
                   </div>
                 </div>
 
-                <CardTitle className="text-base font-semibold leading-snug line-clamp-2 group-hover:text-orange transition-colors">
+                <CardTitle className="text-base font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">
                   {activity.title}
                 </CardTitle>
 
@@ -116,22 +130,20 @@ export default async function ActivitiesHubPage({ searchParams }: PageProps) {
 
               {/* BODY */}
               <CardContent className="px-4 pb-4 pt-0 flex flex-col gap-4 flex-1">
-
-                {/* Description */}
                 <p className="text-sm text-muted-foreground line-clamp-2">
                   {activity.description}
                 </p>
 
                 {/* Stats */}
-                <div className="flex items-center justify-between text-xs bg-muted/30 px-3 py-2 rounded-lg border border-border/40">
+                <div className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/40 px-3 py-2 text-xs">
                   <div className="flex items-center gap-1.5 font-medium text-foreground">
-                    <Trophy className="size-3.5 text-yellow fill-yellow" />
+                    <Trophy className="size-3.5 fill-amber-500 text-amber-500" />
                     {new Intl.NumberFormat().format(activity.points)}
                   </div>
 
                   <div className="flex items-center gap-1 text-muted-foreground">
                     <Users className="size-3" />
-                    {activity._count.participations + activity._count.participatingHives}
+                    {totalParticipants}
                   </div>
                 </div>
 
@@ -141,7 +153,7 @@ export default async function ActivitiesHubPage({ searchParams }: PageProps) {
                     <Badge
                       key={aKsb.ksbId}
                       variant="secondary"
-                      className="text-[10px] px-2 py-0.5 bg-muted/40 border border-border/40"
+                      className="border-border/50 bg-muted text-[10px]"
                     >
                       {aKsb.ksb.title}
                     </Badge>
@@ -155,15 +167,9 @@ export default async function ActivitiesHubPage({ searchParams }: PageProps) {
                 </div>
 
                 {/* CTA */}
-                <Button
-                  asChild
-                  className="mt-auto h-9 text-xs font-semibold rounded-lg"
-                >
-                  <Link href={`/activities/${activity.slug}`}>
-                    View Challenge
-                  </Link>
+                <Button asChild className="mt-auto h-9 text-xs font-semibold rounded-lg">
+                  <Link href={`/activities/${activity.slug}`}>View Challenge</Link>
                 </Button>
-
               </CardContent>
             </Card>
           )

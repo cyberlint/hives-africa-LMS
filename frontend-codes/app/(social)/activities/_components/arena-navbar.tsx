@@ -6,12 +6,14 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Trophy, Zap, Users, Menu, X } from "lucide-react"
+import { Trophy, Zap, Users, Menu, X, LayoutGrid, FolderOpen } from "lucide-react"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 const navItems = [
   { label: "Arena", href: "/activities", icon: Trophy },
   { label: "Hives", href: "/community/hives", icon: Users },
   { label: "Dashboard", href: "/dashboard", icon: Zap },
+  { label: "Portfolio", href: "#", icon: FolderOpen, },
 ]
 
 export default function ArenaNavbar() {
@@ -35,7 +37,7 @@ export default function ArenaNavbar() {
             </button>
 
             {/* LOGO */}
-            <Link href="/community">
+            <Link href="/dashboard">
               <Image
                 src="/assets/NextHive Logo.png"
                 alt="NextHive"
@@ -59,7 +61,7 @@ export default function ArenaNavbar() {
                   className={cn(
                     "flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all",
                     isActive
-                      ? "bg-foreground text-background"
+                      ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   )}
                 >
@@ -71,16 +73,22 @@ export default function ArenaNavbar() {
           </div>
 
           {/* DESKTOP CTA */}
-          <div className="hidden md:flex">
+          <div className="hidden md:flex items-center gap-2">
+
+            <ThemeToggle />
+
             <Button
               asChild
+              variant="outline"
               size="sm"
-              className="rounded-full bg-orange text-white hover:bg-orange/90 px-4"
+              className="rounded-full"
             >
-              <Link href="/community/hives">
-                Join Squad
+              <Link href="/dashboard">
+                <LayoutGrid className="mr-2 size-4" />
+                Dashboard
               </Link>
             </Button>
+
           </div>
         </div>
       </div>
@@ -129,7 +137,7 @@ export default function ArenaNavbar() {
                     className={cn(
                       "flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-all",
                       isActive
-                        ? "bg-foreground text-background"
+                        ? "bg-primary text-primary-foreground"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     )}
                   >
@@ -138,6 +146,34 @@ export default function ArenaNavbar() {
                   </Link>
                 )
               })}
+            </div>
+
+            <div className="mt-6 border-t border-border pt-6 space-y-2">
+
+              <Button
+                asChild
+                variant="outline"
+                className="w-full justify-start rounded-xl"
+              >
+                <Link
+                  href="/dashboard"
+                  onClick={() => setOpen(false)}
+                >
+                  <LayoutGrid className="mr-2 size-4" />
+                  Dashboard
+                </Link>
+              </Button>
+
+              <div className="flex items-center justify-between rounded-xl border border-border px-3 py-3">
+
+                <span className="text-sm text-muted-foreground">
+                  Appearance
+                </span>
+
+                <ThemeToggle />
+
+              </div>
+
             </div>
 
             {/* CTA */}

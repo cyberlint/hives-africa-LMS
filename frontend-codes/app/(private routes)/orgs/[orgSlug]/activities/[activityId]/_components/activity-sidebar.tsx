@@ -17,7 +17,7 @@ const tabs = [
   { id: "overview", label: "1. Overview" },
   { id: "requirements", label: "2. Requirements" },
   { id: "settings", label: "3. Settings & Access" },
-  { id: "ksb", label: "4. KSB Mapping" },
+  { id: "ksb", label: "4. Competency Mapping" },
 ];
 
   return (
